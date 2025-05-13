@@ -1,4 +1,3 @@
-
 namespace API
 {
     public class Program
@@ -24,7 +23,6 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
