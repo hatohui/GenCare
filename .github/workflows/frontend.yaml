@@ -9,8 +9,7 @@ on:
     paths:
       - "frontend/**"
   pull_request:
-    branches: [main]
-    types: [opened, synchronize]
+    types: [synchronize, opened, reopened, edited]
     paths:
       - "frontend/**"
 
