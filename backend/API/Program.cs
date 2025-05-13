@@ -3,11 +3,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "My API",
-        Version = "v1"
-    });
+    c.SwaggerDoc(
+        "v1",
+        new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API test", Version = "v1" }
+    );
 });
 
 var app = builder.Build();
