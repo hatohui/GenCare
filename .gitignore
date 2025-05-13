@@ -365,8 +365,5 @@ FodyWeavers.xsd
 echo ".vs/" >> .gitignore
 echo "bin/" >> .gitignore
 echo "obj/" >> .gitignore
-/Web/appsettings.json
-/Infrastructures/Migrations/
+
 /backend/.cr/personal/FavoritesList
-/backend/API/appsettings.Development.json
-/backend/API/appsettings.json
