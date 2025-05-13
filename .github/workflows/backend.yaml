@@ -12,6 +12,9 @@ on:
     paths:
       - "backend/**"
 
+env:
+  SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
+
 jobs:
   pipeline:
     runs-on: ubuntu-latest
@@ -31,5 +34,6 @@ jobs:
         run: dotnet test --no-build
         working-directory: backend
       - name: Trigger deployment
+        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT == 'false' }}
         run: echo "Deploying..."
         working-directory: backend

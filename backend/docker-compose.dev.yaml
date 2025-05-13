@@ -1,17 +1,21 @@
+name: gencare_service
+
 services:
-  service:
+  backend:
     container_name: gencare_backend
     build:
       context: .
       dockerfile: dev.Dockerfile
     ports:
-      - 8080:8080
+      - "${APP_PORT:-8080}:8080"
     depends_on:
       database:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=database;Database=GenCare;Username=admin;Password=12345
+      - ConnectionStrings__DefaultConnection=Host=database;Database=${POSTGRES_DB:-GenCare};Username=${POSTGRES_USER:-admin};Password=${POSTGRES_PASSWORD:-12345}
 
   database:
     container_name: gencare_database
@@ -19,14 +23,16 @@ services:
     restart: always
     volumes:
       - gencare_postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=GenCare
-      - POSTGRES_PASSWORD=12345
     ports:
-      - 5432:5432
+      - "${DB_PORT:-5432}:5432"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-admin}
+      - POSTGRES_DB=${POSTGRES_DB:-GenCare}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-12345}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d GenCare"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5

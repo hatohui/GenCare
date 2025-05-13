@@ -1,0 +1,13 @@
+# services:
+#   frontend:
+#     container_name: gencare_frontend
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - '80:3000'
+#     environment:
+#       - NODE_ENV=production
+#       - NEXT_TELEMETRY_DISABLED=1
+#       - NODE_OPTIONS=--max-old-space-size=4096
+#     command: 'npm run start'
