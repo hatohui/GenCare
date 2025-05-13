@@ -1,6 +1,0 @@
-@GenCare_HostAddress = http://localhost:5202
-
-GET {{GenCare_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
