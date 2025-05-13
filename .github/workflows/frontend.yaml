@@ -1,4 +1,6 @@
 name: frontend
+permissions:
+  contents: read
 
 on:
   push:
