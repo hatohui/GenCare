@@ -1,0 +1,30 @@
+name: frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+    paths:
+      - "frontend/**"
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm i
+      - name: Style check
+        run: npm run lint
+      - name: Building the app
+        run: npm run build
+      - name: Trigger deployment
+        run: echo "Deploying..."
