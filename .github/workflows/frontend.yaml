@@ -20,18 +20,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
-        run: npm i
+        run: npm ci
         working-directory: frontend
+
       - name: Style check
         run: npm run lint
         working-directory: frontend
+
       - name: Building the app
         run: npm run build
         working-directory: frontend
+
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT == 'false' }}
         run: echo "Deploying..."
