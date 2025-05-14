@@ -3,7 +3,7 @@ export type GetUserDTO = User & {
 	objects: {
 		hello: string
 		world: string
-		objectinobject: {}
+		objectinobject: string
 	}
 }
 
