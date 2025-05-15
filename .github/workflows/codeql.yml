@@ -14,10 +14,7 @@ name: "CodeQL Advanced"
 on:
   pull_request:
     branches:
-      - main
-      - 'feature-*'
-      - 'frontend-*'
-      - 'backend-*'
+      - "**"
 
 jobs:
   analyze:
