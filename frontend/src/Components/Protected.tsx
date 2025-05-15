@@ -1,4 +1,3 @@
-import { useToken } from '@/Hooks/useToken'
 import React from 'react'
 
 const ProtectedPage = ({
@@ -6,8 +5,6 @@ const ProtectedPage = ({
 }: Readonly<{
 	children: React.ReactNode
 }>) => {
-	const token = useToken()
-
 	return <div>{children}</div>
 }
 
