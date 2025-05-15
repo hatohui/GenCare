@@ -7,7 +7,6 @@ on:
     types: [synchronize, opened, reopened, edited]
     paths:
       - "frontend/**"
-      - main
 
 env:
   SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
