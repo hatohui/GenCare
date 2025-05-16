@@ -7,7 +7,6 @@ on:
     types: [synchronize, opened, reopened, edited]
     paths:
       - "frontend/**"
-      - main
 
 env:
   SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
@@ -34,7 +33,21 @@ jobs:
         run: npm run build
         working-directory: frontend
 
-      - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT == 'false' }}
-        run: echo "Deploying..."
-        working-directory: frontend
+      - name: Deploy to Vercel (Preview)
+        uses: amondnet/vercel-action@v25
+        if: ${{ github.event_name == 'pull_request' && github.base_ref != 'main' && env.SKIP_DEPLOYMENT == 'false' }}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GH_TOKEN }}
+
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && env.SKIP_DEPLOYMENT == 'false' }}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: "--prod"
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GH_TOKEN }}
