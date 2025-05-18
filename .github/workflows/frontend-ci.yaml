@@ -1,20 +1,15 @@
-name: frontend
+name: frontend-ci
+
 permissions:
   contents: read
+  pull-requests: write
+  deployments: write
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "frontend/**"
   pull_request:
-    types: [synchronize, opened, reopened, edited]
+    types: [synchronize, opened, reopened]
     paths:
       - "frontend/**"
-
-env:
-  SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
 
 jobs:
   pipeline:
@@ -36,9 +31,4 @@ jobs:
 
       - name: Building the app
         run: npm run build
-        working-directory: frontend
-
-      - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT == 'false' }}
-        run: echo "Deploying..."
         working-directory: frontend
