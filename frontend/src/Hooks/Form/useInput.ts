@@ -37,7 +37,8 @@ const useInput = (
 	const [value, setValue] = useState<typeof initial>(initial)
 
 	const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setValue(event.target.value)
+		if (typeof initial === 'boolean') setValue(!value)
+		else setValue(event.target.value)
 	}
 
 	const reset = () => setValue(null)
