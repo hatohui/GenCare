@@ -6,6 +6,4 @@ const Page = () => {
 	return <RegisterPage />
 }
 
-//test cache
-
 export default Page
