@@ -41,7 +41,7 @@ jobs:
 
       - name: Deploy to Vercel (Production)
         uses: amondnet/vercel-action@v25
-        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && env.SKIP_DEPLOYMENT == 'false' }}
+        if: ${{ github.base_ref == 'main' && env.SKIP_DEPLOYMENT == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-args: "--prod"
