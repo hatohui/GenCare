@@ -22,7 +22,7 @@ env:
 
 jobs:
   deployfe:
-    if: ${{ contains(github.event.head_commit.message, '#skipall') }}
+    if: ${{ !contains(github.event.head_commit.message, '#skipall') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
