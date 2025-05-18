@@ -237,6 +237,8 @@ Tb-3. example of valid PR titles.
 - **Commit Description:**  
   Clearly describe what changed in the commit. Include a brief summary of the new feature, bug fix, or technical change. Focus on what was modified, added, or removed.
 
+  Special: include ``#skip` in the `commit message` to skip deployment
+
 - **Pull Request Description:**  
   The PR description should include the commit description and reference the related issue using one of the following keywords:
 
