@@ -10,15 +10,27 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 
 Clone this repository, then clone `.env.example` to `.env` and populate with necessary information. The API keys will be added in later, check the group.
 
+<p align="center">
+  <img src="docs/images/envExample.png" alt="envExample.png" />
+</p>
+
+##
+
 #### 2. Install Docker
 
 Go to [Docker Desktop](https://www.docker.com/products/docker-desktop) and install Docker.
 
 After installation completed. Create a personal account and login until you can see the `Containers` page.
 
+<p align="center">
+  <img src="docs/images/dockerExample.png" alt="dockerExample.png" />
+</p>
+
+_p/s: Leave docker open when you're developing with docker containers._
+
 #### 3. Development
 
-Open the for the directory by pressing **Ctrl + `** .
+Open the command line for the directory by pressing **Ctrl + `**
 
 For backend:
 
@@ -38,10 +50,192 @@ Then run:
 docker-compose -f .\docker-compose.dev.yaml up
 ```
 
+Example:
+
+<p align="center">  
+  <img src="docs/images/consoleExample.png" alt="consoleExample.png" />
+</p>
+
 to start up the development server.
 
-For **backend** the port exposed would be `8080`, means you can access the api webpage on `http://localhost:8080/swagger/index.html`.
+### _Notes:_
 
-For **database** the port exposed would be `5432`, means you can connect to the database using the details in `.env.example` for **development environment** using database viewer tool (Including Microsoft SQL Server Management Tool)
+- **Backend:**  
+  The backend API is available at [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html).
 
-For **frontend** the port exposed would be `3000`, means you can access the webpage on `http://localhost:3000`
+- **Frontend:**  
+  The web application runs at [http://localhost:3000/](http://localhost:3000/).
+
+- **Database:**  
+  The PostgreSQL database is exposed on port `5432`.  
+  Use the credentials from `.env.example` to connect via your preferred database viewer (e.g., Microsoft SQL Server Management Studio) in the development environment.
+
+---
+
+### Committing to the project
+
+### 1. Creating/Assigning an Issue
+
+Before starting work on a new feature or bug fix, create an issue in the repository to track the task. If an issue already exists, assign it to yourself.
+
+**Steps:**
+
+1. Go to the repository's "Issues" tab.
+2. Click **New Issue** to create a new one, or select an existing issue relevant to your work.
+3. Provide a clear title and description outlining the feature, bug, or task.
+4. Assign the issue to yourself or the appropriate team member.
+
+This ensures all work is tracked, discussed, and linked to commits and pull requests for better project management.
+
+### Issue Naming Convention
+
+When creating issues, use the following naming convention:
+
+```
+[FE | related-feature] concise issue description
+[BE | related-feature] concise issue description
+```
+
+- Use `[FE | ...]` for frontend issues and `[BE | ...]` for backend issues.
+- Replace `related-feature` with the relevant feature or context (e.g., `Auth`, `Dashboard`).
+- Write a short, clear description of the issue after the prefix.
+
+<div align="center">
+
+| Issue Title                                 | Valid? |
+| ------------------------------------------- | :----: |
+| `[FE \| Auth] implement login page`         |   ✅   |
+| `[BE \| user-management] fix user deletion` |   ✅   |
+| `[FE \| Dashboard] add analytics widget`    |   ✅   |
+
+Tb-0. example of valid issue titles.
+
+</div>
+
+**Examples:**
+
+<div align="center">
+  <img src="docs/images/issueExample.png" alt="issueExample.png">
+  image of a valid issue.
+</div>
+
+### 2. Branching
+
+- **Create a new branch for each feature:**  
+  Start every new branch from `main`, focusing on a single feature or fix.
+
+- **Merging workflow:**  
+  When your feature is complete, open a Pull Request (PR) to merge your branch into `main` for deployment.
+
+- **Feature branch collaboration:**  
+  If collaborating on a feature, create additional branches from the feature branch and use PRs to merge changes back into it.
+
+---
+
+#### Branch Naming Convention
+
+Branch names must follow this pattern:
+
+<div align="center">
+
+```
+^((main)(?![-.]*))|((feature|fix|task)(-.*))
+```
+
+</div>
+
+Start branch names with `feature-`, `fix-`, or `task-`.
+
+<div align="center">
+
+| Branch Name            | Valid? |
+| ---------------------- | :----: |
+| `feature-login-page`   |   ✅   |
+| `fix-crash-on-startup` |   ✅   |
+| `task-update-readme`   |   ✅   |
+
+Tb-1. example of valid branch names.
+
+</div>
+
+### 3. Commiting & PR
+
+---
+
+#### Commits & Pull Requests Naming Convention:
+
+Commit messages must follow this pattern:
+
+<div align="center">
+
+```
+^\[(FE|BE)(\s*\|\s*[a-zA-Z0-9-_]+)?\]\s+[a-z].+
+```
+
+</div>
+
+- **Prefix:** Start with `[FE]` for frontend or `[BE]` for backend.
+- **Optional context:** You may add a pipe `|` and a ticket number or context (e.g., `[FE | Auth]`).
+- **Message:** After the prefix, add a space and start the message with a lowercase letter.
+
+Pull request titles must also start with `[FE]` or `[BE]`, following the same convention.
+
+<div align="center">
+
+| Commit Message                             | Valid? |
+| ------------------------------------------ | :----: |
+| `[FE] add login form validation`           |   ✅   |
+| `[BE] fix endpoint bug`                    |   ✅   |
+| `[FE \| Auth] create user profile view`    |   ✅   |
+| `[BE \| backend-auth] implement JWT login` |   ✅   |
+
+Tb-2. example of valid commit messages.
+
+</div>
+
+##
+
+#### Commit & Pull Request Descriptions:
+
+- **Commit Description:**  
+  Clearly describe what changed in the commit. Include a brief summary of the new feature, bug fix, or technical change. Focus on what was modified, added, or removed.
+
+- **Pull Request Description:**  
+  The PR description should include the commit description and reference the related issue using one of the following keywords:
+
+  - `close`
+  - `closes`
+  - `closed`
+  - `fix`
+  - `fixes`
+  - `fixed`
+  - `resolve`
+  - `resolves`
+  - `resolved`
+
+  Tag the issue by adding `#<issue_tag>` immediately after the keyword. If no related issue exists, create one before submitting the PR. For routine tasks (e.g., updating from `main`), tagging is optional.
+
+**Example:**
+
+```
+[FE] add password reset functionality
+
+- Implemented password reset form and API integration.
+- Updated user authentication flow to support password resets.
+
+closes #42
+```
+
+##
+
+### Repository Rules
+
+1. `main` is a protected branch, and is the production branch of this project, all commits made to it will be deployed via CI/CD, you can only do `Pull request` into it.
+
+2. All `branches` & `commits` aside from `main` must follow a set naming convention.
+
+3. All `commits` to a `feature` branch must be made through a `Pull Request`
+
+4. At least `1` review is required for successful `PR`.
+
+5. The code must pass the security check done by `CodeQL` and `GitGuardian`.
