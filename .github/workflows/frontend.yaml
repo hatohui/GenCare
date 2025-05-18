@@ -44,6 +44,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           github-token: ${{ secrets.GH_TOKEN }}
+          working-directory: frontend
 
       - name: Deploy to Vercel (Production)
         uses: amondnet/vercel-action@v25
@@ -54,3 +55,4 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           github-token: ${{ secrets.GH_TOKEN }}
+          working-directory: frontend
