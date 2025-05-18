@@ -139,61 +139,100 @@ Branch names must follow this pattern:
 <div align="center">
 
 ```
-^((main)(?![-.]*))|((feature|fix|task)(-.*))
+^(main$|(feature|fix|task)\/.+(?:-.*)?)$
 ```
 
 </div>
 
-Start branch names with `feature-`, `fix-`, or `task-`.
+Start branch names with `feature/`, `fix/`, or `task/`.
 
 <div align="center">
 
 | Branch Name            | Valid? |
 | ---------------------- | :----: |
-| `feature-login-page`   |   ✅   |
-| `fix-crash-on-startup` |   ✅   |
-| `task-update-readme`   |   ✅   |
+| `feature/login-page`   |   ✅   |
+| `fix/crash-on-startup` |   ✅   |
+| `task/update-readme`   |   ✅   |
+| `feature-login-page`   |   ❌   |
+| `feature/`             |   ❌   |
+| `feature/login page`   |   ❌   |
 
 Tb-1. example of valid branch names.
 
 </div>
 
-### 3. Commiting & PR
+### 3. Commiting
 
 ---
 
-#### Commits & Pull Requests Naming Convention:
+#### Commits Naming Convention:
 
 Commit messages must follow this pattern:
 
 <div align="center">
 
 ```
-^\[(FE|BE)(\s*\|\s*[a-zA-Z0-9-_]+)?\]\s+[a-z].+
+^(fix|feat|chore): .+$
 ```
 
 </div>
 
-- **Prefix:** Start with `[FE]` for frontend or `[BE]` for backend.
-- **Optional context:** You may add a pipe `|` and a ticket number or context (e.g., `[FE | Auth]`).
-- **Message:** After the prefix, add a space and start the message with a lowercase letter.
-
-Pull request titles must also start with `[FE]` or `[BE]`, following the same convention.
+- **Type:** Start with `fix:`, `feat:`, or `chore:` to indicate the nature of the change.
+  - `fix:` for bug fixes
+  - `feat:` for new features
+  - `chore:` for maintenance or non-functional changes
+- **Message:** After the type, add a concise description of the change.
 
 <div align="center">
 
-| Commit Message                             | Valid? |
-| ------------------------------------------ | :----: |
-| `[FE] add login form validation`           |   ✅   |
-| `[BE] fix endpoint bug`                    |   ✅   |
-| `[FE \| Auth] create user profile view`    |   ✅   |
-| `[BE \| backend-auth] implement JWT login` |   ✅   |
+| Commit Message                 | Valid? |
+| ------------------------------ | :----: |
+| `feat: add login form`         |   ✅   |
+| `fix: resolve endpoint bug`    |   ✅   |
+| `chore: update dependencies`   |   ✅   |
+| `feature: implement JWT login` |   ❌   |
+| `fix login bug`                |   ❌   |
 
 Tb-2. example of valid commit messages.
 
 </div>
 
 ##
+
+### 4. Pull Requests
+
+#### Pull Request Title Convention
+
+Pull Request (PR) titles must follow this pattern:
+
+<div align="center">
+
+```
+^\[(FE|BE)(\s*\|\s*[a-zA-Z0-9-_]+)?\]\s+[a-zA-Z].+
+```
+
+</div>
+
+- Start with `[FE | feature]` or `[BE | feature]` (the `| feature` part is optional, but recommended for clarity).
+- Use `FE` for frontend and `BE` for backend.
+- After the prefix, add a concise description of the PR, starting with a letter (uppercase or lowercase).
+
+<div align="center">
+
+| PR Title                                 | Valid? |
+| ---------------------------------------- | :----: |
+| `[FE \| auth] Add login page`            |   ✅   |
+| `[BE \| user-management] Fix user roles` |   ✅   |
+| `[FE] Update dashboard layout`           |   ✅   |
+| `[BE] Implement API endpoint`            |   ✅   |
+| `[FE \| ] Add tests`                     |   ✅   |
+| `[FE]add login page`                     |   ✅   |
+| `[FE \| auth] add Login Page`            |   ✅   |
+| `add login page`                         |   ❌   |
+
+Tb-3. example of valid PR titles.
+
+</div>
 
 #### Commit & Pull Request Descriptions:
 
