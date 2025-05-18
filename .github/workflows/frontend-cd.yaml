@@ -15,10 +15,12 @@ on:
 
 env:
   SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
+  SKIP_ALL: ${{ contains(github.event.head_commit.message, '#skipall') }}
 
 jobs:
   deployfe:
     runs-on: ubuntu-latest
+    if: env.SKIP_ALL == 'false'
     steps:
       - uses: actions/checkout@v4
 
