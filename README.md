@@ -58,7 +58,7 @@ Example:
 
 to start up the development server.
 
-### _Notes:_
+_Notes:_
 
 - **Backend:**  
   The backend API is available at [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html).
@@ -70,11 +70,9 @@ to start up the development server.
   The PostgreSQL database is exposed on port `5432`.  
   Use the credentials from `.env.example` to connect via your preferred database viewer (e.g., Microsoft SQL Server Management Studio) in the development environment.
 
----
-
 ### Committing to the project
 
-### 1. Creating/Assigning an Issue
+#### 1. Creating/Assigning an Issue
 
 Before starting work on a new feature or bug fix, create an issue in the repository to track the task. If an issue already exists, assign it to yourself.
 
@@ -87,7 +85,7 @@ Before starting work on a new feature or bug fix, create an issue in the reposit
 
 This ensures all work is tracked, discussed, and linked to commits and pull requests for better project management.
 
-### Issue Naming Convention
+##### Issue Naming Convention
 
 When creating issues, use the following naming convention:
 
@@ -119,7 +117,7 @@ Tb-0. example of valid issue titles.
   image of a valid issue.
 </div>
 
-### 2. Branching
+#### 2. Branching
 
 - **Create a new branch for each feature:**  
   Start every new branch from `main`, focusing on a single feature or fix.
@@ -132,7 +130,7 @@ Tb-0. example of valid issue titles.
 
 ---
 
-#### Branch Naming Convention
+##### Branch Naming Convention
 
 Branch names must follow this pattern:
 
@@ -161,11 +159,11 @@ Tb-1. example of valid branch names.
 
 </div>
 
-### 3. Commiting
+#### 3. Commiting
 
 ---
 
-#### Commits Naming Convention:
+##### Commits Naming Convention:
 
 Commit messages must follow this pattern:
 
@@ -199,9 +197,9 @@ Tb-2. example of valid commit messages.
 
 ##
 
-### 4. Pull Requests
+#### 4. Pull Requests
 
-#### Pull Request Title Convention
+##### Pull Request Title Convention
 
 Pull Request (PR) titles must follow this pattern:
 
