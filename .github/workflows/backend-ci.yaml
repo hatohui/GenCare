@@ -1,19 +1,13 @@
-name: backend
+name: backend-ci
 
 permissions:
   contents: read
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "backend/**"
   pull_request:
-    types: [synchronize, opened, reopened, edited]
+    types: [synchronize, opened, reopened]
     paths:
       - "backend/**"
-
 env:
   SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
 

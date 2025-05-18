@@ -9,6 +9,14 @@ const LoginForm = () => {
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
 
+	const handleReset = () => {
+		resetUsername()
+		resetPassword()
+		resetRemember()
+	}
+
+	console.log(handleReset)
+
 	const handleSubmit = () => {}
 
 	return (
