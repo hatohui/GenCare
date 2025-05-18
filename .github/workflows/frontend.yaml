@@ -6,6 +6,11 @@ permissions:
   deployments: write
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
   pull_request:
     types: [synchronize, opened, reopened, edited]
     paths:
