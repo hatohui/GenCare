@@ -70,6 +70,8 @@ _Notes:_
   The PostgreSQL database is exposed on port `5432`.  
   Use the credentials from `.env.example` to connect via your preferred database viewer (e.g., Microsoft SQL Server Management Studio) in the development environment.
 
+---
+
 ### Committing to the project
 
 #### 1. Creating/Assigning an Issue
@@ -117,6 +119,8 @@ Tb-0. example of valid issue titles.
   image of a valid issue.
 </div>
 
+---
+
 #### 2. Branching
 
 - **Create a new branch for each feature:**  
@@ -159,9 +163,9 @@ Tb-1. example of valid branch names.
 
 </div>
 
-#### 3. Commiting
-
 ---
+
+#### 3. Commiting
 
 ##### Commits Naming Convention:
 
