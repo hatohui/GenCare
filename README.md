@@ -2,6 +2,24 @@
 
 GenCare is a comprehensive web-based management system designed for healthcare facilities offering gender-specific and sexual health services. It supports a wide range of functionalities, from reproductive health tracking to STI testing and consultation scheduling.
 
+## Project Information
+
+### Technical Overview
+
+#### System Architecture
+
+<p align="center">
+  <img src="docs/charts/systemArchitecture.png" alt="systemArchitecture.png" />
+  System Architecture Diagram
+</p>
+
+#### Continuous Integration & Continuous Delivery
+
+<p align="center">
+  <img src="docs/charts/cicd.png" alt="cicd.png" />
+  Continuous Integration & Continuous Delivery
+</p>
+
 ## Development
 
 ### Getting started:
@@ -282,3 +300,34 @@ closes #42
 4. At least `1` review is required for successful `PR`.
 
 5. The code must pass the security check done by `CodeQL` and `GitGuardian`.
+
+#### Project Credits
+
+<div align="center">
+
+| No  | Student ID |        Name         | Github URL                                    |
+| --- | ---------- | :-----------------: | --------------------------------------------- |
+| 1   | `SE182425` | `Hồng Lê Đăng Khoa` | [NicolaiHong](https://github.com/NicolaiHong) |
+| 2   | `SE182742` | `Nguyễn Tiến Phát`  | [NTPhat0322](https://github.com/NTPhat0322)   |
+| 3   | `SE190797` |    `Lê Sỹ Tuyền`    | [hatohui](https://github.com/hatohui)         |
+| 4   | `SE190051` |   `Phạm Anh Kiệt`   | [KietPham-VN](https://github.com/KietPham-VN) |
+| 5   | `SE193759` |   `Đinh Gia Huy`    | [HuyDG160205](https://github.com/HuyDG160205) |
+
+## </div>
+
+<div align="center">
+
+### 🙏 Thank You for Being Part of GenCare!
+
+</div>
+
+We appreciate your contributions and dedication to the GenCare project.
+
+- For questions or suggestions, please communicate within the project team or use the repository's [issue tracker](../../issues).
+- **Note:** External contributions are not accepted, as this is a closed group project.
+
+<div align="center">
+
+Let's build something great together! 🚀
+
+</div>
