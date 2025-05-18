@@ -9,7 +9,6 @@ jobs:
   analyzefe:
     name: Analyze Frontend (${{ matrix.language }})
     runs-on: ubuntu-latest
-    if: startsWith(github.event.pull_request.head.ref, 'frontend/')
     permissions:
       security-events: write
       packages: read

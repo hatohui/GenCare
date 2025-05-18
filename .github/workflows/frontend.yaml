@@ -11,9 +11,6 @@ on:
     paths:
       - "frontend/**"
 
-env:
-  SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
-
 jobs:
   pipeline:
     runs-on: ubuntu-latest
@@ -35,14 +32,3 @@ jobs:
       - name: Building the app
         run: npm run build
         working-directory: frontend
-
-      - name: Deploy to Vercel (Production)
-        uses: amondnet/vercel-action@v25
-        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && env.SKIP_DEPLOYMENT == 'false' }}
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-args: "--prod"
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-token: ${{ secrets.GH_TOKEN }}
-          working-directory: frontend
