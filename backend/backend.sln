@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yems", "Backend\Yems.csproj", "{D5AA6297-0321-4BA0-ACC3-A08A1525D48F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{9F450DCE-E904-494F-8BDD-17E487ED798C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D5AA6297-0321-4BA0-ACC3-A08A1525D48F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5AA6297-0321-4BA0-ACC3-A08A1525D48F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5AA6297-0321-4BA0-ACC3-A08A1525D48F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5AA6297-0321-4BA0-ACC3-A08A1525D48F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F450DCE-E904-494F-8BDD-17E487ED798C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F450DCE-E904-494F-8BDD-17E487ED798C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F450DCE-E904-494F-8BDD-17E487ED798C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F450DCE-E904-494F-8BDD-17E487ED798C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
