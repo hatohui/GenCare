@@ -8,10 +8,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "frontend/**"
   pull_request:
     types: [closed]
     branches:
       - main
+    paths:
+      - "frontend/**"
 
 env:
   SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skip') }}
