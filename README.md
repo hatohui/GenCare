@@ -2,6 +2,24 @@
 
 GenCare is a comprehensive web-based management system designed for healthcare facilities offering gender-specific and sexual health services. It supports a wide range of functionalities, from reproductive health tracking to STI testing and consultation scheduling.
 
+## Project Information
+
+### Technical Overview
+
+#### System Architecture
+
+<p align="center">
+  <img src="docs/charts/systemArchitecture.png" alt="systemArchitecture.png" />
+  System Architecture Diagram
+</p>
+
+#### Continuous Integration & Continuous Delivery
+
+<p align="center">
+  <img src="docs/charts/cicd.png" alt="cicd.png" />
+  Continuous Integration & Continuous Delivery
+</p>
+
 ## Development
 
 ### Getting started:
@@ -58,7 +76,7 @@ Example:
 
 to start up the development server.
 
-### _Notes:_
+_Notes:_
 
 - **Backend:**  
   The backend API is available at [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html).
@@ -74,7 +92,7 @@ to start up the development server.
 
 ### Committing to the project
 
-### 1. Creating/Assigning an Issue
+#### 1. Creating/Assigning an Issue
 
 Before starting work on a new feature or bug fix, create an issue in the repository to track the task. If an issue already exists, assign it to yourself.
 
@@ -87,7 +105,7 @@ Before starting work on a new feature or bug fix, create an issue in the reposit
 
 This ensures all work is tracked, discussed, and linked to commits and pull requests for better project management.
 
-### Issue Naming Convention
+##### Issue Naming Convention
 
 When creating issues, use the following naming convention:
 
@@ -119,7 +137,9 @@ Tb-0. example of valid issue titles.
   image of a valid issue.
 </div>
 
-### 2. Branching
+---
+
+#### 2. Branching
 
 - **Create a new branch for each feature:**  
   Start every new branch from `main`, focusing on a single feature or fix.
@@ -132,62 +152,66 @@ Tb-0. example of valid issue titles.
 
 ---
 
-#### Branch Naming Convention
+##### Branch Naming Convention
 
 Branch names must follow this pattern:
 
 <div align="center">
 
 ```
-^((main)(?![-.]*))|((feature|fix|task)(-.*))
+^(main$|(feature|fix|task)\/.+(?:-.*)?)$
 ```
 
 </div>
 
-Start branch names with `feature-`, `fix-`, or `task-`.
+Start branch names with `feature/`, `fix/`, or `task/`.
 
 <div align="center">
 
 | Branch Name            | Valid? |
 | ---------------------- | :----: |
-| `feature-login-page`   |   ✅   |
-| `fix-crash-on-startup` |   ✅   |
-| `task-update-readme`   |   ✅   |
+| `feature/login-page`   |   ✅   |
+| `fix/crash-on-startup` |   ✅   |
+| `task/update-readme`   |   ✅   |
+| `feature-login-page`   |   ❌   |
+| `feature/`             |   ❌   |
+| `feature/login page`   |   ❌   |
 
 Tb-1. example of valid branch names.
 
 </div>
 
-### 3. Commiting & PR
-
 ---
 
-#### Commits & Pull Requests Naming Convention:
+#### 3. Commiting
+
+##### Commits Naming Convention:
 
 Commit messages must follow this pattern:
 
 <div align="center">
 
 ```
-^\[(FE|BE)(\s*\|\s*[a-zA-Z0-9-_]+)?\]\s+[a-z].+
+^(fix|feat|chore): .+$
 ```
 
 </div>
 
-- **Prefix:** Start with `[FE]` for frontend or `[BE]` for backend.
-- **Optional context:** You may add a pipe `|` and a ticket number or context (e.g., `[FE | Auth]`).
-- **Message:** After the prefix, add a space and start the message with a lowercase letter.
-
-Pull request titles must also start with `[FE]` or `[BE]`, following the same convention.
+- **Type:** Start with `fix:`, `feat:`, or `chore:` to indicate the nature of the change.
+  - `fix:` for bug fixes
+  - `feat:` for new features
+  - `chore:` for maintenance or non-functional changes
+- **Message:** After the type, add a concise description of the change.
 
 <div align="center">
 
-| Commit Message                             | Valid? |
-| ------------------------------------------ | :----: |
-| `[FE] add login form validation`           |   ✅   |
-| `[BE] fix endpoint bug`                    |   ✅   |
-| `[FE \| Auth] create user profile view`    |   ✅   |
-| `[BE \| backend-auth] implement JWT login` |   ✅   |
+| Commit Message                 | Valid? |
+| ------------------------------ | :----: |
+| `feat: add login form`         |   ✅   |
+| `fix: resolve endpoint bug`    |   ✅   |
+| `chore: update dependencies`   |   ✅   |
+| `feature: implement JWT login` |   ❌   |
+| `fix login bug`                |   ❌   |
 
 Tb-2. example of valid commit messages.
 
@@ -195,10 +219,47 @@ Tb-2. example of valid commit messages.
 
 ##
 
+#### 4. Pull Requests
+
+##### Pull Request Title Convention
+
+Pull Request (PR) titles must follow this pattern:
+
+<div align="center">
+
+```
+^\[(FE|BE)(\s*\|\s*[a-zA-Z0-9-_]+)?\]\s+[a-zA-Z].+
+```
+
+</div>
+
+- Start with `[FE | feature]` or `[BE | feature]` (the `| feature` part is optional, but recommended for clarity).
+- Use `FE` for frontend and `BE` for backend.
+- After the prefix, add a concise description of the PR, starting with a letter (uppercase or lowercase).
+
+<div align="center">
+
+| PR Title                                 | Valid? |
+| ---------------------------------------- | :----: |
+| `[FE \| auth] Add login page`            |   ✅   |
+| `[BE \| user-management] Fix user roles` |   ✅   |
+| `[FE] Update dashboard layout`           |   ✅   |
+| `[BE] Implement API endpoint`            |   ✅   |
+| `[FE \| ] Add tests`                     |   ✅   |
+| `[FE]add login page`                     |   ✅   |
+| `[FE \| auth] add Login Page`            |   ✅   |
+| `add login page`                         |   ❌   |
+
+Tb-3. example of valid PR titles.
+
+</div>
+
 #### Commit & Pull Request Descriptions:
 
 - **Commit Description:**  
   Clearly describe what changed in the commit. Include a brief summary of the new feature, bug fix, or technical change. Focus on what was modified, added, or removed.
+
+  Special: include ``#skip` in the `commit message` to skip deployment
 
 - **Pull Request Description:**  
   The PR description should include the commit description and reference the related issue using one of the following keywords:
@@ -239,3 +300,34 @@ closes #42
 4. At least `1` review is required for successful `PR`.
 
 5. The code must pass the security check done by `CodeQL` and `GitGuardian`.
+
+#### Project Credits
+
+<div align="center">
+
+| No  | Student ID |        Name         | Github URL                                    |
+| --- | ---------- | :-----------------: | --------------------------------------------- |
+| 1   | `SE182425` | `Hồng Lê Đăng Khoa` | [NicolaiHong](https://github.com/NicolaiHong) |
+| 2   | `SE182742` | `Nguyễn Tiến Phát`  | [NTPhat0322](https://github.com/NTPhat0322)   |
+| 3   | `SE190797` |    `Lê Sỹ Tuyền`    | [hatohui](https://github.com/hatohui)         |
+| 4   | `SE190051` |   `Phạm Anh Kiệt`   | [KietPham-VN](https://github.com/KietPham-VN) |
+| 5   | `SE193759` |   `Đinh Gia Huy`    | [HuyDG160205](https://github.com/HuyDG160205) |
+
+## </div>
+
+<div align="center">
+
+### 🙏 Thank You for Being Part of GenCare!
+
+</div>
+
+We appreciate your contributions and dedication to the GenCare project.
+
+- For questions or suggestions, please communicate within the project team or use the repository's [issue tracker](../../issues).
+- **Note:** External contributions are not accepted, as this is a closed group project.
+
+<div align="center">
+
+Let's build something great together! 🚀
+
+</div>
