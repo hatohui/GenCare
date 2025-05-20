@@ -3,9 +3,11 @@
 namespace API.Controllers;
 
 [ApiController]
+[Route("[controller]")]
 public class HealthController : ControllerBase
 {
-    [HttpGet("health")]
+    [HttpGet]
+    [ProducesResponseType(typeof(string), 200)]
     public IActionResult Health()
     {
         return Ok("Healthy");
