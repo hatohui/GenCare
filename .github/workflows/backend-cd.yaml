@@ -40,8 +40,10 @@ jobs:
       - name: Generate cache key
         id: cache-key
         run: |
-          echo "cache-key=$(sha256sum backend/Dockerfile | awk '{print $1}')" >> $GITHUB_OUTPUT
-          find backend/ -type f -not -path 'backend/Dockerfile' -exec sha256sum {} + | sort | sha256sum | awk '{print $1}' >> $GITHUB_OUTPUT
+          DOCKERFILE_HASH=$(sha256sum backend/Dockerfile | awk '{print $1}')
+          FILES_HASH=$(find backend/ -type f -not -path 'backend/Dockerfile' -exec sha256sum {} + | sort | sha256sum | awk '{print $1}')
+          COMBINED_HASH=$(echo "${DOCKERFILE_HASH}${FILES_HASH}" | sha256sum | awk '{print $1}')
+          echo "cache-key=$COMBINED_HASH" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
