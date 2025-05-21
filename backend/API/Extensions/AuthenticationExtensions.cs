@@ -1,4 +1,7 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -29,6 +32,33 @@ public static class AuthenticationExtensions
                 ValidAudience = jwtAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
             };
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddGoogleOAuth2(this IServiceCollection services)
+    {
+        var googleClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
+                             ?? throw new InvalidOperationException("Google Client ID is missing.");
+        var googleClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")
+                                 ?? throw new InvalidOperationException("Google Client Secret is missing.");
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie()
+        .AddGoogle(options =>
+        {
+            options.ClientId = googleClientId;
+            options.ClientSecret = googleClientSecret;
+            options.SaveTokens = true;
+
+            // Optional: Map user info fields
+            options.ClaimActions.MapJsonKey("picture", "picture", "url");
         });
 
         return services;
