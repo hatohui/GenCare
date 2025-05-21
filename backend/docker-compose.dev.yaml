@@ -12,7 +12,7 @@ services:
       database:
         condition: service_healthy
     env_file:
-      - .env
+      - API/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=database;Database=${POSTGRES_DB:-GenCare};Username=${POSTGRES_USER:-admin};Password=${POSTGRES_PASSWORD:-12345}
@@ -26,7 +26,7 @@ services:
     ports:
       - "${DB_PORT:-5432}:5432"
     env_file:
-      - .env
+      - API/.env
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-admin}
       - POSTGRES_DB=${POSTGRES_DB:-GenCare}
