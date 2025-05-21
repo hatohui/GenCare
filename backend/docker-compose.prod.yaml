@@ -1,32 +1,5 @@
-# services:
-#   backend:
-#     image: ${DOCKER_USER}/gencare_backend:latest
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     ports:
-#       - "${APP_PORT:-8080}:8080"
-#     depends_on:
-#       - database
-#     env_file:
-#       - .env
-#     environment:
-#       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-#       - ConnectionStrings__DefaultConnection=Host=${DB_HOST};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-
-#   database:
-#     image: postgres:17
-#     restart: always
-#     ports:
-#       - "${DB_PORT:-5432}:5432"
-#     env_file:
-#       - .env
-#     environment:
-#       - POSTGRES_USER=${POSTGRES_USER}
-#       - POSTGRES_DB=${POSTGRES_DB}
-#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-#       interval: 5s
-#       timeout: 5s
-#       retries: 5
+services:
+  backend:
+    image: hatohui/gencare-backend
+    ports:
+      - "8080:8080"
