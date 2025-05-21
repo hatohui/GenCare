@@ -1,11 +1,16 @@
 # Development image with SDK for hot reload
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
 
 WORKDIR /src
 
 # Copy CSPROJ and restore first for better caching
 COPY API/API.csproj ./API/
+COPY Application/Application.csproj ./Application/
+COPY Domain/Domain.csproj ./Domain/
+COPY Infrastructure/Infrastructure.csproj ./Infrastructure/
+
 RUN dotnet restore ./API/API.csproj
+
 
 # Copy all source files
 COPY . .
