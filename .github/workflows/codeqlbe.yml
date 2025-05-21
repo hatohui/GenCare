@@ -8,6 +8,7 @@ on:
 jobs:
   analyzebe:
     name: Analyze Backend (${{ matrix.language }})
+    if: ${{ !contains(github.event.pull_request.body, '#skip') }}
     runs-on: ubuntu-latest
     permissions:
       security-events: write
