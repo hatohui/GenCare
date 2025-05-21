@@ -51,7 +51,7 @@ public static class JwtHelper
         try
         {
             var key = Environment.GetEnvironmentVariable("JWT_KEY");
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var validationParameters = new TokenValidationParameters
