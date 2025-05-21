@@ -6,7 +6,7 @@ public interface IAuthRepository
 {
     Task<User?> GetByPhoneNumberAsync(string phoneNumber);
 
-    Task<int> AddUserAsync(User user);
+    Task<Guid> AddUserAsync(User user);
 
     Task UpdateUserAsync(User user);
 
