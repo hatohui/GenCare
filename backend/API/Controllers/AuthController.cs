@@ -89,6 +89,14 @@ namespace API.Controllers
             });
         }
 
+        /// <summary>
+        /// Initiates the Google login process by redirecting to Google's OAuth 2.0 authorization endpoint.
+        /// </summary>
+        /// <returns>
+        /// Returns an IActionResult that challenges the user with the Google authentication scheme.
+        /// The user will be redirected to Google for login, and after successful authentication,
+        /// they will be redirected back to the GoogleCallback endpoint.
+        /// </returns>
         [HttpPost("google-login")]
         public IActionResult GoogleLogin()
         {
@@ -99,6 +107,17 @@ namespace API.Controllers
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
+        /// <summary>
+        /// Handles the callback from Google after a successful OAuth 2.0 authentication.
+        /// It retrieves the user's authentication information from the cookie and generates an access token.
+        /// </summary>
+        /// <returns>
+        /// Returns an OkObjectResult containing the access token, user's email, and name if authentication is successful.
+        /// If the authentication fails, it returns an Unauthorized status with an error message.
+        /// </returns>
+        /// <exception cref="UnauthorizedAccessException">
+        /// Thrown if the authentication fails or the user's principal is not found.
+        /// </exception>
         [HttpGet("google-callback")]
         public async Task<IActionResult> GoogleCallbackAsync()
         {
