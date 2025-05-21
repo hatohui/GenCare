@@ -9,6 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddJwtAuthentication();
 builder.Services.AddGoogleOAuth2();
+builder.Services.AddApplicationServices();
+
 var app = builder.Build();
 
 // 1. Swagger - để dev có thể test API trước mọi xử lý khác

@@ -1,5 +1,15 @@
-﻿namespace API.Extensions;
+﻿using Application.Services.Implementations;
+using Application.Services.Interfaces;
 
-public class ServiceCollectionExtensions
+namespace API.Extensions;
+
+public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthService, AuthService>();
+        // Thêm các service khác tại đây
+
+        return services;
+    }
 }
