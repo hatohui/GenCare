@@ -7,3 +7,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Async/await", "CRR0029:ConfigureAwait(true) is called implicitly", Justification = "<Pending>")]
 [assembly: SuppressMessage("Async/await", "CRR0039:The 'await' expression is missing a cancellation token", Justification = "<Pending>", Scope = "member", Target = "~M:API.Middlewares.RateLimitMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Http.RequestDelegate)~System.Threading.Tasks.Task")]
+

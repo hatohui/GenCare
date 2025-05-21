@@ -56,8 +56,6 @@ public static class AuthenticationExtensions
             options.ClientId = googleClientId;
             options.ClientSecret = googleClientSecret;
             options.SaveTokens = true;
-
-            // Optional: Map user info fields
             options.ClaimActions.MapJsonKey("picture", "picture", "url");
         });
 
