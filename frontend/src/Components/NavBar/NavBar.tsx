@@ -8,6 +8,7 @@ export const NavBar = () => {
 	const [showNav, setShowNav] = useState(true)
 	const [onTop, setOnTop] = useState(false)
 	const lastScrollY = useRef(0)
+	//
 
 	useEffect(() => {
 		function handleScroll() {
