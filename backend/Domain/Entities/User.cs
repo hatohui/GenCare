@@ -1,4 +1,4 @@
-﻿using Domain.Common.Enums.UserRole;
+﻿using Domain.Common.Enums;
 
 namespace Domain.Entities;
 

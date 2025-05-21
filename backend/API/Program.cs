@@ -1,5 +1,7 @@
 ﻿using API.Extensions;
+using DotNetEnv;
 
+Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();

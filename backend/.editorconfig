@@ -1,0 +1,5 @@
+# .editorconfig
+# Global rule suppression for all projects
+[*.cs]
+dotnet_diagnostic.CRR0035.severity = none
+dotnet_diagnostic.S112.severity = none
