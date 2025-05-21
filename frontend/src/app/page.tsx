@@ -5,7 +5,7 @@ import { NavBar } from '@/Components/NavBar/NavBar'
 
 const Page = () => {
 	return (
-		<div className=' h-screen  bg-amber-100'>
+		<div className=' h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center flex-col py-[50px]'>
 			<NavBar />
 			<RegisterPage />
 			<RegisterPage />
