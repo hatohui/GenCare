@@ -45,4 +45,32 @@ public static class JwtHelper
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
+
+    public static bool ValidateToken(string token)
+    {
+        try
+        {
+            var key = Environment.GetEnvironmentVariable("JWT_KEY");
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+                ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+                IssuerSigningKey = securityKey
+            };
+
+            tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

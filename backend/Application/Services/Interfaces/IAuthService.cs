@@ -10,4 +10,6 @@ public interface IAuthService
     Task<UserLoginResponse> LoginAsync(UserLoginRequest request);
 
     Task<UserLoginResponse> RefreshTokenAsync(RefreshTokenRequest request);
+
+    Task<UserLoginResponse> GoogleLoginAsync(string email, string name);
 }

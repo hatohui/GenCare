@@ -1,6 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Application.DTOs.Auth.Request;
+using Application.Helpers;
 using Application.Services.Interfaces;
+using Domain.Entities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -46,6 +52,37 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             message = "Access token valid.",
             userId
+        });
+    }
+
+    [HttpPost("google-login")]
+    public IActionResult GoogleLogin()
+    {
+        var properties = new AuthenticationProperties
+        {
+            RedirectUri = Url.Action("GoogleCallback")
+        };
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    [HttpGet("google-callback")]
+    public async Task<IActionResult> GoogleCallbackAsync()
+    {
+        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        if (!result.Succeeded || result.Principal == null)
+            return Unauthorized(new { error = "Google authentication failed" });
+
+        var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+        var name = result.Principal.FindFirstValue(ClaimTypes.Name);
+
+        var accessToken = JwtHelper.GenerateAccessToken(new User());
+
+        return Ok(new
+        {
+            accessToken,
+            email,
+            name
         });
     }
 
