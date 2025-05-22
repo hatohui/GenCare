@@ -47,7 +47,7 @@ public class AuthService(IAuthRepository authRepo) : IAuthService
     // Đăng ký người dùng mới
     public async Task<Guid> RegisterAsync(UserRegisterRequest request)
     {
-        var existingUser = await authRepo.GetByEmailAsync(request.Email);
+        var existingUser = await authRepo.GetByEmailAsync(request.Email!);
         if (existingUser != null)
         {
             throw new Exception("Email already exists.");
@@ -55,8 +55,8 @@ public class AuthService(IAuthRepository authRepo) : IAuthService
 
         var user = new User
         {
-            FullName = request.FullName,
-            Email = request.Email,
+            FullName = request.FullName!,
+            Email = request.Email!,
             Password = PasswordHasher.Hash(request.Password),
         };
 
