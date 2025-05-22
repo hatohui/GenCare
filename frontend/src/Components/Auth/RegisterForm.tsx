@@ -1,21 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { userSchema } from '@/schemas/userSchema'
-import { registerUser } from '@/Services/authService'
+import { registerUser } from '@/Services/auth-service'
 import { ZodError } from 'zod'
 import { useFormStatus } from 'react-dom'
-
 import { motion } from 'motion/react'
+import {
+	RegisterFormData,
+	RegisterSchema,
+} from '@/Interfaces/Auth/API/register.type'
 
 export default function RegisterPage() {
-	const [form, setForm] = useState({
+	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
 		lastName: '',
 		dateOfBirth: '',
 		email: '',
 		address: '',
-		username: '',
 		password: '',
 		confirmPassword: '',
 		agreeToTerms: false,
@@ -34,7 +35,7 @@ export default function RegisterPage() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		try {
-			const parsed = userSchema.parse(form)
+			const parsed = RegisterSchema.parse(form)
 			await registerUser(parsed)
 			alert('Registered!')
 		} catch (err) {
@@ -64,6 +65,7 @@ export default function RegisterPage() {
 				{errors.firstName && (
 					<p className='text-red-500 text-sm'>{errors.firstName}</p>
 				)}
+
 				<input
 					name='lastName'
 					placeholder='Last Name'
@@ -72,6 +74,7 @@ export default function RegisterPage() {
 				{errors.lastName && (
 					<p className='text-red-500 text-sm'>{errors.lastName}</p>
 				)}
+
 				<input
 					type='date'
 					name='dateOfBirth'
@@ -81,6 +84,7 @@ export default function RegisterPage() {
 				{errors.dateOfBirth && (
 					<p className='text-red-500 text-sm'>{errors.dateOfBirth}</p>
 				)}
+
 				<input
 					type='email'
 					name='email'
@@ -88,14 +92,12 @@ export default function RegisterPage() {
 					onChange={handleChange}
 				/>
 				{errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
+
 				<input name='address' placeholder='Address' onChange={handleChange} />
 				{errors.address && (
 					<p className='text-red-500 text-sm'>{errors.address}</p>
 				)}
-				<input name='username' placeholder='Username' onChange={handleChange} />
-				{errors.username && (
-					<p className='text-red-500 text-sm'>{errors.username}</p>
-				)}
+
 				<input
 					type='password'
 					name='password'
@@ -105,6 +107,7 @@ export default function RegisterPage() {
 				{errors.password && (
 					<p className='text-red-500 text-sm'>{errors.password}</p>
 				)}
+
 				<input
 					type='password'
 					name='confirmPassword'
@@ -114,10 +117,16 @@ export default function RegisterPage() {
 				{errors.confirmPassword && (
 					<p className='text-red-500 text-sm'>{errors.confirmPassword}</p>
 				)}
-				<label>
-					<input type='checkbox' name='agreeToTerms' onChange={handleChange} />I
-					agree to the Terms and Services
-				</label>
+
+				<div>
+					<input
+						id='agree'
+						type='checkbox'
+						name='agreeToTerms'
+						onChange={handleChange}
+					/>
+					<label htmlFor='agree'>Iagree to the Terms and Services</label>
+				</div>
 				{errors.agreeToTerms && (
 					<p className='text-red-500 text-sm'>{errors.agreeToTerms}</p>
 				)}
