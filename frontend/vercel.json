@@ -4,5 +4,6 @@
 	"github": {
 		"enabled": false
 	},
+	"buildCommand": "npm run build",
 	"framework": "nextjs"
 }
