@@ -1,45 +1,36 @@
-import Link from 'next/link'
 import { NavComponentProps } from '../NavBar'
-import { motion } from 'motion/react'
+import MotionLink from '../MotionLink'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	return (
-		<motion.div
-			className={`gap-2 pl-2 items-center text-accent ${className}`}
+		<MotionLink
+			id='login'
+			className={`rounded-full px-4 py-2 duration-200 cursor-pointer select-none text-center flex gap-2 items-center ${className}`}
+			href='/login'
+			role='navigation'
 			animate={onTop ? 'onTop' : 'animate'}
 			variants={{
 				animate: {
-					scale: 0.86,
+					filter: 'brightness(1)',
+					scale: 0.8,
 					fontWeight: 'var(--font-weight-bold)',
-					border: '3px',
+					backgroundColor: 'transparent',
+					color: 'var(--color-accent)',
 				},
-				onTop: { scale: 0.8, fontWeight: 'var(--font-weight-medium)' },
+				onTop: {
+					filter: 'brightness(1) contrast(1.2)',
+					scale: 0.8,
+					color: 'white',
+					fontWeight: 'var(--font-weight-bold)',
+					backgroundColor: 'var(--color-accent)',
+					textShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
+				},
 			}}
+			whileHover={{ scale: 0.85, filter: 'brightness(1.2) contrast(1.1)' }}
 			transition={{ duration: 0.2 }}
 		>
-			<Link
-				id='login'
-				className='rounded-full hover:opacity-90 p-1 pr-3 duration-200 transition-all cursor-pointer select-none text-center flex'
-				href='/login'
-				role='navigation'
-			>
-				<label className='pointer-events-none saturate-[0.9]'>Đăng Nhập</label>
-			</Link>
-			{/* <button className='bg-blue-500 rounded-full p-1 cursor-pointer hover:brightness-75'>
-				<svg
-					className='stroke-white size-5'
-					fill='none'
-					strokeWidth='2'
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<circle cx='12' cy='7' r='4'></circle>
-					<path d='M5.5 21a6.5 6.5 0 0113 0'></path>
-				</svg>
-			</button> */}
-		</motion.div>
+			<label className='pointer-events-none'>Đăng Nhập</label>
+		</MotionLink>
 	)
 }
 
