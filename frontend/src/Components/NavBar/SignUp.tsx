@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion'
 
-export default function SignUp() {
+export type SignUpProp = {
+	className?: string
+}
+
+export default function SignUp({ className }: SignUpProp) {
 	return (
 		<motion.div
-			className='flex items-center space-x-2 cursor-pointer font-medium text-white'
+			className={`flex items-center space-x-2 cursor-pointer font-medium text-white ${className}`}
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			transition={{ duration: 0.5 }}
