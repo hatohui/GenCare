@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { NavComponentProps } from '../NavBar'
 import { NAV_OPTIONS } from '@/Constants/NavBar'
 import RouterButton from './RouterButton'

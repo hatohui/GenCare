@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "backend/**"
+    types: [opened, reopened, synchronize]
 
 jobs:
   analyzebe:
