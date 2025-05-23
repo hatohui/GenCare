@@ -4,8 +4,6 @@ import { NAV_OPTIONS } from '@/Constants/NavBar'
 import RouterButton from './RouterButton'
 
 const NavButtons = ({ onTop, className }: NavComponentProps) => {
-	const [hasHovered, setHasHovered] = useState(false)
-
 	return (
 		<div className={`gap-x-8 ${className}`}>
 			{NAV_OPTIONS.map((button, key) => (
