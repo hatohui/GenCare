@@ -1,17 +1,54 @@
+import { COLOR_ON_SCROLL, COLOR_ON_TOP, NAV_TITLE } from '@/Constants/NavBar'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
-export type IconProp = {
+export type LogoProp = {
 	className?: string
+	onTop: boolean
 }
 
-export const Icon = ({ className }: IconProp) => {
+const Logo = ({ className, onTop }: LogoProp) => {
+	const router = useRouter()
+
 	return (
 		<motion.div
-			className={`rounded-full rounded-br-none bg-white w-10 h-7 ${className}`}
-			initial={{ scale: 0, opacity: 0 }}
-			animate={{ scale: 1, opacity: 1 }}
+			className='center-all gap-1 cursor-pointer'
+			animate={onTop ? 'onTop' : 'animate'}
+			variants={{
+				onTop: { scale: 1, opacity: 1, color: 'var(--color-main)' },
+				animate: {
+					scale: 1,
+					opacity: 1,
+					color: COLOR_ON_SCROLL,
+				},
+			}}
+			onClick={() => router.push('/')}
 			transition={{ duration: 0.5, ease: 'easeInOut' }}
-			whileHover={{ scale: 1.2 }}
-		/>
+			whileHover={{}}
+		>
+			<motion.div
+				className={`rounded-full rounded-br-none w-10 h-7 ${className}`}
+				initial={{ scale: 0, opacity: 0 }}
+				animate={onTop ? 'onTop' : 'animate'}
+				variants={{
+					onTop: {
+						scale: 0.9,
+						opacity: 1,
+						backgroundColor: COLOR_ON_TOP,
+					},
+					animate: {
+						scale: 0.9,
+						opacity: 1,
+						backgroundColor: COLOR_ON_SCROLL,
+					},
+				}}
+				transition={{ duration: 0.5, ease: 'easeInOut' }}
+			/>
+			<motion.p className='font-sans pt-[2px] text-shadow-md'>
+				{NAV_TITLE}
+			</motion.p>
+		</motion.div>
 	)
 }
+
+export default Logo
