@@ -129,3 +129,5 @@ const LandingPart = () => {
 }
 
 export default React.memo(LandingPart)
+
+//pls
