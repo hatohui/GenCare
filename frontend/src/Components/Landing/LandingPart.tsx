@@ -48,15 +48,15 @@ const LandingPart = () => {
 			<section className='relative h-screen w-full grid xl:gap-5 grid-cols-1 lg:grid-cols-2'>
 				{/* page */}
 				<div className='lg:col-span-1 pl-[5%] md:pl-[15%] pt-[20%] flex flex-col gap-2 text-shadow-2xs xl:pr[15%] md:pr-[10%] 2xl::pr-[20%]'>
-					<motion.p
+					<motion.h3
 						className='font-semibold p-4 pb-0 text-secondary text-center lg:text-left'
 						{...animateStyle}
 					>
 						<span className='text-secondary'>- </span>
-						DỊCH VỤ CHĂM SÓC SỨC KHỎE
-					</motion.p>
+						<span>DỊCH VỤ CHĂM SÓC SỨC KHỎE</span>
+					</motion.h3>
 
-					<motion.div
+					<motion.h1
 						className='text-center lg:text-left p-4 text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold xl:font-extrabold'
 						{...animateStyle}
 					>
@@ -66,15 +66,15 @@ const LandingPart = () => {
 							strings={['Giải Pháp Y Tế Giới Tính, Dành Cho ']}
 							onComplete={() => setTyping(true)}
 						/>
-						<span> </span>
+						<span>&nbsp;</span>
 						{typing && (
 							<TypedText
 								typeSpeed={10}
-								className='bg-gradient-to-r from-secondary to-main bg-clip-text underline text-transparent'
+								className='bg-gradient-to-r text-stroke-[1px] from-secondary to-main bg-clip-text underline text-transparent'
 								strings={[' Bạn!']}
 							/>
 						)}
-					</motion.div>
+					</motion.h1>
 
 					<motion.p
 						className='text-lg text-center lg:text-left text-shadow-2xs text-muted-foreground px-4 lg:pr-48'
