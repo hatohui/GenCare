@@ -24,24 +24,27 @@ const LandingPart = () => {
 		[]
 	)
 
-	const buttonVariants = {
-		initial: { x: -50, opacity: 0, filter: 'blur(8px)' },
-		animate: {
-			x: 0,
-			opacity: 1,
-			filter: 'blur(0px)',
-			transition: {
-				delay: 1.5,
-				type: 'spring',
-				stiffness: 100,
-				damping: 12,
-				mass: 0.1,
-				duration: 1.5,
+	const buttonVariants = useMemo(
+		() => ({
+			initial: { x: -50, opacity: 0, filter: 'blur(8px)' },
+			animate: {
+				x: 0,
+				opacity: 1,
+				filter: 'blur(0px)',
+				transition: {
+					delay: 1.5,
+					type: 'spring',
+					stiffness: 100,
+					damping: 12,
+					mass: 0.1,
+					duration: 1.5,
+				},
 			},
-		},
-		hover: { scale: 1.05, transition: { duration: 0.2 } },
-		tap: { scale: 0.95, transition: { duration: 0.2 } },
-	}
+			hover: { scale: 1.05, transition: { duration: 0.2 } },
+			tap: { scale: 0.95, transition: { duration: 0.2 } },
+		}),
+		[]
+	)
 
 	return (
 		<>
@@ -88,9 +91,10 @@ const LandingPart = () => {
 					<AnimatedLink
 						className='p-4 ml-4 mt-[15%] bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent text-general self-center lg:self-auto text-center w-1/2 rounded-full'
 						href='/register'
-						children={'Đăng kí ngay với chúng tôi'}
 						{...buttonVariants}
-					/>
+					>
+						<span>Đăng kí ngay với chúng tôi</span>
+					</AnimatedLink>
 
 					<div className='md:col-span-1' />
 				</div>
