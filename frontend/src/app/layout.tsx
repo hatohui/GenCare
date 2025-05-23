@@ -1,11 +1,12 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './Provider'
 import NavBar from '@/Components/NavBar'
+import { Suspense } from 'react'
 
-const geistSans = Geist({
-	variable: '--font-geist-sans',
+const inter = Inter({
+	variable: '--font-inter',
 	subsets: ['latin'],
 })
 
@@ -14,10 +15,38 @@ const geistMono = Geist_Mono({
 	subsets: ['latin'],
 })
 
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+}
+
 export const metadata: Metadata = {
-	title: 'Gencare',
+	title: 'Gencare - Hệ thống Quản lý Y tế Giới tính',
 	description:
-		'A gender healthcare management system for streamlined patient care and administration.',
+		'Hệ thống quản lý y tế giới tính để hợp lý hóa chăm sóc bệnh nhân và quản trị.',
+	keywords: [
+		'y tế giới tính',
+		'quản lý y tế',
+		'chăm sóc bệnh nhân',
+		'quản trị y tế',
+		'hệ thống y tế',
+	],
+	authors: [{ name: 'Đội ngũ Gencare' }],
+	robots: 'index, follow',
+	openGraph: {
+		title: 'Gencare - Hệ thống Quản lý Y tế Giới tính',
+		description:
+			'Hệ thống quản lý y tế giới tính để hợp lý hóa chăm sóc bệnh nhân và quản trị.',
+		type: 'website',
+		locale: 'vi_VN',
+		siteName: 'Gencare',
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: 'Gencare - Hệ thống Quản lý Y tế Giới tính',
+		description:
+			'Hệ thống quản lý y tế giới tính để hợp lý hóa chăm sóc bệnh nhân và quản trị.',
+	},
 }
 
 export default function RootLayout({
@@ -26,13 +55,20 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='en'>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
+		<html lang='vi'>
+			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<NavBar />
-				<Providers>{children}</Providers>
-				<div className='fixed top-0 left-0 w-screen h-screen bg-general' />
+				<Providers>
+					<Suspense
+						fallback={
+							<div className='flex h-screen w-screen text-5xl text-accent items-center justify-center'>
+								Loading...
+							</div>
+						}
+					>
+						{children}
+					</Suspense>
+				</Providers>
 			</body>
 		</html>
 	)

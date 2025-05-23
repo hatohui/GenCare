@@ -12,7 +12,7 @@ const Logo = ({ className, onTop }: LogoProp) => {
 
 	return (
 		<motion.div
-			className='center-all gap-1 cursor-pointer'
+			className='center-all gap-1 cursor-pointer select-none'
 			animate={onTop ? 'onTop' : 'animate'}
 			variants={{
 				onTop: { scale: 1, opacity: 1, color: 'var(--color-main)' },
@@ -44,9 +44,7 @@ const Logo = ({ className, onTop }: LogoProp) => {
 				}}
 				transition={{ duration: 0.5, ease: 'easeInOut' }}
 			/>
-			<motion.p className='font-sans pt-[2px] text-shadow-md'>
-				{NAV_TITLE}
-			</motion.p>
+			<p className='font-sans pt-[2px] text-shadow-md'>{NAV_TITLE}</p>
 		</motion.div>
 	)
 }
