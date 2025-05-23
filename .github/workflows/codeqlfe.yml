@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "frontend/**"
+    types: [opened, reopened, synchronize]
 
 jobs:
   analyzefe:

@@ -1,26 +1,55 @@
 @import 'tailwindcss';
 
-:root {
-	--background: #ffffff;
-	--foreground: #171717;
+/* Theme color settings */
+@theme {
+	--color-main: #067dad;
+	--color-secondary: #038474;
+	--color-accent: #fe6b6a;
+	--color-general: #f4f4f4;
 }
 
-@theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
-}
+/* Example of creating custom variable */
+@layer utilities {
+	.center-all {
+		@apply flex justify-center items-center;
+	}
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
+	.full-screen {
+		@apply absolute w-dvw h-dvh top-0 left-0;
 	}
 }
 
-body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+	position: sticky;
+	top: 0;
+	width: 6px;
+	height: 6px;
+	opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb {
+	position: sticky;
+	background: #be1111;
+	border-radius: 3px;
+	border: 1px solid transparent;
+	background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+	position: sticky;
+	background: #f0f0f0;
+	border-radius: 3px;
+}
+
+::-webkit-scrollbar-corner {
+	position: sticky;
+	background: #e0e0e0;
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #bdbdbd #f0f0f0;
+	overflow-y: overlay;
 }

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Account } from '../Types/account'
+import { Account } from '../Types/Account'
 
 export type RegisterFormData =
 	| Pick<

@@ -8,7 +8,7 @@ import { motion } from 'motion/react'
 import {
 	RegisterFormData,
 	RegisterSchema,
-} from '@/Interfaces/Auth/API/register.type'
+} from '@/Interfaces/Auth/Schema/register'
 
 export default function RegisterPage() {
 	const [form, setForm] = useState<RegisterFormData>({

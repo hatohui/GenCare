@@ -1,4 +1,4 @@
-import { RegisterFormData } from '@/Interfaces/Auth/API/register.type'
+import { RegisterFormData } from '@/Interfaces/Auth/Schema/register'
 import axios, { AxiosResponse } from 'axios'
 
 const baseUrl = 'https://66fd4486c3a184a84d19c340.mockapi.io/users'
