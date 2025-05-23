@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Providers from './Provider'
 import NavBar from '@/Components/NavBar'
+import CustomCursor from '@/Components/CustomCursor'
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -31,7 +32,11 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<NavBar />
-				<Providers>{children}</Providers>
+				<Providers>
+					<CustomCursor />
+					{children}
+				</Providers>
+
 				<div className='fixed top-0 left-0 w-screen h-screen bg-general' />
 			</body>
 		</html>
