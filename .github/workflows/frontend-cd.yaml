@@ -5,11 +5,6 @@ permissions:
   deployments: write
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "frontend/**"
   pull_request:
     types: [closed]
     branches:
@@ -18,11 +13,11 @@ on:
       - "frontend/**"
 
 env:
-  SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skipdeploy') || (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipdeploy')) }}
+  SKIP_DEPLOYMENT: ${{(github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipdeploy'))}}
 
 jobs:
   deployfe:
-    if: ${{ !( (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipall')) || (github.event_name == 'push' && contains(github.event.head_commit.message, '#skipall')) ) }}
+    if: ${{ !(github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipall'))}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -5,11 +5,6 @@ permissions:
   deployments: write
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "backend/**"
   pull_request:
     types: [closed]
     branches:
@@ -18,12 +13,12 @@ on:
       - "backend/**"
 
 env:
-  SKIP_DEPLOYMENT: ${{ contains(github.event.head_commit.message, '#skipdeploy') || (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipdeploy')) }}
+  SKIP_DEPLOYMENT: ${{(github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipdeploy')) }}
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/gencare-backend
 
 jobs:
   deploybe:
-    if: ${{ !contains(github.event.head_commit.message, '#skip') && (github.event_name != 'pull_request' || !contains(github.event.pull_request.body, '#skip')) }}
+    if: ${{ !(github.event_name == 'pull_request' && contains(github.event.pull_request.body, '#skipall'))}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
