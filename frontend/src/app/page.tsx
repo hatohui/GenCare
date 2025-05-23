@@ -8,8 +8,6 @@ const Page = () => {
 			<LandingPart />
 			<div className='h-screen' />
 			<div className='h-screen' />
-
-			{/* effects */}
 		</>
 	)
 }
