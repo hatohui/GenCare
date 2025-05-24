@@ -60,13 +60,8 @@ export default function RootLayout({
 		<html lang='vi'>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<NavBar />
-				<Providers>
-
-					<Suspense fallback={<Loading />}>
-            <CustomCursor />
-            {children}
-          </Suspense>
-				</Providers>
+				<CustomCursor />
+				<Providers>{children}</Providers>
 			</body>
 		</html>
 	)
