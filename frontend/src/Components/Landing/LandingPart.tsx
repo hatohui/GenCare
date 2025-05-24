@@ -3,7 +3,6 @@ import React, { useState, useMemo } from 'react'
 import TypedText from '../TypedText'
 import Image from 'next/image'
 import AnimatedLink from '../MotionLink'
-import SVGSeparator from './SVGSeparator'
 import FlorageBackground from './FlorageBackground'
 
 const LandingPart = () => {
@@ -47,12 +46,12 @@ const LandingPart = () => {
 	)
 
 	return (
-		<>
+		<div className='relative min-h-screen w-full overflow-hidden'>
 			<section className='relative h-screen w-full grid xl:gap-5 grid-cols-1 lg:grid-cols-2'>
 				{/* page */}
-				<div className='lg:col-span-1 pl-[5%] md:pl-[15%] pt-[20%] flex flex-col gap-2 text-shadow-2xs xl:pr[15%] md:pr-[10%] 2xl::pr-[20%]'>
+				<div className='backdrop-blur-md backdrop-hue-rotate-90 lg:backdrop-hue-rotate-0 lg:backdrop-blur-none flex flex-col gap-2 pt-[20%] text-shadow-2xs lg:col-span-1 sm:px-[5%] md:pl-[15%] md:pr-[5%] xl:pl-[20%] xl:pr-[15%] 2xl:pt-[20%] 2xl:pr-[10%]'>
 					<motion.h3
-						className='font-semibold p-4 pb-0 text-secondary text-center lg:text-left'
+						className='font-semibold px-4 pb-0 text-secondary text-center lg:text-left'
 						{...animateStyle}
 					>
 						<span className='text-secondary'>- </span>
@@ -60,7 +59,7 @@ const LandingPart = () => {
 					</motion.h3>
 
 					<motion.h1
-						className='text-center lg:text-left p-4 text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold xl:font-extrabold'
+						className='text-center lg:text-left p-4 text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl font-bold xl:font-extrabold'
 						{...animateStyle}
 					>
 						<TypedText
@@ -80,7 +79,7 @@ const LandingPart = () => {
 					</motion.h1>
 
 					<motion.p
-						className='text-lg text-center lg:text-left text-shadow-2xs text-muted-foreground px-4 lg:pr-48'
+						className='text-[0.9rem] text-center lg:text-left text-shadow-2xs text-muted-foreground px-4 xl:pr-48'
 						{...animateStyle}
 						transition={{ delay: 1.5 }}
 					>
@@ -89,7 +88,7 @@ const LandingPart = () => {
 					</motion.p>
 
 					<AnimatedLink
-						className='p-4 ml-4 mt-[15%] bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent text-general self-center lg:self-auto text-center w-1/2 rounded-full'
+						className='p-4 ml-4 mt-[5%] bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent text-general self-center lg:self-auto text-nowrap text-center min-w-1/2 rounded-full'
 						href='/register'
 						{...buttonVariants}
 					>
@@ -102,7 +101,7 @@ const LandingPart = () => {
 
 			{/* Image */}
 			<motion.div
-				className='absolute bottom-0 overflow-hidden h-[50vh] select-none md:h-[60vh] lg:h-[74vh] right-0 -z-10 w-full md:w-[50%]'
+				className='absolute bottom-0 overflow-hidden h-[100vh] select-none md:h-[100vh] lg:h-[100vh] right-0 -z-10 w-full md:w-[50%]'
 				initial={{ x: -50, opacity: 0, filter: 'blur(8px)' }}
 				animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
 				transition={{
@@ -114,17 +113,20 @@ const LandingPart = () => {
 				}}
 			>
 				<Image
-					height='500'
-					width='1000'
+					height='1000'
+					width='2000'
 					src='/images/landingClipArt.png'
 					alt='landing'
-					className='object-contain h-full w-full max-w-full scale-100 md:scale-90 lg:scale-100'
+					className='object-contain h-full w-full max-w-full scale-100'
 					priority
 				/>
 			</motion.div>
 			<FlorageBackground />
-			<SVGSeparator className='absolute w-full h-screen top-0 right-0 -z-20 overflow-clip' />
-		</>
+			<object
+				data='/svgs/landingBase.svg'
+				className='absolute h-screen w-screen lg:w-auto top-0 right-0 -z-20 overflow-clip'
+			/>
+		</div>
 	)
 }
 

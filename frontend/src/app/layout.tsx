@@ -4,6 +4,7 @@ import './globals.css'
 import Providers from './Provider'
 import NavBar from '@/Components/NavBar'
 import { Suspense } from 'react'
+import Loading from '@/Components/Loading'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -59,15 +60,7 @@ export default function RootLayout({
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<NavBar />
 				<Providers>
-					<Suspense
-						fallback={
-							<div className='flex h-screen w-screen text-5xl text-accent items-center justify-center'>
-								Loading...
-							</div>
-						}
-					>
-						{children}
-					</Suspense>
+					<Suspense fallback={<Loading />}>{children}</Suspense>
 				</Providers>
 			</body>
 		</html>

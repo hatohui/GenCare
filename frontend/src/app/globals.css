@@ -29,33 +29,27 @@
 	top: 0;
 	width: 6px;
 	height: 6px;
-	opacity: 0.5;
-}
-
-::-webkit-scrollbar-thumb {
-	position: sticky;
-	background: #be1111;
-	border-radius: 3px;
-	border: 1px solid transparent;
-	background-clip: content-box;
+	opacity: 0;
+	background: transparent;
+	display: none;
 }
 
 ::-webkit-scrollbar-track {
 	position: sticky;
-	background: #f0f0f0;
+	background: transparent;
 	border-radius: 3px;
 }
 
 ::-webkit-scrollbar-corner {
 	position: sticky;
-	background: #e0e0e0;
+	background: transparent;
 }
 
 /* Firefox */
 * {
-	scrollbar-width: thin;
-	scrollbar-color: #bdbdbd #f0f0f0;
+	scroll-snap-type: proximity;
 	overflow-y: overlay;
+	background-color: transparent;
 	font-family: var(--font-inter);
 }
 

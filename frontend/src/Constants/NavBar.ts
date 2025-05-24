@@ -23,4 +23,8 @@ export const NAV_OPTIONS: RouterButtonProps[] = [
 		label: 'Liên Hệ',
 		to: '/contact',
 	},
+	{
+		label: 'Kết Quả',
+		to: '/result',
+	},
 ]
