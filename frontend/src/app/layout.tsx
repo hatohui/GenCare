@@ -3,6 +3,7 @@ import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './Provider'
 import NavBar from '@/Components/NavBar'
+import CustomCursor from '@/Components/CustomCursor'
 import { Suspense } from 'react'
 import Loading from '@/Components/Loading'
 
@@ -60,7 +61,11 @@ export default function RootLayout({
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<NavBar />
 				<Providers>
-					<Suspense fallback={<Loading />}>{children}</Suspense>
+
+					<Suspense fallback={<Loading />}>
+            <CustomCursor />
+            {children}
+          </Suspense>
 				</Providers>
 			</body>
 		</html>

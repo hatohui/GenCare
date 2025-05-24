@@ -17,10 +17,6 @@
 	.full-screen {
 		@apply absolute w-dvw h-dvh top-0 left-0;
 	}
-
-	.florageBackground {
-		@apply bg-[url("/textures/foragething.png")];
-	}
 }
 
 /* Scrollbar Customization */
@@ -49,10 +45,30 @@
 * {
 	scroll-snap-type: proximity;
 	overflow-y: overlay;
+
 	background-color: transparent;
 	font-family: var(--font-inter);
 }
 
-body {
-	background: var(--color-general);
+html,
+body,
+*,
+*:hover,
+*:focus {
+	cursor: none !important;
+}
+
+.custom-cursor {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: white; /* white for true inversion */
+	mix-blend-mode: difference; /* white ⟶ invert background */
+	pointer-events: none;
+	z-index: 9999;
+	transform: translate(-50%, -50%);
+	will-change: transform; /* optimize */
 }
