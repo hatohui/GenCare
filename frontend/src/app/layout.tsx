@@ -4,8 +4,6 @@ import './globals.css'
 import Providers from './Provider'
 import NavBar from '@/Components/NavBar'
 import CustomCursor from '@/Components/CustomCursor'
-import { Suspense } from 'react'
-import Loading from '@/Components/Loading'
 
 const inter = Inter({
 	variable: '--font-inter',
