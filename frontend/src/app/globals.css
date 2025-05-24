@@ -46,7 +46,7 @@
 	scroll-snap-type: proximity;
 	overflow-y: overlay;
 
-	background-color: transparent;
+	/* background-color: transparent; */
 	font-family: var(--font-inter);
 }
 
@@ -56,6 +56,10 @@ body,
 *:hover,
 *:focus {
 	cursor: none !important;
+}
+
+body {
+	background-color: var(--color-general);
 }
 
 .custom-cursor {
