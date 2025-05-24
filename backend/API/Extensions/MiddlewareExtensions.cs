@@ -5,14 +5,14 @@ namespace API.Extensions;
 
 public static class MiddlewareExtensions
 {
-    public static IApplicationBuilder UseRateLimit(this IApplicationBuilder builder)
+    public static IApplicationBuilder UseRateLimit(this IApplicationBuilder app)
     {
-        return builder.UseMiddleware<RateLimitMiddleware>();
+        return app.UseMiddleware<RateLimitMiddleware>();
     }
 
-    public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder builder)
+    public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder app)
     {
-        return builder.UseMiddleware<GlobalExceptionMiddleware>();
+        return app.UseMiddleware<GlobalExceptionMiddleware>();
     }
 
     public static IApplicationBuilder UseLogging(this IApplicationBuilder app)

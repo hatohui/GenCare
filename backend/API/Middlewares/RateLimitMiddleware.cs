@@ -1,12 +1,12 @@
 ﻿namespace API.Middlewares;
 
-public class RateLimitMiddleware : IMiddleware
+public class RateLimitMiddleware(RequestDelegate next)
 {
     private int requestCounter = 0;
     private DateTime startTime = DateTime.Now;
     private readonly int maxRequests = 10;
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task Invoke(HttpContext context)
     {
         var currentTime = DateTime.Now;
         var elapsedSeconds = (currentTime - startTime).TotalSeconds;
