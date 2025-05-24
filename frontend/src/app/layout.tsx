@@ -5,6 +5,7 @@ import Providers from './Provider'
 import NavBar from '@/Components/NavBar'
 import CustomCursor from '@/Components/CustomCursor'
 import { Suspense } from 'react'
+import Loading from '@/Components/Loading'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -60,17 +61,11 @@ export default function RootLayout({
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<NavBar />
 				<Providers>
-					<div className='fixed top-0 left-0 w-screen h-screen bg-general' />
-					<Suspense
-						fallback={
-							<div className='flex h-screen w-screen text-5xl text-accent items-center justify-center'>
-								Loading...
-							</div>
-						}
-					>
-						<CustomCursor />
-						{children}
-					</Suspense>
+
+					<Suspense fallback={<Loading />}>
+            <CustomCursor />
+            {children}
+          </Suspense>
 				</Providers>
 			</body>
 		</html>
