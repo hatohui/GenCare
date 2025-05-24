@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import React from 'react'
 
-const MotionLink = motion(Link)
+const MotionLink = motion.create(Link)
 
 interface MotionLinkProps {
 	href: string

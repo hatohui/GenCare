@@ -17,10 +17,6 @@
 	.full-screen {
 		@apply absolute w-dvw h-dvh top-0 left-0;
 	}
-
-	.florageBackground {
-		@apply bg-[url("/textures/foragething.png")];
-	}
 }
 
 /* Scrollbar Customization */
@@ -56,11 +52,6 @@
 	scrollbar-width: thin;
 	scrollbar-color: #bdbdbd #f0f0f0;
 	overflow-y: overlay;
-	font-family: var(--font-inter);
-}
-
-body {
-	background: var(--color-general);
 }
 
 html,

@@ -60,8 +60,6 @@ export default function RootLayout({
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<NavBar />
 				<Providers>
-					<CustomCursor />
-
 					<div className='fixed top-0 left-0 w-screen h-screen bg-general' />
 					<Suspense
 						fallback={
@@ -70,6 +68,7 @@ export default function RootLayout({
 							</div>
 						}
 					>
+						<CustomCursor />
 						{children}
 					</Suspense>
 				</Providers>
