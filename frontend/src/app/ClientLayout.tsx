@@ -1,6 +1,7 @@
 'use client'
 
 import NavBar from '@/Components/NavBar'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function ClientLayout({
@@ -17,6 +18,14 @@ export default function ClientLayout({
 	return (
 		<>
 			{!shouldHideNavbar && <NavBar />}
+			{shouldHideNavbar && (
+				<Link
+					href='/'
+					className='fixed top-4 left-4 z-50 text-white bg-main hover:bg-accent px-4 py-2 rounded-full  transition-all duration-200'
+				>
+					Back to Home
+				</Link>
+			)}
 			{children}
 		</>
 	)
