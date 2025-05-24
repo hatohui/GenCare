@@ -1,10 +1,11 @@
 'use client'
 
+import LandingPart from '@/Components/Landing/LandingPart'
+
 const Page = () => {
 	return (
 		<>
-			<div className='h-screen' />
-			<div className='h-screen' />
+			<LandingPart />
 			<div className='h-screen' />
 			<div className='h-screen' />
 		</>
