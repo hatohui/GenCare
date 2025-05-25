@@ -73,7 +73,7 @@ const LandingPart = () => {
 							<TypedText
 								typeSpeed={10}
 								className='bg-gradient-to-r text-stroke-[1px] from-secondary to-main bg-clip-text underline text-transparent'
-								strings={[' Bạn!']}
+								strings={['Bạn!']}
 							/>
 						)}
 					</motion.h1>
