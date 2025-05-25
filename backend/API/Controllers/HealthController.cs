@@ -21,7 +21,10 @@
         [ProducesResponseType(typeof(string), 200)] // Indicates that a successful response returns a string with HTTP 200.
         public IActionResult Health()
         {
-            return Ok("Healthy");
+            return Ok("I'm super healthy");
         }
     }
 }
+
+///This string is here for a test only
+///

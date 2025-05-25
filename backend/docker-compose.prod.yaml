@@ -1,5 +1,0 @@
-services:
-  backend:
-    image: hatohui/gencare-backend
-    ports:
-      - "8080:8080"
