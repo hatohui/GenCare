@@ -9,6 +9,9 @@ on:
     paths:
       - "backend/**"
 
+env:
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/gencare-backend
+
 jobs:
   pipeline:
     runs-on: ubuntu-latest
@@ -27,9 +30,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          key: nuget-${{ runner.os }}-dotnet8-${{ hashFiles('backend/**/*.csproj') }}
           restore-keys: |
-            nuget-${{ runner.os }}-
+            nuget-${{ runner.os }}-dotnet8-
+
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            backend/**/bin
+            backend/**/obj
+          key: build-${{ runner.os }}-dotnet8-${{ hashFiles('backend/**/*.csproj', 'backend/**/*.cs') }}
+          restore-keys: |
+            build-${{ runner.os }}-dotnet8-
 
       - name: Restore dependencies
         run: dotnet restore
@@ -42,3 +55,33 @@ jobs:
       - name: Run unit tests
         run: dotnet test --no-build --configuration Release --verbosity normal
         working-directory: backend
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          DOCKERFILE_HASH=$(sha256sum backend/Dockerfile | awk '{print $1}')
+          FILES_HASH=$(find backend/ -type f -not -path 'backend/Dockerfile' -exec sha256sum {} + | sort | sha256sum | awk '{print $1}')
+          COMBINED_HASH=$(echo "${DOCKERFILE_HASH}${FILES_HASH}" | sha256sum | awk '{print $1}')
+          echo "cache-key=$COMBINED_HASH" >> $GITHUB_OUTPUT
+
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ steps.cache-key.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: ${{ env.IMAGE_NAME }}:ci-${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          build-args: |
+            CACHEBUST=${{ steps.cache-key.outputs.cache-key }}
