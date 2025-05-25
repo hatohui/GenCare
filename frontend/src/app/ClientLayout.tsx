@@ -23,7 +23,7 @@ export default function ClientLayout({
 					href='/'
 					className='fixed top-4 left-4 z-50 text-white bg-main hover:bg-accent px-4 py-2 rounded-full  transition-all duration-200'
 				>
-					Back to Home
+					<span>&lt;</span> Back to Home
 				</Link>
 			)}
 			{children}

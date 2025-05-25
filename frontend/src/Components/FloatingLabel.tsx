@@ -46,11 +46,14 @@ export default function FloatingLabelInput({
 			<motion.label
 				htmlFor={id}
 				initial={false}
-				animate={{
-					x: 0,
-					y: isActive ? 0 : 15,
-					fontSize: isActive ? '0.75rem' : '1rem',
-					color: isActive ? 'var(--color-accent)' : '#6b7280',
+				animate={'animate'}
+				variants={{
+					animate: {
+						x: 0,
+						y: isActive ? 0 : 15,
+						fontSize: isActive ? '0.75rem' : '1rem',
+						color: isActive ? 'var(--color-accent)' : '#6b7280',
+					},
 				}}
 				transition={{ type: 'spring', stiffness: 300, damping: 20 }}
 				className='absolute left-0 top-0 origin-[0] cursor-text z-90'
