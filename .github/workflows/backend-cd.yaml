@@ -50,7 +50,6 @@ jobs:
             CACHEBUST=${{ steps.cache-key.outputs.cache-key }}
 
       - name: Deploy to EC2
-        if: ${{ !env.SKIP_DEPLOYMENT }}
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
