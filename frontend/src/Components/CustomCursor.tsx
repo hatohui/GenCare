@@ -8,8 +8,20 @@ export default function CustomCursor() {
 	const y = useMotionValue(-100)
 	const [isHovering, setIsHovering] = useState(false)
 	const [isClicking, setIsClicking] = useState(false)
+	const [isMobile, setIsMobile] = useState(false)
 
 	useEffect(() => {
+		const checkMobile = () =>
+			/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+				navigator.userAgent
+			)
+
+		setIsMobile(checkMobile())
+	}, [])
+
+	useEffect(() => {
+		if (isMobile) return
+
 		const onMove = (e: MouseEvent) => {
 			const px = e.clientX
 			const py = e.clientY
@@ -32,7 +44,9 @@ export default function CustomCursor() {
 			window.removeEventListener('mousedown', onDown)
 			window.removeEventListener('mouseup', onUp)
 		}
-	}, [x, y])
+	}, [x, y, isMobile])
+
+	if (isMobile) return null
 
 	const scale = isClicking ? 0.7 : isHovering ? 2 : 1
 
