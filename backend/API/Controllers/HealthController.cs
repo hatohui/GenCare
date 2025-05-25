@@ -25,6 +25,3 @@
         }
     }
 }
-
-///This string is here for a test only
-///
