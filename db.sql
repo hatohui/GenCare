@@ -93,3 +93,4 @@ CREATE TRIGGER set_updated_at_refresh_token
 BEFORE UPDATE ON "refresh_token"
 FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
+--haha
