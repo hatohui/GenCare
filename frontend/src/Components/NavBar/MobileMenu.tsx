@@ -1,6 +1,7 @@
 import { NAV_OPTIONS } from '@/Constants/NavBar'
 import { AnimatePresence, motion } from 'motion/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React from 'react'
 
 export type MobileMenu = {
@@ -9,6 +10,7 @@ export type MobileMenu = {
 }
 
 const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
+	const path = usePathname()
 	return (
 		<AnimatePresence>
 			{isOpened && (
@@ -54,7 +56,12 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 							<Link
 								key={index}
 								href={button.to}
-								className='block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors'
+								onClick={() => setOpened(!isOpened)}
+								className={`block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors ${
+									button.to === path
+										? 'bg-gray-700 text-white pointer-events-none'
+										: 'hover:bg-gray-100'
+								}`}
 							>
 								{button.label}
 							</Link>

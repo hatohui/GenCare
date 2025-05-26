@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include=".env" />
+    <None Include=".env" CopyToOutputDirectory="PreserveNewest" Condition="Exists('.env')" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.16" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-	<Compile Remove=".env" />
   </ItemGroup>
 
   <ItemGroup>

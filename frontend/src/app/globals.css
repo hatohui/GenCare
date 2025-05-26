@@ -17,6 +17,9 @@
 	.full-screen {
 		@apply absolute w-dvw h-dvh top-0 left-0;
 	}
+	.florageBackground {
+		@apply bg-[url('/images/floragething.png')];
+	}
 }
 
 /* Scrollbar Customization */
