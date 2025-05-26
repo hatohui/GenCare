@@ -10,15 +10,16 @@ import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod'
 import { loginUser } from '@/Services/auth-service'
 import { useState } from 'react'
+import { redirect } from 'next/navigation'
 
 const LoginForm = () => {
-	const { reset: resetUsername, ...username } = useInput('', 'text')
+	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const handleReset = () => {
-		resetUsername()
+		resetEmail()
 		resetPassword()
 		resetRemember()
 	}
@@ -28,11 +29,13 @@ const LoginForm = () => {
 
 		try {
 			const parsed = loginSchema.parse({
-				username: username.value,
+				email: email.value,
 				password: password.value,
 			})
 			await loginUser(parsed)
+
 			alert('Login successful!')
+			redirect('/') // Redirect to dashboard or home page after successful login
 		} catch (err) {
 			console.log(err)
 
@@ -58,15 +61,15 @@ const LoginForm = () => {
 			<div className='text-3xl font-bold text-accent'>Logo here</div>
 			<form onSubmit={handleSubmit} className='flex flex-col gap-4 p-4 w-full'>
 				<FloatingLabelInput
-					label='username'
-					id='username'
-					type='username'
-					value={username.value}
-					onChange={username.onChange}
-					required
+					label='email'
+					id='email'
+					type='email'
+					value={email.value}
+					onChange={email.onChange}
+					// required
 				/>
-				{errors.username && (
-					<div className='text-red-500 text-sm'>{errors.username}</div>
+				{errors.email && (
+					<div className='text-red-500 text-sm'>{errors.email}</div>
 				)}
 				<FloatingLabelInput
 					label='password'
@@ -74,7 +77,7 @@ const LoginForm = () => {
 					type='password'
 					value={password.value}
 					onChange={password.onChange}
-					required
+					// required
 				/>
 				{errors.password && (
 					<div className='text-red-500 text-sm'>{errors.password}</div>
