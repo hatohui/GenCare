@@ -80,5 +80,4 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 	)
 }
 
-//
 export default MobileMenu
