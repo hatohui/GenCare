@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FocusEvent, ChangeEvent } from 'react'
+import { useState, ChangeEvent } from 'react'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 

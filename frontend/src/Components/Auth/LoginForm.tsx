@@ -16,11 +16,13 @@ const LoginForm = () => {
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
-	// const handleReset = () => {
-	// 	resetEmail()
-	// 	resetPassword()
-	// 	resetRemember()
-	// }
+	const handleReset = () => {
+		resetEmail()
+		resetPassword()
+		resetRemember()
+	}
+
+	console.log(handleReset)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
