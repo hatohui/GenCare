@@ -1,11 +1,9 @@
 'use client'
 
 import { motion } from 'motion/react'
-import TypedText from '../TypedText'
 import useInput from '@/Hooks/Form/useInput'
 import MotionCheckbox from '../MotionCheckbox'
 import FloatingLabelInput from '../FloatingLabel'
-import { on } from 'events'
 import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod'
 import { loginUser } from '@/Services/auth-service'
@@ -18,11 +16,11 @@ const LoginForm = () => {
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
-	const handleReset = () => {
-		resetEmail()
-		resetPassword()
-		resetRemember()
-	}
+	// const handleReset = () => {
+	// 	resetEmail()
+	// 	resetPassword()
+	// 	resetRemember()
+	// }
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()

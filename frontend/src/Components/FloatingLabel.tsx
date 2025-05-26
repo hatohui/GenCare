@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, FocusEvent, ChangeEvent } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import clsx from 'clsx'
 
 type FloatingLabelInputProps = {
@@ -35,7 +35,7 @@ export default function FloatingLabelInput({
 				required={required}
 				value={value}
 				onFocus={() => setFocused(true)}
-				onBlur={(e: FocusEvent<HTMLInputElement>) => setFocused(false)}
+				// onBlur={(e: FocusEvent<HTMLInputElement>) => setFocused(false)}
 				onChange={onChange}
 				className={clsx(
 					'peer w-full border-b-2 border-gray-300 bg-transparent px-1 pt-6 pb-2 text-base text-black outline-none transition-all focus:border-accent',

@@ -1,5 +1,4 @@
 import LoginForm from '@/Components/Auth/LoginForm'
-import Link from 'next/link'
 
 export default function Login() {
 	return (

@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next'
 import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './Provider'
-import NavBar from '@/Components/NavBar'
 import CustomCursor from '@/Components/CustomCursor'
 import ClientLayout from './ClientLayout'
 
