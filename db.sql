@@ -225,6 +225,63 @@ CREATE TABLE IF NOT EXISTS "feedback" (
 	CONSTRAINT "fk_feedback_service" FOREIGN KEY ("service_id") REFERENCES "service"("id") ON DELETE RESTRICT,
 );
 
+CREATE TABLE IF NOT EXISTS "blog" (
+    "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "title" VARCHAR(200) NOT NULL,
+    "content" TEXT NOT NULL,
+    "author" VARCHAR(100) NOT NULL,
+    "published_at" TIMESTAMP,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "created_by" UUID REFERENCES "account"("id"),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_by" UUID REFERENCES "account"("id"),
+    "deleted_at" TIMESTAMP,
+    "deleted_by" UUID REFERENCES "account"("id")
+);
+COMMENT ON TABLE "blog" IS 'table for storing blog posts';
+--tabble:comment
+CREATE TABLE IF NOT EXISTS "comment" (
+    "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "content" TEXT NOT NULL,
+    "blog_id" UUID NOT NULL,
+    "account_id" UUID NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "created_by" UUID REFERENCES "account"("id"),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_by" UUID REFERENCES "account"("id"),
+    "deleted_at" TIMESTAMP,
+    "deleted_by" UUID REFERENCES "account"("id"),
+    CONSTRAINT "fk_comment_blog" FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
+    CONSTRAINT "fk_comment_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT
+);
+COMMENT ON TABLE "comment" IS 'Save comments for blog posts';
+--table:tag
+CREATE TABLE IF NOT EXISTS "tag" (
+    "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "title" VARCHAR(200) NOT NULL UNIQUE,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "created_by" UUID REFERENCES "account"("id"),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_by" UUID REFERENCES "account"("id"),
+    "deleted_at" TIMESTAMP,
+    "deleted_by" UUID REFERENCES "account"("id")
+);
+COMMENT ON TABLE "tag" IS 'Table for storing tags for blog posts';
+-- Table: BlogTag
+CREATE TABLE IF NOT EXISTS "blog_tag" (
+    "blog_id" UUID NOT NULL,
+    "tag_id" UUID NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "created_by" UUID REFERENCES "account"("id"),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_by" UUID REFERENCES "account"("id"),
+    "deleted_at" TIMESTAMP,
+    "deleted_by" UUID REFERENCES "account"("id"),
+    PRIMARY KEY ("blog_id", "tag_id"),
+    CONSTRAINT "fk_blog_tag_blog" FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
+    CONSTRAINT "fk_blog_tag_tag" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE CASCADE
+);
+COMMENT ON TABLE "blog_tag" IS 'Join table for many-to-many relationship between blogs and tags';
 --------------------------------------------------
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_account_role_id ON "account"("role_id");
