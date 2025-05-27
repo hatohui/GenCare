@@ -9,6 +9,7 @@ import {
 	RegisterFormData,
 	RegisterSchema,
 } from '@/Interfaces/Auth/Schema/register'
+import AnimatedLink from '../MotionLink'
 
 export default function RegisterPage() {
 	const [form, setForm] = useState<RegisterFormData>({
@@ -56,7 +57,10 @@ export default function RegisterPage() {
 	return (
 		<div className='p-4 max-w-md mx-auto '>
 			<h1 className='text-xl font-bold mb-4'>Register with Form</h1>
-			<form onSubmit={handleSubmit} className='flex flex-col gap-2'>
+			<form
+				onSubmit={handleSubmit}
+				className='flex flex-col gap-2 overflow-visible p-2'
+			>
 				<input
 					name='firstName'
 					placeholder='First Name'
@@ -130,7 +134,7 @@ export default function RegisterPage() {
 				{errors.agreeToTerms && (
 					<p className='text-red-500 text-sm'>{errors.agreeToTerms}</p>
 				)}
-				<SubmitButton buttonClass='bg-blue-500 text-white p-2 rounded' />
+				<SubmitButton buttonClass='bg-main text-white p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
 			</form>
 		</div>
 	)
@@ -142,13 +146,17 @@ export const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
 	const { pending } = useFormStatus()
 
 	return (
-		<motion.button
-			disabled={pending}
+		<AnimatedLink
 			type='submit'
-			content='Submit'
+			href='/'
 			className={buttonClass}
-			whileHover={{ scale: 1 }}
-			whileTap={{ scale: 0.9 }}
-		/>
+			disabled={pending}
+			animate={{ scale: pending ? 0.95 : 1 }}
+			transition={{ duration: 0.2, ease: 'easeInOut' }}
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+		>
+			Submit
+		</AnimatedLink>
 	)
 }

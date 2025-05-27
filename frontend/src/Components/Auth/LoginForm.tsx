@@ -8,7 +8,6 @@ import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod'
 import { loginUser } from '@/Services/auth-service'
 import { useState } from 'react'
-import { redirect } from 'next/navigation'
 
 const LoginForm = () => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
@@ -35,7 +34,6 @@ const LoginForm = () => {
 			await loginUser(parsed)
 
 			alert('Login successful!')
-			redirect('/') // Redirect to dashboard or home page after successful login
 		} catch (err) {
 			console.log(err)
 

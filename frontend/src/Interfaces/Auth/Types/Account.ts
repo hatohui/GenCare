@@ -14,5 +14,3 @@ export type Account = {
 	isDeleted: boolean
 	role: Role
 }
-
-//wtf
