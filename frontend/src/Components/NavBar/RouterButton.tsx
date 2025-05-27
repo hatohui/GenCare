@@ -2,9 +2,10 @@
 import { motion } from 'motion/react'
 import { usePathname } from 'next/navigation'
 import React from 'react'
-import { NavComponentProps } from '../NavBar'
 import Link from 'next/link'
 import { COLOR_ON_TOP, COLOR_ON_SCROLL } from '@/Constants/NavBar'
+import clsx from 'clsx'
+import { NavComponentProps } from '@/Interfaces/NavBar/Types/NavBarComponents'
 
 export type RouterButtonProps = {
 	label: string
@@ -25,7 +26,10 @@ const RouterButton = ({
 	return (
 		<Link id={label} href={to} tabIndex={index} role='link' className='z-30'>
 			<motion.div
-				className={`${className} flex-1 z-0 relative flex py-1 px-1 overflow-hidden w-[89px] cursor-pointer justify-center`}
+				className={clsx(
+					className,
+					'flex-1 z-0 relative flex py-1 px-1 overflow-hidden w-[89px] cursor-pointer bg-clip-text mix-blend-difference justify-center'
+				)}
 				animate={onTop ? 'onTop' : 'none'}
 				variants={{
 					onTop: {
@@ -34,6 +38,7 @@ const RouterButton = ({
 							path === to
 								? 'var(--font-weight-bold)'
 								: 'var(--font-weight-normal)',
+						mixBlendMode: 'difference',
 					},
 					none: {
 						color: COLOR_ON_SCROLL,
@@ -41,6 +46,7 @@ const RouterButton = ({
 							path === to
 								? 'var(--font-weight-bold)'
 								: 'var(--font-weight-normal)',
+						mixBlendMode: 'difference',
 					},
 				}}
 				whileHover={{
@@ -57,7 +63,7 @@ const RouterButton = ({
 			>
 				<label
 					className={`z-10 text-center scale-90 pointer-events-none ${
-						path === to ? ' brightness-125' : 'brightness-90'
+						path === to ? 'brightness-125' : 'brightness-90'
 					}`}
 				>
 					{label}
