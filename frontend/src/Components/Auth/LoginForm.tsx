@@ -1,68 +1,102 @@
 'use client'
 
 import { motion } from 'motion/react'
-import TypedText from '../TypedText'
 import useInput from '@/Hooks/Form/useInput'
+import MotionCheckbox from '../MotionCheckbox'
+import FloatingLabelInput from '../FloatingLabel'
+import { loginSchema } from '@/Interfaces/Auth/Schema/login'
+import { ZodError } from 'zod'
+import { loginUser } from '@/Services/auth-service'
+import { useState } from 'react'
+import { redirect } from 'next/navigation'
 
 const LoginForm = () => {
-	const { reset: resetUsername, ...username } = useInput('', 'text')
+	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
+	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const handleReset = () => {
-		resetUsername()
+		resetEmail()
 		resetPassword()
 		resetRemember()
 	}
 
 	console.log(handleReset)
 
-	const handleSubmit = () => {}
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+
+		try {
+			const parsed = loginSchema.parse({
+				email: email.value,
+				password: password.value,
+			})
+			await loginUser(parsed)
+
+			alert('Login successful!')
+			redirect('/') // Redirect to dashboard or home page after successful login
+		} catch (err) {
+			console.log(err)
+
+			if (err instanceof ZodError) {
+				const fieldErrors: Record<string, string> = {}
+				err.errors.forEach(e => {
+					if (e.path[0]) fieldErrors[e.path[0].toString()] = e.message
+				})
+				setErrors(fieldErrors)
+			} else {
+				alert('Error occurred.')
+			}
+		}
+	}
 
 	return (
-		<motion.form
-			initial={{ translateX: -20 }}
-			animate={{ translateX: 0 }}
-			transition={{ duration: 1.2 }}
-			className='border-2 h-80 w-[500px] m-auto select-none'
-			onSubmit={handleSubmit}
+		<motion.div
+			className=' flex-col flex items-center justify-center h-120 w-[500px] rounded-2xl bg-white shadow-lg p-4'
+			initial={{ translateX: -20, opacity: 0 }}
+			animate={{ translateX: 0, opacity: 1 }}
+			transition={{ duration: 1.2, ease: 'easeOut' }}
 		>
-			<div className='w-full'>
-				<TypedText strings={['Login']} startDelay={1.2} typeSpeed={90} />
-			</div>
-			<div className='my-5 mx-5'>
-				<div className='flex flex-col border-2'>
-					<label htmlFor='username'>Username</label>
-					<motion.input id='username' {...username} />
-				</div>
-				<div className='flex flex-col border-2'>
-					<label htmlFor='password'>Password</label>
-					<motion.input id='password' {...password} />
-				</div>
-				<div>
-					<motion.input id='remember' {...remember} />
-					<label htmlFor='remember'> Remember me</label>
-				</div>
-			</div>
-			<div>
-				<motion.button id='submit' type='submit' className='px-5 py-2 border-2'>
-					<label htmlFor='submit'>Login</label>
-				</motion.button>
-				<motion.button
-					id='googleAuth'
-					className='pl-2 py-2 pr-3 border-2 flex gap-3 items-center'
+			<div className='text-3xl font-bold text-accent'>Logo here</div>
+			<form onSubmit={handleSubmit} className='flex flex-col gap-4 p-4 w-full'>
+				<FloatingLabelInput
+					label='email'
+					id='email'
+					type='email'
+					value={email.value}
+					onChange={email.onChange}
+					// required
+				/>
+				{errors.email && (
+					<div className='text-red-500 text-sm'>{errors.email}</div>
+				)}
+				<FloatingLabelInput
+					label='password'
+					id='password'
+					type='password'
+					value={password.value}
+					onChange={password.onChange}
+					// required
+				/>
+				{errors.password && (
+					<div className='text-red-500 text-sm'>{errors.password}</div>
+				)}
+
+				<MotionCheckbox
+					label='Remember me'
+					checked={remember.value}
+					onCheckedChange={remember.onChange as any} //can you fix this later? (dont want type to be any)
+				/>
+				<button
+					type='submit'
+					className='bg-accent text-white p-2 rounded-full hover:bg-accent-dark transition-colors duration-200'
 				>
-					<svg
-						className='h-7 text-white'
-						xmlns='http://www.w3.org/2000/svg'
-						viewBox='0 0 488 512'
-					>
-						<path d='M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z' />
-					</svg>
-					<label htmlFor='googleAuth'>Login with Google</label>
-				</motion.button>
-			</div>
-		</motion.form>
+					Đăng nhập
+				</button>
+			</form>
+			<div className='text-gray-500 text-sm'>Quên mật khẩu? </div>
+		</motion.div>
 	)
 }
 

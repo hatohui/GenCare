@@ -138,15 +138,8 @@ export default function RegisterPage() {
 
 //messing around with animte button
 //button is disabled when is submitting
-const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
+export const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
 	const { pending } = useFormStatus()
-
-	const box = {
-		width: '100%',
-		height: 50,
-		backgroundColor: '#9911ff',
-		borderRadius: 5,
-	}
 
 	return (
 		<motion.button
@@ -154,9 +147,8 @@ const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
 			type='submit'
 			content='Submit'
 			className={buttonClass}
-			whileHover={{ scale: 1.2 }}
+			whileHover={{ scale: 1 }}
 			whileTap={{ scale: 0.9 }}
-			style={box}
 		/>
 	)
 }
