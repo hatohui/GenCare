@@ -1,11 +1,15 @@
-import { NavComponentProps } from '../NavBar'
+import { NavComponentProps } from '@/Interfaces/NavBar/Types/NavBarComponents'
 import MotionLink from '../MotionLink'
+import clsx from 'clsx'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	return (
 		<MotionLink
 			id='login'
-			className={`rounded-full px-4 py-2 duration-200 cursor-pointer select-none text-center flex gap-2 items-center ${className}`}
+			className={clsx(
+				'rounded-full px-4 py-2 duration-200 cursor-pointer select-none text-center flex gap-2 items-center',
+				className
+			)}
 			href='/login'
 			role='navigation'
 			animate={onTop ? 'onTop' : 'animate'}
