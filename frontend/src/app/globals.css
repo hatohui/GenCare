@@ -58,7 +58,7 @@ body,
 *,
 *:hover,
 *:focus {
-	cursor: none !important;
+	cursor: none;
 }
 
 body {

@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './Provider'
-import NavBar from '@/Components/NavBar'
 import CustomCursor from '@/Components/CustomCursor'
+import ClientLayout from './ClientLayout'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -57,9 +57,10 @@ export default function RootLayout({
 	return (
 		<html lang='vi'>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
-				<NavBar />
-				<CustomCursor />
-				<Providers>{children}</Providers>
+				<ClientLayout>
+					<CustomCursor />
+					<Providers>{children}</Providers>
+				</ClientLayout>
 			</body>
 		</html>
 	)
