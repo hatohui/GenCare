@@ -9,7 +9,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS "role" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" VARCHAR(100) NOT NULL,
-    "description" TEXT,
+    "description" TEXT
     --"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     --"created_by" UUID,
     --"updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS "account" (
 --COMMENT ON TABLE "account" IS 'User accounts';
 --COMMENT ON COLUMN "account"."gender" IS 'TRUE = male, FALSE = female';
 
-ALTER TABLE "role" ADD CONSTRAINT "fk_role_created_by" FOREIGN KEY ("created_by") REFERENCES "account"("id");
-ALTER TABLE "role" ADD CONSTRAINT "fk_role_updated_by" FOREIGN KEY ("updated_by") REFERENCES "account"("id");
-ALTER TABLE "role" ADD CONSTRAINT "fk_role_deleted_by" FOREIGN KEY ("deleted_by") REFERENCES "account"("id");
+-- ALTER TABLE "role" ADD CONSTRAINT "fk_role_created_by" FOREIGN KEY ("created_by") REFERENCES "account"("id");
+-- ALTER TABLE "role" ADD CONSTRAINT "fk_role_updated_by" FOREIGN KEY ("updated_by") REFERENCES "account"("id");
+-- ALTER TABLE "role" ADD CONSTRAINT "fk_role_deleted_by" FOREIGN KEY ("deleted_by") REFERENCES "account"("id");
 
 ALTER TABLE "account" ADD CONSTRAINT "fk_account_deleted_by" FOREIGN KEY ("deleted_by") REFERENCES "account"("id");
 
@@ -73,7 +73,7 @@ COMMENT ON TABLE "refresh_token" IS 'Refresh tokens for authentication';
 CREATE TABLE IF NOT EXISTS "department" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	"name" varchar(100) NOT NULL,
-	"description" TEXT,
+	"description" TEXT
 );
 
 -- Table: staff_info
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS "purchase" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "account_id" UUID NOT NULL, --FK
 	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-	CONSTRAINT "fk_purchase_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_purchase_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
 
 -- Table: payment_history
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS "payment_history" (
 	"status" payment_history_status NOT NULL DEFAULT 'pending',
 	"expired_at" TIMESTAMP,
 	"payment_method" payment_method_status NOT NULL DEFAULT 'bank',
-	CONSTRAINT "fk_payment_history_purchase" FOREIGN KEY ("purchase_id") REFERENCES "purchase"("id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_payment_history_purchase" FOREIGN KEY ("purchase_id") REFERENCES "purchase"("id") ON DELETE RESTRICT
 );
 -- Table: service
 CREATE TABLE IF NOT EXISTS "service" (
@@ -203,14 +203,14 @@ CREATE TABLE IF NOT EXISTS "order_detail" (
 
 -- Table: result
 CREATE TABLE IF NOT EXISTS "result" (
-    "order_detail_id" UUID PRIMARY KEY, -fk
+    "order_detail_id" UUID PRIMARY KEY, --fk
 	"order_date" TIMESTAMP NOT NULL,
 	"sample_date" TIMESTAMP,
 	"result_date" TIMESTAMP,
 	"status" boolean DEFAULT false,
 	"result_data" text,
 	"updated_at" TIMESTAMP,
-	CONSTRAINT "fk_result_order_detail" FOREIGN KEY ("order_detail_id") REFERENCES "order_detail"("id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_result_order_detail" FOREIGN KEY ("order_detail_id") REFERENCES "order_detail"("id") ON DELETE RESTRICT
 );
 
 -- Table: feedback
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS "feedback" (
 	"created_by" UUID NOT NULL,  --fk
 	"service_id" UUID NOT NULL,  --fk
 	CONSTRAINT "fk_feedback_account" FOREIGN KEY ("created_by") REFERENCES "account"("id") ON DELETE RESTRICT,
-	CONSTRAINT "fk_feedback_service" FOREIGN KEY ("service_id") REFERENCES "service"("id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_feedback_service" FOREIGN KEY ("service_id") REFERENCES "service"("id") ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS "blog" (
