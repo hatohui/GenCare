@@ -57,7 +57,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 								key={index}
 								href={button.to}
 								onClick={() => setOpened(!isOpened)}
-								className={`block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors ${
+								className={`block px-4 py-2 text-gray-800 transition-colors ${
 									button.to === path
 										? 'bg-gray-700 text-white pointer-events-none'
 										: 'hover:bg-gray-100'

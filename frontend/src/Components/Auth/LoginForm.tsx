@@ -2,13 +2,12 @@
 
 import { motion } from 'motion/react'
 import useInput from '@/Hooks/Form/useInput'
-import MotionCheckbox from '../MotionCheckbox'
-import FloatingLabelInput from '../FloatingLabel'
+import MotionCheckbox from '../Form/MotionCheckbox'
 import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod'
 import { loginUser } from '@/Services/auth-service'
 import { useState } from 'react'
-import { redirect } from 'next/navigation'
+import FloatingLabelInput from '../Form/FloatingLabel'
 
 const LoginForm = () => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
@@ -23,6 +22,7 @@ const LoginForm = () => {
 	}
 
 	console.log(handleReset)
+	console.log(errors)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -32,18 +32,17 @@ const LoginForm = () => {
 				email: email.value,
 				password: password.value,
 			})
+
 			await loginUser(parsed)
 
 			alert('Login successful!')
-			redirect('/') // Redirect to dashboard or home page after successful login
 		} catch (err) {
-			console.log(err)
-
 			if (err instanceof ZodError) {
 				const fieldErrors: Record<string, string> = {}
 				err.errors.forEach(e => {
 					if (e.path[0]) fieldErrors[e.path[0].toString()] = e.message
 				})
+
 				setErrors(fieldErrors)
 			} else {
 				alert('Error occurred.')
@@ -60,33 +59,13 @@ const LoginForm = () => {
 		>
 			<div className='text-3xl font-bold text-accent'>Logo here</div>
 			<form onSubmit={handleSubmit} className='flex flex-col gap-4 p-4 w-full'>
-				<FloatingLabelInput
-					label='email'
-					id='email'
-					type='email'
-					value={email.value}
-					onChange={email.onChange}
-					// required
-				/>
-				{errors.email && (
-					<div className='text-red-500 text-sm'>{errors.email}</div>
-				)}
-				<FloatingLabelInput
-					label='password'
-					id='password'
-					type='password'
-					value={password.value}
-					onChange={password.onChange}
-					// required
-				/>
-				{errors.password && (
-					<div className='text-red-500 text-sm'>{errors.password}</div>
-				)}
+				<FloatingLabelInput label='Email' id='email' {...email} />
+				<FloatingLabelInput label='Password' id='password' {...password} />
 
 				<MotionCheckbox
 					label='Remember me'
 					checked={remember.value}
-					onCheckedChange={remember.onChange as any} //can you fix this later? (dont want type to be any)
+					onCheckedChange={remember.onChange as any}
 				/>
 				<button
 					type='submit'

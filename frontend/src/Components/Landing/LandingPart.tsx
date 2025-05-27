@@ -49,7 +49,7 @@ const LandingPart = () => {
 		<div className='relative min-h-screen w-full overflow-hidden'>
 			<section className='relative h-screen w-full grid xl:gap-5 grid-cols-1 lg:grid-cols-2'>
 				{/* page */}
-				<div className='backdrop-blur-md backdrop-hue-rotate-90 lg:backdrop-hue-rotate-0 lg:backdrop-blur-none flex flex-col gap-2 pt-[20%] text-shadow-2xs lg:col-span-1 sm:px-[5%] md:pl-[15%] md:pr-[5%] xl:pl-[20%] xl:pr-[15%] 2xl:pt-[20%] 2xl:pr-[10%]'>
+				<div className='backdrop-blur-md lg:backdrop-blur-none flex flex-col gap-2 pt-[20%] text-shadow-2xs lg:col-span-1 sm:px-[5%] md:pl-[15%] md:pr-[5%] xl:pl-[20%] xl:pr-[15%] 2xl:pt-[20%] 2xl:pr-[10%]'>
 					<motion.h3
 						className='font-semibold px-4 pb-0 text-secondary text-center lg:text-left'
 						{...animateStyle}
@@ -131,5 +131,3 @@ const LandingPart = () => {
 }
 
 export default React.memo(LandingPart)
-
-//pls
