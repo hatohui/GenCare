@@ -1,25 +1,16 @@
--- Drop and create database (run these manually if needed)
--- DROP DATABASE IF EXISTS "GenCareDB";
--- CREATE DATABASE "GenCareDB";
--- \c "GenCareDB";
+DROP DATABASE IF EXISTS "GenCareDB";
+CREATE DATABASE "GenCareDB";
+\c "GenCareDB";
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
+----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "role" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" VARCHAR(100) NOT NULL,
-    "description" TEXT
-    --"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    --"created_by" UUID,
-    --"updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    --"updated_by" UUID,
-    --"deleted_at" TIMESTAMP,
-    --"deleted_by" UUID
+    "description" TEXT NOT NULL
 );
-COMMENT ON TABLE "role" IS 'Role definitions for accounts';
-COMMENT ON COLUMN "role"."name" IS 'Role name (e.g., admin, user)';
-
+----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "account" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "role_id" UUID NOT NULL,
@@ -27,29 +18,22 @@ CREATE TABLE IF NOT EXISTS "account" (
     "password_hash" TEXT NOT NULL,
     "first_name" VARCHAR(100),
     "last_name" VARCHAR(100),
-    "phone_number" VARCHAR(20),
+    "phone" VARCHAR(20),
     "date_of_birth" DATE,
     "gender" BOOLEAN NOT NULL, -- TRUE = male, FALSE = female
     "avatar_url" TEXT,
-    --"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    --"created_by" UUID,
-    --"updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    --"updated_by" UUID,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "created_by" UUID,
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_by" UUID,
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID,
     "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT "fk_account_role" FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE RESTRICT
 );
---COMMENT ON TABLE "account" IS 'User accounts';
---COMMENT ON COLUMN "account"."gender" IS 'TRUE = male, FALSE = female';
+COMMENT ON COLUMN "account"."gender" IS 'TRUE = male, FALSE = female';
 
--- ALTER TABLE "role" ADD CONSTRAINT "fk_role_created_by" FOREIGN KEY ("created_by") REFERENCES "account"("id");
--- ALTER TABLE "role" ADD CONSTRAINT "fk_role_updated_by" FOREIGN KEY ("updated_by") REFERENCES "account"("id");
--- ALTER TABLE "role" ADD CONSTRAINT "fk_role_deleted_by" FOREIGN KEY ("deleted_by") REFERENCES "account"("id");
-
-ALTER TABLE "account" ADD CONSTRAINT "fk_account_deleted_by" FOREIGN KEY ("deleted_by") REFERENCES "account"("id");
-
------------------------------------
+----------------------------------------------------------------------
 -- Table: refresh_token
 CREATE TABLE IF NOT EXISTS "refresh_token" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -58,22 +42,16 @@ CREATE TABLE IF NOT EXISTS "refresh_token" (
     "is_revoked" BOOLEAN NOT NULL DEFAULT FALSE,
     "last_used_at" TIMESTAMP,
     "expires_at" TIMESTAMP NOT NULL,
-    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    --"created_by" UUID REFERENCES "account"("id"),
-    --"updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    --"updated_by" UUID REFERENCES "account"("id"),
-    --"deleted_at" TIMESTAMP,
-    --"deleted_by" UUID REFERENCES "account"("id"),
     CONSTRAINT "fk_refresh_token_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
 COMMENT ON TABLE "refresh_token" IS 'Refresh tokens for authentication';
-
+----------------------------------------------------------------------
 
 -- Table: department
 CREATE TABLE IF NOT EXISTS "department" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	"name" varchar(100) NOT NULL,
-	"description" TEXT
+	"description" TEXT NOT NULL
 );
 
 -- Table: staff_info
@@ -86,7 +64,7 @@ CREATE TABLE IF NOT EXISTS "staff_info" (
 	CONSTRAINT "fk_staff_info_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_staff_info_department" FOREIGN KEY ("department_id") REFERENCES "department"("id") ON DELETE RESTRICT
 );
-
+----------------------------------------------------------------------
 -- Table: slot
 CREATE TABLE IF NOT EXISTS "slot" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -134,10 +112,10 @@ CREATE TABLE IF NOT EXISTS "message" (
     "conversation_id" UUID NOT NULL, --FK
 	"created_by" UUID NOT NULL, --FK
 	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+	"update_by" UUID,
 	"updated_at" TIMESTAMP,
 	"content" TEXT NOT NULL,
-	CONSTRAINT "fk_message_conversation" FOREIGN KEY ("conversation_id") REFERENCES "conversation"("id"),
-	CONSTRAINT "fk_message_account" FOREIGN KEY ("created_by") REFERENCES "account"("id") ON DELETE RESTRICT
+	CONSTRAINT "fk_message_conversation" FOREIGN KEY ("conversation_id") REFERENCES "conversation"("id")
 );
 
 -- Table: appointment
@@ -146,15 +124,16 @@ CREATE TYPE appointment_status AS ENUM ('booked', 'cancelled', 'completed');
 
 CREATE TABLE IF NOT EXISTS "appointment" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "account_one_id" UUID NOT NULL, --FK
-    "account_two_id" UUID NOT NULL, --FK
+    "member_id" UUID NOT NULL, --FK
+    "staff_id" UUID NOT NULL, --FK
 	"schedule_at" TIMESTAMP NOT NULL,
 	"status" appointment_status NOT NULL DEFAULT 'booked',
 	"join_url" TEXT,
 	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"updated_at" TIMESTAMP NOT NULL,
-	CONSTRAINT "fk_appointment_account_one" FOREIGN KEY ("account_one_id") REFERENCES "account"("id") ON DELETE RESTRICT,
-	CONSTRAINT "fk_appointment_account_two" FOREIGN KEY ("account_two_id") REFERENCES "account"("id") ON DELETE RESTRICT
+	"update_by" UUID,
+	CONSTRAINT "fk_appointment_member_id" FOREIGN KEY ("member_id") REFERENCES "account"("id") ON DELETE RESTRICT,
+	CONSTRAINT "fk_appointment_staff_id" FOREIGN KEY ("staff_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
 -- Table: purchase
 CREATE TABLE IF NOT EXISTS "purchase" (
@@ -181,7 +160,7 @@ CREATE TABLE IF NOT EXISTS "payment_history" (
 CREATE TABLE IF NOT EXISTS "service" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" varchar(100) NOT NULL,
-	"description" text,
+	"description" TEXT,
 	"price" decimal,
 	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"updated_at" TIMESTAMP,
@@ -194,7 +173,7 @@ CREATE TABLE IF NOT EXISTS "order_detail" (
 	"service_id" UUID NOT NULL, --FK
 	"first_name" varchar(50) NOT NULL,
 	"last_name" varchar(50) NOT NULL,
-	"phone_number" varchar(50) NOT NULL,
+	"phone" varchar(50) NOT NULL,
 	"date_of_birth" date NOT NULL,
 	"gender" boolean NOT NULL,
 	CONSTRAINT "fk_order_detail_purchase" FOREIGN KEY ("purchase_id") REFERENCES "purchase"("id"),
@@ -221,7 +200,6 @@ CREATE TABLE IF NOT EXISTS "feedback" (
 	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"created_by" UUID NOT NULL,  --fk
 	"service_id" UUID NOT NULL,  --fk
-	CONSTRAINT "fk_feedback_account" FOREIGN KEY ("created_by") REFERENCES "account"("id") ON DELETE RESTRICT,
 	CONSTRAINT "fk_feedback_service" FOREIGN KEY ("service_id") REFERENCES "service"("id") ON DELETE RESTRICT
 );
 
@@ -232,11 +210,11 @@ CREATE TABLE IF NOT EXISTS "blog" (
     "author" VARCHAR(100) NOT NULL,
     "published_at" TIMESTAMP,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "created_by" UUID REFERENCES "account"("id"),
+    "created_by" UUID,
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "updated_by" UUID REFERENCES "account"("id"),
-    "deleted_at" TIMESTAMP,
-    "deleted_by" UUID REFERENCES "account"("id")
+    "updated_by" UUID,
+    "deleted_at" TIMESTAMp,
+    "deleted_by" UUID 
 );
 COMMENT ON TABLE "blog" IS 'table for storing blog posts';
 --tabble:comment
