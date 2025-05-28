@@ -9,7 +9,7 @@ export default function LoadingPage() {
 				className='w-[50px] h-[50px] rounded-full border-4 border-solid border-divider border-t-accent spinner'
 				animate={{ rotate: 360 }}
 				transition={{
-					duration: 1.5,
+					duration: 0.5,
 					repeat: Infinity,
 					ease: 'linear',
 				}}

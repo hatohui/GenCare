@@ -1,35 +1,52 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { Account } from '../Types/Account'
 
 export type RegisterFormData =
-	| Pick<
-			Account,
-			'firstName' | 'lastName' | 'dateOfBirth' | 'email' | 'address'
-	  > & {
+	| Pick<Account, 'firstName' | 'lastName' | 'dateOfBirth' | 'email'> & {
 			password: string
 			confirmPassword: string
 			agreeToTerms: boolean
-			timestamp: Date | string
 	  }
 
-export const RegisterSchema = z
+export const RegisterFormSchema = z
 	.object({
-		firstName: z.string().min(1, { message: 'First name is required' }),
-		lastName: z.string().min(1, { message: 'Last name is required' }),
+		firstName: z
+			.string()
+			.min(1, { message: 'Tên là mục bắt buộc.' })
+			.regex(/^[\p{L}\s]+$/u, {
+				message: 'Trong mục tên không được có kí tự đặc biệt',
+			}),
+
+		lastName: z
+			.string()
+			.min(1, { message: 'Họ là mục bắt buộc' })
+			.regex(/^[\p{L}\s]+$/u, {
+				message: 'Trong mục họ không được có kí tự đặc biệt',
+			}),
+
 		dateOfBirth: z
 			.string()
 			.date()
-			.min(1, { message: 'Date of birth is required' }),
-		email: z.string().email({ message: 'Email is not valid' }),
-		address: z.string().min(1, { message: 'Address is required' }),
+			.min(1, { message: 'Ngày sinh là mục bắt buộc' }),
+
+		email: z.string().email({ message: 'Email không hợp lệ' }),
+
 		password: z
 			.string()
-			.min(6, { message: 'Password must be at least 6 characters long' }),
+			.min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
+
 		confirmPassword: z.string(),
-		agreeToTerms: z.literal(true, { message: 'You must agree to terms' }),
-		timestamp: z.string().min(1, { message: 'Timestamp is required' }),
+
+		agreeToTerms: z.boolean().refine(val => val === true, {
+			message: 'Bạn phải đồng ý với điều khoản',
+		}),
 	})
-	.refine(data => data.password === data.confirmPassword, {
-		message: 'Passwords do not match',
-		path: ['confirmPassword'],
-	})
+	.refine(
+		data =>
+			data.password === data.confirmPassword &&
+			data.confirmPassword.length !== 0,
+		{
+			message: 'Mật khẩu không khớp',
+			path: ['confirmPassword'],
+		}
+	)

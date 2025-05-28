@@ -1,154 +1,206 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { registerUser } from '@/Services/auth-service'
-import { ZodError } from 'zod'
+import z4 from 'zod/v4'
 import { useFormStatus } from 'react-dom'
-import { motion } from 'motion/react'
 import {
 	RegisterFormData,
-	RegisterSchema,
+	RegisterFormSchema,
 } from '@/Interfaces/Auth/Schema/register'
+import { motion } from 'motion/react'
+import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
+
+type RegisterFormProps = keyof RegisterFormData
 
 export default function RegisterPage() {
 	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
 		lastName: '',
-		dateOfBirth: '',
+		dateOfBirth: '2000-01-01',
 		email: '',
-		address: '',
 		password: '',
 		confirmPassword: '',
 		agreeToTerms: false,
-		timestamp: new Date().toISOString(),
 	})
-	const [errors, setErrors] = useState<Record<string, string>>({})
+	const [errors, setErrors] = useState<Record<string, FloatingLabelErrorData>>(
+		{}
+	)
+	const checked = useRef(new Set<RegisterFormProps>())
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value, type, checked } = e.target
-		setForm(prev => ({
-			...prev,
-			[name]: type === 'checkbox' ? checked : value,
-		}))
+		const { name, value, type, checked: isChecked } = e.target
+
+		const updatedForm = {
+			...form,
+			[name]: type === 'checkbox' ? isChecked : value,
+		}
+
+		setForm(updatedForm)
+
+		validateForm(name as RegisterFormProps, updatedForm)
+	}
+
+	const validateForm = (
+		name: RegisterFormProps,
+		currentForm: RegisterFormData
+	) => {
+		const result = RegisterFormSchema.safeParse(currentForm)
+
+		if (!result.success) {
+			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
+			const properties = z4.treeifyError(result.error).properties
+
+			checked.current.add(name)
+
+			checked.current.forEach(field => {
+				if (properties && properties[field]) {
+					filteredErrors[field] = properties[field]
+				}
+			})
+
+			setErrors(filteredErrors)
+		} else {
+			setErrors({})
+		}
+	}
+
+	const validateEntireForm = (formData: RegisterFormData): boolean => {
+		const result = RegisterFormSchema.safeParse(formData)
+
+		if (!result.success) {
+			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
+			const properties = z4.treeifyError(result.error).properties
+
+			if (properties) {
+				;(Object.keys(properties) as Array<keyof RegisterFormData>).forEach(
+					field => {
+						filteredErrors[field] = properties[field]!
+					}
+				)
+			}
+
+			setErrors(filteredErrors)
+			return false
+		}
+		setErrors({})
+		return true
 	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		try {
-			const parsed = RegisterSchema.parse(form)
-			await registerUser(parsed)
-			alert('Registered!')
-		} catch (err) {
-			console.log(err)
 
-			if (err instanceof ZodError) {
-				const fieldErrors: Record<string, string> = {}
-				err.errors.forEach(e => {
-					if (e.path[0]) fieldErrors[e.path[0].toString()] = e.message
-				})
-				setErrors(fieldErrors)
-			} else {
-				alert('Error occurred.')
+		const isValid = validateEntireForm(form)
+
+		if (isValid) {
+			try {
+				await registerUser(form)
+				alert('success!')
+				//! HANDLE REGISTERING DATA
+			} catch (error) {
+				console.log(error)
+
+				alert('error!')
+				//! HANDLE SERVICE ERROR
 			}
 		}
 	}
 
 	return (
-		<div className='p-4 max-w-md mx-auto '>
-			<h1 className='text-xl font-bold mb-4'>Register with Form</h1>
-			<form onSubmit={handleSubmit} className='flex flex-col gap-2'>
+		<form
+			className='p-7 max-w-lg min-w-md mx-auto rounded-3xl bg-general'
+			onSubmit={handleSubmit}
+		>
+			<h1 className='text-xl font-bold mb-4'>Đăng ký tài khoản</h1>
+
+			<FloatingLabel
+				label='Email'
+				id='email'
+				name='email'
+				value={form.email}
+				onChange={handleChange}
+				error={errors.email}
+			/>
+
+			<FloatingLabel
+				label='Mật khẩu'
+				id='password'
+				type='password'
+				name='password'
+				value={form.password}
+				onChange={handleChange}
+				error={errors.password}
+			/>
+
+			<FloatingLabel
+				label='Xác nhận mật khẩu'
+				id='confirmPassword'
+				type='password'
+				name='confirmPassword'
+				value={form.confirmPassword}
+				onChange={handleChange}
+				error={errors.confirmPassword}
+			/>
+
+			<FloatingLabel
+				label='Tên'
+				id='firstName'
+				name='firstName'
+				value={form.firstName}
+				onChange={handleChange}
+				error={errors.firstName}
+			/>
+
+			<FloatingLabel
+				label='Họ'
+				id='lastName'
+				name='lastName'
+				value={form.lastName}
+				onChange={handleChange}
+				error={errors.lastName}
+			/>
+
+			<FloatingLabel
+				label='Ngày sinh (dd/mm/yyyy)'
+				id='dateOfBirth'
+				type='date'
+				name='dateOfBirth'
+				value={form.dateOfBirth}
+				onChange={handleChange}
+				error={errors.dateOfBirth}
+			/>
+
+			{/* <div>
 				<input
-					name='firstName'
-					placeholder='First Name'
+					id='agree'
+					type='checkbox'
+					name='agreeToTerms'
 					onChange={handleChange}
 				/>
-				{errors.firstName && (
-					<p className='text-red-500 text-sm'>{errors.firstName}</p>
-				)}
-
-				<input
-					name='lastName'
-					placeholder='Last Name'
-					onChange={handleChange}
-				/>
-				{errors.lastName && (
-					<p className='text-red-500 text-sm'>{errors.lastName}</p>
-				)}
-
-				<input
-					type='date'
-					name='dateOfBirth'
-					placeholder='dd/mm/yyyy'
-					onChange={handleChange}
-				/>
-				{errors.dateOfBirth && (
-					<p className='text-red-500 text-sm'>{errors.dateOfBirth}</p>
-				)}
-
-				<input
-					type='email'
-					name='email'
-					placeholder='Email'
-					onChange={handleChange}
-				/>
-				{errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
-
-				<input name='address' placeholder='Address' onChange={handleChange} />
-				{errors.address && (
-					<p className='text-red-500 text-sm'>{errors.address}</p>
-				)}
-
-				<input
-					type='password'
-					name='password'
-					placeholder='Password'
-					onChange={handleChange}
-				/>
-				{errors.password && (
-					<p className='text-red-500 text-sm'>{errors.password}</p>
-				)}
-
-				<input
-					type='password'
-					name='confirmPassword'
-					placeholder='Confirm Password'
-					onChange={handleChange}
-				/>
-				{errors.confirmPassword && (
-					<p className='text-red-500 text-sm'>{errors.confirmPassword}</p>
-				)}
-
-				<div>
-					<input
-						id='agree'
-						type='checkbox'
-						name='agreeToTerms'
-						onChange={handleChange}
-					/>
-					<label htmlFor='agree'>Iagree to the Terms and Services</label>
-				</div>
-				{errors.agreeToTerms && (
-					<p className='text-red-500 text-sm'>{errors.agreeToTerms}</p>
-				)}
-				<SubmitButton buttonClass='bg-blue-500 text-white p-2 rounded' />
-			</form>
-		</div>
+				<label htmlFor='agree'>Tôi đồng ý với điều khoản dịch vụ</label>
+			</div>
+			{errors.agreeToTerms && (
+				<p className='text-red-500 text-sm'>{errors.agreeToTerms?.errors}</p>
+			)} */}
+			<SubmitButton buttonClass='bg-main text-white p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
+		</form>
 	)
 }
 
-//messing around with animte button
-//button is disabled when is submitting
 export const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
 	const { pending } = useFormStatus()
 
 	return (
 		<motion.button
-			disabled={pending}
 			type='submit'
-			content='Submit'
 			className={buttonClass}
-			whileHover={{ scale: 1 }}
-			whileTap={{ scale: 0.9 }}
-		/>
+			disabled={pending}
+			animate={{ scale: pending ? 0.95 : 1 }}
+			transition={{ duration: 0.2, ease: 'easeInOut' }}
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+		>
+			Submit
+		</motion.button>
 	)
 }
