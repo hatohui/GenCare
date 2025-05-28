@@ -22,7 +22,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 					id='mobile-menu'
 				>
 					<div
-						className='absolute right-10 top-6 p-3'
+						className='absolute right-6 top-4'
 						onClick={() => setOpened(!isOpened)}
 						onTouchEnd={() => setOpened(!isOpened)}
 						aria-expanded={isOpened}
@@ -66,6 +66,9 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 								{button.label}
 							</Link>
 						))}
+						<Link href='/login' className='block px-4 py-2 text-accent'>
+							Login
+						</Link>
 					</nav>
 					<div className='h-[10%] w-full'></div>
 				</motion.div>
