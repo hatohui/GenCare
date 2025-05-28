@@ -22,6 +22,8 @@
 	}
 }
 
+/*  */
+
 /* Scrollbar Customization */
 ::-webkit-scrollbar {
 	position: sticky;
@@ -48,9 +50,14 @@
 * {
 	scroll-snap-type: proximity;
 	overflow-y: overlay;
-
-	/* background-color: transparent; */
 	font-family: var(--font-inter);
+}
+
+::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
+	color: transparent;
+	display: none;
 }
 
 html,

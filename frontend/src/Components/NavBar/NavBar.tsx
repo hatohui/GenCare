@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Logo from './NavBar/Icon'
-import MobileMenu from './NavBar/MobileButton'
-import UserActionButton from './NavBar/UserActionButton'
-import NavButtons from './NavBar/NavButtons'
-import MobileButtons from './NavBar/MobileMenu'
 import { NAV_TOP_AREA, NAV_TOP_OFFSET } from '@/Constants/NavBar'
+import MobileButton from './MobileButton'
+import Logo from './Icon'
+import MobileMenu from './MobileMenu'
+import NavButtons from './NavButtons'
+import UserActionButton from './UserActionButton'
 
 export type NavComponentProps = { className?: string; onTop: boolean }
 
@@ -122,7 +122,7 @@ const NavBar = () => {
 									onTop={onTop}
 									aria-label='User actions'
 								/>
-								<MobileMenu
+								<MobileButton
 									className='block md:hidden inset-0'
 									onTop={onTop}
 									isOpened={isOpened}
@@ -135,7 +135,7 @@ const NavBar = () => {
 					</motion.header>
 				)}
 			</AnimatePresence>
-			<MobileButtons
+			<MobileMenu
 				isOpened={isOpened}
 				setOpened={setOpened}
 				aria-hidden={!isOpened}
