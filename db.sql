@@ -76,7 +76,6 @@ CREATE TABLE IF NOT EXISTS "slot" (
     "start_at" TIMESTAMP NOT NULL,
     "end_at" TIMESTAMP NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE("no")
 );
 
 ----------------------------------------------------------------------
