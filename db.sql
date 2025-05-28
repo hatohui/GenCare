@@ -1,7 +1,8 @@
 -- Improved GenCareDB Schema with Enhancements Applied
-DROP DATABASE IF EXISTS "GenCareDB";
-CREATE DATABASE "GenCareDB";
-\c "GenCareDB";
+-- DROP DATABASE IF EXISTS "GenCareDB";
+-- CREATE DATABASE "GenCareDB";
+-- \c "GenCareDB";
+-- no need for this because we're creating with docker ^.
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS "slot" (
     "no" INT NOT NULL,
     "start_at" TIMESTAMP NOT NULL,
     "end_at" TIMESTAMP NOT NULL,
-    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 ----------------------------------------------------------------------
@@ -102,12 +103,12 @@ CREATE TABLE IF NOT EXISTS "birth_control" (
 ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "conversation" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "account_one_id" UUID NOT NULL,
-    "account_two_id" UUID NOT NULL,
+    "staff_id" UUID NOT NULL,
+    "member_id" UUID NOT NULL,
     "start_at" TIMESTAMP,
     "status" BOOLEAN NOT NULL DEFAULT TRUE,
-    CONSTRAINT "fk_conversation_account_one" FOREIGN KEY ("account_one_id") REFERENCES "account"("id") ON DELETE RESTRICT,
-    CONSTRAINT "fk_conversation_account_two" FOREIGN KEY ("account_two_id") REFERENCES "account"("id") ON DELETE RESTRICT
+    CONSTRAINT "fk_conversation_staff" FOREIGN KEY ("staff_id") REFERENCES "account"("id") ON DELETE RESTRICT,
+    CONSTRAINT "fk_conversation_member" FOREIGN KEY ("member_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
 
 ----------------------------------------------------------------------
@@ -271,3 +272,4 @@ CREATE TABLE IF NOT EXISTS "blog_tag" (
     CONSTRAINT "fk_blog_tag_tag" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE CASCADE
 );
 COMMENT ON TABLE "blog_tag" IS 'Join table for many-to-many relationship between blogs and tags';
+
