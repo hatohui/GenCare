@@ -113,6 +113,25 @@ export default function RegisterPage() {
 		>
 			<h1 className='text-xl font-bold mb-4'>Đăng ký tài khoản</h1>
 
+			<div className='flex gap-4 mb-4'>
+				<FloatingLabel
+					label='Họ'
+					id='lastName'
+					name='lastName'
+					value={form.lastName}
+					onChange={handleChange}
+					error={errors.lastName}
+				/>
+				<FloatingLabel
+					label='Tên'
+					id='firstName'
+					name='firstName'
+					value={form.firstName}
+					onChange={handleChange}
+					error={errors.firstName}
+				/>
+			</div>
+
 			<FloatingLabel
 				label='Email'
 				id='email'
@@ -140,24 +159,6 @@ export default function RegisterPage() {
 				value={form.confirmPassword}
 				onChange={handleChange}
 				error={errors.confirmPassword}
-			/>
-
-			<FloatingLabel
-				label='Tên'
-				id='firstName'
-				name='firstName'
-				value={form.firstName}
-				onChange={handleChange}
-				error={errors.firstName}
-			/>
-
-			<FloatingLabel
-				label='Họ'
-				id='lastName'
-				name='lastName'
-				value={form.lastName}
-				onChange={handleChange}
-				error={errors.lastName}
 			/>
 
 			<FloatingLabel
