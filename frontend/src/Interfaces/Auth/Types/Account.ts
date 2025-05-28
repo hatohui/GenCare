@@ -9,6 +9,6 @@ export type Account = {
 	phoneNumber: string
 	dateOfBirth: string
 	avatarUrl: string
-	deletedAt: string
+	deletedAt?: string
 	isDeleted: boolean
 }

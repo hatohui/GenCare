@@ -93,12 +93,7 @@ export default function FloatingLabelInput({
 					'peer w-full pt-2 border-b-2 border-gray-300 bg-transparent',
 					'text-base text-gray-900 placeholder-transparent',
 					'transition-all duration-200 ease-in-out',
-					'focus:border-blue-500 focus:outline-none',
-					!isFirst
-						? isCorrect
-							? 'border-green-500'
-							: 'focus:border-red-500'
-						: '',
+					!isFirst ? (isCorrect ? 'border-green-500' : 'border-red-500') : '',
 					error ? 'border-red-500' : ''
 				)}
 			/>

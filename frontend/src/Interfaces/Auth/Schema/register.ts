@@ -24,16 +24,21 @@ export const RegisterFormSchema = z
 				message: 'Trong mục họ không được có kí tự đặc biệt',
 			}),
 
-		dateOfBirth: z
-			.string()
-			.date()
+		dateOfBirth: z.iso
+			.date({ error: 'Ngày không hợp lệ' })
 			.min(1, { message: 'Ngày sinh là mục bắt buộc' }),
 
-		email: z.string().email({ message: 'Email không hợp lệ' }),
+		email: z.email({ message: 'Email không hợp lệ' }),
 
 		password: z
 			.string()
-			.min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
+			.min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
+			.regex(
+				/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/,
+				{
+					message: 'Mật khẩu phải chứa ít nhất một chữ cái và một số',
+				}
+			),
 
 		confirmPassword: z.string(),
 
