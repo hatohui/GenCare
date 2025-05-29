@@ -1,14 +1,19 @@
+'use client'
+
+import React from 'react'
+import { useRouter } from 'next/navigation'
 import RegisterPage from '@/Components/Auth/RegisterForm'
 import {
 	RegisterAPI,
 	RegisterFormData,
 } from '@/Interfaces/Auth/Schema/register'
 import { useRegisterAccount } from '@/Services/auth-service'
-import { useRouter } from 'next/navigation'
-import React from 'react'
+import LoadingPage from '@/Components/Loading'
+import { setCookie } from 'cookies-next/client'
 
-const page = () => {
+const Register = () => {
 	const router = useRouter()
+	const registerMutation = useRegisterAccount()
 
 	const handleRegister = (formData: RegisterFormData) => {
 		const apiData: RegisterAPI = {
@@ -21,17 +26,24 @@ const page = () => {
 			password: formData.password,
 		}
 
-		const { isError, isPending, isSuccess, data } = useRegisterAccount(apiData)
-
-		if (isError) {
-			//HANDLE ERROR
-		}
-
-		if (isSuccess && data) {
-			document.cookie = `accessToken=${data.accessToken}; path=/; max-age=86400; secure; samesite=strict`
-			router.push('/dashboard')
-		}
+		//on success, set cookies
+		registerMutation.mutate(apiData, {
+			onSuccess: data => {
+				setCookie('accessToken', data.accessToken, {
+					sameSite: 'strict',
+					maxAge: data.expiresIn,
+				})
+				setCookie('refreshToken', data.refreshToken)
+				router.push('/dashboard')
+			},
+			onError: error => {
+				console.error('Registration error:', error)
+				// show toast or error message if needed
+			},
+		})
 	}
+
+	if (registerMutation.isPending) return <LoadingPage />
 
 	return (
 		<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4 flex items-center justify-center'>
@@ -40,4 +52,4 @@ const page = () => {
 	)
 }
 
-export default page
+export default Register

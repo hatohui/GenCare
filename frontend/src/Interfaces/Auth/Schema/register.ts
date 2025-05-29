@@ -29,11 +29,11 @@ export const RegisterFormSchema = z
 				message: 'Trong mục họ không được có kí tự đặc biệt',
 			}),
 
-		dateOfBirth: z.iso.datetime({ message: 'Ngày sinh là mục bắt buộc' }),
+		dateOfBirth: z.coerce.date({ message: 'Ngày sinh là mục bắt buộc' }),
 
 		email: z.email({ message: 'Email không hợp lệ' }),
 
-		gender: z.boolean(),
+		gender: z.number().min(0).max(1),
 
 		phoneNumber: z.string().regex(/^(0|\+84)(\s?[2-9])+([0-9]{8})\b/, {
 			message: 'Số điện thoại không hợp lệ',
@@ -51,8 +51,7 @@ export const RegisterFormSchema = z
 	})
 	.refine(
 		data =>
-			data.password === data.confirmPassword &&
-			data.confirmPassword.length !== 0,
+			data.password === data.confirmPassword && data.confirmPassword !== '',
 		{
 			message: 'Mật khẩu không khớp',
 			path: ['confirmPassword'],

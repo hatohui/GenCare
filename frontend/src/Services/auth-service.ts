@@ -5,26 +5,24 @@ import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 
+const AUTH_URL = `${DEFAULT_API_URL}/auth`
+
 const authApi = {
 	register: (data: RegisterAPI) =>
-		axios
-			.post<TokenData>(`${DEFAULT_API_URL}/register`, data)
-			.then(res => res.data),
+		axios.post<TokenData>(`${AUTH_URL}/register`, data).then(res => res.data),
 
 	login: (data: LoginAPI) =>
-		axios
-			.post<TokenData>(`${DEFAULT_API_URL}/login`, data)
-			.then(res => res.data),
+		axios.post<TokenData>(`${AUTH_URL}/login`, data).then(res => res.data),
 }
 
-export const useRegisterAccount = (data: RegisterAPI) => {
+export const useRegisterAccount = () => {
 	return useMutation({
-		mutationFn: () => authApi.register(data),
+		mutationFn: authApi.register,
 	})
 }
 
-export const useLoginAccount = (credentials: LoginAPI) => {
+export const useLoginAccount = () => {
 	return useMutation({
-		mutationFn: () => authApi.login(credentials),
+		mutationFn: authApi.login,
 	})
 }
