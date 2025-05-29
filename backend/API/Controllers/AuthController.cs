@@ -19,14 +19,13 @@ namespace API.Controllers
         /// <summary>
         /// Registers a new user in the system.
         /// </summary>
-        /// <param name="dto">The user registration details.</param>
+        /// <param name="request">The user registration details.</param>
         /// <returns>An action result containing the user ID and a success message.</returns>
         /// <response code="200">User registered successfully.</response>
         /// <response code="400">Bad request if the user data is invalid.</response>
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest request)
         {
-
             var response = await accountService.RegisterAsync(request);
             return Ok(response);
         }

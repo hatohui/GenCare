@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public   class Role
+public class Role
 {
     public Guid Id { get; set; }
 
@@ -8,5 +8,5 @@ public   class Role
 
     public string Description { get; set; } = null!;
 
-    public   ICollection<Account> Account { get; set; } = [];
+    public ICollection<Account> Account { get; set; } = [];
 }
