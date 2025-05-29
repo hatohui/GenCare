@@ -25,8 +25,8 @@ export default function CustomCursor() {
 		const onMove = (e: MouseEvent) => {
 			const px = e.clientX
 			const py = e.clientY
-			x.set(px)
-			y.set(py)
+			x.set(px - 10)
+			y.set(py - 10)
 
 			const el = document.elementFromPoint(px, py)
 			setIsHovering(!!el?.closest('a, button, input, textarea, select'))

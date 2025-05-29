@@ -18,7 +18,7 @@
 		@apply absolute w-dvw h-dvh top-0 left-0;
 	}
 	.florageBackground {
-		@apply bg-[url('/images/floragething.png')];
+		@apply bg-[url('/textures/floragething.png')];
 	}
 }
 
