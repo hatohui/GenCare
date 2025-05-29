@@ -1,12 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Application.DTOs.Auth.Request;
-using Application.Helpers;
-using Application.Services.Interfaces;
-using Domain.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+﻿using Application.DTOs.Auth.Request;
+using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
@@ -32,12 +25,7 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest dto)
         {
-            var userId = await authService.RegisterAsync(dto).ConfigureAwait(false);
-            return Ok(new
-            {
-                message = "User registered successfully",
-                userId
-            });
+            throw new NotImplementedException("Registration is not implemented yet.");
         }
 
         /// <summary>
@@ -50,8 +38,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequest request)
         {
-            var result = await authService.LoginAsync(request).ConfigureAwait(false);
-            return Ok(result);
+            throw new NotImplementedException("Login is not implemented yet.");
         }
 
         /// <summary>
@@ -65,8 +52,7 @@ namespace API.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest dto)
         {
-            var result = await authService.RefreshTokenAsync(dto).ConfigureAwait(false);
-            return Ok(result);
+            throw new NotImplementedException("Token refresh is not implemented yet.");
         }
 
         /// <summary>
@@ -80,13 +66,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public IActionResult GetProfile()
         {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-            return Ok(new
-            {
-                message = "Access token valid.",
-                userId
-            });
+            throw new NotImplementedException("Profile retrieval is not implemented yet.");
         }
 
         /// <summary>
@@ -100,11 +80,7 @@ namespace API.Controllers
         [HttpPost("google-login")]
         public IActionResult GoogleLogin()
         {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("GoogleCallback")
-            };
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+            throw new NotImplementedException("Google login is not implemented yet.");
         }
 
         /// <summary>
@@ -121,22 +97,7 @@ namespace API.Controllers
         [HttpGet("google-callback")]
         public async Task<IActionResult> GoogleCallbackAsync()
         {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            if (!result.Succeeded || result.Principal == null)
-                return Unauthorized(new { error = "Google authentication failed" });
-
-            var email = result.Principal.FindFirstValue(ClaimTypes.Email);
-            var name = result.Principal.FindFirstValue(ClaimTypes.Name);
-
-            var accessToken = JwtHelper.GenerateAccessToken(new User());
-
-            return Ok(new
-            {
-                accessToken,
-                email,
-                name
-            });
+            throw new NotImplementedException("Google callback is not implemented yet.");
         }
 
         /// <summary>
