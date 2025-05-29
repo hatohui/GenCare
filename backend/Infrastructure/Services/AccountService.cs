@@ -38,15 +38,23 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
         // Save the user to the database
         await accountRepo.AddAsync(user);
         //create refresh token for user
-
+        var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
+        RefreshToken rf = new()
+        {
+            AccountId = user.Id,
+            Token = refToken,
+            ExpiresAt = refExpiration
+        };
         //add refresh token to database
-       
+        await refTokenRepo.AddAsync(rf);
+        //create access token
+        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
         // Return the response
         return new UserRegisterResponse
         {
-            //chô nãy return refresh và access token
-            //UserId = user.Id,
-            //Message = "User registered successfully",
+            RefreshToken = rf.Token,
+            AccessToken = accToken,
+            AccessTokenExpiration = accExpiration
         };
     }
 
@@ -57,11 +65,21 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
         {
             throw new Exception("Invalid email or password");
         }
-
+        //create access and refresh tokens
         var (accessToken, accessTokenExpiration) =
-            JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.ToString());
+            JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
         var (refreshToken, refreshTokenExpiration) =
             JwtHelper.GenerateRefreshToken(user.Id);
+        //add refresh token to database
+        
+        RefreshToken rf = new()
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = refreshTokenExpiration
+        };
+        await refTokenRepo.AddAsync(rf);
+
         return new UserLoginResponse()
         {
             AccessToken = accessToken,

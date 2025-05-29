@@ -13,7 +13,7 @@ namespace API.Controllers
     /// </remarks>
     /// <param name="authService">The authentication service.</param>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController(IAccountService accountService) : ControllerBase
     {
         /// <summary>
@@ -41,7 +41,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequest request)
         {
-            var result = await authService.LoginAsync(request);
+            var result = await accountService.LoginAsync(request);
             if (result is null)
             {
                 return BadRequest("Invalid credentials.");
