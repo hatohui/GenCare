@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Text.Json;
+using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
-namespace Web.Middlewares;
+namespace Api.Middlewares;
 
 public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
 {
@@ -12,52 +13,63 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         {
             await next(context).ConfigureAwait(false);
         }
-        catch (ValidationException vex)
+        catch (AppException appEx) // Custom business logic exception
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = "application/json";
-
-            var validationErrors = new[]
-            {
-                new { field = "Unknown", message = vex.Message }
-            };
-
-            var problemDetails = new
-            {
-                type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-                title = "One or more validation errors occurred.",
-                status = 400,
-                errors = validationErrors
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails), context.RequestAborted).ConfigureAwait(false);
+            await WriteProblemDetailsAsync(context, appEx.StatusCode, "Application Error", appEx.Message);
+        }
+        catch (ValidationException vex) // System.ComponentModel.DataAnnotations
+        {
+            await WriteProblemDetailsAsync(context, 400, "Validation Failed", vex.Message);
         }
         catch (UnauthorizedAccessException)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            context.Response.ContentType = "application/json";
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new
-            {
-                error = "Unauthorized access"
-            }), context.RequestAborted).ConfigureAwait(false);
+            await WriteProblemDetailsAsync(context, 401, "Unauthorized", "Access denied");
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException)
+        {
+            await WriteProblemDetailsAsync(context, 404, "Not Found", "Resource not found");
+        }
+        catch (DbUpdateException dbEx)
+        {
+            logger.LogError(dbEx, "Database update error");
+            await WriteProblemDetailsAsync(context, 409, "Database Error", "Conflict occurred while updating the database");
+        }
+        catch (OperationCanceledException)
+        {
+            await WriteProblemDetailsAsync(context, 408, "Request Timeout", "The operation was cancelled or timed out");
+        }
+        catch (NotImplementedException)
+        {
+            await WriteProblemDetailsAsync(context, 501, "Not Implemented", "This feature is not yet available");
+        }
+        catch (BadHttpRequestException badReq)
+        {
+            await WriteProblemDetailsAsync(context, 400, "Bad Request", badReq.Message);
+        }
+        catch (HttpRequestException httpEx)
+        {
+            await WriteProblemDetailsAsync(context, 502, "External Request Failed", httpEx.Message);
+        }
+        catch (Exception ex) // Catch all fallbacks
         {
             logger.LogError(ex, "Unhandled exception");
-
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.ContentType = "application/json";
-
-            var problem = new
-            {
-                type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-                title = "Internal Server Error",
-                status = 500,
-                detail = ex.Message
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(problem), context.RequestAborted).ConfigureAwait(false);
+            await WriteProblemDetailsAsync(context, 500, "Internal Server Error", "An unexpected error occurred");
         }
+    }
+
+    private static async Task WriteProblemDetailsAsync(HttpContext context, int statusCode, string title, string detail)
+    {
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/problem+json";
+
+        var problemDetails = new
+        {
+            type = $"https://httpstatuses.com/{statusCode}",
+            title,
+            status = statusCode,
+            detail
+        };
+
+        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails), context.RequestAborted).ConfigureAwait(false);
     }
 }

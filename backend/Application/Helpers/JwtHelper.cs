@@ -154,7 +154,7 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         public static string GetEmailFromToken(string token)
         {
             var principal = ValidateToken(token);
-            return principal.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+            return principal.FindFirst(JwtRegisteredClaimNames.Email)?.Value ?? string.Empty;
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         public static string GetRoleFromToken(string token)
         {
             var principal = ValidateToken(token);
-            return principal.FindFirst(ClaimTypes.Role)?.Value;
+            return principal.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         public static string GetTokenTypeFromToken(string token)
         {
             var principal = ValidateToken(token);
-            return principal.FindFirst("type")?.Value;
+            return principal.FindFirst("type")?.Value ?? string.Empty;
         }
 
         /// <summary>
