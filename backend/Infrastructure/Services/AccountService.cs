@@ -7,18 +7,25 @@ using Domain.Entities;
 
 namespace Infrastructure.Services;
 
-public class AccountService(IAccountRepository accountRepo, IRefreshTokenRepository refTokenRepo) : IAccountService
+public class AccountService
+    (
+    IAccountRepository accountRepo,
+    IRefreshTokenRepository refTokenRepo,
+    IRoleRepository roleRepo
+    ) : IAccountService
 {
     public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
     {
-        // Validate the request
-        var existtingUser = accountRepo.GetByEmailAsync(request.Email);
-        if (existtingUser.Result is not null)
+        var existingUser = await accountRepo.GetByEmailAsync(request.Email);
+        if (existingUser is not null)
         {
             throw new Exception("User already exists");
         }
-        //create the user and hash password
-        var user = new Account()
+
+        var role = await roleRepo.GetRoleByNameAsync("User") ?? throw new Exception("Role 'User' not found");
+
+        // Tạo tài khoản mới
+        var user = new Account
         {
             Gender = request.Gender,
             FirstName = request.FirstName,
@@ -27,22 +34,23 @@ public class AccountService(IAccountRepository accountRepo, IRefreshTokenReposit
             PasswordHash = PasswordHasher.Hash(request.Password),
             DateOfBirth = request.DateOfBirth,
             Phone = request.PhoneNumber,
+            RoleId = role.Id,
+            Role = role
         };
-        // Save the user to the database
+
         await accountRepo.AddAsync(user);
-        //create refresh token for user
+
         var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-        RefreshToken rf = new()
+        var rf = new RefreshToken
         {
             AccountId = user.Id,
             Token = refToken,
             ExpiresAt = refExpiration
         };
-        //add refresh token to database
         await refTokenRepo.AddAsync(rf);
-        //create access token
-        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
-        // Return the response
+
+        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, role.Name);
+
         return new UserRegisterResponse
         {
             RefreshToken = rf.Token,

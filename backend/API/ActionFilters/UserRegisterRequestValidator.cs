@@ -14,9 +14,8 @@ public class UserRegisterRequestValidator : AbstractValidator<UserRegisterReques
             .WithMessage("Password must contain at least one letter and one number.");
 
         RuleFor(x => x.Email)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.Email)).WithMessage("Email must not be empty.")
-            .EmailAddress().When(x => !string.IsNullOrWhiteSpace(x.Email)).WithMessage("Invalid email format.");
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("Invalid email format.");
 
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("First name is required.")
@@ -25,10 +24,15 @@ public class UserRegisterRequestValidator : AbstractValidator<UserRegisterReques
             .WithMessage("First name must not be only whitespace.");
 
         RuleFor(x => x.LastName)
-            .NotEmpty().WithMessage("First name is required.")
-            .MaximumLength(30).WithMessage("First name is too long.")
+            .NotEmpty().WithMessage("Last name is required.")
+            .MaximumLength(30).WithMessage("Last name is too long.")
             .Must(name => !string.IsNullOrWhiteSpace(name?.Trim()))
-            .WithMessage("First name must not be only whitespace.");
+            .WithMessage("Last name must not be only whitespace.");
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty().WithMessage("Phone number is required.")
+            .Matches(@"^\+?\d{8,15}$").WithMessage("Invalid phone number format.")
+            .MaximumLength(20).WithMessage("Phone number is too long.");
 
         RuleFor(x => x.DateOfBirth)
             .LessThan(DateOnly.FromDateTime(DateTime.Today))
