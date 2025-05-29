@@ -97,8 +97,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 // ====== Application Services ======
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 var env = builder.Environment;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>

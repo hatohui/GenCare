@@ -13,7 +13,7 @@ namespace API.Controllers
     /// <param name="authService">The authentication service.</param>
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IAuthService authService) : ControllerBase
+    public class AuthController(IAccountService authService) : ControllerBase
     {
         /// <summary>
         /// Registers a new user in the system.

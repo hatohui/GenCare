@@ -3,6 +3,6 @@ using Application.Services;
 
 namespace Infrastructure.Services;
 
-public class AuthService(IAuthRepository authRepo) : IAuthService
+public class AccountService(IAccountRepository authRepo) : IAccountService
 {
 }

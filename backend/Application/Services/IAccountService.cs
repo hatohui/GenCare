@@ -1,5 +1,5 @@
 ﻿namespace Application.Services;
 
-public interface IAuthService
+public interface IAccountService
 {
 }

@@ -2,6 +2,6 @@
 
 namespace Infrastructure.Repositories;
 
-public class AuthRepository : IAuthRepository
+public class AccountRepository : IAccountRepository
 {
 }
