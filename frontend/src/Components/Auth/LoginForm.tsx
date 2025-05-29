@@ -8,7 +8,11 @@ import { ZodError } from 'zod'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 
-const LoginForm = () => {
+export type LoginComponentProps = {
+	handleLogin: (data: { email: string; password: string }) => void
+}
+
+const LoginForm = ({handleLogin} : LoginComponentProps  ) => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
@@ -23,6 +27,7 @@ const LoginForm = () => {
 	console.log(handleReset)
 	console.log(errors)
 
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 
@@ -31,10 +36,11 @@ const LoginForm = () => {
 				email: email.value,
 				password: password.value,
 			})
+			
 
-			console.log(parsed)
-
-			alert('Login successful!')
+			handleLogin({
+				...parsed
+			})
 		} catch (err) {
 			if (err instanceof ZodError) {
 				const fieldErrors: Record<string, string> = {}
