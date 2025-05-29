@@ -1,5 +1,6 @@
 ﻿namespace Application.Repositories;
 
-public interface IAuthRepository
+public interface IAccountRepository
 {
+
 }
