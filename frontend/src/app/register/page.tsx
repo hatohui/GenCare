@@ -31,7 +31,7 @@ const Register = () => {
 			onSuccess: data => {
 				setCookie('accessToken', data.accessToken, {
 					sameSite: 'strict',
-					maxAge: data.expiresIn,
+					maxAge: data.accessTokenExpiration.getUTCSeconds(),
 				})
 				setCookie('refreshToken', data.refreshToken)
 				router.push('/dashboard')
