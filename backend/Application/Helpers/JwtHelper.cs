@@ -56,7 +56,7 @@ namespace Application.Helpers
             {
                 new Claim(JwtRegisteredClaimNames.Sub,
                     accountId.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("type", "refresh") // Đánh dấu đây là refresh token
             };
 

@@ -1,4 +1,4 @@
-﻿using Application.Helpers;
+using Application.Helpers;
 using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
@@ -21,5 +21,16 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         }
         return account;   
             
+    }
+
+    public async Task AddAsync(Account user)
+    {
+        await dbContext.Accounts.AddAsync(user);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Account?> GetByEmailAsync(string email)
+    {
+        return await dbContext.Accounts.FirstOrDefaultAsync(u => u.Email == email);
     }
 }
