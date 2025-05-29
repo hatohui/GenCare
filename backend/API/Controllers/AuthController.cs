@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Auth.Request;
+using Application.DTOs.Auth.Requests;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 
@@ -13,7 +14,7 @@ namespace API.Controllers
     /// <param name="authService">The authentication service.</param>
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IAccountService authService) : ControllerBase
+    public class AuthController(IAccountService accountService) : ControllerBase
     {
         /// <summary>
         /// Registers a new user in the system.
@@ -23,9 +24,11 @@ namespace API.Controllers
         /// <response code="200">User registered successfully.</response>
         /// <response code="400">Bad request if the user data is invalid.</response>
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest dto)
+        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest request)
         {
-            throw new NotImplementedException("Registration is not implemented yet.");
+
+            var response = await accountService.RegisterAsync(request);
+            return Ok(response);
         }
 
         /// <summary>

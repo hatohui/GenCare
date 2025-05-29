@@ -15,47 +15,52 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
     {
     }
 
-    public virtual DbSet<Account> Account { get; set; }
+    public virtual DbSet<Account> Accounts { get; set; }
 
-    public virtual DbSet<Appointment> Appointment { get; set; }
+    public virtual DbSet<Appointment> Appointments { get; set; }
 
-    public virtual DbSet<BirthControl> BirthControl { get; set; }
+    public virtual DbSet<BirthControl> BirthControls { get; set; }
 
-    public virtual DbSet<Blog> Blog { get; set; }
+    public virtual DbSet<Blog> Blogs { get; set; }
 
-    public virtual DbSet<BlogTag> BlogTag { get; set; }
+    public virtual DbSet<BlogTag> BlogTags { get; set; }
 
-    public virtual DbSet<Comment> Comment { get; set; }
+    public virtual DbSet<Comment> Comments { get; set; }
 
-    public virtual DbSet<Conversation> Conversation { get; set; }
+    public virtual DbSet<Conversation> Conversations { get; set; }
 
-    public virtual DbSet<Department> Department { get; set; }
+    public virtual DbSet<Department> Departments { get; set; }
 
-    public virtual DbSet<Feedback> Feedback { get; set; }
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
 
-    public virtual DbSet<Message> Message { get; set; }
+    public virtual DbSet<Message> Messages { get; set; }
 
-    public virtual DbSet<OrderDetail> OrderDetail { get; set; }
+    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
 
-    public virtual DbSet<PaymentHistory> PaymentHistory { get; set; }
+    public virtual DbSet<PaymentHistory> PaymentHistories { get; set; }
 
-    public virtual DbSet<Purchase> Purchase { get; set; }
+    public virtual DbSet<Purchase> Purchases { get; set; }
 
-    public virtual DbSet<RefreshToken> RefreshToken { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    public virtual DbSet<Result> Result { get; set; }
+    public virtual DbSet<Result> Results { get; set; }
 
-    public virtual DbSet<Role> Role { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<Schedule> Schedule { get; set; }
+    public virtual DbSet<Schedule> Schedules { get; set; }
 
-    public virtual DbSet<Service> Service { get; set; }
+    public virtual DbSet<Service> Services { get; set; }
 
-    public virtual DbSet<Slot> Slot { get; set; }
+    public virtual DbSet<Slot> Slots { get; set; }
 
-    public virtual DbSet<StaffInfo> StaffInfo { get; set; }
+    public virtual DbSet<StaffInfo> StaffInfos { get; set; }
 
-    public virtual DbSet<Tag> Tag { get; set; }
+    public virtual DbSet<Tag> Tags { get; set; }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await base.SaveChangesAsync();
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
