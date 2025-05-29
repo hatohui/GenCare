@@ -118,8 +118,10 @@ builder.Services.AddCors(options =>
 });
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();  
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 var env = builder.Environment;
 
