@@ -41,7 +41,12 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequest request)
         {
-            throw new NotImplementedException("Login is not implemented yet.");
+            var result = await authService.LoginAsync(request);
+            if (result is null)
+            {
+                return BadRequest("Invalid credentials.");
+            }
+            return Ok(result);
         }
 
         /// <summary>
