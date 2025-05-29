@@ -37,7 +37,7 @@ namespace Application.Helpers
         public static (string AccessToken, DateTime AccessTokenExpiration) GenerateAccessToken(Guid accountId,
             string email, string role, int expiresInMinutes = 60)
         {
-            var accessTokenExpiration = DateTime.UtcNow.AddMinutes(expiresInMinutes);
+            var accessTokenExpiration = DateTime.Now.AddMinutes(expiresInMinutes);
             var accessToken = GenerateToken(accountId, email, role, expiresInMinutes, "access");
             return (accessToken, accessTokenExpiration);
         }
@@ -51,7 +51,7 @@ namespace Application.Helpers
         public static (string RefreshToken, DateTime RefreshTokenExpiration) GenerateRefreshToken(Guid accountId,
             int expiresInDays = 7)
         {
-            var refreshTokenExpiration = DateTime.UtcNow.AddDays(expiresInDays);
+            var refreshTokenExpiration = DateTime.Now.AddDays(expiresInDays);
             var refreshTokenClaims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub,
@@ -102,7 +102,7 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 issuer: JwtIssuer,
                 audience: JwtAudience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expiresInMinutes),
+                expires: DateTime.Now.AddMinutes(expiresInMinutes),
                 signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -203,7 +203,7 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 
             var email = principal.FindFirst(JwtRegisteredClaimNames.Email)?.Value ?? string.Empty;
             var role = principal.FindFirst(ClaimTypes.Role)?.Value ?? "User";
-            var accessTokenExpiration = DateTime.UtcNow.AddMinutes(accessTokenExpiresInMinutes);
+            var accessTokenExpiration = DateTime.Now.AddMinutes(accessTokenExpiresInMinutes);
 
             var newAccessToken = GenerateToken(accountId, email, role, accessTokenExpiresInMinutes, "access");
 
