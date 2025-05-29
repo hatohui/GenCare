@@ -83,8 +83,6 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 	const validateEntireForm = (formData: RegisterFormData): boolean => {
 		const result = RegisterFormSchema.safeParse(formData)
 
-		console.log(result)
-
 		if (!result.success) {
 			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
 			const properties = z4.treeifyError(result.error).properties
@@ -108,9 +106,6 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 		e.preventDefault()
 
 		const isValid = validateEntireForm(form)
-
-		console.log(isValid)
-		console.log(errors)
 
 		if (isValid) {
 			try {
