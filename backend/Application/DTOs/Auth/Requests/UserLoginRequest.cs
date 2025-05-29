@@ -1,7 +1,7 @@
-﻿namespace Application.DTOs.Auth.Request;
+﻿namespace Application.DTOs.Auth.Requests;
 
-public class UserLoginRequest
+public record class UserLoginRequest
 {
-    public string? PhoneNumber { get; set; }
-    public string? Password { get; set; }
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } = null!;
 }

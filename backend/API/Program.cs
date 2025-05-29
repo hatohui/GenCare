@@ -2,6 +2,7 @@
 using API.Middlewares;
 using Application.Repositories;
 using Application.Services;
+using Domain.Abstractions;
 using DotNetEnv;
 using Infrastructure.Data.Context;
 using Infrastructure.Repositories;
@@ -95,10 +96,31 @@ builder.Services.AddAuthentication(options =>
     options.SaveTokens = true;
     options.ClaimActions.MapJsonKey("picture", "picture", "url");
 });
+// ====== CORS Configuration ======
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:4200") // Chỉ định các origin của frontend
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials(); // Cho phép gửi cookie hoặc thông tin xác thực
+    });
 
+    // Nếu muốn cho phép tất cả origin (ít bảo mật hơn, chỉ dùng trong dev)
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
+
 var env = builder.Environment;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
@@ -122,8 +144,11 @@ var app = builder.Build();
 // ====== Middleware Pipeline ======
 
 // 1. Swagger - để dev có thể test API trước mọi xử lý khác
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // 2. Global Exception - log và xử lý exception sớm nhất có thể
 app.UseMiddleware<GlobalExceptionMiddleware>();
