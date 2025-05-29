@@ -4,13 +4,11 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Infrastructure.Repositories;
 
 namespace Infrastructure.Services;
 
-public class AccountService(IAccountRepository accountRepo, IRoleRepository roleRepo, IRefreshTokenRepository refTokenRepo) : IAccountService
+public class AccountService(IAccountRepository accountRepo, IRefreshTokenRepository refTokenRepo) : IAccountService
 {
- 
     public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
     {
         // Validate the request
@@ -19,21 +17,16 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
         {
             throw new Exception("User already exists");
         }
-        if (request.Password != request.ConfirmedPassword)
-        {
-            throw new Exception("Passwords do not match");
-        }
         //create the user and hash password
         var user = new Account()
         {
-            RoleId = roleRepo.GetRoleByNameAsync("Member").Result!.Id,
-            Gender = false,
+            Gender = request.Gender,
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
             PasswordHash = PasswordHasher.Hash(request.Password),
             DateOfBirth = request.DateOfBirth,
-
+            Phone = request.PhoneNumber,
         };
         // Save the user to the database
         await accountRepo.AddAsync(user);
@@ -60,18 +53,14 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
 
     public async Task<UserLoginResponse?> LoginAsync(UserLoginRequest request)
     {
-        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password);
-        if (user is null)
-        {
-            throw new Exception("Invalid email or password");
-        }
+        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password) ?? throw new Exception("Invalid email or password");
         //create access and refresh tokens
         var (accessToken, accessTokenExpiration) =
             JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
         var (refreshToken, refreshTokenExpiration) =
             JwtHelper.GenerateRefreshToken(user.Id);
         //add refresh token to database
-        
+
         RefreshToken rf = new()
         {
             AccountId = user.Id,
@@ -80,11 +69,11 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new UserLoginResponse()
+        return new()
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken 
+            RefreshToken = refreshToken
         };
     }
 }
