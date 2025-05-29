@@ -24,7 +24,7 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
             throw new Exception("Passwords do not match");
         }
         //create the user and hash password
-        var user = new Account
+        var user = new Account()
         {
             RoleId = roleRepo.GetRoleByNameAsync("Member").Result!.Id,
             Gender = false,
