@@ -25,12 +25,12 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task AddAsync(Account user)
     {
-        await context.Accounts.AddAsync(user);
-        await context.SaveChangesAsync();
+        await dbContext.Accounts.AddAsync(user);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<Account?> GetByEmailAsync(string email)
     {
-        return await context.Accounts.FirstOrDefaultAsync(u => u.Email == email);
+        return await dbContext.Accounts.FirstOrDefaultAsync(u => u.Email == email);
     }
 }
