@@ -5,7 +5,6 @@ import useInput from '@/Hooks/Form/useInput'
 import MotionCheckbox from '../Form/MotionCheckbox'
 import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod'
-import { loginUser } from '@/Services/auth-service'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 
@@ -33,7 +32,7 @@ const LoginForm = () => {
 				password: password.value,
 			})
 
-			await loginUser(parsed)
+			console.log(parsed)
 
 			alert('Login successful!')
 		} catch (err) {

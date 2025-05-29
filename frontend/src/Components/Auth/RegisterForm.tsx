@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { registerUser } from '@/Services/auth-service'
 import z4 from 'zod/v4'
 import { useFormStatus } from 'react-dom'
 import {
@@ -10,30 +9,46 @@ import {
 } from '@/Interfaces/Auth/Schema/register'
 import { motion } from 'motion/react'
 import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
+import { Gender } from '@/Enums/Gender'
 
 type RegisterFormProps = keyof RegisterFormData
 
-export default function RegisterPage() {
+export type RegisterComponentProps = {
+	handleRegister: (data: RegisterFormData) => void
+}
+
+const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
 		lastName: '',
-		dateOfBirth: '2000-01-01',
+		dateOfBirth: '',
 		email: '',
+		gender: Gender.Male,
+		phoneNumber: '',
 		password: '',
 		confirmPassword: '',
 		agreeToTerms: false,
 	})
+
 	const [errors, setErrors] = useState<Record<string, FloatingLabelErrorData>>(
 		{}
 	)
 	const checked = useRef(new Set<RegisterFormProps>())
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value, type, checked: isChecked } = e.target
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+	) => {
+		const { name, value, type } = e.target
+		const isChecked = (e.target as HTMLInputElement).checked
 
 		const updatedForm = {
 			...form,
-			[name]: type === 'checkbox' ? isChecked : value,
+			[name]:
+				type === 'checkbox'
+					? isChecked
+					: name === 'gender'
+					? Boolean(value)
+					: value,
 		}
 
 		setForm(updatedForm)
@@ -94,9 +109,7 @@ export default function RegisterPage() {
 
 		if (isValid) {
 			try {
-				await registerUser(form)
-				alert('success!')
-				//! HANDLE REGISTERING DATA
+				handleRegister(form)
 			} catch (error) {
 				console.log(error)
 
@@ -162,28 +175,87 @@ export default function RegisterPage() {
 			/>
 
 			<FloatingLabel
-				label='Ngày sinh (dd/mm/yyyy)'
-				id='dateOfBirth'
-				type='date'
-				name='dateOfBirth'
-				value={form.dateOfBirth}
+				label='Số điện thoại'
+				id='phoneNumber'
+				name='phoneNumber'
+				value={form.phoneNumber}
 				onChange={handleChange}
-				error={errors.dateOfBirth}
+				error={errors.phoneNumber}
 			/>
 
-			{/* <div>
+			{/* Ngày sinh (Date of Birth) */}
+			<div className='mb-4'>
+				<label
+					htmlFor='dateOfBirth'
+					className={`block text-sm font-medium mb-1 ${
+						errors.dateOfBirth ? 'text-red-500' : 'text-gray-700'
+					}`}
+				>
+					Ngày sinh (dd/mm/yyyy)
+				</label>
 				<input
-					id='agree'
-					type='checkbox'
-					name='agreeToTerms'
+					type='date'
+					id='dateOfBirth'
+					name='dateOfBirth'
+					value={form.dateOfBirth}
 					onChange={handleChange}
+					className={`w-full px-3 py-2 border ${
+						errors.dateOfBirth
+							? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+							: 'border-gray-300 focus:ring-main focus:border-main'
+					} rounded-md shadow-sm focus:outline-none focus:ring-2`}
 				/>
-				<label htmlFor='agree'>Tôi đồng ý với điều khoản dịch vụ</label>
+				{errors.dateOfBirth && (
+					<p className='text-red-500 text-sm mt-1'>
+						{errors.dateOfBirth.errors[0]}
+					</p>
+				)}
 			</div>
-			{errors.agreeToTerms && (
-				<p className='text-red-500 text-sm'>{errors.agreeToTerms?.errors}</p>
-			)} */}
-			<SubmitButton buttonClass='bg-main text-white p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
+
+			<div className='mb-4'>
+				<label
+					htmlFor='gender'
+					className='block text-sm font-medium text-gray-700 mb-1'
+				>
+					Giới tính:
+				</label>
+				<select
+					id='gender'
+					name='gender'
+					value={form.gender}
+					onChange={handleChange}
+					className={`w-full px-3 py-2 border ${
+						errors.gender ? 'border-red-500' : 'border-gray-300'
+					} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-main focus:border-main`}
+				>
+					<option value={Gender.Male}>Nam</option>
+					<option value={Gender.Female}>Nữ</option>
+				</select>
+			</div>
+
+			{/* Đồng ý điều khoản (Agree to terms) */}
+			<div className='mb-4 mt-2'>
+				<label
+					className={`flex items-center gap-2 text-gray-700'
+					`}
+				>
+					<input
+						type='checkbox'
+						name='agreeToTerms'
+						checked={form.agreeToTerms}
+						onChange={handleChange}
+						className={`w-4 h-4`}
+					/>
+					<span>Tôi đồng ý với điều khoản dịch vụ</span>
+				</label>
+				{errors.agreeToTerms && (
+					<p className='text-red-500 text-sm mt-1'>
+						{errors.agreeToTerms.errors[0]}
+					</p>
+				)}
+			</div>
+
+			<SubmitButton buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
 		</form>
 	)
 }
@@ -205,3 +277,5 @@ export const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
 		</motion.button>
 	)
 }
+
+export default RegisterForm
