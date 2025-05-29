@@ -2,11 +2,16 @@ import { z } from 'zod/v4'
 import { Account } from '../Types/Account'
 
 export type RegisterFormData =
-	| Pick<Account, 'firstName' | 'lastName' | 'dateOfBirth' | 'email'> & {
+	| Omit<Account, 'id' | 'role' | 'avatarUrl' | 'deletedAt' | 'isDeleted'> & {
 			password: string
 			confirmPassword: string
 			agreeToTerms: boolean
 	  }
+
+export type RegisterAPI = Omit<
+	RegisterFormData,
+	'agreeToTerms' | 'confirmPassword'
+>
 
 export const RegisterFormSchema = z
 	.object({
