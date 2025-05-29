@@ -1,12 +1,12 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Domain.Abstractions;
 
 public interface IApplicationDbContext
 {
     public DbSet<Account> Accounts { get; set; }
-
     public DbSet<Appointment> Appointments { get; set; }
 
     public DbSet<BirthControl> BirthControls { get; set; }

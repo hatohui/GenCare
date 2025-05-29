@@ -57,10 +57,11 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
 
     public virtual DbSet<Tag> Tags { get; set; }
 
-    public Task<int> SaveChangesAsync()
+    public async Task<int> SaveChangesAsync()
     {
-        return base.SaveChangesAsync();
+        return await base.SaveChangesAsync();
     }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
