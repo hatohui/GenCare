@@ -1,13 +1,16 @@
-// import { useRouter } from 'next/router'
-// import { useEffect } from 'react'
+import { Account } from '@/Interfaces/Auth/Types/Account'
+import { create } from 'zustand'
 
-// export const useToken = () => {
-// 	const router = useRouter()
+export type AccountStore = {
+	account: Account | null
+	setAccount: (newAccount: Account) => void
+}
 
-// 	useEffect(() => {
-// 		const { token } = router.query
+const useAccountStore = create<AccountStore>(set => ({
+	account: null,
+	setAccount: (newAccount: Account) =>
+		set(state => ({ ...state, account: newAccount })),
+	removeAccount: () => set(state => ({ ...state, account: null })),
+}))
 
-// 	})
-// 	const token = 'thisisdefinitelyatoken'
-// 	return token
-// }
+export default useAccountStore

@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { registerUser } from '@/Services/auth-service'
 import z4 from 'zod/v4'
 import { useFormStatus } from 'react-dom'
 import {
@@ -10,19 +9,27 @@ import {
 } from '@/Interfaces/Auth/Schema/register'
 import { motion } from 'motion/react'
 import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
+import { Gender } from '@/Enums/Gender'
 
 type RegisterFormProps = keyof RegisterFormData
 
-export default function RegisterPage() {
+export type RegisterComponentProps = {
+	handleRegister: (data: RegisterFormData) => void
+}
+
+const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
 		lastName: '',
 		dateOfBirth: '2000-01-01',
 		email: '',
+		gender: Gender.Male,
+		phoneNumber: '',
 		password: '',
 		confirmPassword: '',
 		agreeToTerms: false,
 	})
+
 	const [errors, setErrors] = useState<Record<string, FloatingLabelErrorData>>(
 		{}
 	)
@@ -94,7 +101,7 @@ export default function RegisterPage() {
 
 		if (isValid) {
 			try {
-				await registerUser(form)
+				await handleRegister(form)
 				alert('success!')
 				//! HANDLE REGISTERING DATA
 			} catch (error) {
@@ -205,3 +212,5 @@ export const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
 		</motion.button>
 	)
 }
+
+export default RegisterForm

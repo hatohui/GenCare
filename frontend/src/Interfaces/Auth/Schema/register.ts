@@ -29,12 +29,15 @@ export const RegisterFormSchema = z
 				message: 'Trong mục họ không được có kí tự đặc biệt',
 			}),
 
-		dateOfBirth: z
-			.string()
-			.date()
-			.min(1, { message: 'Ngày sinh là mục bắt buộc' }),
+		dateOfBirth: z.iso.datetime({ message: 'Ngày sinh là mục bắt buộc' }),
 
-		email: z.string().email({ message: 'Email không hợp lệ' }),
+		email: z.email({ message: 'Email không hợp lệ' }),
+
+		gender: z.boolean(),
+
+		phoneNumber: z.string().regex(/^(0|\+84)(\s?[2-9])+([0-9]{8})\b/, {
+			message: 'Số điện thoại không hợp lệ',
+		}),
 
 		password: z
 			.string()
