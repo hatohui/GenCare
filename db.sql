@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "account" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "role_id" UUID NOT NULL,
     "email" VARCHAR(255) NOT NULL UNIQUE,
-    "password_hash" TEXT NOT NULL,
+    "password_hash" TEXT ,
     "first_name" VARCHAR(100),
     "last_name" VARCHAR(100),
     "phone" VARCHAR(20),
