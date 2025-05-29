@@ -1,14 +1,16 @@
 ﻿using System.Text;
 using API.Middlewares;
-using Application.Repositories.Implementations;
-using Application.Repositories.Interfaces;
-using Application.Services.Implementations;
-using Application.Services.Interfaces;
+using Application.Repositories;
+using Application.Services;
 using DotNetEnv;
+using Infrastructure.Data.Context;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Web.Middlewares;
@@ -97,6 +99,22 @@ builder.Services.AddAuthentication(options =>
 // ====== Application Services ======
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+var env = builder.Environment;
+
+builder.Services.AddDbContext<GenCareDbContext>(options =>
+{
+    string connectionString = env.IsDevelopment()
+        ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
+        : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD");
+
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("Missing connection string for the current environment.");
+    }
+
+    options.UseNpgsql(connectionString);
+});
+
 // Thêm các service khác nếu có
 
 var app = builder.Build();
