@@ -1,17 +1,28 @@
-import { LoginData } from '@/Interfaces/Auth/Schema/login'
-import { RegisterFormData } from '@/Interfaces/Auth/Schema/register'
-import axios, { AxiosResponse } from 'axios'
+import { DEFAULT_API_URL } from '@/Constants/API'
+import { LoginAPI } from '@/Interfaces/Auth/Schema/login'
+import { RegisterAPI } from '@/Interfaces/Auth/Schema/register'
+import { TokenData } from '@/Interfaces/Auth/Schema/token'
+import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
 
-const baseUrl = 'https://66fd4486c3a184a84d19c340.mockapi.io/'
+const AUTH_URL = `${DEFAULT_API_URL}/auth`
 
-export const registerUser = async (
-	data: RegisterFormData
-): Promise<AxiosResponse> => {
-	const response = await axios.post(`${baseUrl}/users`, data)
-	return response
+const authApi = {
+	register: (data: RegisterAPI) =>
+		axios.post<TokenData>(`${AUTH_URL}/register`, data).then(res => res.data),
+
+	login: (data: LoginAPI) =>
+		axios.post<TokenData>(`${AUTH_URL}/login`, data).then(res => res.data),
 }
 
-export const loginUser = async (data: LoginData): Promise<AxiosResponse> => {
-	const response = await axios.post(`${baseUrl}/login`, data)
-	return response
+export const useRegisterAccount = () => {
+	return useMutation({
+		mutationFn: authApi.register,
+	})
+}
+
+export const useLoginAccount = () => {
+	return useMutation({
+		mutationFn: authApi.login,
+	})
 }

@@ -2,11 +2,16 @@ import { z } from 'zod/v4'
 import { Account } from '../Types/Account'
 
 export type RegisterFormData =
-	| Pick<Account, 'firstName' | 'lastName' | 'dateOfBirth' | 'email'> & {
+	| Omit<Account, 'id' | 'role' | 'avatarUrl' | 'deletedAt' | 'isDeleted'> & {
 			password: string
 			confirmPassword: string
 			agreeToTerms: boolean
 	  }
+
+export type RegisterAPI = Omit<
+	RegisterFormData,
+	'agreeToTerms' | 'confirmPassword'
+>
 
 export const RegisterFormSchema = z
 	.object({
@@ -24,12 +29,15 @@ export const RegisterFormSchema = z
 				message: 'Trong mục họ không được có kí tự đặc biệt',
 			}),
 
-		dateOfBirth: z
-			.string()
-			.date()
-			.min(1, { message: 'Ngày sinh là mục bắt buộc' }),
+		dateOfBirth: z.coerce.date({ message: 'Ngày sinh là mục bắt buộc' }),
 
-		email: z.string().email({ message: 'Email không hợp lệ' }),
+		email: z.email({ message: 'Email không hợp lệ' }),
+
+		gender: z.number().min(0).max(1),
+
+		phoneNumber: z.string().regex(/^(0|\+84)(\s?[2-9])+([0-9]{8})\b/, {
+			message: 'Số điện thoại không hợp lệ',
+		}),
 
 		password: z
 			.string()
@@ -43,8 +51,7 @@ export const RegisterFormSchema = z
 	})
 	.refine(
 		data =>
-			data.password === data.confirmPassword &&
-			data.confirmPassword.length !== 0,
+			data.password === data.confirmPassword && data.confirmPassword !== '',
 		{
 			message: 'Mật khẩu không khớp',
 			path: ['confirmPassword'],
