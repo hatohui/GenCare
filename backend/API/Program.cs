@@ -2,6 +2,7 @@
 using API.Middlewares;
 using Application.Repositories;
 using Application.Services;
+using Domain.Abstractions;
 using DotNetEnv;
 using Infrastructure.Data.Context;
 using Infrastructure.Repositories;
@@ -118,6 +119,8 @@ builder.Services.AddCors(options =>
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
+
 var env = builder.Environment;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
