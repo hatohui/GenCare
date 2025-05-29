@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
+
 public class RefreshTokenRepository(IApplicationDbContext context) : IRefreshTokenRepository
 {
     public async Task AddAsync(RefreshToken refreshToken)
