@@ -11,7 +11,7 @@ namespace API.Controllers
     /// <remarks>
     /// Initializes a new instance of the <see cref="AuthController"/> class.
     /// </remarks>
-    /// <param name="authService">The authentication service.</param>
+    /// <param name="accountService">The authentication service.</param>
     [ApiController]
     [Route("api/auth")]
     public class AuthController(IAccountService accountService) : ControllerBase
@@ -24,7 +24,7 @@ namespace API.Controllers
         /// <response code="200">User registered successfully.</response>
         /// <response code="400">Bad request if the user data is invalid.</response>
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest request)
+        public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
         {
             var response = await accountService.RegisterAsync(request);
             return Ok(response);
@@ -38,7 +38,7 @@ namespace API.Controllers
         /// <response code="200">Successfully logged in and token generated.</response>
         /// <response code="400">Invalid credentials.</response>
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] UserLoginRequest request)
+        public async Task<IActionResult> LoginAsync([FromBody] AccountLoginRequest request)
         {
             var result = await accountService.LoginAsync(request);
             if (result is null)

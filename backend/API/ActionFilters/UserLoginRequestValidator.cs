@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.ActionFilters;
 
-public class UserLoginRequestValidator : AbstractValidator<UserLoginRequest>
+public class UserLoginRequestValidator : AbstractValidator<AccountLoginRequest>
 {
     public UserLoginRequestValidator()
     {
