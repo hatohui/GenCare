@@ -20,7 +20,7 @@ const Register = () => {
 			email: formData.email,
 			firstName: formData.firstName,
 			lastName: formData.lastName,
-			gender: formData.gender,
+			gender: Boolean(formData.gender),
 			phoneNumber: formData.phoneNumber,
 			dateOfBirth: formData.dateOfBirth,
 			password: formData.password,
