@@ -22,7 +22,7 @@ public class AccountService
             throw new Exception("User already exists");
         }
 
-        var role = await roleRepo.GetRoleByNameAsync("User") ?? throw new Exception("Role 'User' not found");
+        var role = await roleRepo.GetRoleByNameAsync("Member") ?? throw new Exception("Role 'Member' not found");
 
         // Tạo tài khoản mới
         var user = new Account
