@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.DTOs.Auth.Responses;
-public class AccountRegisterResponse
+public class UserRegisterResponse
 {
     public string AccessToken { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;

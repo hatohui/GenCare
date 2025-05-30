@@ -4,18 +4,17 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
 public class AccountService
-(
+    (
     IAccountRepository accountRepo,
-    IRefreshTokenRepository refTokenRepo, 
+    IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo
-) : IAccountService
+    ) : IAccountService
 {
-    public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
+    public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
     {
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
@@ -23,7 +22,7 @@ public class AccountService
             throw new Exception("User already exists");
         }
 
-        var role = await roleRepo.GetRoleByNameAsync("Member") ?? throw new Exception("Role 'User' not found");
+        var role = await roleRepo.GetRoleByNameAsync("User") ?? throw new Exception("Role 'User' not found");
 
         // Tạo tài khoản mới
         var user = new Account
@@ -52,7 +51,7 @@ public class AccountService
 
         var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, role.Name);
 
-        return new AccountRegisterResponse
+        return new UserRegisterResponse
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
@@ -60,9 +59,9 @@ public class AccountService
         };
     }
 
-    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
+    public async Task<UserLoginResponse?> LoginAsync(UserLoginRequest request)
     {
-        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password) ?? throw new InvalidCredentialsException();
+        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password) ?? throw new Exception("Invalid email or password");
         //create access and refresh tokens
         var (accessToken, accessTokenExpiration) =
             JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
@@ -78,7 +77,7 @@ public class AccountService
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new AccountLoginResponse
+        return new()
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,

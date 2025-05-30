@@ -50,10 +50,6 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         {
             await WriteProblemDetailsAsync(context, 502, "External Request Failed", httpEx.Message);
         }
-        catch (InvalidCredentialsException ex)
-        {
-            await WriteProblemDetailsAsync(context, 401, "Authentication Failed", ex.Message);
-        }
         catch (Exception ex) // Catch all fallbacks
         {
             logger.LogError(ex, "Unhandled exception");
