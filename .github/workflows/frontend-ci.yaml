@@ -12,7 +12,7 @@ on:
       - "frontend/**"
 
 jobs:
-  pipeline:
+  fe-ci:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.body, '#skip') }}
     steps:

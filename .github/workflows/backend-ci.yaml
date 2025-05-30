@@ -13,7 +13,7 @@ env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/gencare-backend
 
 jobs:
-  pipeline:
+  be-ci:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.body, '#skip') }}
 
