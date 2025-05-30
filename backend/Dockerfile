@@ -25,7 +25,7 @@ WORKDIR /src/API
 # Publish the app, allowing restore if needed as a fallback
 RUN dotnet publish -c Release -o /app/publish --packages /src/.nuget/packages
 
-# Runtime stage
+# Runtime stage e
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
 ENV ASPNETCORE_URLS=http://+:8080 \
