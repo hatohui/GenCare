@@ -4,52 +4,53 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Infrastructure.Repositories;
 
 namespace Infrastructure.Services;
 
-public class AccountService(IAccountRepository accountRepo, IRoleRepository roleRepo, IRefreshTokenRepository refTokenRepo) : IAccountService
+public class AccountService
+    (
+    IAccountRepository accountRepo,
+    IRefreshTokenRepository refTokenRepo,
+    IRoleRepository roleRepo
+    ) : IAccountService
 {
- 
     public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
     {
-        // Validate the request
-        var existtingUser = accountRepo.GetByEmailAsync(request.Email);
-        if (existtingUser.Result is not null)
+        var existingUser = await accountRepo.GetByEmailAsync(request.Email);
+        if (existingUser is not null)
         {
             throw new Exception("User already exists");
         }
-        if (request.Password != request.ConfirmedPassword)
+
+        var role = await roleRepo.GetRoleByNameAsync("User") ?? throw new Exception("Role 'User' not found");
+
+        // Tạo tài khoản mới
+        var user = new Account
         {
-            throw new Exception("Passwords do not match");
-        }
-        //create the user and hash password
-        var user = new Account()
-        {
-            RoleId = roleRepo.GetRoleByNameAsync("Member").Result!.Id,
-            Gender = false,
+            Gender = request.Gender,
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
             PasswordHash = PasswordHasher.Hash(request.Password),
             DateOfBirth = request.DateOfBirth,
-
+            Phone = request.PhoneNumber,
+            RoleId = role.Id,
+            Role = role
         };
-        // Save the user to the database
+
         await accountRepo.AddAsync(user);
-        //create refresh token for user
+
         var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-        RefreshToken rf = new()
+        var rf = new RefreshToken
         {
             AccountId = user.Id,
             Token = refToken,
             ExpiresAt = refExpiration
         };
-        //add refresh token to database
         await refTokenRepo.AddAsync(rf);
-        //create access token
-        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
-        // Return the response
+
+        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, role.Name);
+
         return new UserRegisterResponse
         {
             RefreshToken = rf.Token,
@@ -60,18 +61,14 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
 
     public async Task<UserLoginResponse?> LoginAsync(UserLoginRequest request)
     {
-        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password);
-        if (user is null)
-        {
-            throw new Exception("Invalid email or password");
-        }
+        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password) ?? throw new Exception("Invalid email or password");
         //create access and refresh tokens
         var (accessToken, accessTokenExpiration) =
             JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
         var (refreshToken, refreshTokenExpiration) =
             JwtHelper.GenerateRefreshToken(user.Id);
         //add refresh token to database
-        
+
         RefreshToken rf = new()
         {
             AccountId = user.Id,
@@ -80,11 +77,11 @@ public class AccountService(IAccountRepository accountRepo, IRoleRepository role
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new UserLoginResponse()
+        return new()
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken 
+            RefreshToken = refreshToken
         };
     }
 }
