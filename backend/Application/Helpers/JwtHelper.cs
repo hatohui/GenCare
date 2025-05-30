@@ -179,11 +179,11 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             return principal.FindFirst("type")?.Value ?? string.Empty;
         }
 
-        /// <summary>
+        /// <summary>S
         /// Generate a new Access Token using a valid Refresh Token.
         /// </summary>
         /// <param name="refreshToken">The refresh token to validate and use for generating a new access token.</param>
-/// <param name="accessTokenExpiresInMinutes">Access token expiration time in minutes (default is 60 minutes).</param>
+        /// <param name="accessTokenExpiresInMinutes">Access token expiration time in minutes (default is 60 minutes).</param>
         /// <returns>New access token and its expiration time as a tuple if refresh token is valid; otherwise, throws an exception.</returns>
         public static (string AccessToken, DateTime AccessTokenExpiration) GenerateNewAccessTokenFromRefreshToken(string refreshToken, int accessTokenExpiresInMinutes = 60)
         {

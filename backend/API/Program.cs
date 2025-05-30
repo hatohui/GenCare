@@ -57,7 +57,7 @@ builder.Services.AddSwaggerGen(options =>
     );
 });
 
-// ====== JWT + Google Authentication ======
+// ============================================ JWT + Google Authentication ============================================
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "JWT_KEY is missing";
 var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "default_issuer";
 var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "default_audience";
@@ -97,15 +97,14 @@ builder
         options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
 
-// ====== CORS Configuration ======
+//================================================= CORS Configuration =================================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         "AllowAll",
-        builder =>
+        corsPolicyBuilder =>
         {
-            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-            // Không dùng AllowCredentials với AllowAnyOrigin
+            corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         }
     );
 });
@@ -113,18 +112,16 @@ builder.Services.AddCors(options =>
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// ====== Application Services ======
+//================================================ Application Services ================================================
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-var env = builder.Environment;
-
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    var connectionString = (env.IsDevelopment()
+    var connectionString = (builder.Environment.IsDevelopment()
         ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
         : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")) ?? string.Empty;
 
@@ -138,7 +135,7 @@ builder.Services.AddDbContext<GenCareDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
-// ====== App Pipeline ======
+//==================================================== App Pipeline ====================================================
 var app = builder.Build();
 
 // 1. Swagger UI
@@ -160,7 +157,7 @@ app.UseHttpsRedirection();
 // 5. CORS
 app.UseCors("AllowAll");
 
-// 6. Rate Limiting Middleware (nếu bạn có)
+// 6. Rate Limiting Middleware
 app.UseMiddleware<RateLimitMiddleware>();
 
 // 7. Authentication & Authorization
