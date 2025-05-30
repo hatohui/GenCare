@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class RefreshToken
+public class RefreshToken
 {
     public Guid Id { get; set; }
 
@@ -17,5 +14,5 @@ public   class RefreshToken
 
     public DateTime ExpiresAt { get; set; }
 
-    public   Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Common.BaseEntities;
 
-public class Account
+namespace Domain.Entities;
+
+public class Account : SoftDeletableEntity
 {
     public Guid Id { get; set; }
 
@@ -19,25 +21,11 @@ public class Account
     public DateOnly? DateOfBirth { get; set; }
 
     /// <summary>
-    /// TRUE = male, FALSE = female
+    ///     TRUE = male, FALSE = female
     /// </summary>
     public bool Gender { get; set; }
 
     public string? AvatarUrl { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public Guid? CreatedBy { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
-
-    public Guid? UpdatedBy { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedBy { get; set; }
-
-    public bool IsDeleted { get; set; }
 
     public ICollection<Appointment> AppointmentMember { get; set; } = [];
 

@@ -2,11 +2,11 @@
 
 public class RateLimitMiddleware(RequestDelegate next)
 {
-    private int requestCounter = 0;
+    private int requestCounter;
     private DateTime startTime = DateTime.Now;
     private readonly int maxRequests = 10;
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         var currentTime = DateTime.Now;
         var elapsedSeconds = (currentTime - startTime).TotalSeconds;

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class Feedback
+public class Feedback
 {
     public Guid Id { get; set; }
 
@@ -17,5 +14,5 @@ public   class Feedback
 
     public Guid ServiceId { get; set; }
 
-    public   Service Service { get; set; } = null!;
+    public Service Service { get; set; } = null!;
 }

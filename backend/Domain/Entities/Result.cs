@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class Result
+public class Result
 {
     public Guid OrderDetailId { get; set; }
 
@@ -19,5 +16,5 @@ public   class Result
 
     public DateTime? UpdatedAt { get; set; }
 
-    public   OrderDetail OrderDetail { get; set; } = null!;
+    public OrderDetail OrderDetail { get; set; } = null!;
 }
