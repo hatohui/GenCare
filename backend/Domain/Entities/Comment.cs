@@ -1,9 +1,11 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Common.BaseEntities;
+
+namespace Domain.Entities;
 
 /// <summary>
-/// Save comments for blog posts
+///     Save comments for blog posts
 /// </summary>
-public class Comment
+public class Comment : SoftDeletableEntity
 {
     public Guid Id { get; set; }
 
@@ -12,18 +14,6 @@ public class Comment
     public Guid BlogId { get; set; }
 
     public Guid AccountId { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public Guid? CreatedBy { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
-
-    public Guid? UpdatedBy { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedBy { get; set; }
 
     public Account Account { get; set; } = null!;
 

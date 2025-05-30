@@ -56,7 +56,10 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
 
     public virtual DbSet<Tag> Tags { get; set; }
 
-    public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
+    public async Task<int> SaveChangesAsync()
+    {
+        return await base.SaveChangesAsync();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -408,7 +411,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+            entity.Property(e => e.UpdatedBy).HasColumnName("update_by");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
