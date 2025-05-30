@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 /// <summary>
 /// Save comments for blog posts
 /// </summary>
-public   class Comment
+public class Comment
 {
     public Guid Id { get; set; }
 
@@ -28,13 +25,13 @@ public   class Comment
 
     public Guid? DeletedBy { get; set; }
 
-    public   Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 
-    public   Blog Blog { get; set; } = null!;
+    public Blog Blog { get; set; } = null!;
 
-    public   Account? CreatedByNavigation { get; set; }
+    public Account? CreatedByNavigation { get; set; }
 
-    public   Account? DeletedByNavigation { get; set; }
+    public Account? DeletedByNavigation { get; set; }
 
-    public   Account? UpdatedByNavigation { get; set; }
+    public Account? UpdatedByNavigation { get; set; }
 }

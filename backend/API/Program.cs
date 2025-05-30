@@ -16,8 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-//
-
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,21 +97,6 @@ builder
         options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
 
-// ====== CORS Configuration ======
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(
-        "AllowFrontendOrigins",
-        corsPolicyBuilder =>
-        {
-            corsPolicyBuilder
-                .WithOrigins("http://localhost:3000", "https://www.gencare.site")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        }
-    );
-});
-
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
@@ -123,6 +106,7 @@ builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 
 var env = builder.Environment;
 
@@ -165,7 +149,12 @@ app.UseMiddleware<LoggingMiddleware>();
 app.UseHttpsRedirection();
 
 // 5. CORS
-app.UseCors("AllowAll");
+app.UseCors(options =>
+{
+    options.WithOrigins("http://localhost:3000", "https://www.gencare.site", "http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+});
 
 // 6. Rate Limiting Middleware (nếu bạn có)
 app.UseMiddleware<RateLimitMiddleware>();

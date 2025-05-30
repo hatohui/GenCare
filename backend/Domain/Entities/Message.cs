@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class Message
+public class Message
 {
     public Guid Id { get; set; }
 
@@ -19,5 +16,5 @@ public   class Message
 
     public string Content { get; set; } = null!;
 
-    public   Conversation Conversation { get; set; } = null!;
+    public Conversation Conversation { get; set; } = null!;
 }

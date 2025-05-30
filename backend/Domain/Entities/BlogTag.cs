@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 /// <summary>
 /// Join table for many-to-many relationship between blogs and tags
 /// </summary>
-public   class BlogTag
+public class BlogTag
 {
     public Guid BlogId { get; set; }
 
@@ -24,13 +21,13 @@ public   class BlogTag
 
     public Guid? DeletedBy { get; set; }
 
-    public   Blog Blog { get; set; } = null!;
+    public Blog Blog { get; set; } = null!;
 
-    public   Account? CreatedByNavigation { get; set; }
+    public Account? CreatedByNavigation { get; set; }
 
-    public   Account? DeletedByNavigation { get; set; }
+    public Account? DeletedByNavigation { get; set; }
 
-    public   Tag Tag { get; set; } = null!;
+    public Tag Tag { get; set; } = null!;
 
-    public   Account? UpdatedByNavigation { get; set; }
+    public Account? UpdatedByNavigation { get; set; }
 }

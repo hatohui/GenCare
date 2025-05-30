@@ -3,7 +3,7 @@
 /// <summary>
 /// Table for storing blog posts
 /// </summary>
-public   class Blog
+public class Blog
 {
     public Guid Id { get; set; }
 
@@ -27,7 +27,7 @@ public   class Blog
 
     public Guid? DeletedBy { get; set; }
 
-    public   ICollection<BlogTag> BlogTag { get; set; } = [];
+    public ICollection<BlogTag> BlogTag { get; set; } = [];
 
-    public   ICollection<Comment> Comment { get; set; } = [];
+    public ICollection<Comment> Comment { get; set; } = [];
 }

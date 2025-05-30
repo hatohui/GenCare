@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public   class Service
+public class Service
 {
     public Guid Id { get; set; }
 
@@ -22,7 +22,7 @@ public   class Service
 
     public bool IsDeleted { get; set; }
 
-    public   ICollection<Feedback> Feedback { get; set; } = [];
+    public ICollection<Feedback> Feedback { get; set; } = [];
 
-    public   ICollection<OrderDetail> OrderDetail { get; set; } = [];
+    public ICollection<OrderDetail> OrderDetail { get; set; } = [];
 }

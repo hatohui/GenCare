@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public   class Purchase
+public class Purchase
 {
     public Guid Id { get; set; }
 
@@ -14,9 +14,9 @@ public   class Purchase
 
     public Guid? DeletedBy { get; set; }
 
-    public   Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 
-    public   ICollection<OrderDetail> OrderDetail { get; set; } = [];
+    public ICollection<OrderDetail> OrderDetail { get; set; } = [];
 
-    public   PaymentHistory? PaymentHistory { get; set; }
+    public PaymentHistory? PaymentHistory { get; set; }
 }

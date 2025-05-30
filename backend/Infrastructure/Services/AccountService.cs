@@ -14,7 +14,7 @@ public class AccountService
     IRoleRepository roleRepo
     ) : IAccountService
 {
-    public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
+    public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
     {
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
@@ -51,7 +51,7 @@ public class AccountService
 
         var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, role.Name);
 
-        return new UserRegisterResponse
+        return new AccountRegisterResponse
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
@@ -59,7 +59,7 @@ public class AccountService
         };
     }
 
-    public async Task<UserLoginResponse?> LoginAsync(UserLoginRequest request)
+    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
     {
         var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password) ?? throw new Exception("Invalid email or password");
         //create access and refresh tokens

@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public   class Department
+public class Department
 {
     public Guid Id { get; set; }
 
@@ -8,5 +8,5 @@ public   class Department
 
     public string Description { get; set; } = null!;
 
-    public   ICollection<StaffInfo> StaffInfo { get; set; } = [];
+    public ICollection<StaffInfo> StaffInfo { get; set; } = [];
 }

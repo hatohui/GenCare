@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Context;
 
@@ -57,21 +56,14 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
 
     public virtual DbSet<Tag> Tags { get; set; }
 
-    public async Task<int> SaveChangesAsync()
-    {
-        return await base.SaveChangesAsync();
-    }
+    public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .HasPostgresEnum("appointment_status", new[] { "booked", "cancelled", "completed" })
-            .HasPostgresEnum("payment_history_status", new[] { "pending", "paid", "expired" })
-            .HasPostgresEnum("payment_method_status", new[] { "card", "momo", "bank" })
+            .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])
+            .HasPostgresEnum("payment_history_status", ["pending", "paid", "expired"])
+            .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"])
             .HasPostgresExtension("pgcrypto");
 
         modelBuilder.Entity<Account>(entity =>

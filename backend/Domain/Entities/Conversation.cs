@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public   class Conversation
+public class Conversation
 {
     public Guid Id { get; set; }
 
@@ -12,9 +12,9 @@ public   class Conversation
 
     public bool Status { get; set; }
 
-    public   Account Member { get; set; } = null!;
+    public Account Member { get; set; } = null!;
 
-    public   ICollection<Message> Message { get; set; } = [];
+    public ICollection<Message> Message { get; set; } = [];
 
-    public   Account Staff { get; set; } = null!;
+    public Account Staff { get; set; } = null!;
 }
