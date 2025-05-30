@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.Auth.Request;
+﻿namespace Application.DTOs.Auth.Requests;
 
 public class RefreshTokenRequest
 {
