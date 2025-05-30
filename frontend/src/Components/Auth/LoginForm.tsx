@@ -4,11 +4,15 @@ import { motion } from 'motion/react'
 import useInput from '@/Hooks/Form/useInput'
 import MotionCheckbox from '../Form/MotionCheckbox'
 import { loginSchema } from '@/Interfaces/Auth/Schema/login'
-import { ZodError } from 'zod'
+import { ZodError } from 'zod/v4'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 
-const LoginForm = () => {
+export type LoginComponentProps = {
+	handleLogin: (data: { email: string; password: string }) => void
+}
+
+const LoginForm = ({handleLogin} : LoginComponentProps  ) => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
@@ -23,26 +27,28 @@ const LoginForm = () => {
 	console.log(handleReset)
 	console.log(errors)
 
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 
 		try {
-			const parsed = loginSchema.parse({
+			const parsed = loginSchema.safeParse({
 				email: email.value,
 				password: password.value,
 			})
+			
 
-			console.log(parsed)
-
-			alert('Login successful!')
+			handleLogin({
+				email: parsed.data?.email as string,
+				password: parsed.data?.password as string,
+			})
 		} catch (err) {
 			if (err instanceof ZodError) {
-				const fieldErrors: Record<string, string> = {}
-				err.errors.forEach(e => {
-					if (e.path[0]) fieldErrors[e.path[0].toString()] = e.message
-				})
-
-				setErrors(fieldErrors)
+				setErrors(
+					Object.fromEntries(
+						err.issues.map(issue => [issue.path[0] as string, issue.message])
+					)
+				)
 			} else {
 				alert('Error occurred.')
 			}
