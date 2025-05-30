@@ -1,3 +1,5 @@
+'use client'
+
 import useAccountStore from '@/Hooks/useToken'
 import React from 'react'
 
