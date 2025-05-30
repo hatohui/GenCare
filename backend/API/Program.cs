@@ -16,6 +16,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+//
+
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,9 +128,12 @@ var env = builder.Environment;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    var connectionString = (env.IsDevelopment()
-        ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
-        : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")) ?? string.Empty;
+    var connectionString =
+        (
+            env.IsDevelopment()
+                ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
+                : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
+        ) ?? string.Empty;
 
     if (string.IsNullOrWhiteSpace(connectionString))
     {
