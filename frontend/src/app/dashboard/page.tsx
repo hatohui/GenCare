@@ -1,12 +1,19 @@
+import useAccountStore from '@/Hooks/useToken'
 import React from 'react'
 
-const page = () => {
+const DashBoard = () => {
+	const loggedInAccount = useAccountStore().account
+
+	if (!loggedInAccount) return <div>bugged</div>
+
 	return (
 		<div>
-			<div> Account id: abc</div>
-			<div> Account Name: abc</div>
+			<div> Account id: {loggedInAccount.id}</div>
+			<div>
+				Account Name: {loggedInAccount.lastName} {loggedInAccount.firstName}
+			</div>
 		</div>
 	)
 }
 
-export default page
+export default DashBoard

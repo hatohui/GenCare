@@ -3,22 +3,17 @@
 import LoginForm from '@/Components/Auth/LoginForm'
 import { LoginAPI } from '@/Interfaces/Auth/Schema/login'
 import { useLoginAccount } from '@/Services/auth-service'
-import { setCookie } from 'cookies-next/client'
-
+import { setAccessToken } from '@/Utils/setAccessToken'
 import { useRouter } from 'next/navigation'
-export default function Login() {
 
+export default function Login() {
 	const router = useRouter()
 	const loginMutation = useLoginAccount()
 
 	const handleLogin = (formData: LoginAPI) => {
 		loginMutation.mutate(formData, {
 			onSuccess: data => {
-				setCookie('accessToken', data.accessToken, {
-					sameSite: 'strict',
-					maxAge: data.accessTokenExpiration.getUTCSeconds(),
-				})
-				setCookie('refreshToken', data.refreshToken)
+				setAccessToken(data)
 				router.push('/dashboard')
 			},
 			onError: error => {

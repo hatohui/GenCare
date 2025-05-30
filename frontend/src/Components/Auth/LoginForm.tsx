@@ -12,7 +12,7 @@ export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
 }
 
-const LoginForm = ({handleLogin} : LoginComponentProps  ) => {
+const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
@@ -27,7 +27,6 @@ const LoginForm = ({handleLogin} : LoginComponentProps  ) => {
 	console.log(handleReset)
 	console.log(errors)
 
-
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 
@@ -36,7 +35,6 @@ const LoginForm = ({handleLogin} : LoginComponentProps  ) => {
 				email: email.value,
 				password: password.value,
 			})
-			
 
 			handleLogin({
 				email: parsed.data?.email as string,
