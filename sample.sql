@@ -15,11 +15,11 @@ INSERT INTO "department" (name, description) VALUES
 -- Lưu ý: cần insert role_id là UUID tham chiếu đến bảng role đã được sinh ra ở bước trên, có thể dùng subquery hoặc lấy id theo thứ tự.
 INSERT INTO "account" (role_id, email, password_hash, first_name, last_name, phone, date_of_birth, gender, avatar_url, created_at, is_deleted)
 VALUES
-  ((SELECT id FROM "role" WHERE name = 'admin'), 'admin@example.com', 'hashed_admin', 'Alice', 'Admin', '1234567890', '1980-01-01', TRUE, NULL, NOW(), FALSE),
-  ((SELECT id FROM "role" WHERE name = 'staff'), 'staff1@example.com', 'hashed_staff1', 'Bob', 'Staff', '0987654321', '1990-02-02', TRUE, NULL, NOW(), FALSE),
-  ((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant1@example.com', 'hashed_consultant1', 'Tom', 'Consultant', '1231231234', '1987-07-07', TRUE, NULL, NOW(), FALSE),
-  ((SELECT id FROM "role" WHERE name = 'member'), 'member1@example.com', 'hashed_member1', 'David', 'Member', '2233445566', '2000-04-04', TRUE, NULL, NOW(), FALSE),
-  ((SELECT id FROM "role" WHERE name = 'manager'), 'manager1@example.com', 'hashed_manager1', 'Eve', 'Manager', '5556667777', '1982-08-08', FALSE, NULL, NOW(), FALSE);
+  ((SELECT id FROM "role" WHERE name = 'admin'), 'admin@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Alice', 'Admin', '1234567890', '1980-01-01', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'staff'), 'staff1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Bob', 'Staff', '0987654321', '1990-02-02', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Tom', 'Consultant', '1231231234', '1987-07-07', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'member'), 'member1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'David', 'Member', '2233445566', '2000-04-04', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'manager'), 'manager1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Eve', 'Manager', '5556667777', '1982-08-08', FALSE, NULL, NOW(), FALSE);
 
 
 -- 4. refresh_token
