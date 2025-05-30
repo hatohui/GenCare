@@ -8,6 +8,6 @@ public class RoleRepository(IApplicationDbContext context) : IRoleRepository
 {
     public async Task<Role?> GetRoleByNameAsync(string name)
     {
-        return await context.Roles.FirstOrDefaultAsync(r => r.Name == name);
+        return await context.Roles.FirstOrDefaultAsync(r => string.Equals(r.Name, name, StringComparison.Ordinal));
     }
 }

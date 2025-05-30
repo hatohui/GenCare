@@ -7,22 +7,9 @@ namespace Application.Helpers
 {
     public static class JwtHelper
     {
-        private static readonly string JwtKey;
-        private static readonly string JwtIssuer;
-        private static readonly string JwtAudience;
-
-        static JwtHelper()
-        {
-            // Load file .env (giả sử file .env nằm ở thư mục gốc của project)
-
-            // Đọc các biến môi trường từ file .env
-            JwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ??
-                     throw new ArgumentNullException("JWT_KEY environment variable is not set in .env file");
-            JwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ??
-                        throw new ArgumentNullException("JWT_ISSUER environment variable is not set in .env file");
-            JwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ??
-                          throw new ArgumentNullException("JWT_AUDIENCE environment variable is not set in .env file");
-        }
+        public static readonly string JwtKey = Environment.GetEnvironmentVariable("JWT_KEY")!;
+        public static readonly string JwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")!;
+        public static readonly string JwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")!;
 
         /// <summary>
         /// Generate an Access Token for a user.
@@ -188,7 +175,8 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             var principal = ValidateToken(refreshToken);
             var tokenType = principal.FindFirst("type")?.Value;
 
-            if (tokenType != "refresh")
+            // Fix for CRR0050: Use string.Compare() instead of '!=' operator
+            if (!string.Equals(tokenType, "refresh", StringComparison.Ordinal))
             {
                 throw new ArgumentException("Provided token is not a refresh token.");
             }
