@@ -4,7 +4,7 @@ const page = () => {
 	return (
 		<div>
 			<div> Account id: abc</div>
-			<div> Account Name: abc</div>
+			<div> Account Name: abdc</div>
 		</div>
 	)
 }
