@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace API.ActionFilters;
 
-public class UserLoginRequestValidator : AbstractValidator<AccountLoginRequest>
+public class AccountLoginRequestValidator : AbstractValidator<UserLoginRequest>
 {
-    public UserLoginRequestValidator()
+    public AccountLoginRequestValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email is required.")

@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Auth.Requests;
 
-public record class AccountRegisterRequest
+public record class UserRegisterRequest
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
