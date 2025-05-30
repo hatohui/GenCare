@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace API.ActionFilters;
 
-public class UserRegisterRequestValidator : AbstractValidator<UserRegisterRequest>
+public class AccountRegisterRequestValidator : AbstractValidator<UserRegisterRequest>
 {
-    public UserRegisterRequestValidator()
+    public AccountRegisterRequestValidator()
     {
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required.")

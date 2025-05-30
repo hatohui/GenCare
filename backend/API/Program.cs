@@ -101,11 +101,13 @@ builder
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowAll",
-        builder =>
+        "AllowFrontendOrigins",
+        corsPolicyBuilder =>
         {
-            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-            // Không dùng AllowCredentials với AllowAnyOrigin
+            corsPolicyBuilder
+                .WithOrigins("http://localhost:3000", "https://www.gencare.site")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         }
     );
 });
