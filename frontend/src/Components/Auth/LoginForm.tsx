@@ -7,6 +7,7 @@ import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod/v4'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
+import GoogleLoginButton from './GoogleLoginButton'
 
 export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
@@ -78,6 +79,8 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 				</button>
 			</form>
 			<div className='text-gray-500 text-sm'>Quên mật khẩu? </div>
+
+			<GoogleLoginButton />
 		</motion.div>
 	)
 }
