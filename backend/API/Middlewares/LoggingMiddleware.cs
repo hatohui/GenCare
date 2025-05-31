@@ -1,9 +1,14 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace API.Middlewares;
 
 public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
 {
+    /// <summary>
+    /// Processes an HTTP request, logging its start, completion, and any exceptions, along with timing and status information.
+    /// </summary>
+    /// <param name="context">The current HTTP context for the request.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task InvokeAsync(HttpContext context)
     {
         var sw = Stopwatch.StartNew();
