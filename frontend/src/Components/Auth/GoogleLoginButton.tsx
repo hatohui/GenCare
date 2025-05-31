@@ -1,7 +1,12 @@
 import { useOauthAccount } from '@/Services/auth-service'
+import { setAccessToken } from '@/Utils/setAccessToken'
 import { useEffect } from 'react'
 
-export default function GoogleLoginButton() {
+export default function GoogleLoginButton({
+	className = '',
+}: {
+	className?: string
+}) {
 	const handleOauth = useOauthAccount()
 	const handleCredentialResponse = (response: string) => {
 		handleOauth.mutate(
@@ -9,7 +14,8 @@ export default function GoogleLoginButton() {
 			{
 				onSuccess: data => {
 					console.log('OAuth successful:', data)
-					// Handle successful OAuth login, e.g., redirect or show success message
+
+					setAccessToken(data)
 				},
 				onError: error => {
 					console.error('OAuth error:', error)
@@ -22,18 +28,18 @@ export default function GoogleLoginButton() {
 	useEffect(() => {
 		if (typeof window === 'undefined') return
 
-		// @ts-ignore
+		// @ts-expect-error google exist
 		window.google?.accounts.id.initialize({
 			client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
 			callback: handleCredentialResponse,
 		})
 
-		// @ts-ignore
+		// @ts-expect-error google exist liao
 		window.google?.accounts.id.renderButton(
 			document.getElementById('google-signin-button'),
 			{ theme: 'outline', size: 'large' }
 		)
 	}, [])
 
-	return <div id='google-signin-button' />
+	return <div id='google-signin-button' className={className} />
 }

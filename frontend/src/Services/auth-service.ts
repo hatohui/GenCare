@@ -16,7 +16,7 @@ const authApi = {
 		axios.post<TokenData>(`${AUTH_URL}/login`, data).then(res => res.data),
 	Oauth: (data: OauthAPI) =>
 		axios
-			.post<TokenData>(`${AUTH_URL}/oauth`, {
+			.post<TokenData>(`${AUTH_URL}/google`, {
 				credential: data.credential,
 			})
 			.then(res => res.data),
