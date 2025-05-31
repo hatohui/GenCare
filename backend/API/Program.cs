@@ -162,12 +162,7 @@ app.UseMiddleware<LoggingMiddleware>();
 app.UseHttpsRedirection();
 
 // 5. CORS
-app.UseCors(options =>
-{
-    options.WithOrigins("http://localhost:3000", "https://www.gencare.site", "http://localhost:5173")
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-});
+app.UseCors("AllowFrontendOrigins");
 
 // 6. Rate Limiting Middleware (nếu bạn có)
 app.UseMiddleware<RateLimitMiddleware>();
