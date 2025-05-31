@@ -7,6 +7,7 @@ import { ZodError } from 'zod/v4'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
+import { SubmitButton } from './RegisterForm'
 
 export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
@@ -75,12 +76,7 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 					</label>
 				</div>
 
-				<button
-					type='submit'
-					className='bg-accent text-white p-2 rounded-full hover:bg-accent-dark transition-colors duration-200'
-				>
-					Đăng nhập
-				</button>
+				<SubmitButton buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
 			</form>
 			<div className='text-gray-500 text-sm'>Quên mật khẩu? </div>
 
