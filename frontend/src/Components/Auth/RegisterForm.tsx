@@ -10,6 +10,7 @@ import {
 import { motion } from 'motion/react'
 import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
 import { Gender } from '@/Enums/Gender'
+import GoogleLoginButton from './GoogleLoginButton'
 
 type RegisterFormProps = keyof RegisterFormData
 
@@ -256,6 +257,15 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 			</div>
 
 			<SubmitButton buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
+
+			<div className='text-center text-gray-500 mt-4'>
+				Đã có tài khoản?{' '}
+				<a href='/login' className='text-accent hover:underline'>
+					Đăng nhập
+				</a>
+			</div>
+
+			<GoogleLoginButton className='mt-4' />
 		</form>
 	)
 }

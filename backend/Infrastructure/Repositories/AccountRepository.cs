@@ -14,9 +14,8 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> GetAccountByEmailPasswordAsync(string email, string password)
     {
-        var account = await dbContext.Accounts
-            .Include(a => a.Role)
-            .FirstOrDefaultAsync(a => string.Equals(a.Email, email, StringComparison.OrdinalIgnoreCase));
+        //find account by email
+        var account = await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(u => email.ToLower() == u.Email.ToLower());
 
         if (account == null || !PasswordHasher.Verify(password, account.PasswordHash))
         {

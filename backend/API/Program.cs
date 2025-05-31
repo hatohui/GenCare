@@ -36,7 +36,7 @@ builder.Services.AddSwaggerGen(options =>
             Scheme = "Bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "Nhập token theo dạng: Bearer {your token}",
+            Description = "Nhập token theo dạng: Bearer {your token}"
         }
     );
     options.AddSecurityRequirement(
@@ -48,11 +48,11 @@ builder.Services.AddSwaggerGen(options =>
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer",
-                    },
+                        Id = "Bearer"
+                    }
                 },
                 Array.Empty<string>()
-            },
+            }
         }
     );
 });
@@ -85,7 +85,7 @@ builder
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     })
     .AddCookie()
@@ -96,7 +96,20 @@ builder
         options.SaveTokens = true;
         options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
-
+//================================================= CORS Configuration =================================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AllowFrontendOrigins",
+        corsPolicyBuilder =>
+        {
+            corsPolicyBuilder
+                .WithOrigins("http://localhost:3000", "https://www.gencare.site")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    );
+});
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
@@ -149,12 +162,7 @@ app.UseMiddleware<LoggingMiddleware>();
 app.UseHttpsRedirection();
 
 // 5. CORS
-app.UseCors(options =>
-{
-    options.WithOrigins("http://localhost:3000", "https://www.gencare.site", "http://localhost:5173")
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-});
+app.UseCors("AllowFrontendOrigins");
 
 // 6. Rate Limiting Middleware (nếu bạn có)
 app.UseMiddleware<RateLimitMiddleware>();

@@ -2,11 +2,11 @@
 
 import { motion } from 'motion/react'
 import useInput from '@/Hooks/Form/useInput'
-import MotionCheckbox from '../Form/MotionCheckbox'
 import { loginSchema } from '@/Interfaces/Auth/Schema/login'
 import { ZodError } from 'zod/v4'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
+import GoogleLoginButton from './GoogleLoginButton'
 
 export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
@@ -65,11 +65,16 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 				<FloatingLabelInput label='Email' id='email' {...email} />
 				<FloatingLabelInput label='Password' id='password' {...password} />
 
-				<MotionCheckbox
-					label='Remember me'
-					checked={remember.value}
-					onCheckedChange={remember.onChange as any}
-				/>
+				<div className='mb-4 mt-2'>
+					<label
+						className={`flex items-center gap-2 text-gray-700'
+					`}
+					>
+						<input name='agreeToTerms' {...remember} className={`w-4 h-4`} />
+						<span>Remember me</span>
+					</label>
+				</div>
+
 				<button
 					type='submit'
 					className='bg-accent text-white p-2 rounded-full hover:bg-accent-dark transition-colors duration-200'
@@ -78,6 +83,8 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 				</button>
 			</form>
 			<div className='text-gray-500 text-sm'>Quên mật khẩu? </div>
+
+			<GoogleLoginButton />
 		</motion.div>
 	)
 }

@@ -5,6 +5,7 @@ import TanstackProvider from '../Components/TanstackProvider'
 import CustomCursor from '@/Components/CustomCursor'
 import ClientLayout from './ClientLayout'
 import { Suspense } from 'react'
+import Script from 'next/script'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -57,6 +58,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='vi'>
+			<head></head>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<ClientLayout>
 					<CustomCursor />
@@ -64,6 +66,13 @@ export default function RootLayout({
 						<TanstackProvider>{children}</TanstackProvider>
 					</Suspense>
 				</ClientLayout>
+
+				<Script
+					src='https://accounts.google.com/gsi/client'
+					strategy='beforeInteractive'
+					async
+					defer
+				/>
 			</body>
 		</html>
 	)
