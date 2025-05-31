@@ -4,14 +4,24 @@ import { motion } from 'motion/react'
 
 export default function LoadingPage() {
 	return (
-		<div className='fixed top-0 left-0 w-full h-full flex items-center justify-center z-[9999]'>
+		<div className='fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[9999]'>
 			<motion.div
-				className='w-[50px] h-[50px] rounded-full border-4 border-solid border-divider border-t-accent spinner'
-				animate={{ rotate: 360 }}
+				className='w-16 h-16 rounded-full border-4 border-solid border-gray-200/30 border-t-accent shadow-lg spinner'
+				animate={{
+					rotate: 360,
+					scale: [0.95, 1, 0.95],
+				}}
 				transition={{
-					duration: 0.5,
-					repeat: Infinity,
-					ease: 'linear',
+					rotate: {
+						duration: 1,
+						repeat: Infinity,
+						ease: 'linear',
+					},
+					scale: {
+						duration: 1,
+						repeat: Infinity,
+						ease: 'easeInOut',
+					},
 				}}
 			/>
 		</div>
