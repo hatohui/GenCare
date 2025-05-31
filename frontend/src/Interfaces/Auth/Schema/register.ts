@@ -8,10 +8,10 @@ export type RegisterFormData =
 			agreeToTerms: boolean
 	  }
 
-export type RegisterAPI = Omit<
+export type RegisterApi = Omit<
 	RegisterFormData,
 	'agreeToTerms' | 'confirmPassword' | 'gender'
-> & {gender: boolean}	
+> & { gender: boolean }
 
 export const RegisterFormSchema = z
 	.object({
