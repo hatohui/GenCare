@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Auth.Request;
+﻿using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Requests;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
