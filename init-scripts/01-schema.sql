@@ -1,12 +1,4 @@
--- Improved GenCareDB Schema with Enhancements Applied
--- DROP DATABASE IF EXISTS "GenCareDB";
--- CREATE DATABASE "GenCareDB";
--- \c "GenCareDB";
--- no need for this because we're creating with docker ^.
-
 -- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "role" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),

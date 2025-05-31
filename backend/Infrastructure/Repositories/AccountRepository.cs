@@ -16,7 +16,9 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
     public async Task<Account?> GetAccountByEmailPasswordAsync(string email, string password)
     {
         //find account by email
-        var account = await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(u => email.ToLower() == u.Email.ToLower());
+        var account = await dbContext
+            .Accounts.Include(u => u.Role)
+            .FirstOrDefaultAsync(u => email.ToLower() == u.Email.ToLower());
 
         if (account == null || !PasswordHasher.Verify(password, account.PasswordHash))
         {
@@ -27,6 +29,13 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> GetByEmailAsync(string email)
     {
-        return await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(a => a.Email.ToLower() == email.ToLower());
+        return await dbContext
+            .Accounts.Include(u => u.Role)
+            .FirstOrDefaultAsync(a => a.Email.ToLower() == email.ToLower());
+    }
+
+    public async Task<Account?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Accounts.FirstOrDefaultAsync(u => Equals(u.Id, id));
     }
 }
