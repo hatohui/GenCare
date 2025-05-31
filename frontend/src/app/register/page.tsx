@@ -23,11 +23,13 @@ const Register = () => {
 			email: formData.email,
 			firstName: formData.firstName,
 			lastName: formData.lastName,
-			gender: Boolean(formData.gender),
+			gender: formData.gender,
 			phoneNumber: formData.phoneNumber,
 			dateOfBirth: formData.dateOfBirth,
 			password: formData.password,
 		}
+
+		console.log(formData)
 
 		registerMutation.mutate(apiData, {
 			onSuccess: data => {
