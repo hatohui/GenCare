@@ -48,7 +48,7 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 				type === 'checkbox'
 					? isChecked
 					: name === 'gender'
-					? Boolean(value)
+					? Number(value)
 					: value,
 		}
 
