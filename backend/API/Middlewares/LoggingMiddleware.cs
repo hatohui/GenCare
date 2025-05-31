@@ -7,7 +7,7 @@ public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> 
     public async Task InvokeAsync(HttpContext context)
     {
         var sw = Stopwatch.StartNew();
-        var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff");
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
         var request = context.Request;
 
