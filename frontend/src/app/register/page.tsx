@@ -4,7 +4,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import RegisterPage from '@/Components/Auth/RegisterForm'
 import {
-	RegisterAPI,
+	RegisterApi,
 	RegisterFormData,
 } from '@/Interfaces/Auth/Schema/register'
 import { useRegisterAccount } from '@/Services/auth-service'
@@ -19,7 +19,7 @@ const Register = () => {
 
 	//handle register Logic
 	const handleRegister = (formData: RegisterFormData) => {
-		const apiData: RegisterAPI = {
+		const apiData: RegisterApi = {
 			email: formData.email,
 			firstName: formData.firstName,
 			lastName: formData.lastName,

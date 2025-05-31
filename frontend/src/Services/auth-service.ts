@@ -1,7 +1,7 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
-import { LoginAPI } from '@/Interfaces/Auth/Schema/login'
+import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
-import { RegisterAPI } from '@/Interfaces/Auth/Schema/register'
+import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
@@ -9,9 +9,9 @@ import axios from 'axios'
 const AUTH_URL = `${DEFAULT_API_URL}/auth`
 
 const authApi = {
-	register: (data: RegisterAPI) =>
+	register: (data: RegisterApi) =>
 		axios.post<TokenData>(`${AUTH_URL}/register`, data).then(res => res.data),
-	login: (data: LoginAPI) =>
+	login: (data: LoginApi) =>
 		axios.post<TokenData>(`${AUTH_URL}/login`, data).then(res => res.data),
 	Oauth: (data: OauthAPI) =>
 		axios
