@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Common.BaseEntities;
 
-public   class Service
+namespace Domain.Entities;
+
+public class Service : SoftDeletableEntity
 {
     public Guid Id { get; set; }
 
@@ -10,19 +12,7 @@ public   class Service
 
     public decimal? Price { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public ICollection<Feedback> Feedback { get; set; } = [];
 
-    public DateTime? UpdatedAt { get; set; }
-
-    public Guid? CreatedBy { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedBy { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    public   ICollection<Feedback> Feedback { get; set; } = [];
-
-    public   ICollection<OrderDetail> OrderDetail { get; set; } = [];
+    public ICollection<OrderDetail> OrderDetail { get; set; } = [];
 }

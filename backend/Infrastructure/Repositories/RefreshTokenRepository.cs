@@ -12,12 +12,12 @@ public class RefreshTokenRepository(IApplicationDbContext context) : IRefreshTok
         await context.SaveChangesAsync();
     }
 
-    public async Task<RefreshToken?> GetRefreshTokenByAccountIdAsync(Guid accountId)
+    public Task<RefreshToken?> GetRefreshTokenByAccountIdAsync(Guid accountId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<RefreshToken?> GetRefreshTokenByTokenAsync(string token)
+    public Task<RefreshToken?> GetRefreshTokenByTokenAsync(string token)
     {
         throw new NotImplementedException();
     }

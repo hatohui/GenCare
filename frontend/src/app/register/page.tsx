@@ -9,12 +9,13 @@ import {
 } from '@/Interfaces/Auth/Schema/register'
 import { useRegisterAccount } from '@/Services/auth-service'
 import LoadingPage from '@/Components/Loading'
-import { setCookie } from 'cookies-next/client'
+import { setAccessToken } from '@/Utils/setAccessToken'
 
 const Register = () => {
 	const router = useRouter()
 	const registerMutation = useRegisterAccount()
 
+	//handle register Logic
 	const handleRegister = (formData: RegisterFormData) => {
 		const apiData: RegisterAPI = {
 			email: formData.email,
@@ -26,16 +27,12 @@ const Register = () => {
 			password: formData.password,
 		}
 
-		//on success, set cookies
 		registerMutation.mutate(apiData, {
 			onSuccess: data => {
-				setCookie('accessToken', data.accessToken, {
-					sameSite: 'strict',
-					maxAge: data.accessTokenExpiration.getUTCSeconds(),
-				})
-				setCookie('refreshToken', data.refreshToken)
+				setAccessToken(data)
 				router.push('/dashboard')
 			},
+
 			onError: error => {
 				console.error('Registration error:', error)
 				// show toast or error message if needed
@@ -43,6 +40,7 @@ const Register = () => {
 		})
 	}
 
+	//loading page
 	if (registerMutation.isPending) return <LoadingPage />
 
 	return (

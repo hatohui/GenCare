@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public   class Slot
+public class Slot
 {
     public Guid Id { get; set; }
 
@@ -12,5 +12,5 @@ public   class Slot
 
     public bool IsDeleted { get; set; }
 
-    public   ICollection<Schedule> Schedule { get; set; } = [];
+    public ICollection<Schedule> Schedule { get; set; } = [];
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class OrderDetail
+public class OrderDetail
 {
     public Guid Id { get; set; }
 
@@ -21,9 +18,9 @@ public   class OrderDetail
 
     public bool Gender { get; set; }
 
-    public   Purchase Purchase { get; set; } = null!;
+    public Purchase Purchase { get; set; } = null!;
 
-    public   Result? Result { get; set; }
+    public Result? Result { get; set; }
 
-    public   Service Service { get; set; } = null!;
+    public Service Service { get; set; } = null!;
 }

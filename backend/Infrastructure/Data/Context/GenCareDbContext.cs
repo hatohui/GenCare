@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Context;
 
@@ -62,16 +61,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
         return await base.SaveChangesAsync();
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .HasPostgresEnum("appointment_status", new[] { "booked", "cancelled", "completed" })
-            .HasPostgresEnum("payment_history_status", new[] { "pending", "paid", "expired" })
-            .HasPostgresEnum("payment_method_status", new[] { "card", "momo", "bank" })
+            .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])
+            .HasPostgresEnum("payment_history_status", ["pending", "paid", "expired"])
+            .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"])
             .HasPostgresExtension("pgcrypto");
 
         modelBuilder.Entity<Account>(entity =>
@@ -416,7 +411,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.UpdateBy).HasColumnName("update_by");
+            entity.Property(e => e.UpdatedBy).HasColumnName("update_by");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");

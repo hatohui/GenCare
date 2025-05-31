@@ -62,7 +62,7 @@ const RouterButton = ({
 				}}
 			>
 				<label
-					className={`z-10 text-center scale-90 pointer-events-none ${
+					className={`z-10 text-center scale-90 whitespace-nowrap pointer-events-none ${
 						path === to ? 'brightness-125' : 'brightness-90'
 					}`}
 				>

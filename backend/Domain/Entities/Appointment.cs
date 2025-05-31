@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Common.BaseEntities;
 using Domain.Common.Enums;
 
 namespace Domain.Entities;
 
-public class Appointment
+public class Appointment : SoftDeletableEntity
 {
     public Guid Id { get; set; }
 
@@ -15,17 +16,7 @@ public class Appointment
 
     public string? JoinUrl { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
-
     public Guid? UpdateBy { get; set; }
-
-    public Guid? CreatedBy { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedBy { get; set; }
 
     public Account Member { get; set; } = null!;
 
