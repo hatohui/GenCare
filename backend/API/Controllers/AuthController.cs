@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 /// <summary>
-/// Handles authentication-related actions like registration, login, profile retrieval, and token refresh.
+///     Handles authentication-related actions like registration, login, profile retrieval, and token refresh.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="AuthController"/> class.
+///     Initializes a new instance of the <see cref="AuthController" /> class.
 /// </remarks>
 /// <param name="accountService">The authentication service.</param>
 [ApiController]
@@ -21,7 +21,7 @@ public class AuthController
 ) : ControllerBase
 {
     /// <summary>
-    /// Registers a new user in the system.
+    ///     Registers a new user in the system.
     /// </summary>
     /// <param name="request">The user registration details.</param>
     /// <returns>An action result containing the user ID and a success message.</returns>
@@ -35,7 +35,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Logs in a user and generates a JWT access token.
+    ///     Logs in a user and generates a JWT access token.
     /// </summary>
     /// <param name="request">The login credentials (email and password).</param>
     /// <returns>The JWT access token and related information.</returns>
@@ -53,7 +53,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Refreshes the JWT access token using a valid refresh token.
+    ///     Refreshes the JWT access token using a valid refresh token.
     /// </summary>
     /// <param name="dto">The refresh token request containing the valid refresh token.</param>
     /// <returns>The new JWT access token and refresh token.</returns>
@@ -67,7 +67,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Retrieves the profile of the logged-in user.
+    ///     Retrieves the profile of the logged-in user.
     /// </summary>
     /// <returns>The profile information of the authenticated user.</returns>
     /// <response code="200">Successfully retrieved the user's profile.</response>
@@ -81,14 +81,14 @@ public class AuthController
     }
 
     /// <summary>
-    /// Initiates the Google login process by redirecting to Google's OAuth 2.0 authorization endpoint.
+    ///     Initiates the Google login process by redirecting to Google's OAuth 2.0 authorization endpoint.
     /// </summary>
     /// <returns>
-    /// Returns an IActionResult that challenges the user with the Google authentication scheme.
-    /// The user will be redirected to Google for login, and after successful authentication,
-    /// they will be redirected back to the GoogleCallback endpoint.
+    ///     Returns an IActionResult that challenges the user with the Google authentication scheme.
+    ///     The user will be redirected to Google for login, and after successful authentication,
+    ///     they will be redirected back to the GoogleCallback endpoint.
     /// </returns>
-    [HttpPost("login-google")]
+    [HttpPost("google")]
     public async Task<IActionResult> GoogleLoginAsync([FromBody] GoogleLoginRequest request)
     {
         var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
@@ -101,15 +101,15 @@ public class AuthController
     }
 
     /// <summary>
-    /// Handles the callback from Google after a successful OAuth 2.0 authentication.
-    /// It retrieves the user's authentication information from the cookie and generates an access token.
+    ///     Handles the callback from Google after a successful OAuth 2.0 authentication.
+    ///     It retrieves the user's authentication information from the cookie and generates an access token.
     /// </summary>
     /// <returns>
-    /// Returns an OkObjectResult containing the access token, user's email, and name if authentication is successful.
-    /// If the authentication fails, it returns an Unauthorized status with an error message.
+    ///     Returns an OkObjectResult containing the access token, user's email, and name if authentication is successful.
+    ///     If the authentication fails, it returns an Unauthorized status with an error message.
     /// </returns>
     /// <exception cref="UnauthorizedAccessException">
-    /// Thrown if the authentication fails or the user's principal is not found.
+    ///     Thrown if the authentication fails or the user's principal is not found.
     /// </exception>
     [HttpGet("google-callback")]
     public async Task<IActionResult> GoogleCallbackAsync()
@@ -118,7 +118,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Test endpoint to throw an exception for testing error handling.
+    ///     Test endpoint to throw an exception for testing error handling.
     /// </summary>
     /// <returns>Throws a test exception.</returns>
     /// <response code="500">Throws a test error.</response>
