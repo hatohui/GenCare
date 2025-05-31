@@ -11,7 +11,6 @@ const AUTH_URL = `${DEFAULT_API_URL}/auth`
 const authApi = {
 	register: (data: RegisterApi) =>
 		axios.post<TokenData>(`${AUTH_URL}/register`, data).then(res => res.data),
-
 	login: (data: LoginApi) =>
 		axios.post<TokenData>(`${AUTH_URL}/login`, data).then(res => res.data),
 	Oauth: (data: OauthAPI) =>
