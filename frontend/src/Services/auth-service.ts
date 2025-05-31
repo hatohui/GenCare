@@ -1,5 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { LoginAPI } from '@/Interfaces/Auth/Schema/login'
+import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterAPI } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import { useMutation } from '@tanstack/react-query'
@@ -13,6 +14,12 @@ const authApi = {
 
 	login: (data: LoginAPI) =>
 		axios.post<TokenData>(`${AUTH_URL}/login`, data).then(res => res.data),
+	Oauth: (data: OauthAPI) =>
+		axios
+			.post<TokenData>(`${AUTH_URL}/google`, {
+				credential: data.credential,
+			})
+			.then(res => res.data),
 }
 
 export const useRegisterAccount = () => {
@@ -24,5 +31,11 @@ export const useRegisterAccount = () => {
 export const useLoginAccount = () => {
 	return useMutation({
 		mutationFn: authApi.login,
+	})
+}
+
+export const useOauthAccount = () => {
+	return useMutation({
+		mutationFn: authApi.Oauth,
 	})
 }
