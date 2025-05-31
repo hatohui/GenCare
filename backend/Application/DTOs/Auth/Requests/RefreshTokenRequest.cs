@@ -1,6 +1,6 @@
-﻿namespace Application.DTOs.Auth.Request;
+﻿namespace Application.DTOs.Auth.Requests;
 
-public class RefreshTokenRequest
+public record  RefreshTokenRequest
 {
     public string RefreshToken { get; set; } = null!;
 }
