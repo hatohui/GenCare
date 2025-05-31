@@ -2,7 +2,7 @@ import {
 	ACCESS_TOKEN_COOKIE_STRING,
 	REFRESH_TOKEN_COOKIE_STRING,
 } from '@/Constants/Auth'
-import { DecodedTokenData, TokenData } from '@/Interfaces/Auth/Schema/token'
+import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import { setCookie } from 'cookies-next/client'
 import { getDecodedToken } from './getDecodedToken'
 import { accountActions } from '@/Hooks/useToken'
