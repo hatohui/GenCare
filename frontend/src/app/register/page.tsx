@@ -10,6 +10,8 @@ import {
 import { useRegisterAccount } from '@/Services/auth-service'
 import LoadingPage from '@/Components/Loading'
 import { setAccessToken } from '@/Utils/setAccessToken'
+import { AxiosError } from 'axios'
+import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 
 const Register = () => {
 	const router = useRouter()
@@ -34,8 +36,14 @@ const Register = () => {
 			},
 
 			onError: error => {
-				console.error('Registration error:', error)
-				// show toast or error message if needed
+				const err = error as AxiosError<ApiErrorResponse>
+
+				if (err.response?.status) {
+					// Handle validation errors
+					const validationErrors = err.response.data.errors
+					console.error('Validation errors:', validationErrors)
+					// You can show these errors in the UI if needed
+				}
 			},
 		})
 	}
