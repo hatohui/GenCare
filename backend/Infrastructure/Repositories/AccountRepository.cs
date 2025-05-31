@@ -11,7 +11,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
     public async Task AddAsync(Account user)
     {
        await dbContext.Accounts.AddAsync(user);
-       await dbContext.SaveChangesAsync();
+       await dbContext.SaveChangesAsync();// Save changes to the database
     }
 
     public async Task<Account?> GetAccountByEmailPasswordAsync(string email, string password)
