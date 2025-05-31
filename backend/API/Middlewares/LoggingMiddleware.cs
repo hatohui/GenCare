@@ -7,6 +7,7 @@ public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> 
     public async Task InvokeAsync(HttpContext context)
     {
         var sw = Stopwatch.StartNew();
+        var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
         var request = context.Request;
 
@@ -14,8 +15,8 @@ public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> 
         var sanitizedPath = request.Path.Value?.Replace("\n", "").Replace("\r", "") ?? string.Empty;
         var sanitizedIP = context.Connection.RemoteIpAddress?.ToString().Replace("\n", "").Replace("\r", "") ?? "Unknown";
 
-        logger.LogInformation("➡️ HTTP {Method} {Path} from {IP}",
-            sanitizedMethod, sanitizedPath, sanitizedIP);
+        logger.LogInformation("🕓 [{Time}] ➡️ HTTP {Method} {Path} from {IP}",
+            timestamp, sanitizedMethod, sanitizedPath, sanitizedIP);
 
         await next(context);
 
@@ -23,7 +24,7 @@ public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> 
 
         var response = context.Response;
 
-        logger.LogInformation("✅ HTTP {StatusCode} for {Method} {Path} in {Elapsed}ms",
-            response.StatusCode, sanitizedMethod, sanitizedPath, sw.ElapsedMilliseconds);
+        logger.LogInformation("🕓 [{Time}] ✅ HTTP {StatusCode} for {Method} {Path} in {Elapsed}ms",
+            timestamp, response.StatusCode, sanitizedMethod, sanitizedPath, sw.ElapsedMilliseconds);
     }
 }
