@@ -1,6 +1,7 @@
 'use client'
 
 import LoginForm from '@/Components/Auth/LoginForm'
+import LoadingPage from '@/Components/Loading'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { useLoginAccount } from '@/Services/auth-service'
@@ -30,6 +31,8 @@ export default function Login() {
 			},
 		})
 	}
+
+	if (loginMutation.isPending) return <LoadingPage />
 
 	return (
 		<>

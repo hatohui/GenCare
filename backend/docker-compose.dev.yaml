@@ -15,6 +15,8 @@ services:
       - API/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - .:/src
 
   database:
     container_name: gencare_database

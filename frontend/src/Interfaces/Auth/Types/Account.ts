@@ -10,4 +10,5 @@ export type Account = {
 	avatarUrl: string
 	deletedAt: string
 	isDeleted: boolean
+	deletedBy: string
 }

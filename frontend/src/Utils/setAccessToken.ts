@@ -17,6 +17,7 @@ export const setAccessToken = (data: TokenData) => {
 	setCookie(REFRESH_TOKEN_COOKIE_STRING, data.refreshToken)
 	// DECODE COOKIE
 	const tokenClaim = getDecodedToken()
+	console.log(tokenClaim)
 
 	if (!tokenClaim) return //do something
 

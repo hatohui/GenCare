@@ -96,9 +96,6 @@ namespace Application.Helpers
                 new Claim(ClaimTypes.Gender, user.Gender ? "Male" : "Female"),
                 new Claim(ClaimTypes.Uri, user.AvatarUrl ?? ""),
                 new Claim(ClaimTypes.MobilePhone, user.Phone ?? ""),
-                new Claim("IsDeleted", user.IsDeleted.ToString()),
-                new Claim("DeleteAt", user.DeletedAt.ToString()),
-                new Claim("DeleteBy", user.DeletedBy.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("type", tokenType), // Đánh dấu loại token
             };

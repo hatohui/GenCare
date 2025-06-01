@@ -1,11 +1,11 @@
 import { ACCOUNT_STORE_STRING } from '@/Constants/Auth'
-import { Account } from '@/Interfaces/Auth/Types/Account'
+import { TokenizedAccount } from '@/Interfaces/Auth/Schema/token'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
 export type AccountStore = {
-	account: Account | null
-	setAccount: (newAccount: Account) => void
+	account: TokenizedAccount | null
+	setAccount: (newAccount: TokenizedAccount) => void
 	removeAccount: () => void
 }
 

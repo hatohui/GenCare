@@ -8,6 +8,7 @@ import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
 import { SubmitButton } from './RegisterForm'
+import { NoSeeSVG, SeeSVG } from '../Form/SVGs'
 
 export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
@@ -17,16 +18,14 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
+	const [showPassword, setShowPassword] = useState(false)
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
-	const handleReset = () => {
+	const resetCredentials = () => {
 		resetEmail()
 		resetPassword()
 		resetRemember()
 	}
-
-	console.log(handleReset)
-	console.log(errors)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -50,6 +49,8 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 				)
 			} else {
 				alert('Error occurred.')
+				resetCredentials()
+				console.log(errors)
 			}
 		}
 	}
@@ -64,8 +65,21 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 			<div className='text-3xl font-bold text-accent'>Logo here</div>
 			<form onSubmit={handleSubmit} className='flex flex-col gap-4 p-4 w-full'>
 				<FloatingLabelInput label='Email' id='email' {...email} />
-				<FloatingLabelInput label='Password' id='password' {...password} />
-
+				<div className='relative'>
+					<FloatingLabelInput
+						label='Password'
+						id='password'
+						{...password}
+						type={showPassword ? 'text' : 'password'}
+					/>
+					<button
+						type='button'
+						className='absolute right-3 top-1/2 text-slate-700 transform -translate-y-1/2 pb-3'
+						onClick={() => setShowPassword(!showPassword)}
+					>
+						{showPassword ? <NoSeeSVG /> : <SeeSVG />}
+					</button>
+				</div>
 				<div className='mb-4 mt-2'>
 					<label
 						className={`flex items-center gap-2 text-gray-700'
