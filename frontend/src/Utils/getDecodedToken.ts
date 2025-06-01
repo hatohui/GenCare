@@ -1,9 +1,9 @@
 import { ACCESS_TOKEN_COOKIE_STRING } from '@/Constants/Auth'
-import { DecodedTokenData } from '@/Interfaces/Auth/Schema/token'
+import { RawClaims } from '@/Interfaces/Auth/Schema/token'
 import { getCookie } from 'cookies-next/client'
 import { jwtDecode } from 'jwt-decode'
 
-export const getDecodedToken = (): DecodedTokenData | null => {
+export const getDecodedToken = (): RawClaims | null => {
 	const token = getCookie(ACCESS_TOKEN_COOKIE_STRING)
 	if (!token) return null
 
