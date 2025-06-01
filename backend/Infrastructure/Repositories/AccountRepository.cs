@@ -36,6 +36,6 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> GetByIdAsync(Guid id)
     {
-        return await dbContext.Accounts.FirstOrDefaultAsync(u => Equals(u.Id, id));
+        return await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
     }
 }

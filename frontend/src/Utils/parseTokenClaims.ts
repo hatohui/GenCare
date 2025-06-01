@@ -2,6 +2,14 @@ import { DecodedTokenData, RawClaims } from '@/Interfaces/Auth/Schema/token'
 import { Account } from '@/Interfaces/Auth/Types/Account'
 
 export function parseTokenClaims(raw: RawClaims): DecodedTokenData {
+	if (!raw || typeof raw !== 'object') {
+		throw new Error('Invalid token claims: raw claims object is required')
+	}
+
+	if (!raw.sub || !raw.email) {
+		throw new Error('Invalid token claims: subject and email are required')
+	}
+
 	const isDeleted = raw.IsDeleted.toLowerCase() === 'true'
 	const genderString =
 		raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender']

@@ -18,7 +18,7 @@ services:
 
   database:
     container_name: gencare_database
-    image: postgres:latest
+    image: postgres:17
     restart: always
     volumes:
       - ../init-scripts:/docker-entrypoint-initdb.d
