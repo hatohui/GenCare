@@ -2,7 +2,10 @@ import { z } from 'zod/v4'
 import { Account } from '../Types/Account'
 
 export type RegisterFormData =
-	| Omit<Account, 'id' | 'role' | 'avatarUrl' | 'deletedAt' | 'isDeleted'> & {
+	| Omit<
+			Account,
+			'id' | 'role' | 'avatarUrl' | 'deletedAt' | 'isDeleted' | 'deletedBy'
+	  > & {
 			password: string
 			confirmPassword: string
 			agreeToTerms: boolean
