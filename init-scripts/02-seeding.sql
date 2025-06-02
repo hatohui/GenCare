@@ -123,3 +123,17 @@ SELECT
   (SELECT id FROM "tag" WHERE title = 'Health'),
   NOW(),
   (SELECT id FROM "account" WHERE email = 'admin@example.com');
+
+-- 21. Insert media
+INSERT INTO "media" (id, url, type, description, message_id, created_at, created_by)
+VALUES
+  ('c9935b29-903c-4bca-af2a-91c29291f07d', 'https://cdn.example.com/message1.png', 'image', 'Message image 1', '53fc0b55-4c55-41e9-8362-eb30f74eb627', NOW(), (SELECT id FROM "account" WHERE email = 'staff1@example.com')),
+  ('664b2a92-11de-402f-b4bc-150dc266ae76', 'https://cdn.example.com/message2.png', 'image', 'Message image 2', 'e45b29b5-88b8-4eae-ab58-43a31ce11e9d', NOW(), (SELECT id FROM "account" WHERE email = 'member1@example.com'));
+
+INSERT INTO "media" (id, url, type, description, blog_id, created_at, created_by)
+VALUES
+  ('5077fa82-fb6c-43af-870e-1c8156fefd99', 'https://cdn.example.com/blog_cover.jpg', 'cover', 'Blog cover image', (SELECT id FROM "blog" WHERE title = 'Health Tips'), NOW(), (SELECT id FROM "account" WHERE email = 'admin@example.com'));
+
+INSERT INTO "media" (id, url, type, description, service_id, created_at, created_by)
+VALUES
+  ('d56f7e8e-269f-4a8f-a210-719919767099', 'https://cdn.example.com/service_banner.jpg', 'banner', 'Service banner image', (SELECT id FROM "service" WHERE name = 'Consultation'), NOW(), (SELECT id FROM "account" WHERE email = 'admin@example.com'));
