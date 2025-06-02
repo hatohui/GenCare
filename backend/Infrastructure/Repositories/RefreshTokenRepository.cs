@@ -17,11 +17,6 @@ public class RefreshTokenRepository(IApplicationDbContext context) : IRefreshTok
         throw new NotImplementedException();
     }
 
-    public Task<RefreshToken?> GetRefreshTokenByTokenAsync(string token)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<RefreshToken?> GetByTokenAsync(string token)
     {
         return await context.RefreshTokens

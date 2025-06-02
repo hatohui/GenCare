@@ -49,5 +49,5 @@ public interface IApplicationDbContext
 
     public DbSet<Tag> Tags { get; set; }
 
-    Task<int> SaveChangesAsync();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

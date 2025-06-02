@@ -58,11 +58,13 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Tag> Tags { get; set; }
 
-    public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => base.SaveChangesAsync(cancellationToken);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
+            .HasPostgresExtension("pgcrypto")
             .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])
             .HasPostgresEnum("payment_history_status", ["pending", "paid", "expired"])
             .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"]);
@@ -690,7 +692,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasMaxLength(100)
                 .HasColumnName("name");
             entity.Property(e => e.Price)
-                .HasPrecision(18)
+                .HasPrecision(18, 2)
                 .HasColumnName("price");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("now()")
