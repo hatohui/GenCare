@@ -71,7 +71,7 @@ export default function FloatingLabelInput({
 								? isCorrect
 									? 'var(--color-green-500)'
 									: 'var(--color-red-500)'
-								: 'var(--color-slate-600)'
+								: 'var(--color-text)'
 							: '',
 					},
 				}}
