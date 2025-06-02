@@ -3,17 +3,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
+import { SIDE_NAV_OPTIONS as links } from '@/Constants/SideNav'
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
-const links = [
-	{ name: 'Home', href: '/dashboard' },
-	{
-		name: 'Invoices',
-		href: '/dashboard/invoices',
-	},
-	{ name: 'Customers', href: '/dashboard/customers' },
-]
 
 export default function NavLinks() {
 	const pathname = usePathname()
@@ -22,16 +15,16 @@ export default function NavLinks() {
 			{links.map(link => {
 				return (
 					<Link
-						key={link.name}
-						href={link.href}
+						key={link.label}
+						href={link.to}
 						className={clsx(
 							'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-accent md:flex-none md:justify-start md:p-2 md:px-3',
 							{
-								'bg-sky-100 text-accent': pathname === link.href,
+								'bg-sky-100 text-accent': pathname === link.to,
 							}
 						)}
 					>
-						<p className='hidden md:block'>{link.name}</p>
+						<p className=' md:block'>{link.label}</p>
 					</Link>
 				)
 			})}
