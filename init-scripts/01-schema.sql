@@ -109,13 +109,23 @@ CREATE TABLE IF NOT EXISTS "message" (
     "conversation_id" UUID NOT NULL,
     "created_by" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "update_by" UUID,
+    "updated_by" UUID,
     "updated_at" TIMESTAMP,
+    "deleted_at" TIMESTAMP,
+    "deleted_by" UUID,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     "content" TEXT NOT NULL,
     CONSTRAINT "fk_message_conversation" FOREIGN KEY ("conversation_id") REFERENCES "conversation"("id") ON DELETE CASCADE
 );
 
-CREATE TYPE appointment_status AS ENUM ('booked', 'cancelled', 'completed');
+-- Tạo ENUM: appointment_status
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'appointment_status') THEN
+        CREATE TYPE appointment_status AS ENUM ('booked', 'cancelled', 'completed');
+    END IF;
+END$$;
+
 CREATE TABLE IF NOT EXISTS "appointment" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "member_id" UUID NOT NULL,
@@ -124,11 +134,13 @@ CREATE TABLE IF NOT EXISTS "appointment" (
     "status" appointment_status NOT NULL DEFAULT 'booked',
     "join_url" TEXT,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMP,
-    "update_by" UUID,
     "created_by" UUID,
+    "updated_at" TIMESTAMP,
+    "updated_by" UUID,
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
+
     CONSTRAINT "fk_appointment_member_id" FOREIGN KEY ("member_id") REFERENCES "account"("id") ON DELETE RESTRICT,
     CONSTRAINT "fk_appointment_staff_id" FOREIGN KEY ("staff_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
@@ -139,19 +151,35 @@ CREATE TABLE IF NOT EXISTS "purchase" (
     "account_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "created_by" UUID,
+    "updated_at" TIMESTAMP,
+    "updated_by" UUID,
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT "fk_purchase_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
 
 ----------------------------------------------------------------------
-CREATE TYPE payment_history_status AS ENUM ('pending', 'paid', 'expired');
-CREATE TYPE payment_method_status AS ENUM ('card', 'momo', 'bank');
+-- Tạo ENUM: payment_history_status
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_history_status') THEN
+        CREATE TYPE payment_history_status AS ENUM ('pending', 'paid', 'expired');
+    END IF;
+END$$;
+
+-- Tạo ENUM: payment_method_status
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_method_status') THEN
+        CREATE TYPE payment_method_status AS ENUM ('card', 'momo', 'bank');
+    END IF;
+END$$;
 CREATE TABLE IF NOT EXISTS "payment_history" (
     "purchase_id" UUID PRIMARY KEY,
     "transaction_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "amount" FLOAT NOT NULL,
+    "amount" DECIMAL(18,2) NOT NULL,
     "status" payment_history_status NOT NULL DEFAULT 'pending',
     "expired_at" TIMESTAMP,
     "payment_method" payment_method_status NOT NULL DEFAULT 'bank',
@@ -165,8 +193,9 @@ CREATE TABLE IF NOT EXISTS "service" (
     "description" TEXT,
     "price" DECIMAL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMP,
     "created_by" UUID,
+    "updated_at" TIMESTAMP,
+    "updated_by" UUID,
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID,
     "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE
@@ -221,7 +250,8 @@ CREATE TABLE IF NOT EXISTS "blog" (
     "updated_at" TIMESTAMP,
     "updated_by" UUID,
     "deleted_at" TIMESTAMP,
-    "deleted_by" UUID
+    "deleted_by" UUID,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE
 );
 COMMENT ON TABLE "blog" IS 'Table for storing blog posts';
 
@@ -237,6 +267,7 @@ CREATE TABLE IF NOT EXISTS "comment" (
     "updated_by" UUID REFERENCES "account"("id"),
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID REFERENCES "account"("id"),
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT "fk_comment_blog" FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
     CONSTRAINT "fk_comment_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
@@ -259,6 +290,7 @@ CREATE TABLE IF NOT EXISTS "blog_tag" (
     "updated_by" UUID REFERENCES "account"("id"),
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID REFERENCES "account"("id"),
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY ("blog_id", "tag_id"),
     CONSTRAINT "fk_blog_tag_blog" FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
     CONSTRAINT "fk_blog_tag_tag" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE CASCADE
