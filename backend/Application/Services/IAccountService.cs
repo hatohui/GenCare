@@ -8,4 +8,6 @@ public interface IAccountService
     Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request);
 
     Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request);
+
+    Task<bool> RevokeRefreshTokenAsync(string refreshToken);
 }

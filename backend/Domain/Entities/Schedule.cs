@@ -8,7 +8,7 @@ public class Schedule
 
     public Guid AccountId { get; set; }
 
-    public Account Account { get; set; } = null!;
+    public virtual Account Account { get; set; } = null!;
 
-    public Slot Slot { get; set; } = null!;
+    public virtual Slot Slot { get; set; } = null!;
 }

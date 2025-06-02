@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function GoogleLoginButton({
+	text = 'signup_with',
 	className = '',
 }: {
 	className?: string
+	text: 'signup_with' | 'signin_with'
 }) {
 	const router = useRouter()
 	const handleOauth = useOauthAccount()
@@ -41,9 +43,15 @@ export default function GoogleLoginButton({
 		// @ts-expect-error google exist liao
 		window.google?.accounts.id.renderButton(
 			document.getElementById('google-signin-button'),
-			{ theme: 'outline', size: 'large' }
+			{ theme: 'outline', size: 'large', text }
 		)
 	}, [])
 
-	return <div id='google-signin-button' className={className} />
+	return (
+		<div
+			id='google-signin-button'
+			className={className}
+			data-client-id={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+		/>
+	)
 }
