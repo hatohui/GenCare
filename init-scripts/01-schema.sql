@@ -229,11 +229,11 @@ CREATE TABLE IF NOT EXISTS "result" (
 ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "feedback" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "service_id" UUID NOT NULL,
     "detail" TEXT NOT NULL,
     "rating" INT NOT NULL CHECK ("rating" BETWEEN 1 AND 5),
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "created_by" UUID NOT NULL,
-    "service_id" UUID NOT NULL,
     CONSTRAINT "fk_feedback_service" FOREIGN KEY ("service_id") REFERENCES "service"("id") ON DELETE RESTRICT
 );
 
@@ -261,11 +261,11 @@ CREATE TABLE IF NOT EXISTS "comment" (
     "blog_id" UUID NOT NULL,
     "account_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "created_by" UUID REFERENCES "account"("id"),
+    "created_by" UUID,
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "updated_by" UUID REFERENCES "account"("id"),
+    "updated_by" UUID,
     "deleted_at" TIMESTAMP,
-    "deleted_by" UUID REFERENCES "account"("id"),
+    "deleted_by" UUID,
     "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT "fk_comment_blog" FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
     CONSTRAINT "fk_comment_account" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT
@@ -284,11 +284,11 @@ CREATE TABLE IF NOT EXISTS "blog_tag" (
     "blog_id" UUID NOT NULL,
     "tag_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "created_by" UUID REFERENCES "account"("id"),
+    "created_by" UUID,
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "updated_by" UUID REFERENCES "account"("id"),
+    "updated_by" UUID,
     "deleted_at" TIMESTAMP,
-    "deleted_by" UUID REFERENCES "account"("id"),
+    "deleted_by" UUID,
     "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY ("blog_id", "tag_id"),
     CONSTRAINT "fk_blog_tag_blog" FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
