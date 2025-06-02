@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class BirthControl
+public class BirthControl
 {
     public Guid AccountId { get; set; }
 
@@ -19,5 +16,5 @@ public   class BirthControl
 
     public DateTime? EndUnsafeDate { get; set; }
 
-    public   Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 }

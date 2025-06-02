@@ -15,14 +15,15 @@ services:
       - API/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=database;Port=5435;Database=GenCareDB;Username=admin;Password=12345
+    volumes:
+      - .:/src
 
   database:
     container_name: gencare_database
     image: postgres:17
     restart: always
     volumes:
-      - ../db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../init-scripts:/docker-entrypoint-initdb.d
       - gencare_postgres_data:/var/lib/postgresql/data
     ports:
       - "5435:5432"

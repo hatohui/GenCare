@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.DTOs.Auth.Responses;
 
-namespace Application.DTOs.Auth.Responses;
-public class UserRegisterResponse
+public record AccountRegisterResponse
 {
     public string AccessToken { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;
-
     public DateTime AccessTokenExpiration { get; set; }
 }

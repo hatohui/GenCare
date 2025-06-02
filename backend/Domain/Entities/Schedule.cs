@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class Schedule
+public class Schedule
 {
     public Guid Id { get; set; }
 
@@ -11,7 +8,7 @@ public   class Schedule
 
     public Guid AccountId { get; set; }
 
-    public   Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 
-    public   Slot Slot { get; set; } = null!;
+    public Slot Slot { get; set; } = null!;
 }

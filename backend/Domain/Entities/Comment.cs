@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Domain.Common.BaseEntities;
 
 namespace Domain.Entities;
 
 /// <summary>
-/// Save comments for blog posts
+///     Save comments for blog posts
 /// </summary>
-public   class Comment
+public class Comment : SoftDeletableEntity
 {
     public Guid Id { get; set; }
 
@@ -16,25 +15,13 @@ public   class Comment
 
     public Guid AccountId { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public Account Account { get; set; } = null!;
 
-    public Guid? CreatedBy { get; set; }
+    public Blog Blog { get; set; } = null!;
 
-    public DateTime? UpdatedAt { get; set; }
+    public Account? CreatedByNavigation { get; set; }
 
-    public Guid? UpdatedBy { get; set; }
+    public Account? DeletedByNavigation { get; set; }
 
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedBy { get; set; }
-
-    public   Account Account { get; set; } = null!;
-
-    public   Blog Blog { get; set; } = null!;
-
-    public   Account? CreatedByNavigation { get; set; }
-
-    public   Account? DeletedByNavigation { get; set; }
-
-    public   Account? UpdatedByNavigation { get; set; }
+    public Account? UpdatedByNavigation { get; set; }
 }

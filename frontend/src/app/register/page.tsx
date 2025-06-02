@@ -4,45 +4,53 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import RegisterPage from '@/Components/Auth/RegisterForm'
 import {
-	RegisterAPI,
+	RegisterApi,
 	RegisterFormData,
 } from '@/Interfaces/Auth/Schema/register'
 import { useRegisterAccount } from '@/Services/auth-service'
 import LoadingPage from '@/Components/Loading'
-import { setCookie } from 'cookies-next/client'
+import { setAccessToken } from '@/Utils/setAccessToken'
+import { AxiosError } from 'axios'
+import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 
 const Register = () => {
 	const router = useRouter()
 	const registerMutation = useRegisterAccount()
 
+	//handle register Logic
 	const handleRegister = (formData: RegisterFormData) => {
-		const apiData: RegisterAPI = {
+		const apiData: RegisterApi = {
 			email: formData.email,
 			firstName: formData.firstName,
 			lastName: formData.lastName,
-			gender: Boolean(formData.gender),
+			gender: formData.gender,
 			phoneNumber: formData.phoneNumber,
 			dateOfBirth: formData.dateOfBirth,
 			password: formData.password,
 		}
 
-		//on success, set cookies
+		console.log(formData)
+
 		registerMutation.mutate(apiData, {
 			onSuccess: data => {
-				setCookie('accessToken', data.accessToken, {
-					sameSite: 'strict',
-					maxAge: data.accessTokenExpiration.getUTCSeconds(),
-				})
-				setCookie('refreshToken', data.refreshToken)
+				setAccessToken(data)
 				router.push('/dashboard')
 			},
+
 			onError: error => {
-				console.error('Registration error:', error)
-				// show toast or error message if needed
+				const err = error as AxiosError<ApiErrorResponse>
+
+				if (err.response?.status) {
+					// Handle validation errors
+					const validationErrors = err.response.data.errors
+					console.error('Validation errors:', validationErrors)
+					// You can show these errors in the UI if needed
+				}
 			},
 		})
 	}
 
+	//loading page
 	if (registerMutation.isPending) return <LoadingPage />
 
 	return (

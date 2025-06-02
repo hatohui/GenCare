@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public   class StaffInfo
+public class StaffInfo
 {
     public Guid AccountId { get; set; }
 
@@ -15,7 +12,7 @@ public   class StaffInfo
 
     public string Biography { get; set; } = null!;
 
-    public   Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 
-    public   Department Department { get; set; } = null!;
+    public Department Department { get; set; } = null!;
 }

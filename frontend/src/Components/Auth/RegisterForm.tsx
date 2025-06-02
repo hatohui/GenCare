@@ -9,7 +9,7 @@ import {
 } from '@/Interfaces/Auth/Schema/register'
 import { motion } from 'motion/react'
 import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
-import { Gender } from '@/Enums/Gender'
+import GoogleLoginButton from './GoogleLoginButton'
 
 type RegisterFormProps = keyof RegisterFormData
 
@@ -23,7 +23,7 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 		lastName: '',
 		dateOfBirth: '',
 		email: '',
-		gender: Gender.Male,
+		gender: false,
 		phoneNumber: '',
 		password: '',
 		confirmPassword: '',
@@ -47,7 +47,7 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 				type === 'checkbox'
 					? isChecked
 					: name === 'gender'
-					? Boolean(value)
+					? value === 'true' // Convert string 'true'/'false' to boolean
 					: value,
 		}
 
@@ -55,6 +55,8 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 
 		validateForm(name as RegisterFormProps, updatedForm)
 	}
+
+	console.log(form)
 
 	const validateForm = (
 		name: RegisterFormProps,
@@ -222,14 +224,14 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 				<select
 					id='gender'
 					name='gender'
-					value={form.gender}
+					value={`${form.gender}`}
 					onChange={handleChange}
 					className={`w-full px-3 py-2 border ${
 						errors.gender ? 'border-red-500' : 'border-gray-300'
 					} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-main focus:border-main`}
 				>
-					<option value={Gender.Male}>Nam</option>
-					<option value={Gender.Female}>Nữ</option>
+					<option value='true'>Nam</option>
+					<option value='false'>Nữ</option>
 				</select>
 			</div>
 
@@ -256,6 +258,15 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 			</div>
 
 			<SubmitButton buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
+
+			<div className='text-center text-gray-500 mt-4'>
+				Đã có tài khoản?{' '}
+				<a href='/login' className='text-accent hover:underline'>
+					Đăng nhập
+				</a>
+			</div>
+
+			<GoogleLoginButton className='mt-4' />
 		</form>
 	)
 }

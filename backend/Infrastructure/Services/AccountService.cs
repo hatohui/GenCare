@@ -7,14 +7,13 @@ using Domain.Entities;
 
 namespace Infrastructure.Services;
 
-public class AccountService
-    (
+public class AccountService(
     IAccountRepository accountRepo,
     IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo
-    ) : IAccountService
+) : IAccountService
 {
-    public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
+    public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
     {
         //check if user already exists
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
@@ -23,9 +22,11 @@ public class AccountService
             throw new Exception("User already exists");
         }
 
-        var role = await roleRepo.GetRoleByNameAsync("Member") ?? throw new Exception("Role 'Member' not found");
+        var role =
+            await roleRepo.GetRoleByNameAsync("Member")
+            ?? throw new Exception("Role 'Member' not found");
 
-        //create new user
+        //create new user account
         var user = new Account
         {
             Gender = request.Gender,
@@ -36,48 +37,48 @@ public class AccountService
             DateOfBirth = request.DateOfBirth,
             Phone = request.PhoneNumber,
             RoleId = role.Id,
-            Role = role
+            Role = role,
         };
         //add user to database
         await accountRepo.AddAsync(user);
 
         //create refresh token
         var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
+
         var rf = new RefreshToken
         {
             AccountId = user.Id,
             Token = refToken,
-            ExpiresAt = refExpiration
+            ExpiresAt = refExpiration,
         };
         //add refresh token to database
         await refTokenRepo.AddAsync(rf);
 
-        //create access token
-        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, role.Name);
+        var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user);
 
-        return new UserRegisterResponse
+        return new AccountRegisterResponse
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
-            AccessTokenExpiration = accExpiration
+            AccessTokenExpiration = accExpiration,
         };
     }
 
-    public async Task<UserLoginResponse?> LoginAsync(UserLoginRequest request)
+    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
     {
-        var user = await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password) ?? throw new Exception("Invalid email or password");
+        var user =
+            await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
+            ?? throw new Exception("Invalid email or password");
         //create access and refresh tokens
-        var (accessToken, accessTokenExpiration) =
-            JwtHelper.GenerateAccessToken(user.Id, user.Email, user.Role.Name);
-        var (refreshToken, refreshTokenExpiration) =
-            JwtHelper.GenerateRefreshToken(user.Id);
+        var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
         //add refresh token to database
 
         RefreshToken rf = new()
         {
             AccountId = user.Id,
             Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration
+            ExpiresAt = refreshTokenExpiration,
         };
         await refTokenRepo.AddAsync(rf);
 
@@ -85,7 +86,7 @@ public class AccountService
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
         };
     }
 }
