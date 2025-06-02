@@ -1,21 +1,18 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
-import {
-	ACCESS_TOKEN_COOKIE_STRING,
-	REFRESH_TOKEN_COOKIE_STRING,
-} from '@/Constants/Auth'
+import { REFRESH_TOKEN_COOKIE_STRING } from '@/Constants/Auth'
+import { accountActions } from '@/Hooks/useToken'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { LogoutRequest } from '@/Interfaces/Auth/Schema/logout'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
+import { getAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { removeTokens } from '@/Utils/removeTokens'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { getCookie } from 'cookies-next/client'
 
 const AUTH_URL = `${DEFAULT_API_URL}/auth`
-
-const getRefreshToken = () => getCookie(ACCESS_TOKEN_COOKIE_STRING)
 
 const authApi = {
 	register: (data: RegisterApi) => {
@@ -41,10 +38,10 @@ const authApi = {
 		}
 		return axios
 			.post(`${AUTH_URL}/logout`, data, {
-				headers: { Authorization: getRefreshToken() },
+				headers: { Authorization: getAccessTokenHeader() },
 			})
 			.then(res => {
-				if (res) removeTokens()
+				if (res.status === 200) removeTokens()
 				return res.data
 			})
 	},
@@ -71,5 +68,6 @@ export const useOauthAccount = () => {
 export const useLogoutAccount = () => {
 	return useMutation({
 		mutationFn: authApi.logout,
+		onSuccess: () => accountActions.removeAccount(),
 	})
 }
