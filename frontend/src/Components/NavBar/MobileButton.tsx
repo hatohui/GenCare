@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import React from 'react'
 import { MobileMenu } from './MobileMenu'
 import { NavComponentProps } from './NavBar'
-import { on } from 'events'
 
 const MobileButton = ({
 	className,

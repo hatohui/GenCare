@@ -1,6 +1,5 @@
 import { COLOR_ON_SCROLL } from '@/Constants/NavBar'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Logo from '../Logo'
 
