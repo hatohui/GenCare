@@ -15,14 +15,13 @@ export const setAccessToken = (data: TokenData) => {
 		expires: new Date(data.accessTokenExpiration),
 	})
 	setCookie(REFRESH_TOKEN_COOKIE_STRING, data.refreshToken)
+
 	// DECODE COOKIE
 	const tokenClaim = getDecodedToken()
-	console.log(tokenClaim)
 
 	if (!tokenClaim) return //do something
 
 	const decodedTokenData = parseTokenClaims(tokenClaim)
-	console.log(decodedTokenData)
 
 	// SET ACCOUNT
 	accountActions.setAccount(decodedTokenData.account)
