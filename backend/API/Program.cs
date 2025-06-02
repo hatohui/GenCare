@@ -1,6 +1,8 @@
 ﻿using System.Text;
+using API.ActionFilters;
 using Api.Middlewares;
 using API.Middlewares;
+using Application.DTOs.Auth.Requests;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
@@ -111,7 +113,8 @@ builder.Services.AddCors(options =>
     );
 });
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
+
 
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
