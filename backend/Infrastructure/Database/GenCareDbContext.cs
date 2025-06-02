@@ -58,7 +58,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Tag> Tags { get; set; }
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => base.SaveChangesAsync(cancellationToken);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
