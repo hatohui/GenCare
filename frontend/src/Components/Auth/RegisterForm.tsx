@@ -133,7 +133,7 @@ const RegisterForm = ({
 		>
 			<h1 className='text-xl font-bold mb-4'>Đăng ký tài khoản</h1>
 
-			<div className='flex gap-4 mb-4'>
+			<div className='flex gap-4'>
 				<FloatingLabel
 					label='Họ'
 					id='lastName'

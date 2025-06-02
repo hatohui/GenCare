@@ -9,7 +9,7 @@ const DashBoard = () => {
 	if (!loggedInAccount) return <div>bugged</div>
 
 	return (
-		<div className='h-screen w-screen center-all flex-col'>
+		<div className='h-full w-full center-all flex-col'>
 			<div> Account id: {loggedInAccount.id}</div>
 			<div>
 				Account Name: {loggedInAccount.lastName} {loggedInAccount.firstName}

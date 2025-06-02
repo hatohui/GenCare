@@ -18,6 +18,7 @@ export type FloatingLabelInputProps = {
 	className?: string
 	name?: string
 	error?: FloatingLabelErrorData
+	autocomplete?: string
 }
 
 export default function FloatingLabelInput({
@@ -30,6 +31,7 @@ export default function FloatingLabelInput({
 	className = '',
 	name = '',
 	error,
+	autocomplete,
 }: FloatingLabelInputProps) {
 	const [focused, setFocused] = useState(false)
 	const [isFirst, setIsFirst] = useState(true)
@@ -89,6 +91,7 @@ export default function FloatingLabelInput({
 				onFocus={handleFocus}
 				onBlur={() => setFocused(false)}
 				onChange={onChange}
+				autoComplete={autocomplete ?? ''}
 				className={clsx(
 					'peer w-full pt-2 border-b-2 border-gray-300 bg-transparent',
 					'text-base text-gray-900 placeholder-transparent',
