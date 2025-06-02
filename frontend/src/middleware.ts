@@ -11,6 +11,11 @@ export async function middleware(request: NextRequest) {
 
 		const decoded = jwtDecode(token)
 
+		const timeUntilExpire = decoded.exp
+			? decoded.exp - Math.floor(Date.now() / 1000)
+			: 0
+		console.log(`Token Expiration: ${timeUntilExpire} seconds`)
+
 		// Check expiration
 		if (decoded.exp && typeof decoded.exp === 'number') {
 			const currentTime = Math.floor(Date.now() / 1000)

@@ -25,13 +25,15 @@ export default function Login() {
 	const store = useAccountStore()
 	const account = store.account
 	const router = useRouter()
-
 	useEffect(() => {
+		if (error) {
+			store.removeAccount()
+		}
 		if (account) {
 			console.log(account)
 			router.push('/dashboard')
 		}
-	}, [store, router])
+	}, [account, router, error])
 
 	const handleLogin = (formData: LoginApi) => {
 		loginMutation.mutate(formData, {
