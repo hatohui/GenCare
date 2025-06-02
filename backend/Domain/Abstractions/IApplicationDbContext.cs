@@ -6,6 +6,7 @@ namespace Domain.Abstractions;
 public interface IApplicationDbContext
 {
     public DbSet<Account> Accounts { get; set; }
+
     public DbSet<Appointment> Appointments { get; set; }
 
     public DbSet<BirthControl> BirthControls { get; set; }
@@ -21,6 +22,8 @@ public interface IApplicationDbContext
     public DbSet<Department> Departments { get; set; }
 
     public DbSet<Feedback> Feedbacks { get; set; }
+
+    public DbSet<Media> Media { get; set; }
 
     public DbSet<Message> Messages { get; set; }
 
@@ -46,5 +49,5 @@ public interface IApplicationDbContext
 
     public DbSet<Tag> Tags { get; set; }
 
-    Task<int> SaveChangesAsync();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
