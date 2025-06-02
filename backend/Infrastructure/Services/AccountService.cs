@@ -16,6 +16,7 @@ public class AccountService
 {
     public async Task<UserRegisterResponse> RegisterAsync(UserRegisterRequest request)
     {
+        //check if user already exists
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
         {
@@ -24,7 +25,7 @@ public class AccountService
 
         var role = await roleRepo.GetRoleByNameAsync("Member") ?? throw new Exception("Role 'Member' not found");
 
-        // Tạo tài khoản mới
+        //create new user
         var user = new Account
         {
             Gender = request.Gender,
@@ -37,9 +38,10 @@ public class AccountService
             RoleId = role.Id,
             Role = role
         };
-
+        //add user to database
         await accountRepo.AddAsync(user);
 
+        //create refresh token
         var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
         var rf = new RefreshToken
         {
@@ -47,8 +49,10 @@ public class AccountService
             Token = refToken,
             ExpiresAt = refExpiration
         };
+        //add refresh token to database
         await refTokenRepo.AddAsync(rf);
 
+        //create access token
         var (accToken, accExpiration) = JwtHelper.GenerateAccessToken(user.Id, user.Email, role.Name);
 
         return new UserRegisterResponse

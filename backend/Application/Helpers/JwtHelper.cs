@@ -167,6 +167,18 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             var principal = ValidateToken(token);
             return principal.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
+        public static string GetRoleFromAccessToken(string accessToken)
+        {
+            var principal = ValidateToken(accessToken);
+            // Tìm claim role (theo ClaimTypes.Role)
+            var roleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            if (roleClaim == null)
+            {
+                throw new ArgumentException("Role claim not found in access token.");
+            }
+            return roleClaim.Value;
+        }
+
 
         /// <summary>
         /// Extract the token type (access or refresh) from a JWT token.
