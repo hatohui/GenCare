@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using API.ActionFilters;
 using Api.Middlewares;
 using API.Middlewares;
 using Application.Repositories;
@@ -112,6 +113,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddValidatorsFromAssemblyContaining<AccountLoginRequestValidator>();
 
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
