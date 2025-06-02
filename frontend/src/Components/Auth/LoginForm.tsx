@@ -7,14 +7,17 @@ import { ZodError } from 'zod/v4'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
-import { SubmitButton } from './RegisterForm'
 import { NoSeeSVG, SeeSVG } from '../Form/SVGs'
+import SubmitButton from './SubmitButton'
+import Logo from '../Logo'
+import Link from 'next/link'
 
 export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
+	formError: string | null
 }
 
-const LoginForm = ({ handleLogin }: LoginComponentProps) => {
+const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
@@ -57,15 +60,25 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 
 	return (
 		<motion.div
-			className=' flex-col flex items-center justify-center h-120 w-[500px] rounded-2xl bg-white shadow-lg p-4'
+			className='flex-col flex items-center pb-5 justify-center w-[500px] rounded-2xl bg-white shadow-lg p-4'
 			initial={{ translateX: -20, opacity: 0 }}
 			animate={{ translateX: 0, opacity: 1 }}
 			transition={{ duration: 1.2, ease: 'easeOut' }}
 		>
-			<div className='text-3xl font-bold text-accent'>Logo here</div>
-			<form onSubmit={handleSubmit} className='flex flex-col gap-4 p-4 w-full'>
-				<FloatingLabelInput label='Email' id='email' {...email} />
-				<div className='relative'>
+			<form onSubmit={handleSubmit} className='flex flex-col p-4 w-full'>
+				<div className='center-all flex-col gap-3'>
+					<Logo className='w-12 drop-shadow-md' />
+					<div className='text-xl font-medium mb-4 drop-shadow-md'>
+						ĐĂNG NHẬP VÀO TÀI KHOẢN
+					</div>
+				</div>
+				<FloatingLabelInput
+					className='mt-4'
+					label='Email'
+					id='email'
+					{...email}
+				/>
+				<div className='relative mt-2'>
 					<FloatingLabelInput
 						label='Password'
 						id='password'
@@ -80,21 +93,38 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 						{showPassword ? <NoSeeSVG /> : <SeeSVG />}
 					</button>
 				</div>
-				<div className='mb-4 mt-2'>
-					<label
-						className={`flex items-center gap-2 text-gray-700'
-					`}
+				{formError && (
+					<p className='text-red-500 text-sm text-center'>{formError}</p>
+				)}
+
+				<div className='mb-6 flex justify-between'>
+					<div>
+						<label className='flex items-center gap-2'>
+							<input name='agreeToTerms' {...remember} className={`w-4 h-4`} />
+							<span className='select-none color-text'>Remember me</span>
+						</label>
+					</div>
+					<Link
+						href='/forgot-password'
+						className='select-none underline text-blue-400 hover:text-blue-600 cursor-pointer transition-colors duration-200'
 					>
-						<input name='agreeToTerms' {...remember} className={`w-4 h-4`} />
-						<span>Remember me</span>
-					</label>
+						Forgot Password?
+					</Link>
 				</div>
 
-				<SubmitButton buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
+				<SubmitButton
+					label='Đăng Nhập'
+					buttonClass='bg-main drop-shadow-lg text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 '
+				/>
 			</form>
-			<div className='text-gray-500 text-sm'>Quên mật khẩu? </div>
 
-			<GoogleLoginButton />
+			<div className='w-full flex items-center gap-2 max-w-90 my-4'>
+				<div className='h-[1px] flex-1 bg-gray-300'></div>
+				<span className='text-gray-500 text-sm px-2'>Hoặc</span>
+				<div className='h-[1px] flex-1 bg-gray-300'></div>
+			</div>
+
+			<GoogleLoginButton text='signin_with' className='mt-2' />
 		</motion.div>
 	)
 }

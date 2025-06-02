@@ -54,8 +54,7 @@ const LandingPart = () => {
 						className='font-semibold px-4 pb-0 text-secondary text-center lg:text-left'
 						{...animateStyle}
 					>
-						<span className='text-secondary'>- </span>
-						<span>DỊCH VỤ CHĂM SÓC SỨC KHỎE</span>
+						<span className='ml-1'>DỊCH VỤ CHĂM SÓC SỨC KHỎE</span>
 					</motion.h3>
 
 					<motion.h1
@@ -88,7 +87,7 @@ const LandingPart = () => {
 					</motion.p>
 
 					<AnimatedLink
-						className='p-4 ml-4 mt-[5%] bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent text-general self-center lg:self-auto text-nowrap text-center min-w-1/2 rounded-full'
+						className='p-4 ml-4 mt-[5%] bg-gradient-to-r duration-200 from-accent to-accent/80 backdrop-blur-3xl max-w-md hover:from-accent/90 hover:to-accent text-general self-center lg:self-auto text-nowrap text-center min-w-1/2 rounded-full'
 						href='/register'
 						{...buttonVariants}
 					>

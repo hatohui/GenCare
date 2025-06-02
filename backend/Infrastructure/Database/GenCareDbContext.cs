@@ -1,7 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Entities;
 
-namespace Infrastructure.Data.Context;
+namespace Infrastructure.Database;
 
 public class GenCareDbContext : DbContext, IApplicationDbContext
 {
@@ -14,60 +14,60 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
+    public DbSet<Account> Accounts { get; set; }
 
-    public virtual DbSet<Appointment> Appointments { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
 
-    public virtual DbSet<BirthControl> BirthControls { get; set; }
+    public DbSet<BirthControl> BirthControls { get; set; }
 
-    public virtual DbSet<Blog> Blogs { get; set; }
+    public DbSet<Blog> Blogs { get; set; }
 
-    public virtual DbSet<BlogTag> BlogTags { get; set; }
+    public DbSet<BlogTag> BlogTags { get; set; }
 
-    public virtual DbSet<Comment> Comments { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 
-    public virtual DbSet<Conversation> Conversations { get; set; }
+    public DbSet<Conversation> Conversations { get; set; }
 
-    public virtual DbSet<Department> Departments { get; set; }
+    public DbSet<Department> Departments { get; set; }
 
-    public virtual DbSet<Feedback> Feedbacks { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 
-    public virtual DbSet<Message> Messages { get; set; }
+    public DbSet<Media> Media { get; set; }
 
-    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
-    public virtual DbSet<PaymentHistory> PaymentHistories { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
 
-    public virtual DbSet<Purchase> Purchases { get; set; }
+    public DbSet<PaymentHistory> PaymentHistories { get; set; }
 
-    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Purchase> Purchases { get; set; }
 
-    public virtual DbSet<Result> Results { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
+    public DbSet<Result> Results { get; set; }
 
-    public virtual DbSet<Schedule> Schedules { get; set; }
+    public DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<Service> Services { get; set; }
+    public DbSet<Schedule> Schedules { get; set; }
 
-    public virtual DbSet<Slot> Slots { get; set; }
+    public DbSet<Service> Services { get; set; }
 
-    public virtual DbSet<StaffInfo> StaffInfos { get; set; }
+    public DbSet<Slot> Slots { get; set; }
 
-    public virtual DbSet<Tag> Tags { get; set; }
+    public DbSet<StaffInfo> StaffInfos { get; set; }
 
-    public async Task<int> SaveChangesAsync()
-    {
-        return await base.SaveChangesAsync();
-    }
+    public DbSet<Tag> Tags { get; set; }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => base.SaveChangesAsync(cancellationToken);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
+            .HasPostgresExtension("pgcrypto")
             .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])
             .HasPostgresEnum("payment_history_status", ["pending", "paid", "expired"])
-            .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"])
-            .HasPostgresExtension("pgcrypto");
+            .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"]);
 
         modelBuilder.Entity<Account>(entity =>
         {
@@ -118,6 +118,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("phone");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
@@ -146,16 +147,20 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deleted_at");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
             entity.Property(e => e.JoinUrl).HasColumnName("join_url");
             entity.Property(e => e.MemberId).HasColumnName("member_id");
             entity.Property(e => e.ScheduleAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("schedule_at");
             entity.Property(e => e.StaffId).HasColumnName("staff_id");
-            entity.Property(e => e.UpdateBy).HasColumnName("update_by");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
             entity.HasOne(d => d.Member).WithMany(p => p.AppointmentMember)
                 .HasForeignKey(d => d.MemberId)
@@ -224,6 +229,9 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deleted_at");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
             entity.Property(e => e.PublishedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("published_at");
@@ -231,6 +239,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasMaxLength(200)
                 .HasColumnName("title");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
@@ -253,7 +262,11 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deleted_at");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
@@ -262,21 +275,9 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasForeignKey(d => d.BlogId)
                 .HasConstraintName("fk_blog_tag_blog");
 
-            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.BlogTagCreatedByNavigation)
-                .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("blog_tag_created_by_fkey");
-
-            entity.HasOne(d => d.DeletedByNavigation).WithMany(p => p.BlogTagDeletedByNavigation)
-                .HasForeignKey(d => d.DeletedBy)
-                .HasConstraintName("blog_tag_deleted_by_fkey");
-
             entity.HasOne(d => d.Tag).WithMany(p => p.BlogTag)
                 .HasForeignKey(d => d.TagId)
                 .HasConstraintName("fk_blog_tag_tag");
-
-            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.BlogTagUpdatedByNavigation)
-                .HasForeignKey(d => d.UpdatedBy)
-                .HasConstraintName("blog_tag_updated_by_fkey");
         });
 
         modelBuilder.Entity<Comment>(entity =>
@@ -300,12 +301,16 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deleted_at");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.CommentAccount)
+            entity.HasOne(d => d.Account).WithMany(p => p.Comment)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_comment_account");
@@ -313,18 +318,6 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.HasOne(d => d.Blog).WithMany(p => p.Comment)
                 .HasForeignKey(d => d.BlogId)
                 .HasConstraintName("fk_comment_blog");
-
-            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.CommentCreatedByNavigation)
-                .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("comment_created_by_fkey");
-
-            entity.HasOne(d => d.DeletedByNavigation).WithMany(p => p.CommentDeletedByNavigation)
-                .HasForeignKey(d => d.DeletedBy)
-                .HasConstraintName("comment_deleted_by_fkey");
-
-            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.CommentUpdatedByNavigation)
-                .HasForeignKey(d => d.UpdatedBy)
-                .HasConstraintName("comment_updated_by_fkey");
         });
 
         modelBuilder.Entity<Conversation>(entity =>
@@ -395,6 +388,57 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasConstraintName("fk_feedback_service");
         });
 
+        modelBuilder.Entity<Media>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("media_pkey");
+
+            entity.ToTable("media");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("id");
+            entity.Property(e => e.BlogId).HasColumnName("blog_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("deleted_at");
+            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
+            entity.Property(e => e.MessageId).HasColumnName("message_id");
+            entity.Property(e => e.ServiceId).HasColumnName("service_id");
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .HasColumnName("type");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.Url).HasColumnName("url");
+
+            entity.HasOne(d => d.Blog).WithMany(p => p.Media)
+                .HasForeignKey(d => d.BlogId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_media_blog");
+
+            entity.HasOne(d => d.Message).WithMany(p => p.Media)
+                .HasForeignKey(d => d.MessageId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_media_message");
+
+            entity.HasOne(d => d.Service).WithMany(p => p.Media)
+                .HasForeignKey(d => d.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_media_service");
+        });
+
         modelBuilder.Entity<Message>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("message_pkey");
@@ -411,10 +455,18 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.UpdatedBy).HasColumnName("update_by");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("deleted_at");
+            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.Message)
                 .HasForeignKey(d => d.ConversationId)
@@ -464,7 +516,9 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.PurchaseId)
                 .ValueGeneratedNever()
                 .HasColumnName("purchase_id");
-            entity.Property(e => e.Amount).HasColumnName("amount");
+            entity.Property(e => e.Amount)
+                .HasPrecision(18, 2)
+                .HasColumnName("amount");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
@@ -499,6 +553,14 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deleted_at");
             entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Purchase)
                 .HasForeignKey(d => d.AccountId)
@@ -556,6 +618,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasDefaultValue(false)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
 
@@ -628,13 +691,17 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
-            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Price)
+                .HasPrecision(18, 2)
+                .HasColumnName("price");
             entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
             //ignore UpdatedBy nếu ko sẽ tu them vao bảng UpdatedBy
             entity.Ignore(x => x.UpdatedBy);
             
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
         });
 
         modelBuilder.Entity<Slot>(entity =>
