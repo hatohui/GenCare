@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Domain.Common.Enums;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class PaymentHistory
 {
@@ -11,15 +8,9 @@ public class PaymentHistory
 
     public DateTime CreatedAt { get; set; }
 
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
 
     public DateTime? ExpiredAt { get; set; }
 
-    public Purchase Purchase { get; set; } = null!;
-
-    [Column("status")]
-    public PaymentHistoryStatus Status { get; set; }
-
-    [Column("payment_method")]
-    public PaymentMethodStatus PaymentMethod { get; set; }
+    public virtual Purchase Purchase { get; set; } = null!;
 }

@@ -12,9 +12,9 @@ public class Conversation
 
     public bool Status { get; set; }
 
-    public Account Member { get; set; } = null!;
+    public virtual Account Member { get; set; } = null!;
 
-    public ICollection<Message> Message { get; set; } = [];
+    public virtual ICollection<Message> Message { get; set; } = [];
 
-    public Account Staff { get; set; } = null!;
+    public virtual Account Staff { get; set; } = null!;
 }

@@ -9,7 +9,7 @@ using Domain.Abstractions;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Infrastructure.Data.Context;
+using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
