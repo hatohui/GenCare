@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import NavLinks from './NavLink'
 import { useRouter } from 'next/navigation'
