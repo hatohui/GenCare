@@ -12,7 +12,7 @@ const Logo = ({
 	return (
 		<>
 			<Image
-				src='/Logo/gencareLogo.png'
+				src='/images/gencarelogo.png'
 				alt='gencare-logo'
 				width={1000}
 				height={1000}

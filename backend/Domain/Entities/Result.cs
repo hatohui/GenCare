@@ -14,7 +14,7 @@ public class Result
 
     public string? ResultData { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
-    public OrderDetail OrderDetail { get; set; } = null!;
+    public virtual OrderDetail OrderDetail { get; set; } = null!;
 }
