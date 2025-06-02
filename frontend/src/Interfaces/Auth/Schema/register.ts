@@ -2,7 +2,10 @@ import { z } from 'zod/v4'
 import { Account } from '../Types/Account'
 
 export type RegisterFormData =
-	| Omit<Account, 'id' | 'role' | 'avatarUrl' | 'deletedAt' | 'isDeleted'> & {
+	| Omit<
+			Account,
+			'id' | 'role' | 'avatarUrl' | 'deletedAt' | 'isDeleted' | 'deletedBy'
+	  > & {
 			password: string
 			confirmPassword: string
 			agreeToTerms: boolean
@@ -10,8 +13,8 @@ export type RegisterFormData =
 
 export type RegisterApi = Omit<
 	RegisterFormData,
-	'agreeToTerms' | 'confirmPassword' | 'gender'
-> & { gender: boolean }
+	'agreeToTerms' | 'confirmPassword'
+>
 
 export const RegisterFormSchema = z
 	.object({
@@ -29,11 +32,15 @@ export const RegisterFormSchema = z
 				message: 'Trong mục họ không được có kí tự đặc biệt',
 			}),
 
-		dateOfBirth: z.coerce.date({ message: 'Ngày sinh là mục bắt buộc' }),
+		dateOfBirth: z.coerce
+			.date({ message: 'Ngày sinh là mục bắt buộc' })
+			.refine(date => date < new Date(), {
+				message: 'Ngày sinh phải là ngày trong quá khứ',
+			}),
 
 		email: z.email({ message: 'Email không hợp lệ' }),
 
-		gender: z.number().min(0).max(1),
+		gender: z.boolean(),
 
 		phoneNumber: z.string().regex(/^(0|\+84)(\s?[2-9])+([0-9]{8})\b/, {
 			message: 'Số điện thoại không hợp lệ',

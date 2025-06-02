@@ -25,7 +25,7 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 #### Database ERD
 
 <p align="center">
-  <img src="docs/charts/database.png" alt="database.png" />
+  <img src="docs/charts/database.schema.png" alt="database.png" />
   Database ERD
 </p>
 

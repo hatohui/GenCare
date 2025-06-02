@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Helpers
@@ -9,7 +10,9 @@ namespace Application.Helpers
     {
         public static readonly string JwtKey = Environment.GetEnvironmentVariable("JWT_KEY")!;
         public static readonly string JwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")!;
-        public static readonly string JwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")!;
+        public static readonly string JwtAudience = Environment.GetEnvironmentVariable(
+            "JWT_AUDIENCE"
+        )!;
 
         /// <summary>
         /// Generate an Access Token for a user.
@@ -19,11 +22,13 @@ namespace Application.Helpers
         /// <param name="role">The role of the user (from the role table).</param>
         /// <param name="expiresInMinutes">Access token expiration time in minutes (default is 60 minutes).</param>
         /// <returns>A tuple containing the access token and its expiration time.</returns>
-        public static (string AccessToken, DateTime AccessTokenExpiration) GenerateAccessToken(Guid accountId,
-            string email, string role, int expiresInMinutes = 60)
+        public static (string AccessToken, DateTime AccessTokenExpiration) GenerateAccessToken(
+            Account user,
+            int expiresInMinutes = 60
+        )
         {
             var accessTokenExpiration = DateTime.Now.AddMinutes(expiresInMinutes);
-            var accessToken = GenerateToken(accountId, email, role, expiresInMinutes, "access");
+            var accessToken = GenerateToken(user, expiresInMinutes, "access");
             return (accessToken, accessTokenExpiration);
         }
 
@@ -33,16 +38,17 @@ namespace Application.Helpers
         /// <param name="accountId">The unique identifier of the account (UUID from the database).</param>
         /// <param name="expiresInDays">Refresh token expiration time in days (default is 7 days).</param>
         /// <returns>A tuple containing the refresh token and its expiration time.</returns>
-        public static (string RefreshToken, DateTime RefreshTokenExpiration) GenerateRefreshToken(Guid accountId,
-            int expiresInDays = 7)
+        public static (string RefreshToken, DateTime RefreshTokenExpiration) GenerateRefreshToken(
+            Guid accountId,
+            int expiresInDays = 7
+        )
         {
             var refreshTokenExpiration = DateTime.Now.AddDays(expiresInDays);
             var refreshTokenClaims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub,
-                    accountId.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
-new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("type", "refresh") // Đánh dấu đây là refresh token
+                new Claim(JwtRegisteredClaimNames.Sub, accountId.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("type", "refresh"), // Đánh dấu đây là refresh token
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey));
@@ -69,19 +75,29 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         /// <param name="expiresInMinutes">Token expiration time in minutes.</param>
         /// <param name="tokenType">Type of token: "access" or "refresh".</param>
         /// <returns>JWT token as a string.</returns>
-        private static string GenerateToken(Guid accountId, string email, string role, int expiresInMinutes,
-            string tokenType)
+        ///Todo: Update the doc above
+        private static string GenerateToken(
+            Account user,
+            int expiresInMinutes = 60,
+            string tokenType = "access"
+        )
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub,
-                    accountId.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
-                new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(ClaimTypes.Role, role),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role?.Name ?? ""),
+                new Claim(ClaimTypes.GivenName, user.FirstName ?? ""),
+                new Claim(ClaimTypes.Surname, user.LastName ?? ""),
+                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth?.ToString() ?? ""),
+                new Claim(ClaimTypes.Gender, user.Gender ? "Male" : "Female"),
+                new Claim(ClaimTypes.Uri, user.AvatarUrl ?? ""),
+                new Claim(ClaimTypes.MobilePhone, user.Phone ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("type", tokenType) // Đánh dấu loại token
+                new Claim("type", tokenType), // Đánh dấu loại token
             };
             var token = new JwtSecurityToken(
                 issuer: JwtIssuer,
@@ -110,7 +126,7 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = JwtIssuer,
                 ValidAudience = JwtAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(key)
+                IssuerSigningKey = new SymmetricSecurityKey(key),
             };
             return tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
         }
@@ -170,30 +186,42 @@ new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         /// <param name="refreshToken">The refresh token to validate and use for generating a new access token.</param>
         /// <param name="accessTokenExpiresInMinutes">Access token expiration time in minutes (default is 60 minutes).</param>
         /// <returns>New access token and its expiration time as a tuple if refresh token is valid; otherwise, throws an exception.</returns>
-        public static (string AccessToken, DateTime AccessTokenExpiration) GenerateNewAccessTokenFromRefreshToken(string refreshToken, int accessTokenExpiresInMinutes = 60)
-        {
-            var principal = ValidateToken(refreshToken);
-            var tokenType = principal.FindFirst("type")?.Value;
+        // public static (
+        //     string AccessToken,
+        //     DateTime AccessTokenExpiration
+        // ) GenerateNewAccessTokenFromRefreshToken(
+        //     string refreshToken,
+        //     int accessTokenExpiresInMinutes = 60
+        // )
+        // {
+        //     var principal = ValidateToken(refreshToken);
+        //     var tokenType = principal.FindFirst("type")?.Value;
 
-            // Fix for CRR0050: Use string.Compare() instead of '!=' operator
-            if (!string.Equals(tokenType, "refresh", StringComparison.Ordinal))
-            {
-                throw new ArgumentException("Provided token is not a refresh token.");
-            }
+        //     // Fix for CRR0050: Use string.Compare() instead of '!=' operator
+        //     if (!string.Equals(tokenType, "refresh", StringComparison.Ordinal))
+        //     {
+        //         throw new ArgumentException("Provided token is not a refresh token.");
+        //     }
 
-            var accountIdString = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-            if (!Guid.TryParse(accountIdString, out Guid accountId))
-            {
-                throw new ArgumentException("Invalid account ID format in token.");
-            }
+        //     var accountIdString = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        //     if (!Guid.TryParse(accountIdString, out Guid accountId))
+        //     {
+        //         throw new ArgumentException("Invalid account ID format in token.");
+        //     }
 
-            var email = principal.FindFirst(JwtRegisteredClaimNames.Email)?.Value ?? string.Empty;
-            var role = principal.FindFirst(ClaimTypes.Role)?.Value ?? "User";
-            var accessTokenExpiration = DateTime.Now.AddMinutes(accessTokenExpiresInMinutes);
+        //     var user = AccountService.GetAccountById(accountId); // You need to implement this
 
-            var newAccessToken = GenerateToken(accountId, email, role, accessTokenExpiresInMinutes, "access");
+        //     if (user == null)
+        //     {
+        //         throw new ArgumentException("User not found.");
+        //     }
 
-            return (newAccessToken, accessTokenExpiration);
-        }
+        //     var accessTokenExpiration = DateTime.UtcNow.AddMinutes(accessTokenExpiresInMinutes);
+        //     var newAccessToken = GenerateToken(user, accessTokenExpiresInMinutes, "access");
+
+        //     return (newAccessToken, accessTokenExpiration);
+        // }
+
+        // Todo: Figure out a way to fetch the account with Id string so that we can verify the user exist for the new access Token
     }
 }

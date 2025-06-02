@@ -1,9 +1,12 @@
 'use client'
 
 import LoginForm from '@/Components/Auth/LoginForm'
+import LoadingPage from '@/Components/Loading'
+import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { useLoginAccount } from '@/Services/auth-service'
 import { setAccessToken } from '@/Utils/setAccessToken'
+import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 
 export default function Login() {
@@ -17,11 +20,19 @@ export default function Login() {
 				router.push('/dashboard')
 			},
 			onError: error => {
-				console.error('Login error:', error)
-				// Show toast or error message if needed
+				const err = error as AxiosError<ApiErrorResponse>
+
+				if (err.response?.status) {
+					// Handle validation errors
+					const validationErrors = err.response.data
+					console.error('Validation errors:', validationErrors)
+					// You can show these errors in the UI if needed
+				}
 			},
 		})
 	}
+
+	if (loginMutation.isPending) return <LoadingPage />
 
 	return (
 		<>
