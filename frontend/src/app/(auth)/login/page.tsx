@@ -8,15 +8,18 @@ import { useLoginAccount } from '@/Services/auth-service'
 import { setAccessToken } from '@/Utils/setAccessToken'
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function Login() {
 	const router = useRouter()
 	const loginMutation = useLoginAccount()
+	const [formError, setFormError] = useState<string | null>(null)
 
 	const handleLogin = (formData: LoginApi) => {
 		loginMutation.mutate(formData, {
 			onSuccess: data => {
 				setAccessToken(data)
+				setFormError(null)
 				router.push('/dashboard')
 			},
 			onError: error => {
@@ -26,7 +29,7 @@ export default function Login() {
 					// Handle validation errors
 					const validationErrors = err.response.data
 					console.error('Validation errors:', validationErrors)
-					// You can show these errors in the UI if needed
+					setFormError('login or password is incorrect')
 				}
 			},
 		})
@@ -37,7 +40,7 @@ export default function Login() {
 	return (
 		<>
 			<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4'>
-				<LoginForm handleLogin={handleLogin} />
+				<LoginForm handleLogin={handleLogin} formError={formError} />
 			</div>
 		</>
 	)

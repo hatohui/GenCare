@@ -12,9 +12,10 @@ import { NoSeeSVG, SeeSVG } from '../Form/SVGs'
 
 export type LoginComponentProps = {
 	handleLogin: (data: { email: string; password: string }) => void
+	formError: string | null
 }
 
-const LoginForm = ({ handleLogin }: LoginComponentProps) => {
+const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 	const { reset: resetEmail, ...email } = useInput('', 'email')
 	const { reset: resetPassword, ...password } = useInput('', 'password')
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
@@ -80,6 +81,9 @@ const LoginForm = ({ handleLogin }: LoginComponentProps) => {
 						{showPassword ? <NoSeeSVG /> : <SeeSVG />}
 					</button>
 				</div>
+				{formError && (
+					<p className='text-red-500 text-sm text-center'>{formError}</p>
+				)}
 				<div className='mb-4 mt-2'>
 					<label
 						className={`flex items-center gap-2 text-gray-700'
