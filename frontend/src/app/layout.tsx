@@ -4,7 +4,8 @@ import './globals.css'
 import CustomCursor from '@/Components/CustomCursor'
 import { Suspense } from 'react'
 import Script from 'next/script'
-import TanstackProvider from '@/Components/TanstackProvider'
+import TanstackProvider from '@/Components/Providers/TanstackProvider'
+import LoadingPage from '@/Components/Loading'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -57,10 +58,12 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='vi'>
-			<head></head>
+			<head>
+				<link rel='icon' href='/favicon.ico' sizes='any' />
+			</head>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
 				<CustomCursor />
-				<Suspense fallback={<div>Loading...</div>}>
+				<Suspense fallback={<LoadingPage />}>
 					<TanstackProvider>{children}</TanstackProvider>
 				</Suspense>
 				<Script

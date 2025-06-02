@@ -55,7 +55,7 @@ const Register = () => {
 
 	return (
 		<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4 flex items-center justify-center'>
-			<RegisterPage handleRegister={handleRegister} />
+			<RegisterPage className='mt-[3rem]' handleRegister={handleRegister} />
 		</div>
 	)
 }
