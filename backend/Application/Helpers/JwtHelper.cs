@@ -136,16 +136,32 @@ namespace Application.Helpers
         /// </summary>
         /// <param name="token">The JWT token.</param>
         /// <returns>The account ID as a Guid if token is valid; otherwise, throws an exception.</returns>
-        public static Guid GetAccountIdFromToken(string token)
+      
+        public static Guid GetAccountIdFromToken1(string token)
         {
             var principal = ValidateToken(token);
-            var accountIdString = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            // Thử lấy từ nhiều loại claim phổ biến
+            var possibleClaimTypes = new[]
+            {
+        JwtRegisteredClaimNames.Sub,
+        "sub",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    };
+
+            string accountIdString = null;
+            foreach (var type in possibleClaimTypes)
+            {
+                accountIdString = principal.FindFirst(type)?.Value;
+                if (!string.IsNullOrEmpty(accountIdString)) break;
+            }
+
             if (Guid.TryParse(accountIdString, out Guid accountId))
             {
                 return accountId;
             }
             throw new ArgumentException("Invalid account ID format in token.");
         }
+
 
         /// <summary>
         /// Extract the email from a JWT token.

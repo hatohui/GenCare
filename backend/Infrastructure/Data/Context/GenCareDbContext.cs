@@ -602,7 +602,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_schedule_slot");
         });
-
+//
         modelBuilder.Entity<Service>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("service_pkey");
@@ -632,6 +632,9 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
+            //ignore UpdatedBy nếu ko sẽ tu them vao bảng UpdatedBy
+            entity.Ignore(x => x.UpdatedBy);
+            
         });
 
         modelBuilder.Entity<Slot>(entity =>
