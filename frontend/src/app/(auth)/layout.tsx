@@ -1,3 +1,5 @@
+import ReturnButton from '@/Components/ReturnButton'
+
 export default function AuthLayout({
 	children,
 }: {
@@ -5,6 +7,7 @@ export default function AuthLayout({
 }) {
 	return (
 		<>
+			<ReturnButton />
 			<main>{children}</main>
 		</>
 	)

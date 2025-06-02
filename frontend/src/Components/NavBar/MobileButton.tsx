@@ -3,11 +3,13 @@ import { motion } from 'framer-motion'
 import React from 'react'
 import { MobileMenu } from './MobileMenu'
 import { NavComponentProps } from './NavBar'
+import { on } from 'events'
 
 const MobileButton = ({
 	className,
 	isOpened,
 	setOpened,
+	onTop,
 }: NavComponentProps & MobileMenu) => {
 	return (
 		<>
@@ -25,7 +27,7 @@ const MobileButton = ({
 					fill='none'
 					viewBox='0 0 26 25'
 					strokeWidth={1.5}
-					stroke='var(--color-main)'
+					stroke={onTop ? 'var(--color-main)' : 'white'}
 					className='size-8 absolute inset-0'
 					initial='hide'
 					animate={isOpened ? 'hide' : 'show'}

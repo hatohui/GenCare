@@ -2,22 +2,26 @@
 
 import { useRef, useState } from 'react'
 import z4 from 'zod/v4'
-import { useFormStatus } from 'react-dom'
 import {
 	RegisterFormData,
 	RegisterFormSchema,
 } from '@/Interfaces/Auth/Schema/register'
-import { motion } from 'motion/react'
 import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
+import SubmitButton from './SubmitButton'
+import clsx from 'clsx'
 
 type RegisterFormProps = keyof RegisterFormData
 
 export type RegisterComponentProps = {
 	handleRegister: (data: RegisterFormData) => void
+	className?: string
 }
 
-const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
+const RegisterForm = ({
+	handleRegister,
+	className,
+}: RegisterComponentProps) => {
 	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
 		lastName: '',
@@ -55,8 +59,6 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 
 		validateForm(name as RegisterFormProps, updatedForm)
 	}
-
-	console.log(form)
 
 	const validateForm = (
 		name: RegisterFormProps,
@@ -123,7 +125,10 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 
 	return (
 		<form
-			className='p-7 max-w-lg min-w-md mx-auto rounded-3xl bg-general'
+			className={clsx(
+				'p-7 max-w-lg min-w-sm mx-auto rounded-3xl bg-general',
+				className
+			)}
 			onSubmit={handleSubmit}
 		>
 			<h1 className='text-xl font-bold mb-4'>Đăng ký tài khoản</h1>
@@ -205,7 +210,7 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 						errors.dateOfBirth
 							? 'border-red-500 focus:ring-red-500 focus:border-red-500'
 							: 'border-gray-300 focus:ring-main focus:border-main'
-					} rounded-md shadow-sm focus:outline-none focus:ring-2`}
+					} rounded-md shadow-sm focus:outline-none focus:ring-0`}
 				/>
 				{errors.dateOfBirth && (
 					<p className='text-red-500 text-sm mt-1'>
@@ -213,7 +218,6 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 					</p>
 				)}
 			</div>
-
 			<div className='mb-4'>
 				<label
 					htmlFor='gender'
@@ -228,11 +232,14 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 					onChange={handleChange}
 					className={`w-full px-3 py-2 border ${
 						errors.gender ? 'border-red-500' : 'border-gray-300'
-					} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-main focus:border-main`}
+					} rounded-md shadow-sm focus:ring-main focus:border-main focus:outline-none focus:ring-0`}
 				>
 					<option value='true'>Nam</option>
 					<option value='false'>Nữ</option>
 				</select>
+				{errors.gender && (
+					<p className='text-red-500 text-sm mt-1'>{errors.gender.errors[0]}</p>
+				)}
 			</div>
 
 			{/* Đồng ý điều khoản (Agree to terms) */}
@@ -257,7 +264,10 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 				)}
 			</div>
 
-			<SubmitButton buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 ' />
+			<SubmitButton
+				label='Đăng kí'
+				buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent'
+			/>
 
 			<div className='text-center text-gray-500 mt-4'>
 				Đã có tài khoản?{' '}
@@ -266,26 +276,8 @@ const RegisterForm = ({ handleRegister }: RegisterComponentProps) => {
 				</a>
 			</div>
 
-			<GoogleLoginButton className='mt-4' />
+			<GoogleLoginButton text='signup_with' className='mt-4 h-10' />
 		</form>
-	)
-}
-
-export const SubmitButton = ({ buttonClass }: { buttonClass: string }) => {
-	const { pending } = useFormStatus()
-
-	return (
-		<motion.button
-			type='submit'
-			className={buttonClass}
-			disabled={pending}
-			animate={{ scale: pending ? 0.95 : 1 }}
-			transition={{ duration: 0.2, ease: 'easeInOut' }}
-			whileHover={{ scale: 1.05 }}
-			whileTap={{ scale: 0.95 }}
-		>
-			Submit
-		</motion.button>
 	)
 }
 
