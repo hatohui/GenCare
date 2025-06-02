@@ -140,7 +140,6 @@ CREATE TABLE IF NOT EXISTS "appointment" (
     "deleted_at" TIMESTAMP,
     "deleted_by" UUID,
     "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
-
     CONSTRAINT "fk_appointment_member_id" FOREIGN KEY ("member_id") REFERENCES "account"("id") ON DELETE RESTRICT,
     CONSTRAINT "fk_appointment_staff_id" FOREIGN KEY ("staff_id") REFERENCES "account"("id") ON DELETE RESTRICT
 );
@@ -191,7 +190,7 @@ CREATE TABLE IF NOT EXISTS "service" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "name" VARCHAR(100) NOT NULL,
     "description" TEXT,
-    "price" DECIMAL,
+    "price" DECIMAL(18,0),
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "created_by" UUID,
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -296,4 +295,25 @@ CREATE TABLE IF NOT EXISTS "blog_tag" (
     CONSTRAINT "fk_blog_tag_tag" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE CASCADE
 );
 COMMENT ON TABLE "blog_tag" IS 'Join table for many-to-many relationship between blogs and tags';
+
+CREATE TABLE IF NOT EXISTS "media" (
+    "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "url" TEXT NOT NULL,
+    "type" VARCHAR(50),
+    "description" TEXT,
+    "message_id" UUID,
+    "blog_id" UUID,
+    "service_id" UUID,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "created_by" UUID,
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_by" UUID,
+    "deleted_at" TIMESTAMP,
+    "deleted_by" UUID,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT fk_media_message FOREIGN KEY ("message_id") REFERENCES "message"("id") ON DELETE CASCADE,
+    CONSTRAINT fk_media_blog FOREIGN KEY ("blog_id") REFERENCES "blog"("id") ON DELETE CASCADE,
+    CONSTRAINT fk_media_service FOREIGN KEY ("service_id") REFERENCES "service"("id") ON DELETE CASCADE
+);
 
