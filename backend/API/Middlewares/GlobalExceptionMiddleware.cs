@@ -53,7 +53,7 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         catch (Exception ex) // Catch all fallbacks
         {
             logger.LogError(ex, "Unhandled exception");
-            await WriteProblemDetailsAsync(context, 500, "Internal Server Error", "An unexpected error occurred");
+            await WriteProblemDetailsAsync(context, 500, ex.Message, "An unexpected error occurred");
         }
     }
 
