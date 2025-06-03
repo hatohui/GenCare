@@ -16,7 +16,7 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 
 		logout(undefined, {
 			onSuccess: () => {
-				router.push('/login?error=logged_out')
+				router.push('/login')
 			},
 			onError: () => {
 				console.error('Logout failed')

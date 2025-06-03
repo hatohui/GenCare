@@ -15,7 +15,7 @@ export default function SideNav() {
 
 		logout(undefined, {
 			onSuccess: () => {
-				router.push('/login?error=logged_out')
+				router.push('/login')
 			},
 			onError: () => {
 				alert('Something wrong happened')
