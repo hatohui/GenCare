@@ -1,6 +1,5 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { REFRESH_TOKEN_COOKIE_STRING } from '@/Constants/Auth'
-import { accountActions } from '@/Hooks/useToken'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { LogoutRequest } from '@/Interfaces/Auth/Schema/logout'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
@@ -41,7 +40,7 @@ const authApi = {
 				headers: { Authorization: getAccessTokenHeader() },
 			})
 			.then(res => {
-				if (res.status === 200) removeTokens()
+				if (res.status === 204) removeTokens()
 				return res.data
 			})
 	},
@@ -68,6 +67,5 @@ export const useOauthAccount = () => {
 export const useLogoutAccount = () => {
 	return useMutation({
 		mutationFn: authApi.logout,
-		onSuccess: () => accountActions.removeAccount(),
 	})
 }

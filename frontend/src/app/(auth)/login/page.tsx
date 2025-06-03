@@ -36,7 +36,6 @@ export default function Login() {
 	//redirect when account is available
 	useEffect(() => {
 		if (account) {
-			console.log(account)
 			router.push('/dashboard')
 		}
 	}, [account, router])
@@ -44,15 +43,11 @@ export default function Login() {
 	const handleLogin = (formData: LoginApi) => {
 		loginMutation.mutate(formData, {
 			onSuccess: data => {
-				console.log(data)
-
 				setAccessToken(data)
 				setFormError('')
 				router.push('/dashboard')
 			},
 			onError: error => {
-				console.log(error)
-
 				const err = error as AxiosError<ApiErrorResponse>
 
 				if (err.response?.status) {
