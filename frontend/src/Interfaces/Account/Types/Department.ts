@@ -1,5 +1,5 @@
 export type Department = {
 	id: string
-	name: string
+	departmentName: string
 	description?: string
 }

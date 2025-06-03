@@ -1,3 +1,9 @@
+import { Account } from '@/Interfaces/Auth/Types/Account'
+import { StaffInfo } from '../Types/StaffInfo'
+import { StaffAccount } from '../Types/StaffAccount'
+import { Department } from '../Types/Department'
+import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
+
 //----------------------------------------
 /**
  * GET /api/accounts/
@@ -8,18 +14,13 @@
  * @requires header - access-token
  * @returns {200} Success response status
  */
-
-import { Account } from '@/Interfaces/Auth/Types/Account'
-import { StaffInfo } from '../Types/StaffInfo'
-import { StaffAccount } from '../Types/StaffAccount'
-
 export type GetAccountByPageRequest = {
 	page: number
 	count: number
 }
 
 export type GetAccountByPageResponse = {
-	accounts: []
+	accounts: Account[]
 }
 
 //----------------------------------------
@@ -31,29 +32,68 @@ export type GetAccountByPageResponse = {
  *
  * @requires header - access-token
  * @return {200} Success response status
+ * @return {StaffAccount} details of the account
  */
 export type GetAccountByIdRequest = {
 	id: string
 }
 
-export type GetAccountByIdResponse = Account
+export type GetAccountByIdResponse = {
+	account: StaffAccount
+}
 
 //------------------------------- ---------
 /**
  * POST /api/account/
  *
  * @remark
- * Create a new account
+ * Create a new staff account
  *
  * @requires header - access-token
  * @return {201} Created success status
+ * @return {StaffAccount} newly created Account
  */
 export type PostAccountRequest = {
-	account: Omit<Account, 'id' | 'deletedAt' | 'isDeleted' | 'deletedBy'>
-	staffInfo: Omit<StaffInfo, 'accountId' | 'departmentId'>
-	department: string
+	account: RegisterApi
+	staffInfo?: Omit<StaffInfo, 'accountId' | 'departmentId'>
+	department?: string
 }
 
-export type PostAccountResponse = {
-	staffAccount: StaffAccount
+export type PostAccountResponse = StaffAccount
+
+//------------------------------- ---------
+/**
+ * DELETE /api/account/:id
+ *
+ * @remark
+ * Delete an account
+ *
+ * @requires header - access-token
+ * @return {204} No Content success status
+ */
+export type DeleteAccountRequest = {
+	id: string
 }
+
+export type DeleteAccountResponse = Required<
+	Pick<Account, 'id' | 'email' | 'deletedAt' | 'deletedBy' | 'isDeleted'>
+>
+
+//------------------------------- ---------
+/**
+ * PUT /api/account/:id
+ *
+ * @remark
+ * Update an existing account
+ *
+ * @requires header - access-token
+ * @return {200} Success response status
+ * @return {StaffAccount} updated account
+ */
+export type PutAccountRequest = {
+	account: Partial<Omit<Account, 'deletedAt' | 'isDeleted' | 'deletedBy'>>
+	staffInfo?: Partial<Omit<StaffInfo, 'accountId' | 'departmentId'>>
+	department?: string
+}
+
+export type PutAccountResponse = StaffAccount
