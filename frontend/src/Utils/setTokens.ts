@@ -17,9 +17,13 @@ export const setAccessToken = (data: TokenData) => {
 	setCookie(REFRESH_TOKEN_COOKIE_STRING, data.refreshToken)
 
 	// DECODE COOKIE
-	const tokenClaim = getDecodedToken()
+	const tokenClaim = getDecodedToken(data.accessToken)
 
-	if (!tokenClaim) return //do something
+	if (!tokenClaim) {
+		console.warn('Token decoding failed. User not authenticated.')
+		accountActions.removeAccount()
+		return
+	}
 
 	const decodedTokenData = parseTokenClaims(tokenClaim)
 

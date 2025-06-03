@@ -20,7 +20,7 @@ VALUES
   ((SELECT id FROM "role" WHERE name = 'member'), 'member1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'David', 'Member', '2233445566', '2000-04-04', TRUE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'manager'), 'manager1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Eve', 'Manager', '5556667777', '1982-08-08', FALSE, NULL, NOW(), FALSE);
 
-4. Insert staff_info
+--4. Insert staff_info
 INSERT INTO "staff_info" (account_id, department_id, degree, year_of_experience, biography)
 SELECT a.id, d.id, 'MD', 5, 'Experienced Doctor in Cardiology'
 FROM "account" a, "department" d WHERE a.email = 'staff1@example.com' AND d.name = 'Cardiology'
