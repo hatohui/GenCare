@@ -96,7 +96,7 @@ public class AccountService(
             return false;
 
         token.IsRevoked = true;
-        token.LastUsedAt = DateTime.UtcNow;
+        token.LastUsedAt = DateTime.Now;
 
         await refTokenRepo.UpdateAsync(token);
         return true;
