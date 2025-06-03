@@ -12,5 +12,5 @@ public class Slot
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<Schedule> Schedule { get; set; } = [];
+    public ICollection<Schedule> Schedules { get; set; } = [];
 }

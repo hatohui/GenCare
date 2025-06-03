@@ -24,7 +24,7 @@ public class Comment
 
     public bool IsDeleted { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 
-    public virtual Blog Blog { get; set; } = null!;
+    public Blog Blog { get; set; } = null!;
 }

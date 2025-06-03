@@ -115,14 +115,12 @@ public class AccountService(
             user = new Account
             {
                 Email = payload.Email,
-                FirstName = payload.GivenName,
-                LastName = payload.FamilyName,
-                AvatarUrl = payload.Picture,
+                FirstName = payload.GivenName ?? string.Empty,
+                LastName = payload.FamilyName ?? string.Empty,
+                AvatarUrl = payload.Picture ?? string.Empty,
                 PasswordHash = null,
                 RoleId = role.Id,
                 Role = role,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
                 Gender = true,
                 IsDeleted = false,
             };

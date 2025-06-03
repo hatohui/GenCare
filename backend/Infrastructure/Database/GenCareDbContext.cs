@@ -123,7 +123,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.Account)
+            entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_account_role");
@@ -162,12 +162,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Member).WithMany(p => p.AppointmentMember)
+            entity.HasOne(d => d.Member).WithMany(p => p.AppointmentMembers)
                 .HasForeignKey(d => d.MemberId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_appointment_member_id");
 
-            entity.HasOne(d => d.Staff).WithMany(p => p.AppointmentStaff)
+            entity.HasOne(d => d.Staff).WithMany(p => p.AppointmentStaffs)
                 .HasForeignKey(d => d.StaffId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_appointment_staff_id");
@@ -271,11 +271,11 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Blog).WithMany(p => p.BlogTag)
+            entity.HasOne(d => d.Blog).WithMany(p => p.BlogTags)
                 .HasForeignKey(d => d.BlogId)
                 .HasConstraintName("fk_blog_tag_blog");
 
-            entity.HasOne(d => d.Tag).WithMany(p => p.BlogTag)
+            entity.HasOne(d => d.Tag).WithMany(p => p.BlogTags)
                 .HasForeignKey(d => d.TagId)
                 .HasConstraintName("fk_blog_tag_tag");
         });
@@ -310,12 +310,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Comment)
+            entity.HasOne(d => d.Account).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_comment_account");
 
-            entity.HasOne(d => d.Blog).WithMany(p => p.Comment)
+            entity.HasOne(d => d.Blog).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.BlogId)
                 .HasConstraintName("fk_comment_blog");
         });
@@ -338,12 +338,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasDefaultValue(true)
                 .HasColumnName("status");
 
-            entity.HasOne(d => d.Member).WithMany(p => p.ConversationMember)
+            entity.HasOne(d => d.Member).WithMany(p => p.ConversationMembers)
                 .HasForeignKey(d => d.MemberId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_conversation_member");
 
-            entity.HasOne(d => d.Staff).WithMany(p => p.ConversationStaff)
+            entity.HasOne(d => d.Staff).WithMany(p => p.ConversationStaffs)
                 .HasForeignKey(d => d.StaffId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_conversation_staff");
@@ -382,7 +382,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.Rating).HasColumnName("rating");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
 
-            entity.HasOne(d => d.Service).WithMany(p => p.Feedback)
+            entity.HasOne(d => d.Service).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.ServiceId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_feedback_service");
@@ -468,7 +468,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Conversation).WithMany(p => p.Message)
+            entity.HasOne(d => d.Conversation).WithMany(p => p.Messages)
                 .HasForeignKey(d => d.ConversationId)
                 .HasConstraintName("fk_message_conversation");
         });
@@ -496,12 +496,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.PurchaseId).HasColumnName("purchase_id");
             entity.Property(e => e.ServiceId).HasColumnName("service_id");
 
-            entity.HasOne(d => d.Purchase).WithMany(p => p.OrderDetail)
+            entity.HasOne(d => d.Purchase).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.PurchaseId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_order_detail_purchase");
 
-            entity.HasOne(d => d.Service).WithMany(p => p.OrderDetail)
+            entity.HasOne(d => d.Service).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.ServiceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_order_detail_service");
@@ -562,7 +562,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Purchase)
+            entity.HasOne(d => d.Account).WithMany(p => p.Purchases)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_purchase_account");
@@ -589,7 +589,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("last_used_at");
             entity.Property(e => e.Token).HasColumnName("token");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.RefreshToken)
+            entity.HasOne(d => d.Account).WithMany(p => p.RefreshTokens)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_refresh_token_account");
@@ -655,12 +655,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.SlotId).HasColumnName("slot_id");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Schedule)
+            entity.HasOne(d => d.Account).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_schedule_account");
 
-            entity.HasOne(d => d.Slot).WithMany(p => p.Schedule)
+            entity.HasOne(d => d.Slot).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.SlotId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_schedule_slot");
@@ -741,7 +741,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_staff_info_account");
 
-            entity.HasOne(d => d.Department).WithMany(p => p.StaffInfo)
+            entity.HasOne(d => d.Department).WithMany(p => p.StaffInfos)
                 .HasForeignKey(d => d.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_staff_info_department");
