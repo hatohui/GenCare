@@ -4,6 +4,8 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
+using Domain.Exceptions;
+using Google.Apis.Auth;
 
 namespace Infrastructure.Services;
 
@@ -67,7 +69,7 @@ public class AccountService(
     {
         var user =
             await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
-            ?? throw new Exception("Invalid email or password");
+            ?? throw new InvalidCredentialsException();
         //create access and refresh tokens
         var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
@@ -100,5 +102,50 @@ public class AccountService(
 
         await refTokenRepo.UpdateAsync(token);
         return true;
+    }
+
+    public async Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
+    {
+        var user = await accountRepo.GetByEmailAsync(payload.Email);
+        if (user == null)
+        {
+            var role = await roleRepo.GetRoleByNameAsync("Member")
+                ?? throw new Exception("Role 'Member' not found");
+
+            user = new Account
+            {
+                Email = payload.Email,
+                FirstName = payload.GivenName,
+                LastName = payload.FamilyName,
+                AvatarUrl = payload.Picture,
+                PasswordHash = null,
+                RoleId = role.Id,
+                Role = role,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Gender = true,
+                IsDeleted = false,
+            };
+
+            await accountRepo.AddAsync(user);
+        }
+
+        var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        RefreshToken rf = new()
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = refreshExpiration
+        };
+        await refTokenRepo.AddAsync(rf);
+
+        return new AccountLoginResponse
+        {
+            AccessToken = accessToken,
+            AccessTokenExpiration = accessExpiration,
+            RefreshToken = refreshToken
+        };
     }
 }

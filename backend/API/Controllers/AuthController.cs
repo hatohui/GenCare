@@ -95,8 +95,11 @@ public class AuthController
         {
             return BadRequest("Google Client ID is not configured.");
         }
+
         var payload = await googleCredentialService.VerifyGoogleCredentialAsync(clientId, request.Credential);
-        return Ok(payload);
+
+        var response = await accountService.LoginWithGoogleAsync(payload);
+        return Ok(response);
     }
 
     /// <summary>
@@ -122,16 +125,5 @@ public class AuthController
         }
 
         return NoContent(); // 204
-    }
-
-    /// <summary>
-    ///     Test endpoint to throw an exception for testing error handling.
-    /// </summary>
-    /// <returns>Throws a test exception.</returns>
-    /// <response code="500">Throws a test error.</response>
-    [HttpGet("test-exception")]
-    public IActionResult ThrowTest()
-    {
-        throw new Exception("This is a test error");
     }
 }

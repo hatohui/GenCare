@@ -36,25 +36,25 @@ public class Account
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<Appointment> AppointmentMember { get; set; } = [];
+    public ICollection<Appointment> AppointmentMember { get; set; } = [];
 
-    public virtual ICollection<Appointment> AppointmentStaff { get; set; } = [];
+    public ICollection<Appointment> AppointmentStaff { get; set; } = [];
 
-    public virtual BirthControl? BirthControl { get; set; }
+    public BirthControl? BirthControl { get; set; }
 
-    public virtual ICollection<Comment> Comment { get; set; } = [];
+    public ICollection<Comment> Comment { get; set; } = [];
 
-    public virtual ICollection<Conversation> ConversationMember { get; set; } = [];
+    public ICollection<Conversation> ConversationMember { get; set; } = [];
 
-    public virtual ICollection<Conversation> ConversationStaff { get; set; } = [];
+    public ICollection<Conversation> ConversationStaff { get; set; } = [];
 
-    public virtual ICollection<Purchase> Purchase { get; set; } = [];
+    public ICollection<Purchase> Purchase { get; set; } = [];
 
-    public virtual ICollection<RefreshToken> RefreshToken { get; set; } = [];
+    public ICollection<RefreshToken> RefreshToken { get; set; } = [];
 
-    public virtual Role Role { get; set; } = null!;
+    public Role Role { get; set; } = null!;
 
-    public virtual ICollection<Schedule> Schedule { get; set; } = [];
+    public ICollection<Schedule> Schedule { get; set; } = [];
 
-    public virtual StaffInfo? StaffInfo { get; set; }
+    public StaffInfo? StaffInfo { get; set; }
 }
