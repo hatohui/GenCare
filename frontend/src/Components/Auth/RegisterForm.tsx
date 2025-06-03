@@ -276,7 +276,7 @@ const RegisterForm = ({
 				</a>
 			</div>
 
-			<GoogleLoginButton text='signup_with' className='mt-4 h-10' />
+			<GoogleLoginButton text='signup_with' className='mt-4 h-10 mx-auto' />
 		</form>
 	)
 }
