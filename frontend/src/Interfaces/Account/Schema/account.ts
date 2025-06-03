@@ -1,7 +1,6 @@
 import { Account } from '@/Interfaces/Auth/Types/Account'
 import { StaffInfo } from '../Types/StaffInfo'
 import { StaffAccount } from '../Types/StaffAccount'
-import { Department } from '../Types/Department'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 
 //----------------------------------------
