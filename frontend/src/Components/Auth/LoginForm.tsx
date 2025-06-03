@@ -7,7 +7,7 @@ import { ZodError } from 'zod/v4'
 import { useState } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
-import { NoSeeSVG, SeeSVG } from '../Form/SVGs'
+import { NoSeeSVG, SeeSVG } from '../SVGs'
 import SubmitButton from './SubmitButton'
 import Logo from '../Logo'
 import Link from 'next/link'
@@ -76,12 +76,14 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 					className='mt-4'
 					label='Email'
 					id='email'
+					autocomplete='username'
 					{...email}
 				/>
 				<div className='relative mt-2'>
 					<FloatingLabelInput
 						label='Password'
 						id='password'
+						autocomplete='password'
 						{...password}
 						type={showPassword ? 'text' : 'password'}
 					/>
@@ -93,11 +95,8 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 						{showPassword ? <NoSeeSVG /> : <SeeSVG />}
 					</button>
 				</div>
-				{formError && (
-					<p className='text-red-500 text-sm text-center'>{formError}</p>
-				)}
 
-				<div className='mb-6 flex justify-between'>
+				<div className='m-2 flex justify-between'>
 					<div>
 						<label className='flex items-center gap-2'>
 							<input name='agreeToTerms' {...remember} className={`w-4 h-4`} />
@@ -111,6 +110,10 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 						Forgot Password?
 					</Link>
 				</div>
+
+				{formError && (
+					<p className='text-red-500 text-sm mb-3 text-center'>{formError}</p>
+				)}
 
 				<SubmitButton
 					label='Đăng Nhập'

@@ -1,6 +1,6 @@
 import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 import { useOauthAccount } from '@/Services/auth-service'
-import { setAccessToken } from '@/Utils/setAccessToken'
+import { setAccessToken } from '@/Utils/setTokens'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 

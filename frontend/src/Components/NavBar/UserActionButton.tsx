@@ -1,9 +1,46 @@
 import { NavComponentProps } from '@/Interfaces/NavBar/Types/NavBarComponents'
 import MotionLink from '../MotionLink'
 import clsx from 'clsx'
+import useAccountStore from '@/Hooks/useToken'
+import { UserSVG } from '../SVGs'
+import { useRouter } from 'next/navigation'
+import { useLogoutAccount } from '@/Services/auth-service'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
-	return (
+	const accountStore = useAccountStore()
+	const router = useRouter()
+	const { mutate: logout } = useLogoutAccount()
+
+	const handleLogout = (e: React.FormEvent) => {
+		e.preventDefault()
+
+		logout(undefined, {
+			onSuccess: () => {
+				router.push('/login?error=logged_out')
+			},
+			onError: () => {
+				console.error('Logout failed')
+			},
+		})
+	}
+
+	return accountStore.account ? (
+		<button
+			className={clsx(
+				'rounded-full px-2 py-1 duration-200 cursor-pointer select-none',
+				'text-center flex gap-2 items-center',
+				'bg-accent',
+				'shadow-md hover:shadow-lg',
+				'text-white font-medium',
+				'transition-all ease-in-out',
+				className
+			)}
+			onClick={handleLogout}
+		>
+			<label className='pointer-events-none whitespace-nowrap'>Đăng Xuất</label>
+			{onTop && <UserSVG className='size-5 text-white' />}
+		</button>
+	) : (
 		<MotionLink
 			id='login'
 			className={clsx(
