@@ -29,7 +29,7 @@ export default function Login() {
 	//clean up
 	useEffect(() => {
 		if (error) {
-			store.removeAccount()
+			if (account) store.removeAccount()
 		}
 	}, [store, error])
 
