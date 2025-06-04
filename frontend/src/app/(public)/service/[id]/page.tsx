@@ -1,7 +1,12 @@
 import ServiceDetail from '@/Components/Services/ServiceDetail'
 
 export const Page = () => {
-	return <ServiceDetail />
+	return (
+		<main className='max-h-screen bg-[#F7F7F7] text-gray-900'>
+			<div className='h-10' />
+			<ServiceDetail />
+		</main>
+	)
 }
 
 export default Page
