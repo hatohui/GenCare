@@ -127,4 +127,29 @@ public class AuthController
     {
         throw new Exception("This is a test error");
     }
+
+
+    /// <summary>
+    /// Initiates the forgot password process by sending a reset password link to the user's email.
+    /// </summary>
+    /// <param name="request">forgot password request</param>
+    /// <returns>response containing forgot password URL</returns>
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPasswordSync([FromBody] ForgotPasswordRequest request)
+    {
+        var response = await accountService.ForgotPasswordAsync(request);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Resets the user's password using a reset token and new password.
+    /// </summary>
+    /// <param name="request">reset password request</param>
+    /// <returns>message of resetting password successfully</returns>
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+    {
+        var response = await accountService.ResetPasswordAsync(request);
+        return Ok(response);
+    }
 }

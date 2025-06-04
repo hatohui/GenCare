@@ -120,6 +120,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var env = builder.Environment;
 
