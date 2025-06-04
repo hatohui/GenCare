@@ -7,8 +7,8 @@ export type Account = {
 	gender: boolean
 	phoneNumber: string
 	dateOfBirth: string
-	avatarUrl: string
-	deletedAt: string
-	isDeleted: boolean
-	deletedBy: string
+	avatarUrl?: string
+	deletedAt?: string
+	isDeleted?: boolean
+	deletedBy?: string
 }
