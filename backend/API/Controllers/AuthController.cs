@@ -51,8 +51,14 @@ public class AuthController
         return Ok(result);
     }
 
+    /// <summary>
+    ///     Logs in a user and generates a JWT access token Using Httponly cookie.
+    /// </summary>
+    /// <param name="request"> The login credentials (email and password).</param>
+    /// returns>The JWT access token and related information.</returns>
+    /// <response code="200">Successfully logged in and token generated.</response>
+    /// <response code="400">Invalid credentials.</response>
     [HttpPost("login-cookie")]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> LoginWithCookieAsync([FromBody] AccountLoginRequest request)
     {
         var result = await accountService.LoginAsync(request);
@@ -73,7 +79,8 @@ public class AuthController
         Response.Cookies.Append("refreshToken", result.RefreshToken, cookieOptions);
 
 
-        return Ok(new {
+        return Ok(new
+        {
             AccessToken = result.AccessToken,
             AccessTokenExpiration = result.AccessTokenExpiration,
         });
