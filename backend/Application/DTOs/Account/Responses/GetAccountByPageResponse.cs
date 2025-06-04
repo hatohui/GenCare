@@ -1,6 +1,6 @@
-﻿namespace Application.DTOs.Account;
+﻿namespace Application.DTOs.Account.Responses;
 
 public class GetAccountByPageResponse
 {
-    public List<> Accounts { get; set; } = [];
+    public List<AccountViewModel> Accounts { get; set; } = [];
 }

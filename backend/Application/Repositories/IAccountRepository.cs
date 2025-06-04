@@ -11,4 +11,5 @@ public interface IAccountRepository
     Task AddAsync(Account user);
 
     Task<Account?> GetAccountByEmailPasswordAsync(string email, string password);
+    Task<List<Account>> GetAccountsByPageAsync(int skip, int take);
 }

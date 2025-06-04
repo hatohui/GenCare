@@ -1,4 +1,6 @@
-﻿using Application.DTOs.Auth.Requests;
+﻿using Application.DTOs.Account;
+using Application.DTOs.Account.Responses;
+using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
 using Application.Repositories;
@@ -9,7 +11,8 @@ using Google.Apis.Auth;
 
 namespace Infrastructure.Services;
 
-public class AccountService(
+public class AccountService
+(
     IAccountRepository accountRepo,
     IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo
@@ -38,7 +41,7 @@ public class AccountService(
             DateOfBirth = request.DateOfBirth,
             Phone = request.PhoneNumber,
             RoleId = role.Id,
-            Role = role,
+            Role = role
         };
         //add user to database
         await accountRepo.AddAsync(user);
@@ -50,7 +53,7 @@ public class AccountService(
         {
             AccountId = user.Id,
             Token = refToken,
-            ExpiresAt = refExpiration,
+            ExpiresAt = refExpiration
         };
         //add refresh token to database
         await refTokenRepo.AddAsync(rf);
@@ -61,7 +64,7 @@ public class AccountService(
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
-            AccessTokenExpiration = accExpiration,
+            AccessTokenExpiration = accExpiration
         };
     }
 
@@ -79,15 +82,15 @@ public class AccountService(
         {
             AccountId = user.Id,
             Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration,
+            ExpiresAt = refreshTokenExpiration
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new()
+        return new AccountLoginResponse
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken,
+            RefreshToken = refreshToken
         };
     }
 
@@ -95,7 +98,9 @@ public class AccountService(
     {
         var token = await refTokenRepo.GetByTokenAsync(refreshToken);
         if (token is null || token.IsRevoked)
+        {
             return false;
+        }
 
         token.IsRevoked = true;
         token.LastUsedAt = DateTime.Now;
@@ -110,7 +115,7 @@ public class AccountService(
         if (user == null)
         {
             var role = await roleRepo.GetRoleByNameAsync("Member")
-                ?? throw new Exception("Role 'Member' not found");
+                       ?? throw new Exception("Role 'Member' not found");
 
             user = new Account
             {
@@ -122,7 +127,7 @@ public class AccountService(
                 RoleId = role.Id,
                 Role = role,
                 Gender = true,
-                IsDeleted = false,
+                IsDeleted = false
             };
 
             await accountRepo.AddAsync(user);
@@ -145,5 +150,28 @@ public class AccountService(
             AccessTokenExpiration = accessExpiration,
             RefreshToken = refreshToken
         };
+    }
+
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
+    {
+        var skip = page * count;
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
+        var result = new GetAccountByPageResponse
+        {
+            Accounts = accounts.Select(a => new AccountViewModel
+            {
+                Id = a.Id,
+                Role = a.Role.Name,
+                Email = a.Email,
+                FirstName = a.FirstName ?? string.Empty,
+                LastName = a.LastName ?? string.Empty,
+                Gender = a.Gender,
+                DateOfBirth = a.DateOfBirth,
+                AvatarUrl = a.AvatarUrl,
+                IsDeleted = a.IsDeleted
+
+            }).ToList()
+        };
+        return result;
     }
 }

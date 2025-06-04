@@ -1,3 +1,4 @@
+using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Google.Apis.Auth;
@@ -13,4 +14,6 @@ public interface IAccountService
     Task<bool> RevokeRefreshTokenAsync(string refreshToken);
 
     Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
+
+    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
 }

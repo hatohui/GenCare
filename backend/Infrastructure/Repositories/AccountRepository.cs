@@ -38,4 +38,13 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
     {
         return await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
     }
+
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
+    {
+        return await dbContext.Accounts
+            .Include(a => a.Role)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
 }
