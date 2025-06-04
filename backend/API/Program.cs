@@ -1,6 +1,5 @@
-﻿using System.Text;
+﻿using Api.Middlewares;
 using API.ActionFilters;
-using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Repositories;
@@ -13,10 +12,12 @@ using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -90,7 +91,26 @@ builder
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     })
-    .AddCookie()
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, option => {
+        option.Cookie.HttpOnly = true;
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        option.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        option.SlidingExpiration = true;
+        
+        option.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                context.Response.StatusCode = 403;
+                return Task.CompletedTask;
+            }
+        };
+    })
     .AddGoogle(options =>
     {
         options.ClientId = googleClientId;
