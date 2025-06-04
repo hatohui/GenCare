@@ -1,6 +1,6 @@
 ﻿
 namespace Application.DTOs.Auth.Requests;
-public class ResetPasswordRequest
+public record class ResetPasswordRequest
 {
     public string? Email { get; set; }
     public string? NewPassword { get; set; }
