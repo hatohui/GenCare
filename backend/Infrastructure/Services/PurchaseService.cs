@@ -10,7 +10,7 @@ public class PurchaseService(
     IPurchaseRepository purchaseRepository, 
     IOrderDetailRepository orderDetailRepository,
     IAccountRepository accountRepository,
-    IServiceRepository serviceRepository) : IPurchaseService
+    IServicesRepository servicesRepository) : IPurchaseService
 {
     //add new purchase
     public async Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest, string accessToken)
@@ -29,28 +29,51 @@ public class PurchaseService(
         //add purchase to database
         await purchaseRepository.AddAsync(purchase);
 
+        ////for each order detail in booking service request
+        //bookingServiceRequest.OrderDetails.ForEach(async o =>
+        //{
+        //    //create new order detail (DB)
+        //    OrderDetail ordDetail = new()
+        //    {
+        //        PurchaseId = purchase.Id,
+        //        ServiceId = o.ServiceId,
+        //        FirstName = o.FirstName ?? "", //if first name is null --> assigned empty string
+        //        LastName = o.LastName ?? "",
+        //        Phone = o.PhoneNumber ?? "",
+        //        DateOfBirth = o.DateOfBirth,
+        //        Gender = o.Gender,
+        //        Purchase = purchase,
+        //        Service = await servicesRepository.GetByIdAsync(o.ServiceId)
+        //                    ?? throw new Exception("Service not found")
+        //    };
+        //    //add order detail to corresponding purchase
+        //    purchase.OrderDetail.Add(ordDetail);
+        //    //add order detail to database
+        //    await orderDetailRepository.AddAsync(ordDetail);
+        //});
+
         //for each order detail in booking service request
-        bookingServiceRequest.OrderDetails.ForEach(async o =>
+        foreach (var o in bookingServiceRequest.OrderDetails)
         {
             //create new order detail (DB)
             OrderDetail ordDetail = new()
             {
                 PurchaseId = purchase.Id,
                 ServiceId = o.ServiceId,
-                FirstName = o.FirstName ?? "", //if first name is null --> assigned empty string
+                FirstName = o.FirstName ?? "",
                 LastName = o.LastName ?? "",
                 Phone = o.PhoneNumber ?? "",
                 DateOfBirth = o.DateOfBirth,
                 Gender = o.Gender,
                 Purchase = purchase,
-                Service = await serviceRepository.GetByIdAsync(o.ServiceId)
+                Service = await servicesRepository.GetByIdAsync(o.ServiceId)
                             ?? throw new Exception("Service not found")
             };
             //add order detail to corresponding purchase
             purchase.OrderDetail.Add(ordDetail);
             //add order detail to database
             await orderDetailRepository.AddAsync(ordDetail);
-        });
+        }
 
         return new BookingServiceResponse
         {

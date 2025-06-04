@@ -30,7 +30,7 @@ public class ServicesRepository(IApplicationDbContext dbContext): IServicesRepos
                 Id = s.Id.ToString(),
                 Name = s.Name,
                 Description = s.Description ?? "",
-                Price = s.Price 
+                Price = s.Price
             })
             .ToListAsync();
 
@@ -45,8 +45,8 @@ public class ServicesRepository(IApplicationDbContext dbContext): IServicesRepos
     public async Task<ViewSearchWithIdResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
     {
         var guidId = Guid.Parse(request.Id);
-        
-        var service =  await dbContext.Services
+
+        var service = await dbContext.Services
             .Where(s => s.Id == guidId)
             .Select(s => new ViewSearchWithIdResponse
             {
@@ -60,12 +60,12 @@ public class ServicesRepository(IApplicationDbContext dbContext): IServicesRepos
             })
             .FirstOrDefaultAsync();
         //throw khi service null
-        if (service == null)  throw new Exception("Service not found!");
-        
+        if (service == null) throw new Exception("Service not found!");
+
         return service;
     }
 
-    public async Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken )
+    public async Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken)
     {
         var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
         //db tự sinh time nhưng mún lấy h để đồng bộ CreatedAt == UpdatedAt
@@ -97,7 +97,12 @@ public class ServicesRepository(IApplicationDbContext dbContext): IServicesRepos
         };
     }
 
-    public  Task<bool> ExistsByNameAsync(string name) =>  dbContext.Services
+    public Task<bool> ExistsByNameAsync(string name) => dbContext.Services
         .AnyAsync(s => s.Name == name && !s.IsDeleted);
-    
+
+
+    public async Task<Service?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Services.FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
+    }
 }
