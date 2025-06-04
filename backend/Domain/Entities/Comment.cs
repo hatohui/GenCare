@@ -1,11 +1,6 @@
-﻿using Domain.Common.BaseEntities;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-/// <summary>
-///     Save comments for blog posts
-/// </summary>
-public class Comment : SoftDeletableEntity
+public class Comment
 {
     public Guid Id { get; set; }
 
@@ -15,13 +10,21 @@ public class Comment : SoftDeletableEntity
 
     public Guid AccountId { get; set; }
 
-    public Account Account { get; set; } = null!;
+    public DateTime CreatedAt { get; set; }
 
-    public Blog Blog { get; set; } = null!;
+    public Guid? CreatedBy { get; set; }
 
-    public Account? CreatedByNavigation { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
-    public Account? DeletedByNavigation { get; set; }
+    public Guid? UpdatedBy { get; set; }
 
-    public Account? UpdatedByNavigation { get; set; }
+    public DateTime? DeletedAt { get; set; }
+
+    public Guid? DeletedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public virtual Account Account { get; set; } = null!;
+
+    public virtual Blog Blog { get; set; } = null!;
 }

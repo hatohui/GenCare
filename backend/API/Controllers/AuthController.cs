@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Auth.Requests;
-using Application.DTOs.Auth.Requests;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 
@@ -101,20 +100,28 @@ public class AuthController
     }
 
     /// <summary>
-    ///     Handles the callback from Google after a successful OAuth 2.0 authentication.
-    ///     It retrieves the user's authentication information from the cookie and generates an access token.
+    ///     Logs out the current user by revoking their refresh token.
     /// </summary>
-    /// <returns>
-    ///     Returns an OkObjectResult containing the access token, user's email, and name if authentication is successful.
-    ///     If the authentication fails, it returns an Unauthorized status with an error message.
-    /// </returns>
-    /// <exception cref="UnauthorizedAccessException">
-    ///     Thrown if the authentication fails or the user's principal is not found.
-    /// </exception>
-    [HttpGet("google-callback")]
-    public async Task<IActionResult> GoogleCallbackAsync()
+    /// <param name="dto">The refresh token to revoke.</param>
+    /// <returns>Returns 204 if successful.</returns>
+    /// <response code="204">Token revoked successfully.</response>
+    /// <response code="400">Invalid or missing token.</response>
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> LogoutAsync([FromBody] RevokeTokenRequest dto)
     {
-        throw new NotImplementedException("Google callback is not implemented yet.");
+        if (string.IsNullOrWhiteSpace(dto.RefreshToken))
+        {
+            return BadRequest("Refresh token is required.");
+        }
+
+        var success = await accountService.RevokeRefreshTokenAsync(dto.RefreshToken);
+        if (!success)
+        {
+            return BadRequest("Failed to revoke token or token not found.");
+        }
+
+        return NoContent(); // 204
     }
 
     /// <summary>
@@ -126,5 +133,30 @@ public class AuthController
     public IActionResult ThrowTest()
     {
         throw new Exception("This is a test error");
+    }
+
+
+    /// <summary>
+    /// Initiates the forgot password process by sending a reset password link to the user's email.
+    /// </summary>
+    /// <param name="request">forgot password request</param>
+    /// <returns>response containing forgot password URL</returns>
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPasswordSync([FromBody] ForgotPasswordRequest request)
+    {
+        var response = await accountService.ForgotPasswordAsync(request);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Resets the user's password using a reset token and new password.
+    /// </summary>
+    /// <param name="request">reset password request</param>
+    /// <returns>message of resetting password successfully</returns>
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+    {
+        var response = await accountService.ResetPasswordAsync(request);
+        return Ok(response);
     }
 }

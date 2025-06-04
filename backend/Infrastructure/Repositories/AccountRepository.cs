@@ -40,4 +40,10 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .Include(a => a.BirthControl)
             .FirstOrDefaultAsync(a => a.Id == accountId);
     }
+
+    public async Task UpdateAccount(Account user)
+    {
+        dbContext.Accounts.Update(user);
+        await dbContext.SaveChangesAsync();
+    }
 }

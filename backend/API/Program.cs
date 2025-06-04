@@ -1,13 +1,15 @@
 ﻿using System.Text;
+using API.ActionFilters;
 using Api.Middlewares;
 using API.Middlewares;
+using Application.DTOs.Auth.Requests;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Infrastructure.Data.Context;
+using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -111,7 +113,8 @@ builder.Services.AddCors(options =>
     );
 });
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
+
 
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -119,11 +122,15 @@ builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+//
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IServicesRepository, ServicesRepository>();
+builder.Services.AddScoped<IServicesService, ServicesService>();
+//
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var env = builder.Environment;
 

@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
-import TanstackProvider from '../Components/TanstackProvider'
 import CustomCursor from '@/Components/CustomCursor'
-import ClientLayout from './ClientLayout'
 import { Suspense } from 'react'
 import Script from 'next/script'
+import TanstackProvider from '@/Components/Providers/TanstackProvider'
+import LoadingPage from '@/Components/Loading'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -58,15 +58,14 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='vi'>
-			<head></head>
+			<head>
+				<link rel='icon' href='/favicon.ico' sizes='any' />
+			</head>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
-				<ClientLayout>
-					<CustomCursor />
-					<Suspense fallback={<div>Loading...</div>}>
-						<TanstackProvider>{children}</TanstackProvider>
-					</Suspense>
-				</ClientLayout>
-
+				<CustomCursor />
+				<Suspense fallback={<LoadingPage />}>
+					<TanstackProvider>{children}</TanstackProvider>
+				</Suspense>
 				<Script
 					src='https://accounts.google.com/gsi/client'
 					strategy='beforeInteractive'

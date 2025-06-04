@@ -1,8 +1,6 @@
-﻿using Domain.Common.BaseEntities;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public class Account : SoftDeletableEntity
+public class Account
 {
     public Guid Id { get; set; }
 
@@ -10,7 +8,7 @@ public class Account : SoftDeletableEntity
 
     public string Email { get; set; } = null!;
 
-    public string PasswordHash { get; set; } = null!;
+    public string? PasswordHash { get; set; }
 
     public string? FirstName { get; set; }
 
@@ -20,44 +18,43 @@ public class Account : SoftDeletableEntity
 
     public DateOnly? DateOfBirth { get; set; }
 
-    /// <summary>
-    ///     TRUE = male, FALSE = female
-    /// </summary>
     public bool Gender { get; set; }
 
     public string? AvatarUrl { get; set; }
 
-    public ICollection<Appointment> AppointmentMember { get; set; } = [];
+    public DateTime CreatedAt { get; set; }
 
-    public ICollection<Appointment> AppointmentStaff { get; set; } = [];
+    public Guid? CreatedBy { get; set; }
 
-    public BirthControl? BirthControl { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
-    public ICollection<BlogTag> BlogTagCreatedByNavigation { get; set; } = [];
+    public Guid? UpdatedBy { get; set; }
 
-    public ICollection<BlogTag> BlogTagDeletedByNavigation { get; set; } = [];
+    public DateTime? DeletedAt { get; set; }
 
-    public ICollection<BlogTag> BlogTagUpdatedByNavigation { get; set; } = [];
+    public Guid? DeletedBy { get; set; }
 
-    public ICollection<Comment> CommentAccount { get; set; } = [];
+    public bool IsDeleted { get; set; }
 
-    public ICollection<Comment> CommentCreatedByNavigation { get; set; } = [];
+    public virtual ICollection<Appointment> AppointmentMember { get; set; } = [];
 
-    public ICollection<Comment> CommentDeletedByNavigation { get; set; } = [];
+    public virtual ICollection<Appointment> AppointmentStaff { get; set; } = [];
 
-    public ICollection<Comment> CommentUpdatedByNavigation { get; set; } = [];
+    public virtual BirthControl? BirthControl { get; set; }
 
-    public ICollection<Conversation> ConversationMember { get; set; } = [];
+    public virtual ICollection<Comment> Comment { get; set; } = [];
 
-    public ICollection<Conversation> ConversationStaff { get; set; } = [];
+    public virtual ICollection<Conversation> ConversationMember { get; set; } = [];
 
-    public ICollection<Purchase> Purchase { get; set; } = [];
+    public virtual ICollection<Conversation> ConversationStaff { get; set; } = [];
 
-    public ICollection<RefreshToken> RefreshToken { get; set; } = [];
+    public virtual ICollection<Purchase> Purchase { get; set; } = [];
 
-    public Role Role { get; set; } = null!;
+    public virtual ICollection<RefreshToken> RefreshToken { get; set; } = [];
 
-    public ICollection<Schedule> Schedule { get; set; } = [];
+    public virtual Role Role { get; set; } = null!;
 
-    public StaffInfo? StaffInfo { get; set; }
+    public virtual ICollection<Schedule> Schedule { get; set; } = [];
+
+    public virtual StaffInfo? StaffInfo { get; set; }
 }

@@ -18,9 +18,9 @@ public class OrderDetail
 
     public bool Gender { get; set; }
 
-    public Purchase Purchase { get; set; } = null!;
+    public virtual Purchase Purchase { get; set; } = null!;
 
-    public Result? Result { get; set; }
+    public virtual Result? Result { get; set; }
 
-    public Service Service { get; set; } = null!;
+    public virtual Service Service { get; set; } = null!;
 }

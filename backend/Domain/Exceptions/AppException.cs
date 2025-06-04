@@ -1,6 +1,7 @@
 ﻿namespace Domain.Exceptions;
 
-public class AppException(string message, int statusCode = 400) : Exception(message)
+public class AppException(int statusCode, string message, string? errorCode = null) : Exception(message)
 {
     public int StatusCode { get; } = statusCode;
+    public string? ErrorCode { get; } = errorCode;
 }

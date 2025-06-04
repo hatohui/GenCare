@@ -1,23 +1,26 @@
-﻿using Domain.Common.BaseEntities;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-/// <summary>
-///     Join table for many-to-many relationship between blogs and tags
-/// </summary>
-public class BlogTag : SoftDeletableEntity
+public class BlogTag
 {
     public Guid BlogId { get; set; }
 
     public Guid TagId { get; set; }
 
-    public Blog Blog { get; set; } = null!;
+    public DateTime CreatedAt { get; set; }
 
-    public Account? CreatedByNavigation { get; set; }
+    public Guid? CreatedBy { get; set; }
 
-    public Account? DeletedByNavigation { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
-    public Tag Tag { get; set; } = null!;
+    public Guid? UpdatedBy { get; set; }
 
-    public Account? UpdatedByNavigation { get; set; }
+    public DateTime? DeletedAt { get; set; }
+
+    public Guid? DeletedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public virtual Blog Blog { get; set; } = null!;
+
+    public virtual Tag Tag { get; set; } = null!;
 }

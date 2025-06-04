@@ -1,0 +1,14 @@
+import ReturnButton from '@/Components/ReturnButton'
+
+export default function AuthLayout({
+	children,
+}: {
+	children: React.ReactNode
+}) {
+	return (
+		<>
+			<ReturnButton />
+			<main>{children}</main>
+		</>
+	)
+}

@@ -1,16 +1,28 @@
-﻿using Domain.Common.BaseEntities;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public class Purchase : SoftDeletableEntity
+public class Purchase
 {
     public Guid Id { get; set; }
 
     public Guid AccountId { get; set; }
 
-    public Account Account { get; set; } = null!;
+    public DateTime CreatedAt { get; set; }
 
-    public ICollection<OrderDetail> OrderDetail { get; set; } = [];
+    public Guid? CreatedBy { get; set; }
 
-    public PaymentHistory? PaymentHistory { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public Guid? UpdatedBy { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    public Guid? DeletedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public virtual Account Account { get; set; } = null!;
+
+    public virtual ICollection<OrderDetail> OrderDetail { get; set; } = [];
+
+    public virtual PaymentHistory? PaymentHistory { get; set; }
 }
