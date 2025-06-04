@@ -25,9 +25,18 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="403">Forbidden. Only users with Admin or Manager roles can access this endpoint.</response>
     [HttpGet]
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
     public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request)
     {
+        if (request.Page < 0)
+        {
+            return BadRequest("Page index must be greater than or equal to 0.");
+        }
+        if (request.Count <= 0)
+        {
+            return BadRequest("Count must be greater than 0.");
+        }
         var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count);
         return Ok(result);
     }

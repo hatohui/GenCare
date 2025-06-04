@@ -52,6 +52,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
     {
         return await dbContext.Accounts
             .Include(a => a.Role)
+            .OrderBy(a => a.FirstName)
             .Skip(skip)
             .Take(take)
             .ToListAsync();

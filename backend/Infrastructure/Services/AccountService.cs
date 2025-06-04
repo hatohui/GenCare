@@ -217,7 +217,7 @@ public class AccountService
             Accounts = accounts.Select(a => new AccountViewModel
             {
                 Id = a.Id,
-                Role = a.Role.Name,
+                Role = a.Role?.Name ?? "Unknown",
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
