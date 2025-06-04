@@ -145,6 +145,32 @@ namespace Application.Helpers
                 return accountId;
             }
             throw new ArgumentException("Invalid account ID format in token.");
+            
+        }
+
+        public static Guid GetAccountIdFromToken1(string token)
+        {
+            var principal = ValidateToken(token);
+            // Thử lấy từ nhiều loại claim phổ biến
+            var possibleClaimTypes = new[]
+            {
+        JwtRegisteredClaimNames.Sub,
+        "sub",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    };
+
+            string accountIdString = null;
+            foreach (var type in possibleClaimTypes)
+            {
+                accountIdString = principal.FindFirst(type)?.Value;
+                if (!string.IsNullOrEmpty(accountIdString)) break;
+            }
+
+            if (Guid.TryParse(accountIdString, out Guid accountId))
+            {
+                return accountId;
+            }
+            throw new ArgumentException("Invalid account ID format in token.");
         }
 
         /// <summary>
@@ -221,7 +247,9 @@ namespace Application.Helpers
         //         throw new ArgumentException("Invalid account ID format in token.");
         //     }
 
+        //----------------------------------------------------------
         //     var user = AccountService.GetAccountById(accountId); // You need to implement this
+        //----------------------------------------------------------
 
         //     if (user == null)
         //     {

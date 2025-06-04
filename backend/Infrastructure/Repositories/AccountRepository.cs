@@ -40,9 +40,4 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .Include(a => a.BirthControl)
             .FirstOrDefaultAsync(a => a.Id == accountId);
     }
-
-    public async Task<Account?> GetByIdAsync(Guid id)
-    {
-        return await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
-    }
 }

@@ -28,7 +28,7 @@ public class AuthController
         /// <response code="200">User registered successfully.</response>
         /// <response code="400">Bad request if the user data is invalid.</response>
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest request)
+        public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
         {
             var response = await accountService.RegisterAsync(request);
             return Ok(response);
