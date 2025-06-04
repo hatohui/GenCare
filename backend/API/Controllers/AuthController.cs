@@ -51,6 +51,34 @@ public class AuthController
         return Ok(result);
     }
 
+    [HttpPost("login-cookie")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LoginWithCookieAsync([FromBody] AccountLoginRequest request)
+    {
+        var result = await accountService.LoginAsync(request);
+        if (result is null)
+        {
+            return BadRequest("Invalid credentials.");
+        }
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true, // send over HTTPS only
+            SameSite = SameSiteMode.Lax, // CSRF protection
+            Expires = DateTime.UtcNow.AddMinutes(30), // set cookie expiration
+            Path = "/"
+        };
+
+        Response.Cookies.Append("refreshToken", result.RefreshToken, cookieOptions);
+
+
+        return Ok(new {
+            AccessToken = result.AccessToken,
+            AccessTokenExpiration = result.AccessTokenExpiration,
+        });
+    }
+
     /// <summary>
     ///     Refreshes the JWT access token using a valid refresh token.
     /// </summary>
