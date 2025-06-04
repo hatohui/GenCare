@@ -6,46 +6,46 @@ import {
 	GetServiceApiByPageResponse,
 	GetServiceWithIdResponse,
 } from '@/Interfaces/Service/Schemas/service'
+import { getAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
-const ACCESS_TOKEN = 'access-token'
 
 const serviceApi = {
 	getByPage: (page: number, count: number) =>
 		axios
 			.get<GetServiceApiByPageResponse>(
 				`${SERVICE_URL}?page=${page}&count=${count}`,
-				{ headers: { Authorization: ACCESS_TOKEN } }
+				{ headers: { Authorization: getAccessTokenHeader() } }
 			)
 			.then(res => res.data),
 
 	getById: (id: string) =>
 		axios
 			.get<GetServiceWithIdResponse>(`${SERVICE_URL}/${id}`, {
-				headers: { Authorization: ACCESS_TOKEN },
+				headers: { Authorization: getAccessTokenHeader() },
 			})
 			.then(res => res.data),
 
 	create: (data: any) =>
 		axios
 			.post<CreateServiceApiResponse>(SERVICE_URL, data, {
-				headers: { Authorization: ACCESS_TOKEN },
+				headers: { Authorization: getAccessTokenHeader() },
 			})
 			.then(res => res.data),
 
 	update: (id: string, data: any) =>
 		axios
 			.put<UpdateServiceApiResponse>(`${SERVICE_URL}/${id}`, data, {
-				headers: { Authorization: ACCESS_TOKEN },
+				headers: { Authorization: getAccessTokenHeader() },
 			})
 			.then(res => res.data),
 
 	delete: (id: string) =>
 		axios
 			.delete<DeleteServiceApiResponse>(`${SERVICE_URL}/${id}`, {
-				headers: { Authorization: ACCESS_TOKEN },
+				headers: { Authorization: getAccessTokenHeader() },
 			})
 			.then(res => res.data),
 }

@@ -13,10 +13,6 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         {
             await next(context).ConfigureAwait(false);
         }
-        catch (AppException appEx) // Custom business logic exception
-        {
-            await WriteProblemDetailsAsync(context, appEx.StatusCode, "Application Error", appEx.Message);
-        }
         catch (ValidationException vex) // System.ComponentModel.DataAnnotations
         {
             await WriteProblemDetailsAsync(context, 400, "Validation Failed", vex.Message);
@@ -50,7 +46,11 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         {
             await WriteProblemDetailsAsync(context, 502, "External Request Failed", httpEx.Message);
         }
-        catch (Exception ex) // Catch all fallbacks
+        catch (AppException appEx)
+        {
+            await WriteProblemDetailsAsync(context, appEx.StatusCode, "Application Error", appEx.Message);
+        }
+        catch (Exception ex)
         {
             logger.LogError(ex, "Unhandled exception");
             await WriteProblemDetailsAsync(context, 500, "Internal Server Error", "An unexpected error occurred");
@@ -64,12 +64,12 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
 
         var problemDetails = new
         {
-            type = $"https://httpstatuses.com/{statusCode}",
             title,
             status = statusCode,
             detail
         };
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails), context.RequestAborted).ConfigureAwait(false);
+        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails), context.RequestAborted)
+            .ConfigureAwait(false);
     }
 }

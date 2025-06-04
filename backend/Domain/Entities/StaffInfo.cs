@@ -12,7 +12,7 @@ public class StaffInfo
 
     public string Biography { get; set; } = null!;
 
-    public Account Account { get; set; } = null!;
+    public virtual Account Account { get; set; } = null!;
 
-    public Department Department { get; set; } = null!;
+    public virtual Department Department { get; set; } = null!;
 }

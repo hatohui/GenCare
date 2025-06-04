@@ -142,4 +142,16 @@ public class AccountService(
         };
     }
 
+    public async Task<bool> RevokeRefreshTokenAsync(string refreshToken)
+    {
+        var token = await refTokenRepo.GetByTokenAsync(refreshToken);
+        if (token is null || token.IsRevoked)
+            return false;
+
+        token.IsRevoked = true;
+        token.LastUsedAt = DateTime.Now;
+
+        await refTokenRepo.UpdateAsync(token);
+        return true;
+    }
 }

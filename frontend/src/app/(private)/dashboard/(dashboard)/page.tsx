@@ -6,10 +6,15 @@ import React from 'react'
 const DashBoard = () => {
 	const loggedInAccount = useAccountStore().account
 
-	if (!loggedInAccount) return <div>bugged</div>
+	if (!loggedInAccount)
+		return (
+			<div className='h-full w-full center-all'>
+				Logging you into dashboard...
+			</div>
+		)
 
 	return (
-		<div className='h-screen w-screen center-all flex-col'>
+		<div className='h-full w-full center-all flex-col'>
 			<div> Account id: {loggedInAccount.id}</div>
 			<div>
 				Account Name: {loggedInAccount.lastName} {loggedInAccount.firstName}

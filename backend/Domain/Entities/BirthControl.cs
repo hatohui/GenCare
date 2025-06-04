@@ -16,5 +16,5 @@ public class BirthControl
 
     public DateTime? EndUnsafeDate { get; set; }
 
-    public Account Account { get; set; } = null!;
+    public virtual Account Account { get; set; } = null!;
 }
