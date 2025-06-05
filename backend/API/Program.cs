@@ -1,6 +1,5 @@
-﻿using System.Text;
+﻿using Api.Middlewares;
 using API.ActionFilters;
-using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Repositories;
@@ -13,10 +12,12 @@ using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -107,6 +108,7 @@ builder.Services.AddCors(options =>
         {
             corsPolicyBuilder
                 .WithOrigins("http://localhost:3000", "https://www.gencare.site")
+                .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         }
@@ -114,7 +116,6 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
-
 
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();

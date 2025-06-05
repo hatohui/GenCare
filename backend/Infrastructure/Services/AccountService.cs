@@ -75,38 +75,16 @@ public class AccountService
         };
     }
 
-    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
-    {
-        var user =
-            await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
-            ?? throw new InvalidCredentialsException();
-        //create access and refresh tokens
-        var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
-        var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-        //add refresh token to database
 
-        RefreshToken rf = new()
-        {
-            AccountId = user.Id,
-            Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration
-        };
-        await refTokenRepo.AddAsync(rf);
-
-        return new AccountLoginResponse
-        {
-            AccessToken = accessToken,
-            AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken
-        };
-    }
 
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
         //find user by email
         var user = await accountRepo.GetByEmailAsync(request.Email);
         if (user is null)
+        {
             throw new Exception("User not found");
+        }
 
         //generate reset password token
         var resetPwdToken = JwtHelper.GeneratePasswordResetToken(user.Id);
@@ -124,9 +102,9 @@ public class AccountService
             msg
         );
         //return reponse
-        return new ForgotPasswordResponse()
+        return new ForgotPasswordResponse
         {
-            CallbackUrl = callbackUrl,
+            CallbackUrl = callbackUrl
         };
     }
 
@@ -136,18 +114,22 @@ public class AccountService
         //check if token is valid
         var isValid = JwtHelper.ValidatePasswordResetToken(request.ResetPasswordToken!, out userId);
         if (!isValid)
+        {
             throw new Exception("Invalid reset password token");
+        }
         //get user by email
         var user = accountRepo.GetByEmailAsync(request.Email!) ?? throw new Exception("email in reset passsword token is invalid");
         //check userId of token and email in request
-        if (!Guid.Equals(userId, user.Result!.Id))
+        if (!Equals(userId, user.Result!.Id))
+        {
             throw new Exception("User ID in reset password token does not match email");
+        }
         //update user password
         user.Result!.PasswordHash = PasswordHasher.Hash(request.NewPassword!);
         await accountRepo.UpdateAccount(user.Result);
-        return new ResetPasswordResponse()
+        return new ResetPasswordResponse
         {
-            msg = "Password reset successfully. You can now login with your new password.",
+            msg = "Password reset successfully. You can now login with your new password."
         };
     }
 
@@ -166,7 +148,66 @@ public class AccountService
         return true;
     }
 
-    public async Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
+    public async Task<(string AccessToken, string RefreshToken)> LoginAsync(AccountLoginRequest req)
+    {
+        var user = await accountRepo
+                       .GetAccountByEmailPasswordAsync(req.Email, req.Password)
+                   ?? throw new InvalidCredentialsException();
+
+        var (accessToken, _) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, _) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        await refTokenRepo.AddAsync(new RefreshToken
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = DateTime.Now.AddDays(7)
+        });
+
+        return (accessToken, refreshToken);
+    }
+
+    public async Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefresh)
+    {
+        // 1) Xác thực chữ ký / hạn dùng
+        var principal = JwtHelper.ValidateToken(oldRefresh); // nếu lỗi -> JwtHelper tự throw
+
+        // 2) Phải là refresh token
+        if (!string.Equals(principal.FindFirst("type")?.Value, "refresh", StringComparison.Ordinal))
+        {
+            throw new AppException(401, "Token is not a refresh token");
+        }
+
+        // 3) Tra DB
+        var stored = await refTokenRepo.GetByTokenAsync(oldRefresh);
+        if (stored is null || stored.IsRevoked || stored.ExpiresAt < DateTime.Now)
+        {
+            throw new AppException(401, "Refresh token expired or revoked");
+        }
+
+        // 4) Lấy user
+        var user = await accountRepo.GetByAccountIdAsync(stored.AccountId)
+                   ?? throw new AppException(404, "User not found");
+
+        // 5) Phát hành token mới (dùng DateTime.Now)
+        var (newAccess, _) = JwtHelper.GenerateAccessToken(user);
+        var (newRefresh, newRefreshExp) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        // 6) Revoke token cũ & lưu token mới
+        stored.IsRevoked = true;
+        await refTokenRepo.UpdateAsync(stored);
+
+        await refTokenRepo.AddAsync(new RefreshToken
+        {
+            AccountId = user.Id,
+            Token = newRefresh,
+            ExpiresAt = newRefreshExp
+        });
+
+        return (newAccess, newRefresh);
+    }
+
+    public async Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
     {
         var user = await accountRepo.GetByEmailAsync(payload.Email);
         if (user == null)
@@ -201,12 +242,7 @@ public class AccountService
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new AccountLoginResponse
-        {
-            AccessToken = accessToken,
-            AccessTokenExpiration = accessExpiration,
-            RefreshToken = refreshToken
-        };
+        return (accessToken, refreshToken);
     }
 
     public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
@@ -230,5 +266,6 @@ public class AccountService
             }).ToList()
         };
         return result;
+
     }
 }
