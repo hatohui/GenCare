@@ -1,16 +1,12 @@
-import { ACCESS_TOKEN_COOKIE_STRING } from '@/Constants/Auth'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
-import { setCookie } from 'cookies-next/client'
 import { getDecodedToken } from './getDecodedToken'
 import { accountActions } from '@/Hooks/useToken'
 import { parseTokenClaims } from './parseTokenClaims'
+import useAccountStore from '@/Hooks/useToken'
 
 export const setAccessToken = (data: TokenData) => {
 	// SET COOKIE
-	setCookie(ACCESS_TOKEN_COOKIE_STRING, data.accessToken, {
-		sameSite: 'strict',
-		expires: new Date(data.accessTokenExpiration),
-	})
+	useAccountStore.getState().setAccessToken(data.accessToken)
 
 	// DECODE COOKIE
 	const tokenClaim = getDecodedToken(data.accessToken)
