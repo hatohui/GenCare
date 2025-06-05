@@ -2,7 +2,6 @@ import { Account } from '../Types/Account'
 
 export type TokenData = {
 	accessToken: string
-	refreshToken: string
 	accessTokenExpiration: string
 }
 export type DecodedTokenData = {
@@ -30,7 +29,4 @@ export type RawClaims = {
 	aud: string
 }
 
-export type TokenizedAccount = Omit<
-	Account,
-	'deletedAt' | 'deletedBy' | 'isDeleted'
->
+export type TokenizedAccount = Pick<Account, 'id' | 'role'>
