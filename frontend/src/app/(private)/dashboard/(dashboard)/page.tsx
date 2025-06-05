@@ -1,24 +1,15 @@
 'use client'
-
-import useAccountStore from '@/Hooks/useToken'
+import { useAccountStore } from '@/Hooks/useAccount'
 import React from 'react'
 
 const DashBoard = () => {
-	const loggedInAccount = useAccountStore().account
-
-	if (!loggedInAccount)
-		return (
-			<div className='h-full w-full center-all'>
-				Logging you into dashboard...
-			</div>
-		)
+	const accountStore = useAccountStore()
+	const accountdata = accountStore.data?.account
 
 	return (
 		<div className='h-full w-full center-all flex-col'>
-			<div> Account id: {loggedInAccount.id}</div>
-			<div>
-				{/* Account Name: {loggedInAccount.lastName} {loggedInAccount.firstName} */}
-			</div>
+			<div>Account id: {accountdata?.id}</div>
+			<div>Role: {accountdata?.role}</div>
 		</div>
 	)
 }

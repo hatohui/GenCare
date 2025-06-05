@@ -2,48 +2,30 @@
 
 import LoginForm from '@/Components/Auth/LoginForm'
 import LoadingPage from '@/Components/Loading'
-import useAccountStore from '@/Hooks/useToken'
+import useToken from '@/Hooks/useToken'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { useLoginAccount } from '@/Services/auth-service'
-import { setAccessToken } from '@/Utils/setTokens'
+import { isTokenValid } from '@/Utils/isTokenValid'
 import { AxiosError } from 'axios'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Login() {
 	const loginMutation = useLoginAccount()
-	const error = useSearchParams().get('error')
-	const errorMap: Record<string, string> = {
-		invalid_session: 'Invalid session, please log in again.',
-		session_expired: 'Your session has expired. Please log in again.',
-		unauthorized: 'You are not authorized to access that page.',
-	}
-
-	const paramError = error && errorMap[error]
-	const [formError, setFormError] = useState<string>(paramError || '')
-	const store = useAccountStore()
-	const account = store.account
+	const [formError, setFormError] = useState<string>('')
 	const router = useRouter()
+	const tokenStore = useToken()
+	const token = tokenStore.accessToken
 
-	//clean up
 	useEffect(() => {
-		if (error) {
-			if (account) store.removeAccount()
-		}
-	}, [store, error])
-
-	//redirect when account is available
-	useEffect(() => {
-		if (account) {
-			router.push('/dashboard')
-		}
-	}, [account, router])
+		if (token && isTokenValid(token).valid) router.push('/dashboard')
+	}, [router, token])
 
 	const handleLogin = (formData: LoginApi) => {
 		loginMutation.mutate(formData, {
 			onSuccess: data => {
-				setAccessToken(data)
+				tokenStore.setAccessToken(data.accessToken)
 				setFormError('')
 				router.push('/dashboard')
 			},
@@ -51,7 +33,6 @@ export default function Login() {
 				const err = error as AxiosError<ApiErrorResponse>
 
 				if (err.response?.status) {
-					// Handle validation errors
 					const validationErrors = err.response.data
 					console.error('Validation errors:', validationErrors)
 					setFormError('login or password is incorrect')

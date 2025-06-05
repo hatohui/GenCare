@@ -1,9 +1,9 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
+import useToken from '@/Hooks/useToken'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
-import { removeTokens } from '@/Utils/removeTokens'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -41,7 +41,7 @@ const authApi = {
 				}
 			)
 			.then(res => {
-				if (res.status === 204) removeTokens()
+				if (res.status === 204) useToken().removeAccessToken()
 				return res.data
 			})
 	},
