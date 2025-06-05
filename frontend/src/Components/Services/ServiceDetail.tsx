@@ -1,4 +1,3 @@
-// app/page.tsx
 import Image from 'next/image'
 import { ServiceCardProps } from './ServiceCard'
 
@@ -9,23 +8,23 @@ export default function ServiceDetail({
 	imageUrl = '',
 }: ServiceCardProps) {
 	return (
-		<main className=' bg-[#F7F7F7] text-gray-900 px-6 py-8'>
-			<div className='max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8'>
+		<main className='bg-[#F7F7F7] text-gray-900 px-6 py-12'>
+			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12'>
 				{/* Left Panel */}
-				<div className='md:col-span-1 space-y-4'>
-					<h1 className='text-xl font-bold'>{name}</h1>
-					<p className='text-rose-500 font-semibold'>{price}</p>
-					<button className='bg-accent text-white px-4 py-2 rounded-full text-sm font-medium'>
+				<div className='space-y-6'>
+					<h1 className='text-3xl font-bold text-gray-800'>{name}</h1>
+					<p className='text-2xl text-accent font-semibold'>{price}</p>
+					<button className='bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-full text-lg font-medium transition duration-300 hover:from-pink-600 hover:to-rose-500'>
 						Booking
 					</button>
-					<div className='pt-4'>
+					<div className='pt-6'>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
 							fill='none'
 							viewBox='0 0 24 24'
 							strokeWidth={1.5}
 							stroke='currentColor'
-							className='w-15 h-15'
+							className='w-16 h-16 text-gray-600 transition-transform duration-300 transform hover:scale-110'
 						>
 							<path
 								strokeLinecap='round'
@@ -37,8 +36,9 @@ export default function ServiceDetail({
 				</div>
 
 				{/* Right Panel */}
-				<div className='col-span-2 space-y-6'>
-					<div className='bg-gray-200 h-64 w-full flex items-center justify-center text-xl font-bold rounded-lg'>
+				<div className='space-y-8'>
+					{/* Image Section */}
+					<div className='bg-gray-200 h-96 w-full flex items-center justify-center rounded-lg overflow-hidden shadow-lg transition duration-300 hover:scale-105 hover:shadow-2xl'>
 						{imageUrl ? (
 							<Image
 								src={imageUrl}
@@ -51,9 +51,14 @@ export default function ServiceDetail({
 							<p className='text-gray-500'>No Image Available</p>
 						)}
 					</div>
-				</div>
-				<div className=' h-64 w-full flex items-center justify-center text-xl font-bold rounded-lg col-span-3'>
-					{description}
+
+					{/* Description Section */}
+					<div className='bg-white p-6 rounded-lg shadow-md text-lg text-gray-700'>
+						<h2 className='text-xl font-semibold text-gray-800 mb-4'>
+							Description
+						</h2>
+						<p className='text-gray-600 leading-relaxed'>{description}</p>
+					</div>
 				</div>
 			</div>
 		</main>

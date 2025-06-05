@@ -20,10 +20,10 @@ export const ServiceCard = ({
 			initial={{ opacity: 0, x: -20 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.5, ease: 'easeOut' }}
-			className='bg-white rounded-2xl shadow-md p-4'
+			className='bg-white rounded-2xl p-4  shadow-md hover:shadow-lg transition-shadow duration-300'
 		>
 			<h3 className='text-xl font-semibold mb-2'>{name}</h3>
-			<p className='text-accent mb-2'>{price} VNĐ</p>
+			<p className='text-accent mb-2'>{price} VND</p>
 			<p className='text-gray-600 mb-4 truncate '>{description}</p>
 			<div className='flex items-center justify-end mb-4 gap-4'>
 				<Link
@@ -33,7 +33,7 @@ export const ServiceCard = ({
 					Detail
 				</Link>
 				<button className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'>
-					Booking
+					Add to Cart
 				</button>
 			</div>
 		</motion.div>
