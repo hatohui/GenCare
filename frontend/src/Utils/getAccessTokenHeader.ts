@@ -1,7 +1,7 @@
-import useAccountStore from '@/Hooks/useToken'
+import useToken from '@/Hooks/useToken'
 
-export const getAccessTokenHeader = (): string => {
-	const store = useAccountStore()
+export const useAccessTokenHeader = (): string => {
+	const store = useToken()
 	const token = store.accessToken
 
 	console.log('token: ', token)

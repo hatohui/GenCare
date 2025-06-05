@@ -1,6 +1,5 @@
 import { DecodedTokenData } from '@/Interfaces/Auth/Schema/token'
 import { decodeToken } from './decodeToken'
-import useToken from '@/Hooks/useToken'
 
 export type TokenValidationResult =
 	| {

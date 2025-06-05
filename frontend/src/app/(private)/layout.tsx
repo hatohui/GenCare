@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
 import useToken from '@/Hooks/useToken'
-import { decodeToken } from '@/Utils/decodeToken'
 import { useRouter } from 'next/navigation'
 import { MANAGEMENT_TEAM } from '@/Constants/Management'
 import LoadingPage from '@/Components/Loading'
