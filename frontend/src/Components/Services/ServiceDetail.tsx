@@ -1,13 +1,20 @@
 // app/page.tsx
+import Image from 'next/image'
+import { ServiceCardProps } from './ServiceCard'
 
-export default function ServiceDetail() {
+export default function ServiceDetail({
+	name,
+	price,
+	description,
+	imageUrl = '',
+}: ServiceCardProps) {
 	return (
 		<main className=' bg-[#F7F7F7] text-gray-900 px-6 py-8'>
 			<div className='max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8'>
 				{/* Left Panel */}
 				<div className='md:col-span-1 space-y-4'>
-					<h1 className='text-xl font-bold'>Service Name</h1>
-					<p className='text-rose-500 font-semibold'>Price</p>
+					<h1 className='text-xl font-bold'>{name}</h1>
+					<p className='text-rose-500 font-semibold'>{price}</p>
 					<button className='bg-accent text-white px-4 py-2 rounded-full text-sm font-medium'>
 						Booking
 					</button>
@@ -32,11 +39,21 @@ export default function ServiceDetail() {
 				{/* Right Panel */}
 				<div className='col-span-2 space-y-6'>
 					<div className='bg-gray-200 h-64 w-full flex items-center justify-center text-xl font-bold rounded-lg'>
-						IMG
+						{imageUrl ? (
+							<Image
+								src={imageUrl}
+								alt={name}
+								className='h-full w-full object-cover rounded-lg'
+								width={500}
+								height={500}
+							/>
+						) : (
+							<p className='text-gray-500'>No Image Available</p>
+						)}
 					</div>
 				</div>
-				<div className='bg-gray-200 h-64 w-full flex items-center justify-center text-xl font-bold rounded-lg col-span-3'>
-					description
+				<div className=' h-64 w-full flex items-center justify-center text-xl font-bold rounded-lg col-span-3'>
+					{description}
 				</div>
 			</div>
 		</main>

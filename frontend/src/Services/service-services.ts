@@ -22,7 +22,8 @@ export const samplePayload: {
 	{
 		id: '1',
 		name: 'Basic Health Checkup',
-		description: 'A standard package for routine health screening.',
+		description:
+			'A standard package for routine health screening. lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
 		price: 499000,
 		imageUrl: 'https://example.com/images/health-basic.jpg',
 	},

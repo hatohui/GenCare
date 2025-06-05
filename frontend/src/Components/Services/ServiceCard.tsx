@@ -1,11 +1,12 @@
 import { motion } from 'motion/react'
 import Link from 'next/link'
 
-type ServiceCardProps = {
+export type ServiceCardProps = {
 	id: string
 	name: string
 	price: number
 	description: string
+	imageUrl?: string
 }
 
 export const ServiceCard = ({
@@ -23,7 +24,7 @@ export const ServiceCard = ({
 		>
 			<h3 className='text-xl font-semibold mb-2'>{name}</h3>
 			<p className='text-accent mb-2'>{price} VNĐ</p>
-			<p className='text-gray-600 mb-4'>{description}</p>
+			<p className='text-gray-600 mb-4 truncate '>{description}</p>
 			<div className='flex items-center justify-end mb-4 gap-4'>
 				<Link
 					href={`/service/${id}`}
