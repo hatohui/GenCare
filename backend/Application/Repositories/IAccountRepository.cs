@@ -6,9 +6,9 @@ public interface IAccountRepository
 {
     Task<Account?> GetByEmailAsync(string email);
 
-    Task<Account?> GetByAccountIdAsync(Guid id);
-
     Task AddAsync(Account user);
+    
+    Task<Account?> GetByAccountIdAsync(Guid id);
 
     Task<Account?> GetAccountByEmailPasswordAsync(string email, string password);
 

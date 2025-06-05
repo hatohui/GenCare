@@ -12,7 +12,7 @@ namespace API.Controllers;
 [Route("api/services")]
 public class ServicesController(IServicesService _servicesService) : ControllerBase
 {
-    
+
     /// <summary>
     /// Search and get all services by optional name or price filter.
     /// </summary>
@@ -49,7 +49,7 @@ public class ServicesController(IServicesService _servicesService) : ControllerB
         {
             return NotFound();
         }
-       
+
     }
 
     /// <summary>
