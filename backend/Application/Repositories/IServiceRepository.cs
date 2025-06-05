@@ -14,6 +14,6 @@ public interface  IServiceRepository
     Task <bool> UpdateServiceByIdAsync(Service service);
     Task<bool> ExistsByNameAsync(string name);
     Task<bool> ExistsByIdAsync(Guid idService);
-    public Task<Service?> SearchServiceByIdAsync1(Guid idService);
+    public Task<Service?> SearchServiceByIdForStaffAsync(Guid idService);
     Task<bool> DeleteServiceByIdAsync(Guid idService);
 }

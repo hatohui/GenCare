@@ -43,7 +43,7 @@ public class ServicesService(
             throw new AppException(400,"Invalid id format.");
 
         // Gọi repository để lấy dữ liệu
-        var service = await serviceRepository.SearchServiceByIdAsync1(guidId);
+        var service = await serviceRepository.SearchServiceByIdForStaffAsync(guidId);
 
         // Nếu không tìm thấy thì throw exception hoặc trả về null 
         if (service == null)
@@ -124,7 +124,7 @@ public class ServicesService(
         if (request.Id == Guid.Empty)
             throw new AppException(400,"Guid cannot be empty.");
 
-        var service = await serviceRepository.SearchServiceByIdAsync1(request.Id);
+        var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
         if (service == null)
             throw new AppException(404,"Service not found");
 
@@ -186,7 +186,7 @@ public class ServicesService(
        if (request.Id == Guid.Empty)
            throw new ArgumentException("Service id cannot be empty.");
    
-       var service = await serviceRepository.SearchServiceByIdAsync1(request.Id);
+       var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
        if (service == null)
            throw new KeyNotFoundException("Service not found.");
    

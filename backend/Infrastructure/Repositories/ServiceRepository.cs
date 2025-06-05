@@ -24,7 +24,7 @@ public class ServiceRepository(IApplicationDbContext dbContext): IServiceReposit
         .FirstOrDefaultAsync(s => s.Id == idService && !s.IsDeleted);
     
     
-    public async Task<Service?> SearchServiceByIdAsync1(Guid idService) => await dbContext.Services
+    public async Task<Service?> SearchServiceByIdForStaffAsync(Guid idService) => await dbContext.Services
         .FirstOrDefaultAsync(s => s.Id == idService);
     
     public async Task<Service> AddServiceAsync(Service service)
