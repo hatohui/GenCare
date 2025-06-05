@@ -108,6 +108,7 @@ builder.Services.AddCors(options =>
         {
             corsPolicyBuilder
                 .WithOrigins("http://localhost:3000", "https://www.gencare.site")
+                .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         }
