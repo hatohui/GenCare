@@ -149,7 +149,7 @@ namespace Application.Helpers
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     };
 
-            string accountIdString = null;
+            string? accountIdString = null;
             foreach (var type in possibleClaimTypes)
             {
                 accountIdString = principal.FindFirst(type)?.Value;

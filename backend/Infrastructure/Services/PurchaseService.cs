@@ -1,16 +1,19 @@
-﻿using Application.Repositories;
-using Application.Services;
-using Application.DTOs.Purchase.Request;
+﻿using Application.DTOs.Purchase.Request;
 using Application.DTOs.Purchase.Response;
 using Application.Helpers;
+using Application.Repositories;
+using Application.Services;
 using Domain.Entities;
 
 namespace Infrastructure.Services;
-public class PurchaseService(
-    IPurchaseRepository purchaseRepository, 
+
+public class PurchaseService
+(
+    IPurchaseRepository purchaseRepository,
     IOrderDetailRepository orderDetailRepository,
     IAccountRepository accountRepository,
-    IServicesRepository servicesRepository) : IPurchaseService
+    IServicesRepository servicesRepository
+) : IPurchaseService
 {
     //add new purchase
     public async Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest, string accessToken)
@@ -20,10 +23,10 @@ public class PurchaseService(
         //get account by id
         var account = await accountRepository.GetByAccountIdAsync(accountId) ?? throw new Exception("Account not found");
         //create purchase
-        Purchase purchase = new Purchase()
+        var purchase = new Purchase
         {
             AccountId = accountId,
-            Account = account,
+            Account = account
         };
 
         //add purchase to database
@@ -70,7 +73,7 @@ public class PurchaseService(
                             ?? throw new Exception("Service not found")
             };
             //add order detail to corresponding purchase
-            purchase.OrderDetail.Add(ordDetail);
+            purchase.OrderDetails.Add(ordDetail);
             //add order detail to database
             await orderDetailRepository.AddAsync(ordDetail);
         }

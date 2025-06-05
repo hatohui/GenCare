@@ -30,9 +30,9 @@ public class Media
 
     public bool IsDeleted { get; set; }
 
-    public virtual Blog? Blog { get; set; }
+    public  Blog? Blog { get; set; }
 
-    public virtual Message? Message { get; set; }
+    public  Message? Message { get; set; }
 
-    public virtual Service? Service { get; set; }
+    public  Service? Service { get; set; }
 }
