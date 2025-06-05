@@ -19,6 +19,7 @@ export const ServiceCard = ({
 		<motion.div
 			initial={{ opacity: 0, x: -20 }}
 			animate={{ opacity: 1, x: 0 }}
+			whileHover={{ scale: 1.02 }}
 			transition={{ duration: 0.5, ease: 'easeOut' }}
 			className='bg-white rounded-2xl p-4  shadow-md hover:shadow-lg transition-shadow duration-300'
 		>

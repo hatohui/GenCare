@@ -1,12 +1,9 @@
 'use client'
 
-import FloatingLabelInput from '@/Components/Form/FloatingLabel'
 import { ServiceCard } from '@/Components/Services/ServiceCard'
 import { CartButton } from '@/Components/Services/ServiceCart'
-import ServiceSearch from '@/Components/Services/ServiceSearch'
 import useInput from '@/Hooks/Form/useInput'
 import { Suspense, useEffect, useState } from 'react'
-import { array } from 'zod/v4'
 import { samplePayload, useServiceByPage } from '@/Services/service-services'
 import { GetServiceApiByPageResponse } from '@/Interfaces/Service/Schemas/service'
 import { motion } from 'motion/react'
@@ -44,7 +41,7 @@ export default function Page() {
 				<h2 className='text-2xl font-bold text-gray-800 mb-6'>
 					Dịch Vụ Nổi Bật
 				</h2>
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
 					<Suspense fallback={LoadingSkeleton()}>
 						{services?.payload.map((item, index) => (
 							<motion.div

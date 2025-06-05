@@ -7,7 +7,7 @@ export const CartButton = () => {
 			initial='rest'
 			whileHover='hover'
 			animate='rest'
-			className='flex items-center justify-center bg-accent text-white px-4 py-2 rounded-full overflow-hidden'
+			className='flex items-center justify-center bg-accent text-white px-4 py-2 rounded-full overflow-hidden hover:cursor-pointer'
 		>
 			<motion.span
 				variants={{
