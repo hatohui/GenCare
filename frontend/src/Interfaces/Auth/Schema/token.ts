@@ -2,7 +2,6 @@ import { Account } from '../Types/Account'
 
 export type TokenData = {
 	accessToken: string
-	accessTokenExpiration: string
 }
 export type DecodedTokenData = {
 	audience: string //who the token is made for
