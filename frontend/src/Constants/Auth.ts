@@ -1,3 +1,2 @@
 export const ACCESS_TOKEN_COOKIE_STRING = 'accessToken'
-export const REFRESH_TOKEN_COOKIE_STRING = 'refreshToken'
-export const ACCOUNT_STORE_STRING = 'accountStore'
+export const TOKEN_STORE_STRING = 'token-store'
