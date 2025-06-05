@@ -1,6 +1,8 @@
-using System.Net;
+
 using Application.DTOs.Account;
 using Application.DTOs.Account.Responses;
+using System.Net;
+
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
@@ -9,6 +11,8 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
+using Newtonsoft.Json.Linq;
+
 
 namespace Infrastructure.Services;
 
@@ -50,7 +54,7 @@ public class AccountService
         await accountRepo.AddAsync(user);
 
         //create refresh token
-        var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken();
+        var (refToken, refExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
 
         var rf = new RefreshToken
         {
@@ -70,6 +74,7 @@ public class AccountService
             AccessTokenExpiration = accExpiration
         };
     }
+
 
 
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
@@ -149,11 +154,8 @@ public class AccountService
                        .GetAccountByEmailPasswordAsync(req.Email, req.Password)
                    ?? throw new InvalidCredentialsException();
 
-        // Generate access token with only ID and Role
         var (accessToken, _) = JwtHelper.GenerateAccessToken(user);
-
-        // Generate refresh token (a random string, not linked to account)
-        var (refreshToken, _) = JwtHelper.GenerateRefreshToken();
+        var (refreshToken, _) = JwtHelper.GenerateRefreshToken(user.Id);
 
         await refTokenRepo.AddAsync(new RefreshToken
         {
@@ -167,31 +169,31 @@ public class AccountService
 
     public async Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefresh)
     {
-        // 1) Validate the refresh token (throws exception if invalid)
-        var principal = JwtHelper.ValidateToken(oldRefresh); // if error -> JwtHelper throws it
+        // 1) Xác thực chữ ký / hạn dùng
+        var principal = JwtHelper.ValidateToken(oldRefresh); // nếu lỗi -> JwtHelper tự throw
 
-        // 2) Ensure it's a refresh token
+        // 2) Phải là refresh token
         if (!string.Equals(principal.FindFirst("type")?.Value, "refresh", StringComparison.Ordinal))
         {
             throw new AppException(401, "Token is not a refresh token");
         }
 
-        // 3) Retrieve the token from the database
+        // 3) Tra DB
         var stored = await refTokenRepo.GetByTokenAsync(oldRefresh);
         if (stored is null || stored.IsRevoked || stored.ExpiresAt < DateTime.Now)
         {
             throw new AppException(401, "Refresh token expired or revoked");
         }
 
-        // 4) Fetch the user from the database
-        var user = await accountRepo.GetAccountByIdAsync(stored.AccountId)
+        // 4) Lấy user
+        var user = await accountRepo.GetByAccountIdAsync(stored.AccountId)
                    ?? throw new AppException(404, "User not found");
 
-        // 5) Generate new access and refresh tokens
-        var (newAccess, _) = JwtHelper.GenerateAccessToken(user); // Access token with ID and Role
-        var (newRefresh, newRefreshExp) = JwtHelper.GenerateRefreshToken(); // New random refresh token
+        // 5) Phát hành token mới (dùng DateTime.Now)
+        var (newAccess, _) = JwtHelper.GenerateAccessToken(user);
+        var (newRefresh, newRefreshExp) = JwtHelper.GenerateRefreshToken(user.Id);
 
-        // 6) Revoke old refresh token & store new one
+        // 6) Revoke token cũ & lưu token mới
         stored.IsRevoked = true;
         await refTokenRepo.UpdateAsync(stored);
 
@@ -229,11 +231,8 @@ public class AccountService
             await accountRepo.AddAsync(user);
         }
 
-        // Generate access token with only ID and Role
         var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
-
-        // Generate refresh token (a random string, not linked to account)
-        var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken();
+        var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
 
         RefreshToken rf = new()
         {
@@ -246,14 +245,10 @@ public class AccountService
         return (accessToken, refreshToken);
     }
 
-
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
     {
         var skip = page * count;
-
-        // Gọi repo để thực hiện tìm kiếm
-        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count, search);
-
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
         var result = new GetAccountByPageResponse
         {
             Accounts = accounts.Select(a => new AccountViewModel
@@ -267,14 +262,10 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
+
             }).ToList()
         };
-
         return result;
-    }
-    public async Task<Account> GetAccountByIdAsync(Guid accountId)
-    {
-        // Gọi repository để truy xuất tài khoản từ accountId
-        return await accountRepo.GetAccountByIdAsync(accountId);
+
     }
 }
