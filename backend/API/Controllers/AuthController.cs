@@ -144,7 +144,7 @@ public class AuthController
             });
 
 
-        return Ok(accessToken);
+        return Ok(new AccountLoginResponse(accessToken));
     }
 
     /// <summary>

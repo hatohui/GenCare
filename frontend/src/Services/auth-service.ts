@@ -17,8 +17,12 @@ const authApi = {
 	},
 	login: (data: LoginApi) => {
 		return axios
-			.post<TokenData>(`${AUTH_URL}/login`, data)
-			.then(res => res.data)
+			.post<TokenData>(`${AUTH_URL}/login`, data, {
+				withCredentials: true,
+			})
+			.then(res => {
+				return res.data
+			})
 	},
 	Oauth: (data: OauthAPI) => {
 		return axios
