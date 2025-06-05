@@ -10,7 +10,7 @@ const Logo = ({
 	withLabel?: boolean
 }) => {
 	return (
-		<>
+		<div className='center-all'>
 			<Image
 				src='/images/gencarelogo.png'
 				alt='gencare-logo'
@@ -27,7 +27,7 @@ const Logo = ({
 					</h1>
 				</div>
 			)}
-		</>
+		</div>
 	)
 }
 

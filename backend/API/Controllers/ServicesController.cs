@@ -9,6 +9,7 @@ namespace API.Controllers;
 public class ServicesController(IServicesService servicesService) : ControllerBase
 {
  
+
     /// <summary>
     /// Search and get all services by optional name or price filter.
     /// </summary>
@@ -45,7 +46,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         {
             return NotFound();
         }
-       
+
     }
 
     /// <summary>

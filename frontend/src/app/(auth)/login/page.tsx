@@ -2,24 +2,49 @@
 
 import LoginForm from '@/Components/Auth/LoginForm'
 import LoadingPage from '@/Components/Loading'
+import useAccountStore from '@/Hooks/useToken'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { useLoginAccount } from '@/Services/auth-service'
-import { setAccessToken } from '@/Utils/setAccessToken'
+import { setAccessToken } from '@/Utils/setTokens'
 import { AxiosError } from 'axios'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function Login() {
-	const router = useRouter()
 	const loginMutation = useLoginAccount()
-	const [formError, setFormError] = useState<string | null>(null)
+	const error = useSearchParams().get('error')
+	const errorMap: Record<string, string> = {
+		invalid_session: 'Invalid session, please log in again.',
+		session_expired: 'Your session has expired. Please log in again.',
+		unauthorized: 'You are not authorized to access that page.',
+	}
+
+	const paramError = error && errorMap[error]
+	const [formError, setFormError] = useState<string>(paramError || '')
+	const store = useAccountStore()
+	const account = store.account
+	const router = useRouter()
+
+	//clean up
+	useEffect(() => {
+		if (error) {
+			if (account) store.removeAccount()
+		}
+	}, [store, error])
+
+	//redirect when account is available
+	useEffect(() => {
+		if (account) {
+			router.push('/dashboard')
+		}
+	}, [account, router])
 
 	const handleLogin = (formData: LoginApi) => {
 		loginMutation.mutate(formData, {
 			onSuccess: data => {
 				setAccessToken(data)
-				setFormError(null)
+				setFormError('')
 				router.push('/dashboard')
 			},
 			onError: error => {
@@ -35,7 +60,7 @@ export default function Login() {
 		})
 	}
 
-	if (loginMutation.isPending) return <LoadingPage />
+	if (loginMutation.isPending || loginMutation.isSuccess) return <LoadingPage />
 
 	return (
 		<>

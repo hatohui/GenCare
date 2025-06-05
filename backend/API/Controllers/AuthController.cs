@@ -19,19 +19,19 @@ public class AuthController
     IGoogleCredentialService googleCredentialService
 ) : ControllerBase
 {
-    /// <summary>
-    ///     Registers a new user in the system.
-    /// </summary>
-    /// <param name="request">The user registration details.</param>
-    /// <returns>An action result containing the user ID and a success message.</returns>
-    /// <response code="200">User registered successfully.</response>
-    /// <response code="400">Bad request if the user data is invalid.</response>
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
-    {
-        var response = await accountService.RegisterAsync(request);
-        return Ok(response);
-    }
+        /// <summary>
+        /// Registers a new user in the system.
+        /// </summary>
+        /// <param name="request">The user registration details.</param>
+        /// <returns>An action result containing refresh token, access token and access token expiration.</returns>
+        /// <response code="200">User registered successfully.</response>
+        /// <response code="400">Bad request if the user data is invalid.</response>
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
+        {
+            var response = await accountService.RegisterAsync(request);
+            return Ok(response);
+        }
 
     /// <summary>
     ///     Logs in a user and generates a JWT access token.
@@ -133,5 +133,30 @@ public class AuthController
     public IActionResult ThrowTest()
     {
         throw new Exception("This is a test error");
+    }
+
+
+    /// <summary>
+    /// Initiates the forgot password process by sending a reset password link to the user's email.
+    /// </summary>
+    /// <param name="request">forgot password request</param>
+    /// <returns>response containing forgot password URL</returns>
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPasswordSync([FromBody] ForgotPasswordRequest request)
+    {
+        var response = await accountService.ForgotPasswordAsync(request);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Resets the user's password using a reset token and new password.
+    /// </summary>
+    /// <param name="request">reset password request</param>
+    /// <returns>message of resetting password successfully</returns>
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+    {
+        var response = await accountService.ResetPasswordAsync(request);
+        return Ok(response);
     }
 }

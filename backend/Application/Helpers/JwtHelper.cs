@@ -88,6 +88,7 @@ namespace Application.Helpers
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
+                //.ToString("D"): định dạng Guid thành chuỗi chuẩn (dashed format)
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role?.Name ?? ""),
                 new Claim(ClaimTypes.GivenName, user.FirstName ?? ""),
@@ -160,7 +161,9 @@ namespace Application.Helpers
                 return accountId;
             }
             throw new ArgumentException("Invalid account ID format in token.");
+            
         }
+
 
 
         /// <summary>
@@ -184,6 +187,18 @@ namespace Application.Helpers
             var principal = ValidateToken(token);
             return principal.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
+        public static string GetRoleFromAccessToken(string accessToken)
+        {
+            var principal = ValidateToken(accessToken);
+            // Tìm claim role (theo ClaimTypes.Role)
+            var roleClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            if (roleClaim == null)
+            {
+                throw new ArgumentException("Role claim not found in access token.");
+            }
+            return roleClaim.Value;
+        }
+
 
         /// <summary>
         /// Extract the token type (access or refresh) from a JWT token.
@@ -225,7 +240,9 @@ namespace Application.Helpers
         //         throw new ArgumentException("Invalid account ID format in token.");
         //     }
 
+        //----------------------------------------------------------
         //     var user = AccountService.GetAccountById(accountId); // You need to implement this
+        //----------------------------------------------------------
 
         //     if (user == null)
         //     {
@@ -239,5 +256,79 @@ namespace Application.Helpers
         // }
 
         // Todo: Figure out a way to fetch the account with Id string so that we can verify the user exist for the new access Token
+
+
+        /// <summary>
+        /// generate the reset password token
+        /// </summary>
+        /// <param name="userId">the user Id for resetting password</param>
+        /// <param name="expiresInMinutes">expire time(minutes) for token</param>
+        /// <returns>the reset password token</returns>
+        public static string GeneratePasswordResetToken(Guid userId, int expiresInMinutes = 5)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            // Set token expiration time
+            var expiration = DateTime.Now.AddMinutes(expiresInMinutes); 
+
+            // Create JWT token with claims
+            var claims = new[] 
+            {   
+            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString("D")),
+            new Claim("purpose", "password_reset")
+        };
+
+            var token = new JwtSecurityToken(
+                issuer: JwtIssuer, 
+                audience: JwtAudience,
+                claims: claims,
+                expires: expiration, 
+                signingCredentials: credentials 
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        /// <summary>
+        /// Validate a password reset token and extract the user ID.
+        /// </summary>
+        /// <param name="token">reset password token</param>
+        /// <param name="userId">the extracted user Id</param>
+        /// <returns>true if reset password token is valid and false if otherwise</returns>
+        public static bool ValidatePasswordResetToken(string token, out Guid userId)
+        {
+            userId = Guid.Empty;
+            var tokenHandler = new JwtSecurityTokenHandler();
+       
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true, 
+                ValidateAudience = true,
+                ValidateLifetime = true, 
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = JwtIssuer, 
+                ValidAudience = JwtAudience, 
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey))
+            };
+
+            // Validate token
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+
+            // Check if token is for password reset
+            var purposeClaim = principal.FindFirst("purpose")?.Value;
+            if (purposeClaim != "password_reset")
+            {
+                return false;
+            }
+
+            // Get the user ID from the token
+            var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out userId))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

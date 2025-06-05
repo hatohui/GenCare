@@ -9,5 +9,8 @@ public interface IAccountService
 
     Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request);
 
+    Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request);
+
+    Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request);
     Task<bool> RevokeRefreshTokenAsync(string refreshToken);
 }

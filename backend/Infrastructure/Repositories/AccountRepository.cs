@@ -29,13 +29,21 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> GetByEmailAsync(string email)
     {
-        return await dbContext
-            .Accounts.Include(u => u.Role)
-            .FirstOrDefaultAsync(a => a.Email.ToLower() == email.ToLower());
+        return await dbContext.Accounts.Include(a => a.Role)
+            .FirstOrDefaultAsync(a => a.Email == email);
     }
 
-    public async Task<Account?> GetByIdAsync(Guid id)
+    public async Task<Account?> GetByAccountIdAsync(Guid accountId)
     {
-        return await dbContext.Accounts.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == id);
+        return await dbContext.Accounts
+            .Include(a => a.Role)
+            .Include(a => a.BirthControl)
+            .FirstOrDefaultAsync(a => a.Id == accountId);
+    }
+
+    public async Task UpdateAccount(Account user)
+    {
+        dbContext.Accounts.Update(user);
+        await dbContext.SaveChangesAsync();
     }
 }
