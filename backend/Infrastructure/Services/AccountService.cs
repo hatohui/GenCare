@@ -98,6 +98,7 @@ public class AccountService
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
             RefreshToken = refreshToken
+
         };
     }
 
@@ -229,6 +230,7 @@ public class AccountService
         });
 
         return (newAccess, newRefresh);
+
     public async Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
     {
         var user = await accountRepo.GetByEmailAsync(payload.Email);
@@ -293,5 +295,6 @@ public class AccountService
             }).ToList()
         };
         return result;
+
     }
 }
