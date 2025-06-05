@@ -12,7 +12,7 @@ public class PurchaseService
     IPurchaseRepository purchaseRepository,
     IOrderDetailRepository orderDetailRepository,
     IAccountRepository accountRepository,
-    IServicesRepository servicesRepository
+    IServiceRepository serviceRepository
 ) : IPurchaseService
 {
     //add new purchase
@@ -46,7 +46,7 @@ public class PurchaseService
         //        DateOfBirth = o.DateOfBirth,
         //        Gender = o.Gender,
         //        Purchase = purchase,
-        //        Service = await servicesRepository.GetByIdAsync(o.ServiceId)
+        //        Service = await serviceRepository.GetByIdAsync(o.ServiceId)
         //                    ?? throw new Exception("Service not found")
         //    };
         //    //add order detail to corresponding purchase
@@ -69,8 +69,8 @@ public class PurchaseService
                 DateOfBirth = o.DateOfBirth,
                 Gender = o.Gender,
                 Purchase = purchase,
-                Service = await servicesRepository.GetByIdAsync(o.ServiceId)
-                          ?? throw new Exception("Service not found")
+                Service = await serviceRepository.SearchServiceByIdAsync(o.ServiceId)
+                            ?? throw new Exception("Service not found")
             };
             //add order detail to corresponding purchase
             purchase.OrderDetails.Add(ordDetail);

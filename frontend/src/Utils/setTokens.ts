@@ -1,7 +1,4 @@
-import {
-	ACCESS_TOKEN_COOKIE_STRING,
-	REFRESH_TOKEN_COOKIE_STRING,
-} from '@/Constants/Auth'
+import { ACCESS_TOKEN_COOKIE_STRING } from '@/Constants/Auth'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import { setCookie } from 'cookies-next/client'
 import { getDecodedToken } from './getDecodedToken'
@@ -14,7 +11,6 @@ export const setAccessToken = (data: TokenData) => {
 		sameSite: 'strict',
 		expires: new Date(data.accessTokenExpiration),
 	})
-	setCookie(REFRESH_TOKEN_COOKIE_STRING, data.refreshToken)
 
 	// DECODE COOKIE
 	const tokenClaim = getDecodedToken(data.accessToken)
