@@ -1,42 +1,32 @@
-import { TokenizedAccount } from '@/Interfaces/Auth/Schema/token'
+import { TOKEN_STORE_STRING } from '@/Constants/Auth'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
-export type AccountStore = {
-	account: TokenizedAccount | null
+export type TokenStore = {
 	accessToken: string | null
+	isDehydrated: boolean
 	setAccessToken: (token: string) => void
 	removeAccessToken: () => void
-	setAccount: (newAccount: TokenizedAccount) => void
-	removeAccount: () => void
 }
 
-const useAccountStore = create<AccountStore>()(
+const useToken = create<TokenStore>()(
 	persist(
 		set => ({
-			account: null,
 			accessToken: null,
+			isDehydrated: false,
 			setAccessToken: (token: string) => set({ accessToken: token }),
-
 			removeAccessToken: () => {
-				set({ accessToken: null, account: null })
+				set({ accessToken: null })
 			},
-			setAccount: (newAccount: TokenizedAccount) =>
-				set({ account: newAccount }),
-			removeAccount: () => set({ account: null }),
 		}),
 		{
-			name: 'account-store',
+			name: TOKEN_STORE_STRING,
 			storage: createJSONStorage(() => sessionStorage),
+			onRehydrateStorage: state => {
+				if (state) state.isDehydrated = true
+			},
 		}
 	)
 )
 
-export const accountActions = {
-	setAccount: useAccountStore.getState().setAccount,
-	removeAccount: useAccountStore.getState().removeAccount,
-	removeAccessToken: useAccountStore.getState().removeAccessToken,
-	setAccessToken: useAccountStore.getState().setAccessToken,
-}
-
-export default useAccountStore
+export default useToken

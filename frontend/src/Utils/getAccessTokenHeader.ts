@@ -1,8 +1,11 @@
-import { ACCESS_TOKEN_COOKIE_STRING } from '@/Constants/Auth'
-import { getCookie } from 'cookies-next/client'
+import useToken from '@/Hooks/useToken'
 
-export const getAccessTokenHeader = (): string => {
-	const token = getCookie(ACCESS_TOKEN_COOKIE_STRING)
+export const useAccessTokenHeader = (): string => {
+	const store = useToken()
+	const token = store.accessToken
+
+	console.log('token: ', token)
+
 	if (!token || typeof token !== 'string') {
 		throw new Error('Access Token is missing or invalid')
 	}
