@@ -20,7 +20,7 @@ public class PurchaseService
     public async Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest, string accessToken)
     {
         //get account id from access token
-        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         //get account by id
         var account = await accountRepository.GetAccountByIdAsync(accountId) ?? throw new AppException(404, "Account not found");
         //create purchase

@@ -155,7 +155,7 @@ public static class JwtHelper
     /// </summary>
     /// <param name="token">The JWT token.</param>
     /// <returns>The account ID as a Guid if token is valid; otherwise, throws an exception.</returns>
-    public static Guid GetAccountIdFromToken1(string token)
+    public static Guid GetAccountIdFromToken(string token)
     {
         var principal = ValidateToken(token);
         // Thử lấy từ nhiều loại claim phổ biến
@@ -234,7 +234,6 @@ public static class JwtHelper
     {
         var principal = ValidateToken(token);
 
-        // Tìm accountId từ "nameidentifier" claim (hoặc "sub" nếu không tìm thấy)
         var accountIdString = principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value
                               ?? principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 

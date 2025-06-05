@@ -143,7 +143,7 @@ public class AuthController
     public async Task<IActionResult> LogoutAsync()
     {
         // Lấy refresh token từ cookies
-        var refreshToken = Request.Cookies["RefreshToken"];
+        var refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
             return BadRequest("Refresh token is required.");
@@ -154,7 +154,7 @@ public class AuthController
             return BadRequest("Failed to revoke token or token not found.");
         }
         // Xóa refresh token khỏi cookies sau khi logout
-        Response.Cookies.Delete("RefreshToken");
+        Response.Cookies.Delete("refreshToken");
         return NoContent(); // 204 No Content
     }
 
