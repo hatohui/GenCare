@@ -5,11 +5,12 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Newtonsoft.Json.Linq;
+using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class AccountService(
+public class AccountService
+(
     IAccountRepository accountRepo,
     IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo,
@@ -39,7 +40,7 @@ public class AccountService(
             DateOfBirth = request.DateOfBirth,
             Phone = request.PhoneNumber,
             RoleId = role.Id,
-            Role = role,
+            Role = role
         };
         //add user to database
         await accountRepo.AddAsync(user);
@@ -51,7 +52,7 @@ public class AccountService(
         {
             AccountId = user.Id,
             Token = refToken,
-            ExpiresAt = refExpiration,
+            ExpiresAt = refExpiration
         };
         //add refresh token to database
         await refTokenRepo.AddAsync(rf);
@@ -62,7 +63,7 @@ public class AccountService(
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
-            AccessTokenExpiration = accExpiration,
+            AccessTokenExpiration = accExpiration
         };
     }
 
@@ -70,7 +71,7 @@ public class AccountService(
     {
         var user =
             await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
-            ?? throw new Exception("Invalid email or password");
+            ?? throw new InvalidCredentialsException();
         //create access and refresh tokens
         var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
@@ -80,15 +81,15 @@ public class AccountService(
         {
             AccountId = user.Id,
             Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration,
+            ExpiresAt = refreshTokenExpiration
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new()
+        return new AccountLoginResponse
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken,
+            RefreshToken = refreshToken
         };
     }
 
@@ -97,7 +98,9 @@ public class AccountService(
         //find user by email
         var user = await accountRepo.GetByEmailAsync(request.Email);
         if (user is null)
+        {
             throw new Exception("User not found");
+        }
 
         //generate reset password token
         var resetPwdToken = JwtHelper.GeneratePasswordResetToken(user.Id);
@@ -115,9 +118,9 @@ public class AccountService(
             msg
         );
         //return reponse
-        return new ForgotPasswordResponse()
+        return new ForgotPasswordResponse
         {
-            CallbackUrl = callbackUrl,
+            CallbackUrl = callbackUrl
         };
     }
 
@@ -127,18 +130,22 @@ public class AccountService(
         //check if token is valid
         var isValid = JwtHelper.ValidatePasswordResetToken(request.ResetPasswordToken!, out userId);
         if (!isValid)
+        {
             throw new Exception("Invalid reset password token");
+        }
         //get user by email
         var user = accountRepo.GetByEmailAsync(request.Email!) ?? throw new Exception("email in reset passsword token is invalid");
         //check userId of token and email in request
-        if (!Guid.Equals(userId, user.Result!.Id))
+        if (!Equals(userId, user.Result!.Id))
+        {
             throw new Exception("User ID in reset password token does not match email");
+        }
         //update user password
         user.Result!.PasswordHash = PasswordHasher.Hash(request.NewPassword!);
         await accountRepo.UpdateAccount(user.Result);
-        return new ResetPasswordResponse()
+        return new ResetPasswordResponse
         {
-            msg = "Password reset successfully. You can now login with your new password.",
+            msg = "Password reset successfully. You can now login with your new password."
         };
     }
 
@@ -146,7 +153,9 @@ public class AccountService(
     {
         var token = await refTokenRepo.GetByTokenAsync(refreshToken);
         if (token is null || token.IsRevoked)
+        {
             return false;
+        }
 
         token.IsRevoked = true;
         token.LastUsedAt = DateTime.Now;
