@@ -26,9 +26,9 @@ public class Blog
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<BlogTag> BlogTag { get; set; } = [];
+    public ICollection<BlogTag> BlogTags { get; set; } = [];
 
-    public virtual ICollection<Comment> Comment { get; set; } = [];
+    public ICollection<Comment> Comments { get; set; } = [];
 
-    public virtual ICollection<Media> Media { get; set; } = [];
+    public ICollection<Media> Media { get; set; } = [];
 }
