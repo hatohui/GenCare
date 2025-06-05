@@ -8,6 +8,7 @@ import { samplePayload, useServiceByPage } from '@/Services/service-services'
 import { GetServiceApiByPageResponse } from '@/Interfaces/Service/Schemas/service'
 import { motion } from 'motion/react'
 import { LoadingSkeleton } from '@/Components/Skeletons'
+import FlorageBackground from '@/Components/Landing/FlorageBackground'
 
 export default function Page() {
 	const { ...search } = useInput('', 'text')
@@ -26,7 +27,7 @@ export default function Page() {
 	}, [serviceDatam])
 
 	return (
-		<main className='min-h-screen bg-[#F7F7F7] text-gray-900'>
+		<main className='relative min-h-screen  text-gray-900'>
 			<div className='bg-general shadow-md'>
 				<div className='h-20' />
 				<div className='mx-auto px-6 py-4 flex items-center justify-between'>
@@ -37,7 +38,7 @@ export default function Page() {
 				</div>
 			</div>
 
-			<div className='max-w-7xl mx-auto px-6 py-8'>
+			<div className=' max-w-7xl mx-auto px-6 py-8'>
 				<h2 className='text-2xl font-bold text-gray-800 mb-6'>
 					Dịch Vụ Nổi Bật
 				</h2>
@@ -59,6 +60,7 @@ export default function Page() {
 						))}
 					</Suspense>
 				</div>
+				<FlorageBackground />
 			</div>
 		</main>
 	)

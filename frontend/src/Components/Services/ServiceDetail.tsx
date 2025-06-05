@@ -38,7 +38,7 @@ export default function ServiceDetail({
 				{/* Right Panel */}
 				<div className='space-y-8'>
 					{/* Image Section */}
-					<div className='bg-gray-200 h-96 w-full flex items-center justify-center rounded-lg overflow-hidden shadow-lg transition duration-300 hover:scale-105 hover:shadow-2xl'>
+					<div className='bg-gray-200 h-96 w-full flex items-center justify-center rounded-lg overflow-hidden shadow-lg transition duration-300 hover:scale-105 hover:shadow-2xl p-2'>
 						{imageUrl ? (
 							<Image
 								src={imageUrl}
