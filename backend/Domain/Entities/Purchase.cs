@@ -20,9 +20,9 @@ public class Purchase
 
     public bool IsDeleted { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 
-    public virtual ICollection<OrderDetail> OrderDetail { get; set; } = [];
+    public ICollection<OrderDetail> OrderDetails { get; set; } = [];
 
-    public virtual PaymentHistory? PaymentHistory { get; set; }
+    public PaymentHistory? PaymentHistory { get; set; }
 }

@@ -1,15 +1,23 @@
-﻿using System.Net;
+
+using Application.DTOs.Account;
+using Application.DTOs.Account.Responses;
+using System.Net;
+
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
+using Domain.Exceptions;
+using Google.Apis.Auth;
 using Newtonsoft.Json.Linq;
+
 
 namespace Infrastructure.Services;
 
-public class AccountService(
+public class AccountService
+(
     IAccountRepository accountRepo,
     IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo,
@@ -18,6 +26,7 @@ public class AccountService(
 {
     public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
     {
+        //check if user already exists
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
         {
@@ -39,7 +48,7 @@ public class AccountService(
             DateOfBirth = request.DateOfBirth,
             Phone = request.PhoneNumber,
             RoleId = role.Id,
-            Role = role,
+            Role = role
         };
         //add user to database
         await accountRepo.AddAsync(user);
@@ -51,7 +60,7 @@ public class AccountService(
         {
             AccountId = user.Id,
             Token = refToken,
-            ExpiresAt = refExpiration,
+            ExpiresAt = refExpiration
         };
         //add refresh token to database
         await refTokenRepo.AddAsync(rf);
@@ -62,7 +71,7 @@ public class AccountService(
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
-            AccessTokenExpiration = accExpiration,
+            AccessTokenExpiration = accExpiration
         };
     }
 
@@ -70,7 +79,7 @@ public class AccountService(
     {
         var user =
             await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
-            ?? throw new Exception("Invalid email or password");
+            ?? throw new InvalidCredentialsException();
         //create access and refresh tokens
         var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
@@ -80,15 +89,15 @@ public class AccountService(
         {
             AccountId = user.Id,
             Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration,
+            ExpiresAt = refreshTokenExpiration
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new()
+        return new AccountLoginResponse
         {
             AccessToken = accessToken,
             AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken,
+            RefreshToken = refreshToken
         };
     }
 
@@ -146,12 +155,80 @@ public class AccountService(
     {
         var token = await refTokenRepo.GetByTokenAsync(refreshToken);
         if (token is null || token.IsRevoked)
+        {
             return false;
+        }
 
         token.IsRevoked = true;
         token.LastUsedAt = DateTime.Now;
 
         await refTokenRepo.UpdateAsync(token);
         return true;
+    }
+
+    public async Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
+    {
+        var user = await accountRepo.GetByEmailAsync(payload.Email);
+        if (user == null)
+        {
+            var role = await roleRepo.GetRoleByNameAsync("Member")
+                       ?? throw new Exception("Role 'Member' not found");
+
+            user = new Account
+            {
+                Email = payload.Email,
+                FirstName = payload.GivenName ?? string.Empty,
+                LastName = payload.FamilyName ?? string.Empty,
+                AvatarUrl = payload.Picture ?? string.Empty,
+                PasswordHash = null,
+                RoleId = role.Id,
+                Role = role,
+                Gender = true,
+                IsDeleted = false
+            };
+
+            await accountRepo.AddAsync(user);
+        }
+
+        var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        RefreshToken rf = new()
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = refreshExpiration
+        };
+        await refTokenRepo.AddAsync(rf);
+
+        return new AccountLoginResponse
+        {
+            AccessToken = accessToken,
+            AccessTokenExpiration = accessExpiration,
+            RefreshToken = refreshToken
+        };
+    }
+
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
+    {
+        var skip = page * count;
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
+        var result = new GetAccountByPageResponse
+        {
+            Accounts = accounts.Select(a => new AccountViewModel
+            {
+                Id = a.Id,
+                Role = a.Role?.Name ?? "Unknown",
+                Email = a.Email,
+                FirstName = a.FirstName ?? string.Empty,
+                LastName = a.LastName ?? string.Empty,
+                Gender = a.Gender,
+                DateOfBirth = a.DateOfBirth,
+                AvatarUrl = a.AvatarUrl,
+                IsDeleted = a.IsDeleted
+
+            }).ToList()
+        };
+        return result;
     }
 }

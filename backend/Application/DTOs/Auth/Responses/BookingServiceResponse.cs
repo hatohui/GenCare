@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.DTOs.Auth.Responses;
-public class ForgotPasswordResponse
+public record class BookingServiceResponse
 {
-    public string? CallbackUrl { get; set; }
+    public Guid PurchaseId { get; set; }
 }

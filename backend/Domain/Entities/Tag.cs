@@ -6,5 +6,5 @@ public class Tag
 
     public string Title { get; set; } = null!;
 
-    public virtual ICollection<BlogTag> BlogTag { get; set; } = [];
+    public ICollection<BlogTag> BlogTags { get; set; } = [];
 }

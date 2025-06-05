@@ -8,5 +8,5 @@ public class Role
 
     public string Description { get; set; } = null!;
 
-    public virtual ICollection<Account> Account { get; set; } = [];
+    public ICollection<Account> Accounts { get; set; } = [];
 }
