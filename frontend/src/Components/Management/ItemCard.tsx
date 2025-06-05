@@ -45,23 +45,24 @@ const ItemCard = ({
 		default:
 	}
 
-	const handleEditFunc = (event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleEditFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
 
 		router.push(`${path}/edit/${id}`)
 	}
 
-	const handleDeleteFunc = (event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleDeleteFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
 		handleDelete()
 	}
 
 	return (
-		<div
+		<button
 			id={id}
-			className='bg-gray-300  w-full h-full flex justify-between px-2 drop-shadow-xs border-transparent hover:border-slate-800 transition-colors duration-300 border items-center rounded-[30px]'
+			className='bg-gray-300 w-full h-full flex justify-between px-2 drop-shadow-xs border-transparent hover:border-slate-800 transition-colors duration-300 border items-center rounded-[30px]'
 			aria-label={`Item card for ${label}`}
 			onClick={() => router.push(`${path}/${id}`)}
+			tabIndex={0}
 		>
 			<div className='flex items-center gap-3 text-shadow-sm p-3'>
 				<div
@@ -81,21 +82,23 @@ const ItemCard = ({
 			<div className='center-all gap-2'>
 				<p className='truncate text-slate-950 hidden sm:block'>{date}</p>
 				<div className='flex gap-2 p-3'>
-					<button
+					<div
 						className='bg-amber-200 py-2 z-50 center-all px-4 rounded-[30px] transition duration-200 ease-in hover:scale-105 hover:shadow-[0_0_15px_rgba(253,224,71,0.7)]'
 						onClick={handleEditFunc}
+						tabIndex={1}
 					>
 						<PencilSVG className='size-5 text-slate-950' />
-					</button>
-					<button
+					</div>
+					<div
 						className='bg-red-400 py-2 center-all z-50 px-4 rounded-[30px] transition duration-200 ease-in hover:scale-105 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
 						onClick={handleDeleteFunc}
+						tabIndex={1}
 					>
 						<TrashCanSVG className='size-5 text-slate-950' />
-					</button>
+					</div>
 				</div>
 			</div>
-		</div>
+		</button>
 	)
 }
 

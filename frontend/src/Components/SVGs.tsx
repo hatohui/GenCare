@@ -170,3 +170,37 @@ export const PencilSVG = ({ className }: SVGProps) => (
 		<path d='M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z' />
 	</svg>
 )
+
+export const NextSVG = ({ className }: SVGProps) => (
+	<svg
+		xmlns='http://www.w3.org/2000/svg'
+		fill='none'
+		viewBox='0 0 24 24'
+		strokeWidth={1.5}
+		stroke='currentColor'
+		className={clsx(className, 'size-5')}
+	>
+		<path
+			strokeLinecap='round'
+			strokeLinejoin='round'
+			d='m8.25 4.5 7.5 7.5-7.5 7.5'
+		/>
+	</svg>
+)
+
+export const PreviousSVG = ({ className }: SVGProps) => (
+	<svg
+		xmlns='http://www.w3.org/2000/svg'
+		fill='none'
+		viewBox='0 0 24 24'
+		strokeWidth={1.5}
+		stroke='currentColor'
+		className={clsx(className, 'size-5')}
+	>
+		<path
+			strokeLinecap='round'
+			strokeLinejoin='round'
+			d='M15.75 19.5 8.25 12l7.5-7.5'
+		/>
+	</svg>
+)
