@@ -12,5 +12,5 @@ public class PaymentHistory
 
     public DateTime? ExpiredAt { get; set; }
 
-    public virtual Purchase Purchase { get; set; } = null!;
+    public Purchase Purchase { get; set; } = null!;
 }

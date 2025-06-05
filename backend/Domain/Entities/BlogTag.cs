@@ -20,7 +20,7 @@ public class BlogTag
 
     public bool IsDeleted { get; set; }
 
-    public virtual Blog Blog { get; set; } = null!;
+    public Blog Blog { get; set; } = null!;
 
-    public virtual Tag Tag { get; set; } = null!;
+    public Tag Tag { get; set; } = null!;
 }
