@@ -18,7 +18,7 @@ public interface IAccountService
   
     Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefreshToken);
 
-    Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
+    Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
 }

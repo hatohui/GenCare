@@ -129,8 +129,22 @@ public class AuthController
 
         var payload = await googleCredentialService.VerifyGoogleCredentialAsync(clientId, request.Credential);
 
-        var response = await accountService.LoginWithGoogleAsync(payload);
-        return Ok(response);
+        var (accessToken, refreshToken) = await accountService.LoginWithGoogleAsync(payload);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+
+        return Ok(accessToken);
     }
 
     /// <summary>

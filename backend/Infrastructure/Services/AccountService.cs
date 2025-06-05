@@ -75,32 +75,7 @@ public class AccountService
         };
     }
 
-    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
-    {
-        var user =
-            await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
-            ?? throw new InvalidCredentialsException();
-        //create access and refresh tokens
-        var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
-        var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-        //add refresh token to database
 
-        RefreshToken rf = new()
-        {
-            AccountId = user.Id,
-            Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration
-        };
-        await refTokenRepo.AddAsync(rf);
-
-        return new AccountLoginResponse
-        {
-            AccessToken = accessToken,
-            AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken
-
-        };
-    }
 
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
@@ -230,8 +205,9 @@ public class AccountService
         });
 
         return (newAccess, newRefresh);
+    }
 
-    public async Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
+    public async Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
     {
         var user = await accountRepo.GetByEmailAsync(payload.Email);
         if (user == null)
@@ -266,12 +242,7 @@ public class AccountService
         };
         await refTokenRepo.AddAsync(rf);
 
-        return new AccountLoginResponse
-        {
-            AccessToken = accessToken,
-            AccessTokenExpiration = accessExpiration,
-            RefreshToken = refreshToken
-        };
+        return (accessToken, refreshToken);
     }
 
     public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
