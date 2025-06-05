@@ -91,26 +91,7 @@ builder
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     })
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, option => {
-        option.Cookie.HttpOnly = true;
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-        option.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        option.SlidingExpiration = true;
-        
-        option.Events = new CookieAuthenticationEvents
-        {
-            OnRedirectToLogin = context =>
-            {
-                context.Response.StatusCode = 401;
-                return Task.CompletedTask;
-            },
-            OnRedirectToAccessDenied = context =>
-            {
-                context.Response.StatusCode = 403;
-                return Task.CompletedTask;
-            }
-        };
-    })
+    .AddCookie()
     .AddGoogle(options =>
     {
         options.ClientId = googleClientId;
@@ -134,7 +115,6 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
-
 
 // ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
