@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import React from 'react'
 import { PencilSVG, TrashCanSVG } from '../SVGs'
 import { useRouter } from 'next/navigation'
+import { motion } from 'motion/react'
 
 export type Status = 'SUCCESS' | 'PENDING' | 'FAILED'
 
@@ -12,6 +13,7 @@ export type ItemCardProps = {
 	status?: Status
 	date: string | Date
 	path: string
+	delay: number
 	secondaryLabel: string
 	handleDelete: () => void
 }
@@ -20,6 +22,7 @@ const ItemCard = ({
 	id,
 	label = 'Your name',
 	status,
+	delay,
 	path = '/',
 	date = '00/00/0000',
 	secondaryLabel = 'aaa',
@@ -56,11 +59,14 @@ const ItemCard = ({
 	}
 
 	return (
-		<button
+		<motion.button
 			id={id}
 			className='bg-gradient-to-r border border-white hover:border-teal-300 from-white to-general w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center rounded-[30px]'
 			aria-label={`Item card for ${label}`}
 			onClick={() => router.push(`${path}/${id}`)}
+			initial={{ translateY: -40, opacity: 0 }}
+			animate={{ translateY: 0, opacity: 1 }}
+			transition={{ delay: delay / 15, type: 'spring' }}
 			tabIndex={0}
 		>
 			<div className='absolute h-full w-full opacity-60 asfaltBackground' />
@@ -102,7 +108,7 @@ const ItemCard = ({
 					</div>
 				</div>
 			</div>
-		</button>
+		</motion.button>
 	)
 }
 

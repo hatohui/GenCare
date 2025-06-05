@@ -4,7 +4,7 @@ import {
 	GetAccountByPageResponse,
 } from '@/Interfaces/Account/Schema/account'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 const ACCOUNT_URL = `${DEFAULT_API_URL}/account`
@@ -33,8 +33,9 @@ export const useGetAccountsByPage = (count: number, page: number) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['accounts', count, page],
+		queryKey: ['accounts', page],
 		queryFn: () => accountApi.getByPage(header, count, page),
+		placeholderData: keepPreviousData,
 	})
 }
 

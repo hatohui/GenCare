@@ -5,12 +5,10 @@ import { useLogoutAccount } from '@/Services/auth-service'
 import { useRouter } from 'next/navigation'
 import Logo from '../Logo'
 import { ExitSVG } from '../SVGs'
-import { useState } from 'react'
 
 export default function SideNav() {
 	const router = useRouter()
 	const { mutate: logout } = useLogoutAccount()
-	const [isOpen, setIsOpen] = useState()
 
 	const handleLogout = (e: React.FormEvent) => {
 		e.preventDefault()
