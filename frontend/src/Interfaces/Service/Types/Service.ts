@@ -5,5 +5,6 @@ export interface Service {
 	price: number
 	createdAt: Date
 	updatedAt: Date
-	isDeleted: string
+	isDeleted: boolean
+	imageUrl?: string
 }
