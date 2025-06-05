@@ -4,7 +4,9 @@ using Application.DTOs.Service.Responses;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
+using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
@@ -38,14 +40,14 @@ public class ServicesService(
     {
         // Validate Id là Guid hợp lệ
         if (!Guid.TryParse(request.Id, out var guidId))
-            throw new ArgumentException("Invalid id format.");
+            throw new AppException(400,"Invalid id format.");
 
         // Gọi repository để lấy dữ liệu
         var service = await serviceRepository.SearchServiceByIdAsync1(guidId);
 
         // Nếu không tìm thấy thì throw exception hoặc trả về null 
         if (service == null)
-            throw new KeyNotFoundException("Service not found.");
+            throw new AppException(404,"Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
         
         var imUrls = mediaService?.Select(m  =>m.Url).ToList();         
@@ -67,17 +69,17 @@ public class ServicesService(
         var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
 
         // Validate quyền
-        if (role != "admin" && role != "staff")
+        if (role != RoleNames.Admin && role != RoleNames.Admin)
             throw new UnauthorizedAccessException();
         // Validate not null
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new ArgumentException("Service name cannot be empty.");
+            throw new AppException(400,"Service name cannot be empty.");
         //check exists
         if (await serviceRepository.ExistsByNameAsync(request.Name))
-            throw new InvalidOperationException("Service name already exists.");
+            throw new AppException(400,"Service name already exists.");
         //price is not negative
         if (request.Price < 0)
-            throw new ArgumentException("Service price cannot be negative.");
+            throw new AppException(400,"Service price cannot be negative.");
         Media? media = null;
         if (!string.IsNullOrWhiteSpace(request.UrlImage))
         {
@@ -116,19 +118,18 @@ public class ServicesService(
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
 
-        if (role != "admin" && role != "staff")
-            throw new UnauthorizedAccessException();
+        if (role != RoleNames.Admin && role != RoleNames.Admin)
+            throw new AppException(403,"UNAUTHORIZED");
 
         if (request.Id == Guid.Empty)
-            throw new ArgumentException("Service id cannot be empty.");
+            throw new AppException(400,"Guid cannot be empty.");
 
         var service = await serviceRepository.SearchServiceByIdAsync1(request.Id);
         if (service == null)
-            throw new Exception("Service not found");
+            throw new AppException(404,"Service not found");
 
         service.UpdatedBy = accountId;
-        if (service == null)
-            throw new Exception("Service not found");
+        
 
         if (!string.IsNullOrWhiteSpace(request.Name))
             service.Name = request.Name;
