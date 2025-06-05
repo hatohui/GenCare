@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.DTOs.Auth.Requests;
-public class ForgotPasswordRequest
+public record class ForgotPasswordRequest
 {
     public string? Email { get; set; }
 }

@@ -22,7 +22,7 @@ public class Message
 
     public string Content { get; set; } = null!;
 
-    public virtual Conversation Conversation { get; set; } = null!;
+    public Conversation Conversation { get; set; } = null!;
 
-    public virtual ICollection<Media> Media { get; set; } = [];
+    public ICollection<Media> Media { get; set; } = [];
 }

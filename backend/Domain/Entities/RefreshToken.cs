@@ -14,5 +14,5 @@ public class RefreshToken
 
     public DateTime ExpiresAt { get; set; }
 
-    public virtual Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!;
 }

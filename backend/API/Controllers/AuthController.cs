@@ -1,5 +1,7 @@
 ﻿using Application.DTOs.Auth.Requests;
+using Application.DTOs.Auth.Responses;
 using Application.Services;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -19,19 +21,19 @@ public class AuthController
     IGoogleCredentialService googleCredentialService
 ) : ControllerBase
 {
-    /// <summary>
-    ///     Registers a new user in the system.
-    /// </summary>
-    /// <param name="request">The user registration details.</param>
-    /// <returns>An action result containing the user ID and a success message.</returns>
-    /// <response code="200">User registered successfully.</response>
-    /// <response code="400">Bad request if the user data is invalid.</response>
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
-    {
-        var response = await accountService.RegisterAsync(request);
-        return Ok(response);
-    }
+        /// <summary>
+        /// Registers a new user in the system.
+        /// </summary>
+        /// <param name="request">The user registration details.</param>
+        /// <returns>An action result containing refresh token, access token and access token expiration.</returns>
+        /// <response code="200">User registered successfully.</response>
+        /// <response code="400">Bad request if the user data is invalid.</response>
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
+        {
+            var response = await accountService.RegisterAsync(request);
+            return Ok(response);
+        }
 
     /// <summary>
     ///     Logs in a user and generates a JWT access token.
@@ -41,14 +43,24 @@ public class AuthController
     /// <response code="200">Successfully logged in and token generated.</response>
     /// <response code="400">Invalid credentials.</response>
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> LoginAsync([FromBody] AccountLoginRequest request)
     {
-        var result = await accountService.LoginAsync(request);
-        if (result is null)
-        {
-            return BadRequest("Invalid credentials.");
-        }
-        return Ok(result);
+        var (accessToken, refreshToken) = await accountService.LoginAsync(request);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+        return Ok(new AccountLoginResponse(accessToken));
     }
 
     /// <summary>
@@ -60,9 +72,28 @@ public class AuthController
     /// <response code="400">Invalid refresh token.</response>
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest dto)
+    public async Task<IActionResult> RefreshTokenAsync()
     {
-        throw new NotImplementedException("Token refresh is not implemented yet.");
+        if (!Request.Cookies.TryGetValue("refreshToken", out var oldRefresh))
+        {
+            throw new AppException(401, "Missing refresh token cookie");
+        }
+
+        var (accessToken, newRefresh) = await accountService.RefreshAccessTokenAsync(oldRefresh);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            newRefresh,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+        return Ok(new { accessToken });
     }
 
     /// <summary>
@@ -95,8 +126,25 @@ public class AuthController
         {
             return BadRequest("Google Client ID is not configured.");
         }
+
         var payload = await googleCredentialService.VerifyGoogleCredentialAsync(clientId, request.Credential);
-        return Ok(payload);
+
+        var (accessToken, refreshToken) = await accountService.LoginWithGoogleAsync(payload);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+
+        return Ok(new AccountLoginResponse(accessToken));
     }
 
     /// <summary>
@@ -137,7 +185,7 @@ public class AuthController
 
 
     /// <summary>
-    /// Initiates the forgot password process by sending a reset password link to the user's email.
+    ///     Initiates the forgot password process by sending a reset password link to the user's email.
     /// </summary>
     /// <param name="request">forgot password request</param>
     /// <returns>response containing forgot password URL</returns>
@@ -149,7 +197,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Resets the user's password using a reset token and new password.
+    ///     Resets the user's password using a reset token and new password.
     /// </summary>
     /// <param name="request">reset password request</param>
     /// <returns>message of resetting password successfully</returns>
@@ -159,4 +207,5 @@ public class AuthController
         var response = await accountService.ResetPasswordAsync(request);
         return Ok(response);
     }
+
 }

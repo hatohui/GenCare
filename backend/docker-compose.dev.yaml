@@ -17,6 +17,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - .:/src
+      - ~/.nuget/packages:/root/.nuget/packages
 
   database:
     container_name: gencare_database
