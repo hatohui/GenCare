@@ -18,6 +18,7 @@ public class AccountService(
 {
     public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
     {
+        //check if user already exists
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
         {
