@@ -29,9 +29,8 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> GetByEmailAsync(string email)
     {
-        return await dbContext
-            .Accounts.Include(u => u.Role)
-            .FirstOrDefaultAsync(a => a.Email.ToLower() == email.ToLower());
+        return await dbContext.Accounts.Include(a => a.Role)
+            .FirstOrDefaultAsync(a => a.Email == email);
     }
 
     public async Task<Account?> GetByAccountIdAsync(Guid accountId)
@@ -46,5 +45,15 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
     {
         dbContext.Accounts.Update(user);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
+    {
+        return await dbContext.Accounts
+            .Include(a => a.Role)
+            .OrderBy(a => a.FirstName)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
     }
 }

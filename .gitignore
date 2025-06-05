@@ -210,6 +210,10 @@ PublishScripts/
 csx/
 *.build.csdef
 
+#frontend
+.vercel
+dev
+
 # Microsoft Azure Emulator
 ecf/
 rcf/

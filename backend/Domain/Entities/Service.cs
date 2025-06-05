@@ -14,7 +14,7 @@ public class Service
 
     public Guid? CreatedBy { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     public Guid? UpdatedBy { get; set; }
 
@@ -24,9 +24,9 @@ public class Service
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<Feedback> Feedback { get; set; } = [];
+    public ICollection<Feedback> Feedbacks { get; set; } = [];
 
-    public virtual ICollection<Media> Media { get; set; } = [];
+    public ICollection<Media> Media { get; set; } = [];
 
-    public virtual ICollection<OrderDetail> OrderDetail { get; set; } = [];
+    public ICollection<OrderDetail> OrderDetails { get; set; } = [];
 }

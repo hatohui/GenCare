@@ -1,4 +1,8 @@
-﻿using System.Net;
+
+using Application.DTOs.Account;
+using Application.DTOs.Account.Responses;
+using System.Net;
+
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
@@ -6,6 +10,8 @@ using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
 using Domain.Exceptions;
+using Google.Apis.Auth;
+using Newtonsoft.Json.Linq;
 
 namespace Infrastructure.Services;
 
@@ -19,6 +25,7 @@ public class AccountService
 {
     public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
     {
+        //check if user already exists
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
         {
@@ -64,6 +71,33 @@ public class AccountService
             RefreshToken = rf.Token,
             AccessToken = accToken,
             AccessTokenExpiration = accExpiration
+        };
+    }
+
+    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
+    {
+        var user =
+            await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
+            ?? throw new InvalidCredentialsException();
+        //create access and refresh tokens
+        var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
+        //add refresh token to database
+
+        RefreshToken rf = new()
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = refreshTokenExpiration
+        };
+        await refTokenRepo.AddAsync(rf);
+
+        return new AccountLoginResponse
+        {
+            AccessToken = accessToken,
+            AccessTokenExpiration = accessTokenExpiration,
+            RefreshToken = refreshToken
+
         };
     }
 
@@ -195,5 +229,71 @@ public class AccountService
         });
 
         return (newAccess, newRefresh);
+
+    public async Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
+    {
+        var user = await accountRepo.GetByEmailAsync(payload.Email);
+        if (user == null)
+        {
+            var role = await roleRepo.GetRoleByNameAsync("Member")
+                       ?? throw new Exception("Role 'Member' not found");
+
+            user = new Account
+            {
+                Email = payload.Email,
+                FirstName = payload.GivenName ?? string.Empty,
+                LastName = payload.FamilyName ?? string.Empty,
+                AvatarUrl = payload.Picture ?? string.Empty,
+                PasswordHash = null,
+                RoleId = role.Id,
+                Role = role,
+                Gender = true,
+                IsDeleted = false
+            };
+
+            await accountRepo.AddAsync(user);
+        }
+
+        var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        RefreshToken rf = new()
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = refreshExpiration
+        };
+        await refTokenRepo.AddAsync(rf);
+
+        return new AccountLoginResponse
+        {
+            AccessToken = accessToken,
+            AccessTokenExpiration = accessExpiration,
+            RefreshToken = refreshToken
+        };
+    }
+
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
+    {
+        var skip = page * count;
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
+        var result = new GetAccountByPageResponse
+        {
+            Accounts = accounts.Select(a => new AccountViewModel
+            {
+                Id = a.Id,
+                Role = a.Role?.Name ?? "Unknown",
+                Email = a.Email,
+                FirstName = a.FirstName ?? string.Empty,
+                LastName = a.LastName ?? string.Empty,
+                Gender = a.Gender,
+                DateOfBirth = a.DateOfBirth,
+                AvatarUrl = a.AvatarUrl,
+                IsDeleted = a.IsDeleted
+
+            }).ToList()
+        };
+        return result;
+
     }
 }
