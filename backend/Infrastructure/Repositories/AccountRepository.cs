@@ -46,4 +46,14 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         dbContext.Accounts.Update(user);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
+    {
+        return await dbContext.Accounts
+            .Include(a => a.Role)
+            .OrderBy(a => a.FirstName)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+    }
 }

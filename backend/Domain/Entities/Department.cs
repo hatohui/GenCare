@@ -8,5 +8,5 @@ public class Department
 
     public string Description { get; set; } = null!;
 
-    public virtual ICollection<StaffInfo> StaffInfo { get; set; } = [];
+    public ICollection<StaffInfo> StaffInfos { get; set; } = [];
 }

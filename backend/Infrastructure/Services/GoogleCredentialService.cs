@@ -13,8 +13,7 @@ public class GoogleCredentialService : IGoogleCredentialService
         };
         try
         {
-            var payload = await GoogleJsonWebSignature.ValidateAsync(credential, settings);
-            return payload;
+            return await GoogleJsonWebSignature.ValidateAsync(credential, settings);
         }
         catch (Exception ex)
         {

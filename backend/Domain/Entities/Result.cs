@@ -16,5 +16,5 @@ public class Result
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual OrderDetail OrderDetail { get; set; } = null!;
+    public OrderDetail OrderDetail { get; set; } = null!;
 }

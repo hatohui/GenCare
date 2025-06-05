@@ -1,7 +1,6 @@
 ﻿using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.DTOs.Service.Requests;
-using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
 using Domain.Entities;
 

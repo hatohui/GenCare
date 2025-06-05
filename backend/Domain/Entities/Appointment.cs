@@ -26,7 +26,7 @@ public class Appointment
 
     public bool IsDeleted { get; set; }
 
-    public virtual Account Member { get; set; } = null!;
+    public Account Member { get; set; } = null!;
 
-    public virtual Account Staff { get; set; } = null!;
+    public Account Staff { get; set; } = null!;
 }
