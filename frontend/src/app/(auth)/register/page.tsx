@@ -9,13 +9,14 @@ import {
 } from '@/Interfaces/Auth/Schema/register'
 import { useRegisterAccount } from '@/Services/auth-service'
 import LoadingPage from '@/Components/Loading'
-import { setAccessToken } from '@/Utils/setTokens'
 import { AxiosError } from 'axios'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
+import useToken from '@/Hooks/useToken'
 
 const Register = () => {
 	const router = useRouter()
 	const registerMutation = useRegisterAccount()
+	const tokenStore = useToken()
 
 	//handle register Logic
 	const handleRegister = (formData: RegisterFormData) => {
@@ -33,7 +34,7 @@ const Register = () => {
 
 		registerMutation.mutate(apiData, {
 			onSuccess: data => {
-				setAccessToken(data)
+				tokenStore.setAccessToken(data.accessToken)
 				router.push('/dashboard')
 			},
 
