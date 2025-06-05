@@ -4,6 +4,7 @@ import { create } from 'zustand'
 export type AccountStore = {
 	account: TokenizedAccount | null
 	accessToken: string | null
+	setAccessToken: (token: string) => void
 	removeAccessToken: () => void
 	setAccount: (newAccount: TokenizedAccount) => void
 	removeAccount: () => void
@@ -12,6 +13,8 @@ export type AccountStore = {
 const useAccountStore = create<AccountStore>()(set => ({
 	account: null,
 	accessToken: null,
+	setAccessToken: (token: string) => set({ accessToken: token }),
+
 	removeAccessToken: () => {
 		set({ accessToken: null, account: null })
 	},
@@ -23,6 +26,7 @@ export const accountActions = {
 	setAccount: useAccountStore.getState().setAccount,
 	removeAccount: useAccountStore.getState().removeAccount,
 	removeAccessToken: useAccountStore.getState().removeAccessToken,
+	setAccessToken: useAccountStore.getState().setAccessToken,
 }
 
 export default useAccountStore
