@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Services;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -71,9 +72,28 @@ public class AuthController
     /// <response code="400">Invalid refresh token.</response>
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest dto)
+    public async Task<IActionResult> RefreshTokenAsync()
     {
-        throw new NotImplementedException("Token refresh is not implemented yet.");
+        if (!Request.Cookies.TryGetValue("refreshToken", out var oldRefresh))
+        {
+            throw new AppException(401, "Missing refresh token cookie");
+        }
+
+        var (accessToken, newRefresh) = await accountService.RefreshAccessTokenAsync(oldRefresh);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            newRefresh,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+        return Ok(new { accessToken });
     }
 
     /// <summary>

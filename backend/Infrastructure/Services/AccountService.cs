@@ -156,4 +156,44 @@ public class AccountService
 
         return (accessToken, refreshToken);
     }
+
+    public async Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefresh)
+    {
+        // 1) Xác thực chữ ký / hạn dùng
+        var principal = JwtHelper.ValidateToken(oldRefresh); // nếu lỗi -> JwtHelper tự throw
+
+        // 2) Phải là refresh token
+        if (!string.Equals(principal.FindFirst("type")?.Value, "refresh", StringComparison.Ordinal))
+        {
+            throw new AppException(401, "Token is not a refresh token");
+        }
+
+        // 3) Tra DB
+        var stored = await refTokenRepo.GetByTokenAsync(oldRefresh);
+        if (stored is null || stored.IsRevoked || stored.ExpiresAt < DateTime.Now)
+        {
+            throw new AppException(401, "Refresh token expired or revoked");
+        }
+
+        // 4) Lấy user
+        var user = await accountRepo.GetByAccountIdAsync(stored.AccountId)
+                   ?? throw new AppException(404, "User not found");
+
+        // 5) Phát hành token mới (dùng DateTime.Now)
+        var (newAccess, _) = JwtHelper.GenerateAccessToken(user);
+        var (newRefresh, newRefreshExp) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        // 6) Revoke token cũ & lưu token mới
+        stored.IsRevoked = true;
+        await refTokenRepo.UpdateAsync(stored);
+
+        await refTokenRepo.AddAsync(new RefreshToken
+        {
+            AccountId = user.Id,
+            Token = newRefresh,
+            ExpiresAt = newRefreshExp
+        });
+
+        return (newAccess, newRefresh);
+    }
 }

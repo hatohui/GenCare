@@ -13,4 +13,5 @@ public interface IAccountService
 
     Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request);
     Task<bool> RevokeRefreshTokenAsync(string refreshToken);
+    Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefreshToken);
 }
