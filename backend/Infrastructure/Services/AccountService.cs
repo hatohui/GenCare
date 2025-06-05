@@ -1,8 +1,6 @@
-
+using System.Net;
 using Application.DTOs.Account;
 using Application.DTOs.Account.Responses;
-using System.Net;
-
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
@@ -11,8 +9,6 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Newtonsoft.Json.Linq;
-
 
 namespace Infrastructure.Services;
 
@@ -106,7 +102,9 @@ public class AccountService
         //find user by email
         var user = await accountRepo.GetByEmailAsync(request.Email);
         if (user is null)
+        {
             throw new Exception("User not found");
+        }
 
         //generate reset password token
         var resetPwdToken = JwtHelper.GeneratePasswordResetToken(user.Id);
@@ -124,9 +122,9 @@ public class AccountService
             msg
         );
         //return reponse
-        return new ForgotPasswordResponse()
+        return new ForgotPasswordResponse
         {
-            CallbackUrl = callbackUrl,
+            CallbackUrl = callbackUrl
         };
     }
 
@@ -136,18 +134,22 @@ public class AccountService
         //check if token is valid
         var isValid = JwtHelper.ValidatePasswordResetToken(request.ResetPasswordToken!, out userId);
         if (!isValid)
+        {
             throw new Exception("Invalid reset password token");
+        }
         //get user by email
         var user = accountRepo.GetByEmailAsync(request.Email!) ?? throw new Exception("email in reset passsword token is invalid");
         //check userId of token and email in request
-        if (!Guid.Equals(userId, user.Result!.Id))
+        if (!Equals(userId, user.Result!.Id))
+        {
             throw new Exception("User ID in reset password token does not match email");
+        }
         //update user password
         user.Result!.PasswordHash = PasswordHasher.Hash(request.NewPassword!);
         await accountRepo.UpdateAccount(user.Result);
-        return new ResetPasswordResponse()
+        return new ResetPasswordResponse
         {
-            msg = "Password reset successfully. You can now login with your new password.",
+            msg = "Password reset successfully. You can now login with your new password."
         };
     }
 
@@ -209,10 +211,12 @@ public class AccountService
         };
     }
 
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
     {
         var skip = page * count;
-        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
+
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count, search);
+
         var result = new GetAccountByPageResponse
         {
             Accounts = accounts.Select(a => new AccountViewModel
@@ -226,7 +230,6 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-
             }).ToList()
         };
         return result;

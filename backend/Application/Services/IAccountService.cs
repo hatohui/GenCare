@@ -18,5 +18,5 @@ public interface IAccountService
 
     Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
 
-    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
+    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search);
 }

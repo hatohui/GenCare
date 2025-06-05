@@ -47,13 +47,24 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take, string? search)
     {
-        return await dbContext.Accounts
+        IQueryable<Account> query = dbContext.Accounts
             .Include(a => a.Role)
-            .OrderBy(a => a.FirstName)
-            .Skip(skip)
-            .Take(take)
-            .ToListAsync();
+            .OrderBy(a => a.FirstName);
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            // Tìm kiếm trong FirstName, LastName và Email
+            query = query.Where(a =>
+                a.FirstName.ToLower().Contains(search.ToLower()) ||
+                a.LastName.ToLower().Contains(search.ToLower()) ||
+                a.Email.ToLower().Contains(search.ToLower()));
+        }
+
+        // Thực hiện phân trang
+        var accounts = await query.Skip(skip).Take(take).ToListAsync();
+
+        return accounts;
     }
 }
