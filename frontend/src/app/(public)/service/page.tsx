@@ -5,11 +5,12 @@ import { ServiceCard } from '@/Components/Services/ServiceCard'
 import { CartButton } from '@/Components/Services/ServiceCart'
 import ServiceSearch from '@/Components/Services/ServiceSearch'
 import useInput from '@/Hooks/Form/useInput'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { array } from 'zod/v4'
 import { samplePayload, useServiceByPage } from '@/Services/service-services'
 import { GetServiceApiByPageResponse } from '@/Interfaces/Service/Schemas/service'
 import { motion } from 'motion/react'
+import { LoadingSkeleton } from '@/Components/Skeletons'
 
 export default function Page() {
 	const { ...search } = useInput('', 'text')
@@ -44,20 +45,22 @@ export default function Page() {
 					Dịch Vụ Nổi Bật
 				</h2>
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-					{services?.payload.map((item, index) => (
-						<motion.div
-							key={item.id}
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{
-								delay: index * 0.15,
-								duration: 0.5,
-							}}
-							className=' rounded-2xl p-2 duration-300'
-						>
-							<ServiceCard {...item} />
-						</motion.div>
-					))}
+					<Suspense fallback={LoadingSkeleton()}>
+						{services?.payload.map((item, index) => (
+							<motion.div
+								key={item.id}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{
+									delay: index * 0.15,
+									duration: 0.5,
+								}}
+								className=' rounded-2xl p-2 duration-300'
+							>
+								<ServiceCard {...item} />
+							</motion.div>
+						))}
+					</Suspense>
 				</div>
 			</div>
 		</main>
