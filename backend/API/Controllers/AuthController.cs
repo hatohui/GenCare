@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Auth.Requests;
+using Application.DTOs.Auth.Responses;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 
@@ -41,49 +42,24 @@ public class AuthController
     /// <response code="200">Successfully logged in and token generated.</response>
     /// <response code="400">Invalid credentials.</response>
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> LoginAsync([FromBody] AccountLoginRequest request)
     {
-        var result = await accountService.LoginAsync(request);
-        if (result is null)
-        {
-            return BadRequest("Invalid credentials.");
-        }
-        return Ok(result);
-    }
+        var (accessToken, refreshToken) = await accountService.LoginAsync(request);
 
-    /// <summary>
-    ///     Logs in a user and generates a JWT access token Using Httponly cookie.
-    /// </summary>
-    /// <param name="request"> The login credentials (email and password).</param>
-    /// returns>The JWT access token and related information.</returns>
-    /// <response code="200">Successfully logged in and token generated.</response>
-    /// <response code="400">Invalid credentials.</response>
-    [HttpPost("login-cookie")]
-    public async Task<IActionResult> LoginWithCookieAsync([FromBody] AccountLoginRequest request)
-    {
-        var result = await accountService.LoginAsync(request);
-        if (result is null)
-        {
-            return BadRequest("Invalid credentials.");
-        }
+        Response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
 
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true, // send over HTTPS only
-            SameSite = SameSiteMode.Lax, // CSRF protection
-            Expires = DateTime.UtcNow.AddMinutes(30), // set cookie expiration
-            Path = "/"
-        };
-
-        Response.Cookies.Append("refreshToken", result.RefreshToken, cookieOptions);
-
-
-        return Ok(new
-        {
-            AccessToken = result.AccessToken,
-            AccessTokenExpiration = result.AccessTokenExpiration,
-        });
+        return Ok(new AccountLoginResponse(accessToken));
     }
 
     /// <summary>
@@ -172,7 +148,7 @@ public class AuthController
 
 
     /// <summary>
-    /// Initiates the forgot password process by sending a reset password link to the user's email.
+    ///     Initiates the forgot password process by sending a reset password link to the user's email.
     /// </summary>
     /// <param name="request">forgot password request</param>
     /// <returns>response containing forgot password URL</returns>
@@ -184,7 +160,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Resets the user's password using a reset token and new password.
+    ///     Resets the user's password using a reset token and new password.
     /// </summary>
     /// <param name="request">reset password request</param>
     /// <returns>message of resetting password successfully</returns>

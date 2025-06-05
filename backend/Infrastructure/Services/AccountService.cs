@@ -67,32 +67,6 @@ public class AccountService
         };
     }
 
-    public async Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request)
-    {
-        var user =
-            await accountRepo.GetAccountByEmailPasswordAsync(request.Email, request.Password)
-            ?? throw new InvalidCredentialsException();
-        //create access and refresh tokens
-        var (accessToken, accessTokenExpiration) = JwtHelper.GenerateAccessToken(user);
-        var (refreshToken, refreshTokenExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-        //add refresh token to database
-
-        RefreshToken rf = new()
-        {
-            AccountId = user.Id,
-            Token = refreshToken,
-            ExpiresAt = refreshTokenExpiration
-        };
-        await refTokenRepo.AddAsync(rf);
-
-        return new AccountLoginResponse
-        {
-            AccessToken = accessToken,
-            AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken
-        };
-    }
-
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
         //find user by email
@@ -162,5 +136,24 @@ public class AccountService
 
         await refTokenRepo.UpdateAsync(token);
         return true;
+    }
+
+    public async Task<(string AccessToken, string RefreshToken)> LoginAsync(AccountLoginRequest req)
+    {
+        var user = await accountRepo
+                       .GetAccountByEmailPasswordAsync(req.Email, req.Password)
+                   ?? throw new InvalidCredentialsException();
+
+        var (accessToken, _) = JwtHelper.GenerateAccessToken(user);
+        var (refreshToken, _) = JwtHelper.GenerateRefreshToken(user.Id);
+
+        await refTokenRepo.AddAsync(new RefreshToken
+        {
+            AccountId = user.Id,
+            Token = refreshToken,
+            ExpiresAt = DateTime.Now.AddDays(7)
+        });
+
+        return (accessToken, refreshToken);
     }
 }
