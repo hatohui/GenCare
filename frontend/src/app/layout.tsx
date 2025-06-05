@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
-import CustomCursor from '@/Components/CustomCursor'
 import { Suspense } from 'react'
 import Script from 'next/script'
 import TanstackProvider from '@/Components/Providers/TanstackProvider'
@@ -62,7 +61,6 @@ export default function RootLayout({
 				<link rel='icon' href='/favicon.ico' sizes='any' />
 			</head>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
-				<CustomCursor />
 				<Suspense fallback={<LoadingPage />}>
 					<TanstackProvider>{children}</TanstackProvider>
 				</Suspense>

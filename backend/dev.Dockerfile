@@ -19,12 +19,17 @@ COPY . .
 WORKDIR /src/API
 
 # Expose port for development
-EXPOSE 8080
+# Add before ENTRYPOINT
+COPY ./https/dev-cert.pfx /https/dev-cert.pfx
 
-# Set environment variables for development and hot reload
-ENV DOTNET_USE_POLLING_FILE_WATCHER=true \
+# Configure ASP.NET Core to use the certificate
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/dev-cert.pfx \
+    ASPNETCORE_Kestrel__Certificates__Default__Password=password123 \
     ASPNETCORE_ENVIRONMENT=Development \
-    ASPNETCORE_URLS=http://+:8080
+    ASPNETCORE_URLS=https://0.0.0.0:8080;http://0.0.0.0:8081\
+    DOTNET_USE_POLLING_FILE_WATCHER=true
 
-# Start the app with hot reload
-ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:8080"]
+EXPOSE 8080 8081
+
+ENTRYPOINT ["dotnet", "watch", "run"]
+

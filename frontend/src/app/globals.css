@@ -21,6 +21,12 @@
 	.florageBackground {
 		@apply bg-[url('/textures/floragething.png')];
 	}
+	.batthernBackground {
+		@apply bg-[url('/textures/batthern.png')];
+	}
+	.asfaltBackground {
+		@apply bg-[url('/textures/asfalt-dark.png')];
+	}
 }
 
 /*  */

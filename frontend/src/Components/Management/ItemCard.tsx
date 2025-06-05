@@ -34,13 +34,13 @@ const ItemCard = ({
 
 	switch (status) {
 		case 'SUCCESS':
-			statusClass = 'bg-green-600 shadow-green-500/50'
+			statusClass = 'bg-lime-500 shadow-lime-400/50'
 			break
 		case 'PENDING':
 			statusClass = 'bg-yellow-500 shadow-yellow-500/50'
 			break
 		case 'FAILED':
-			statusClass = 'bg-red-500 shadow-red-500/50'
+			statusClass = 'bg-red-500 shadow-rose-500/50'
 			break
 		default:
 	}
@@ -59,12 +59,13 @@ const ItemCard = ({
 	return (
 		<button
 			id={id}
-			className='bg-gray-300 w-full h-full flex justify-between px-2 drop-shadow-xs border-transparent hover:border-slate-800 transition-colors duration-300 border items-center rounded-[30px]'
+			className='bg-gradient-to-r hover:scale-[100.5%] from-white to-general w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center rounded-[30px]'
 			aria-label={`Item card for ${label}`}
 			onClick={() => router.push(`${path}/${id}`)}
 			tabIndex={0}
 		>
-			<div className='flex items-center gap-3 text-shadow-sm p-3'>
+			<div className='absolute h-full w-full opacity-60 asfaltBackground' />
+			<div className='flex flex-1 items-center gap-3 text-shadow-sm p-3'>
 				<div
 					className={clsx(
 						'rounded-full size-4 transition-all animate-pulse duration-300',
@@ -74,27 +75,31 @@ const ItemCard = ({
 					role='status'
 					aria-label={`Status: ${status}`}
 				/>
-				<p className='font-bold truncate text-slate-950'>{label}</p>
+				<p className='font-semibold truncate text-slate-900'>{label}</p>
 			</div>
-			<p className='hidden sm:block text-slate-700 truncate'>
+
+			<p className='hidden text-sm flex-1 sm:block text-slate-700 truncate font-light'>
 				{secondaryLabel}
 			</p>
-			<div className='center-all gap-2'>
-				<p className='truncate text-slate-950 hidden sm:block'>{date}</p>
-				<div className='flex gap-2 p-3'>
+
+			<div className='md:justify-center items-center flex justify-end gap-2 flex-1'>
+				<p className='truncate text-slate-950 flex-1 font-mono hidden sm:block'>
+					{date}
+				</p>
+				<div className='flex gap-2 p-3 justify-end'>
 					<div
-						className='bg-amber-200 py-2 z-50 center-all px-4 rounded-[30px] transition duration-200 ease-in hover:scale-105 hover:shadow-[0_0_15px_rgba(253,224,71,0.7)]'
+						className='bg-gradient-to-r drop-shadow-md opacity-75  from-amber-300 to-amber-400 py-2 z-50 center-all px-4 rounded-[30px] transition duration-200 ease-in hover:scale-105 hover:shadow-[0_0_15px_rgba(253,224,71,0.7)]'
 						onClick={handleEditFunc}
 						tabIndex={1}
 					>
-						<PencilSVG className='size-5 text-slate-950' />
+						<PencilSVG className='size-5 text-violet-950' />
 					</div>
 					<div
-						className='bg-red-400 py-2 center-all z-50 px-4 rounded-[30px] transition duration-200 ease-in hover:scale-105 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
+						className='bg-gradient-to-r from-red-400 opacity-75 drop-shadow-md to-red-500 py-2 center-all z-50 px-4 rounded-[30px] transition duration-200 ease-in hover:scale-105 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
 						onClick={handleDeleteFunc}
 						tabIndex={1}
 					>
-						<TrashCanSVG className='size-5 text-slate-950' />
+						<TrashCanSVG className='size-5 text-white' />
 					</div>
 				</div>
 			</div>
