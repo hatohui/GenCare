@@ -33,7 +33,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .FirstOrDefaultAsync(a => a.Email == email);
     }
 
-    public async Task<Account?> GetByAccountIdAsync(Guid accountId)
+    public async Task<Account?> GetAccountByIdAsync(Guid accountId)
     {
         return await dbContext.Accounts
             .Include(a => a.Role)
@@ -47,13 +47,19 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take, string? search)
     {
-        return await dbContext.Accounts
+        IQueryable<Account> query = dbContext.Accounts
             .Include(a => a.Role)
-            .OrderBy(a => a.FirstName)
-            .Skip(skip)
-            .Take(take)
-            .ToListAsync();
+            .OrderBy(a => a.FirstName);
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(a =>
+                a.FirstName.ToLower().Contains(search.ToLower()) ||
+                a.LastName.ToLower().Contains(search.ToLower()) ||
+                a.Email.ToLower().Contains(search.ToLower()));
+        }
+        var accounts = await query.Skip(skip).Take(take).ToListAsync();
+        return accounts;
     }
 }

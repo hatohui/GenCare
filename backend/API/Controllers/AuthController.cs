@@ -21,19 +21,19 @@ public class AuthController
     IGoogleCredentialService googleCredentialService
 ) : ControllerBase
 {
-        /// <summary>
-        /// Registers a new user in the system.
-        /// </summary>
-        /// <param name="request">The user registration details.</param>
-        /// <returns>An action result containing refresh token, access token and access token expiration.</returns>
-        /// <response code="200">User registered successfully.</response>
-        /// <response code="400">Bad request if the user data is invalid.</response>
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
-        {
-            var response = await accountService.RegisterAsync(request);
-            return Ok(response);
-        }
+    /// <summary>
+    ///     Registers a new user in the system.
+    /// </summary>
+    /// <param name="request">The user registration details.</param>
+    /// <returns>An action result containing refresh token, access token and access token expiration.</returns>
+    /// <response code="200">User registered successfully.</response>
+    /// <response code="400">Bad request if the user data is invalid.</response>
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
+    {
+        var response = await accountService.RegisterAsync(request);
+        return Ok(response);
+    }
 
     /// <summary>
     ///     Logs in a user and generates a JWT access token.
@@ -58,7 +58,8 @@ public class AuthController
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.Now.AddDays(7),
                 Path = "/"
-            });
+            }
+        );
 
         return Ok(new AccountLoginResponse(accessToken));
     }
@@ -97,20 +98,6 @@ public class AuthController
     }
 
     /// <summary>
-    ///     Retrieves the profile of the logged-in user.
-    /// </summary>
-    /// <returns>The profile information of the authenticated user.</returns>
-    /// <response code="200">Successfully retrieved the user's profile.</response>
-    /// <response code="401">Unauthorized if the user is not authenticated.</response>
-    [Authorize]
-    [HttpGet("profile")]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public IActionResult GetProfile()
-    {
-        throw new NotImplementedException("Profile retrieval is not implemented yet.");
-    }
-
-    /// <summary>
     ///     Initiates the Google login process by redirecting to Google's OAuth 2.0 authorization endpoint.
     /// </summary>
     /// <returns>
@@ -126,11 +113,8 @@ public class AuthController
         {
             return BadRequest("Google Client ID is not configured.");
         }
-
         var payload = await googleCredentialService.VerifyGoogleCredentialAsync(clientId, request.Credential);
-
         var (accessToken, refreshToken) = await accountService.LoginWithGoogleAsync(payload);
-
         Response.Cookies.Append(
             "refreshToken",
             refreshToken,
@@ -156,33 +140,23 @@ public class AuthController
     /// <response code="400">Invalid or missing token.</response>
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> LogoutAsync([FromBody] RevokeTokenRequest dto)
+    public async Task<IActionResult> LogoutAsync()
     {
-        if (string.IsNullOrWhiteSpace(dto.RefreshToken))
+        // Lấy refresh token từ cookies
+        var refreshToken = Request.Cookies["RefreshToken"];
+        if (string.IsNullOrWhiteSpace(refreshToken))
         {
             return BadRequest("Refresh token is required.");
         }
-
-        var success = await accountService.RevokeRefreshTokenAsync(dto.RefreshToken);
+        var success = await accountService.RevokeRefreshTokenAsync(refreshToken);
         if (!success)
         {
             return BadRequest("Failed to revoke token or token not found.");
         }
-
-        return NoContent(); // 204
+        // Xóa refresh token khỏi cookies sau khi logout
+        Response.Cookies.Delete("RefreshToken");
+        return NoContent(); // 204 No Content
     }
-
-    /// <summary>
-    ///     Test endpoint to throw an exception for testing error handling.
-    /// </summary>
-    /// <returns>Throws a test exception.</returns>
-    /// <response code="500">Throws a test error.</response>
-    [HttpGet("test-exception")]
-    public IActionResult ThrowTest()
-    {
-        throw new Exception("This is a test error");
-    }
-
 
     /// <summary>
     ///     Initiates the forgot password process by sending a reset password link to the user's email.
@@ -207,5 +181,4 @@ public class AuthController
         var response = await accountService.ResetPasswordAsync(request);
         return Ok(response);
     }
-
 }

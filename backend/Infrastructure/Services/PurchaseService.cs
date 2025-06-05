@@ -4,6 +4,7 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
+using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
@@ -21,7 +22,7 @@ public class PurchaseService
         //get account id from access token
         var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
         //get account by id
-        var account = await accountRepository.GetByAccountIdAsync(accountId) ?? throw new Exception("Account not found");
+        var account = await accountRepository.GetAccountByIdAsync(accountId) ?? throw new AppException(404, "Account not found");
         //create purchase
         var purchase = new Purchase
         {
@@ -70,7 +71,7 @@ public class PurchaseService
                 Gender = o.Gender,
                 Purchase = purchase,
                 Service = await serviceRepository.SearchServiceByIdAsync(o.ServiceId)
-                            ?? throw new Exception("Service not found")
+                          ?? throw new Exception("Service not found")
             };
             //add order detail to corresponding purchase
             purchase.OrderDetails.Add(ordDetail);
