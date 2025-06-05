@@ -32,7 +32,14 @@ const useAccountStore = create<AccountStore>()(
 					localStorage.setItem(key, JSON.stringify(value)),
 				getItem: key => {
 					const value = localStorage.getItem(key)
-					return value ? JSON.parse(value) : null
+					if (!value) return null
+					try {
+						return JSON.parse(value)
+					} catch (error) {
+						console.warn('Failed to parse stored account data:', error)
+						localStorage.removeItem(key)
+						return null
+					}
 				},
 				removeItem: key => localStorage.removeItem(key),
 			} as const, // Correct option here for using localStorage
