@@ -7,12 +7,13 @@ public interface IAccountRepository
     Task<Account?> GetByEmailAsync(string email);
 
     Task AddAsync(Account user);
-
-    Task<Account?> GetAccountByIdAsync(Guid id);
+    
+    Task<Account?> GetByAccountIdAsync(Guid id);
 
     Task<Account?> GetAccountByEmailPasswordAsync(string email, string password);
 
-    Task<List<Account>> GetAccountsByPageAsync(int skip, int take, string? search);
+    Task<List<Account>> GetAccountsByPageAsync(int skip, int take);
 
     Task UpdateAccount(Account user);
 }
+
