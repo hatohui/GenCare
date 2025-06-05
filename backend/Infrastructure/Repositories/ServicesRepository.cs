@@ -1,10 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using Application.DTOs.Auth.Requests;
-using Application.DTOs.Auth.Responses;
-using Application.DTOs.Service.Requests;
-using Application.DTOs.Service.Requests;
-using Application.DTOs.Service.Responses;
-using Application.Helpers;
+﻿
 using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
@@ -14,90 +8,59 @@ namespace Infrastructure.Repositories;
 
 public class ServicesRepository(IApplicationDbContext dbContext): IServicesRepository
 {
-    public async Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request)
+    public async Task<List<Service>> SearchServiceAsync(int page, int count)
     {
-        var query = dbContext.Services
-            .Where(s => !s.IsDeleted); // chỉ lấy service chưa xoá
-
-        var totalCount = await query.CountAsync();
-
-        var items = await query
-            .OrderBy(s => s.Id)
-            .Skip((request.Page - 1) * request.Count)
-            .Take(request.Count)
-            .Select(s => new ViewServiceByPageResponse.ServicePayload()
-            {
-                Id = s.Id.ToString(),
-                Name = s.Name,
-                Description = s.Description ?? "",
-                Price = s.Price 
-            })
+        return await dbContext.Services
+            .Where(s => !s.IsDeleted)
+            .OrderByDescending(s => s.CreatedAt)
+            .Skip((page - 1) * count)
+            .Take(count)
             .ToListAsync();
 
-        return new ViewServiceByPageResponse
-        {
-            Page = request.Page,
-            Count = totalCount,
-            Payload = items
-        };
+        
     }
 
-    public async Task<ViewSearchWithIdResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
+    public async Task<Service?> SearchServiceByIdAsync(Guid idService) => await dbContext.Services
+        .FirstOrDefaultAsync(s => s.Id == idService && !s.IsDeleted);
+    
+    
+    public async Task<Service?> SearchServiceByIdAsync1(Guid idService) => await dbContext.Services
+        .FirstOrDefaultAsync(s => s.Id == idService);
+    
+    public async Task<Service> AddServiceAsync(Service service)
     {
-        var guidId = Guid.Parse(request.Id);
-        
-        var service =  await dbContext.Services
-            .Where(s => s.Id == guidId)
-            .Select(s => new ViewSearchWithIdResponse
-            {
-                Id = s.Id.ToString(),
-                Name = s.Name,
-                Description = s.Description ?? "",
-                Price = s.Price,
-                CreatedAt = s.CreatedAt,
-                UpdatedAt = s.UpdatedAt,
-                IsDeleted = s.IsDeleted ? "true" : "false"
-            })
-            .FirstOrDefaultAsync();
-        //throw khi service null
-        if (service == null)  throw new Exception("Service not found!");
-        
+        await dbContext.Services.AddAsync(service);
+        await dbContext.SaveChangesAsync();
         return service;
     }
 
-    public async Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken )
+    public async Task<bool> UpdateServiceByIdAsync(Service service)
     {
-        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
-        //db tự sinh time nhưng mún lấy h để đồng bộ CreatedAt == UpdatedAt
-        Console.WriteLine(accountId);
-        var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified);
-        //ng Createdseavice == UpdatedBy
-        //CreatedAt == UpdatedAt
-        var newService = new Service
-        {
-            Name = request.Name,
-            Description = request.Description ?? "",
-            Price = request.Price,
-            CreatedBy = accountId,
-            UpdatedBy = accountId,
-            CreatedAt = now,
-            UpdatedAt = now,
-        };
-
-        dbContext.Services.Add(newService);
-        await dbContext.SaveChangesAsync();
-
-        return new CreateServiceResponse
-        {
-            Id = newService.Id.ToString(),
-            Name = newService.Name,
-            Description = newService.Description,
-            Price = newService.Price,
-            IsDeleted = newService.IsDeleted ? "true" : "false"
-        };
+        var affectedRows = await dbContext.Services
+            .Where(s => s.Id == service.Id )
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(e => e.Name, service.Name)
+                .SetProperty(e => e.Description, service.Description)
+                .SetProperty(e => e.Price, service.Price)
+                .SetProperty(e =>e.UpdatedBy, service.UpdatedBy)
+                .SetProperty(e => e.IsDeleted, service.IsDeleted)
+            );
+        return affectedRows > 0;
+        
     }
 
-    public  Task<bool> ExistsByNameAsync(string name) =>  dbContext.Services
+    public async Task<bool> ExistsByNameAsync(string name) =>  await dbContext.Services
         .AnyAsync(s => s.Name == name && !s.IsDeleted);
-    
+
+    public async Task<bool> ExistsByIdAsync(Guid idService) => await dbContext.Services
+        .AnyAsync(s => s.Id == idService && !s.IsDeleted);
+
+    public async Task<bool> DeleteServiceByIdAsync(Guid idService)
+    {
+        var affectedRows = await dbContext.Services
+            .Where(s => s.Id == idService && !s.IsDeleted)
+            .ExecuteDeleteAsync();
+
+        return affectedRows > 0;
+    }
 }

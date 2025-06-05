@@ -125,6 +125,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IServicesRepository, ServicesRepository>();
 builder.Services.AddScoped<IServicesService, ServicesService>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
+builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 
 var env = builder.Environment;
 

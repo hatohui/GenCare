@@ -3,13 +3,18 @@ using Application.DTOs.Auth.Responses;
 using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
+using Domain.Entities;
 
 namespace Application.Repositories;
 
 public interface  IServicesRepository
 {
-    Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request);
-    Task<ViewSearchWithIdResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request);
-    Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request , string accessToken);
+    Task<List<Service>> SearchServiceAsync(int page,int count);
+    Task<Service?> SearchServiceByIdAsync(Guid idService);
+    Task<Service> AddServiceAsync(Service newService);
+    Task <bool> UpdateServiceByIdAsync(Service service);
     Task<bool> ExistsByNameAsync(string name);
+    Task<bool> ExistsByIdAsync(Guid idService);
+    public Task<Service?> SearchServiceByIdAsync1(Guid idService);
+    Task<bool> DeleteServiceByIdAsync(Guid idService);
 }
