@@ -7,8 +7,7 @@ services:
       context: .
       dockerfile: dev.Dockerfile
     ports:
-      - "8080:8080" # HTTPS
-      - "8081:8081" # HTTP
+      - "8080:8080"
     depends_on:
       database:
         condition: service_healthy
@@ -19,7 +18,6 @@ services:
     volumes:
       - .:/src
       - ~/.nuget/packages:/root/.nuget/packages
-      - ./https/dev-cert.pfx:/https/dev-cert.pfx:ro
 
   database:
     container_name: gencare_database

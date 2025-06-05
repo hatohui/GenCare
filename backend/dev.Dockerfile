@@ -20,16 +20,13 @@ WORKDIR /src/API
 
 # Expose port for development
 # Add before ENTRYPOINT
-COPY ./https/dev-cert.pfx /https/dev-cert.pfx
 
 # Configure ASP.NET Core to use the certificate
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/dev-cert.pfx \
-    ASPNETCORE_Kestrel__Certificates__Default__Password=password123 \
-    ASPNETCORE_ENVIRONMENT=Development \
-    ASPNETCORE_URLS=https://0.0.0.0:8080;http://0.0.0.0:8081\
+ENV ASPNETCORE_ENVIRONMENT=Development \
+    ASPNETCORE_URLS=http://+:8080\
     DOTNET_USE_POLLING_FILE_WATCHER=true
 
-EXPOSE 8080 8081
+EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "watch", "run"]
+ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:8080"]
 

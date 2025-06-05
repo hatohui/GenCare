@@ -18,14 +18,21 @@
 	.full-screen {
 		@apply absolute w-dvw h-dvh top-0 left-0;
 	}
+
 	.florageBackground {
 		@apply bg-[url('/textures/floragething.png')];
 	}
+
 	.batthernBackground {
 		@apply bg-[url('/textures/batthern.png')];
 	}
+
 	.asfaltBackground {
 		@apply bg-[url('/textures/asfalt-dark.png')];
+	}
+
+	.itemCardButton {
+		@apply py-2 z-50 px-4 opacity-75 rounded-[30px] hover:scale-105 transition duration-200 border ease-in;
 	}
 }
 
