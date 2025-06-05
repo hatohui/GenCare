@@ -1,6 +1,6 @@
 import { TokenizedAccount } from '@/Interfaces/Auth/Schema/token'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
 export type AccountStore = {
 	account: TokenizedAccount | null
@@ -27,22 +27,7 @@ const useAccountStore = create<AccountStore>()(
 		}),
 		{
 			name: 'account-store', // The key name for localStorage
-			storage: {
-				setItem: (key, value) =>
-					localStorage.setItem(key, JSON.stringify(value)),
-				getItem: key => {
-					const value = localStorage.getItem(key)
-					if (!value) return null
-					try {
-						return JSON.parse(value)
-					} catch (error) {
-						console.warn('Failed to parse stored account data:', error)
-						localStorage.removeItem(key)
-						return null
-					}
-				},
-				removeItem: key => localStorage.removeItem(key),
-			} as const, // Correct option here for using localStorage
+			storage: createJSONStorage(() => sessionStorage),
 		}
 	)
 )
