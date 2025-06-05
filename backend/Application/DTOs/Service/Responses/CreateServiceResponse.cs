@@ -2,11 +2,12 @@
 
 public class CreateServiceResponse
 {
-    public string Id { get; set; } = default!;
-    public string Name { get; set; } = default!;
-    public string Description { get; set; } = default!;
+    public string? Id { get; set; }
+    public string? Name { get; set; } 
+    public string? Description { get; set; } 
+    public string? UrlImage { get; set; } 
     public decimal Price { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public string IsDeleted { get; set; } = default!;
+    public bool IsDeleted { get; set; } 
 }

@@ -2,6 +2,6 @@
 
 public class ViewServiceWithIdRequest
 {
-    public String Id { get; set; }
+    public String? Id { get; set; }
 
 }
