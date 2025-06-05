@@ -66,7 +66,7 @@ public class PurchaseService(
                 DateOfBirth = o.DateOfBirth,
                 Gender = o.Gender,
                 Purchase = purchase,
-                Service = await servicesRepository.GetByIdAsync(o.ServiceId)
+                Service = await servicesRepository.SearchServiceByIdAsync(o.ServiceId)
                             ?? throw new Exception("Service not found")
             };
             //add order detail to corresponding purchase
