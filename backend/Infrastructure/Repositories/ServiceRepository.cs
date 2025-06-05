@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class ServicesRepository(IApplicationDbContext dbContext): IServicesRepository
+public class ServiceRepository(IApplicationDbContext dbContext): IServiceRepository
 {
     public async Task<List<Service>> SearchServiceAsync(int page, int count)
     {

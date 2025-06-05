@@ -28,7 +28,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <param name="id">Service Id</param>
     /// <returns>Service details</returns>
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ViewSearchWithIdResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ViewServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
@@ -86,12 +86,12 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <param name="request">Service update info (including Id)</param>
     /// <returns>Update result</returns>
     [HttpPost("update")]
-    [ProducesResponseType(typeof(UpdateServiceByIdResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateService), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Update([FromBody] UpdateServiceByIdRequest request)
+    public async Task<IActionResult> Update([FromBody] UpdateServiceRequest request)
     {
         var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
         var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
@@ -120,7 +120,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         }
     }
     [HttpDelete("{id}")]
-    [ProducesResponseType(typeof(DeleteServiceByIdResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DeleteServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -131,7 +131,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
             ? tokenHeader.Substring(7)
             : string.Empty;
     
-        var request = new DeleteServiceByIdRequest { Id = id };
+        var request = new DeleteServiceRequest { Id = id };
     
         try
         {

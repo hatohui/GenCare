@@ -6,7 +6,7 @@ using Domain.Entities;
 
 namespace Application.Repositories;
 
-public interface  IServicesRepository
+public interface  IServiceRepository
 {
     Task<List<Service>> SearchServiceAsync(int page,int count);
     Task<Service?> SearchServiceByIdAsync(Guid idService);

@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Service.Responses;
 
-public class ViewSearchWithIdResponse
+public class ViewServiceResponse
 {
     public string? Id { get; set; } 
     public string? Name { get; set; } 

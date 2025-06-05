@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Service.Requests;
 
-public class UpdateServiceByIdRequest
+public class UpdateServiceRequest
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }

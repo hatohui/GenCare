@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Service.Requests;
 
-public class DeleteServiceByIdRequest
+public class DeleteServiceRequest
 {
     public Guid Id { get; set; } 
 }

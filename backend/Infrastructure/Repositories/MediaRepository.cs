@@ -14,7 +14,7 @@ public class MediaRepository(IApplicationDbContext dbContext) : IMediaRepository
         });
     }
 
-    public async Task AddAsync1(List<Media> media)
+    public async Task AddListOfMediaAsync(List<Media> media)
     {
        await dbContext.Media.AddRangeAsync(media);
        await dbContext.SaveChangesAsync();

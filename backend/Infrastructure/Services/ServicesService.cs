@@ -9,13 +9,13 @@ using Domain.Entities;
 namespace Infrastructure.Services;
 
 public class ServicesService(
-    IServicesRepository servicesRepository,
+    IServiceRepository serviceRepository,
     IMediaRepository mediaRepository
 ) : IServicesService
 {
     public async Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request)
     {
-        var services = await servicesRepository.SearchServiceAsync(request.Page, request.Count);
+        var services = await serviceRepository.SearchServiceAsync(request.Page, request.Count);
         ViewServiceByPageResponse response = new ViewServiceByPageResponse();
         response.Page = request.Page;
         response.Count = request.Count;
@@ -34,14 +34,14 @@ public class ServicesService(
         return response;
     }
 
-    public async Task<ViewSearchWithIdResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
+    public async Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
     {
         // Validate Id là Guid hợp lệ
         if (!Guid.TryParse(request.Id, out var guidId))
             throw new ArgumentException("Invalid id format.");
 
         // Gọi repository để lấy dữ liệu
-        var service = await servicesRepository.SearchServiceByIdAsync1(guidId);
+        var service = await serviceRepository.SearchServiceByIdAsync1(guidId);
 
         // Nếu không tìm thấy thì throw exception hoặc trả về null 
         if (service == null)
@@ -49,7 +49,7 @@ public class ServicesService(
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
         
         var imUrls = mediaService?.Select(m  =>m.Url).ToList();         
-        return new ViewSearchWithIdResponse()
+        return new ViewServiceResponse()
         {
             Id = service.Id.ToString(),
             Name = service.Name,
@@ -73,7 +73,7 @@ public class ServicesService(
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new ArgumentException("Service name cannot be empty.");
         //check exists
-        if (await servicesRepository.ExistsByNameAsync(request.Name))
+        if (await serviceRepository.ExistsByNameAsync(request.Name))
             throw new InvalidOperationException("Service name already exists.");
         //price is not negative
         if (request.Price < 0)
@@ -97,7 +97,7 @@ public class ServicesService(
             CreatedBy = accountId,
             Media = media is not null ? new List<Media> { media } : new List<Media>()
         };
-        await servicesRepository.AddServiceAsync(service);
+        await serviceRepository.AddServiceAsync(service);
         return new CreateServiceResponse()
         {
             Id = service.Id.ToString(),
@@ -111,7 +111,7 @@ public class ServicesService(
         };
     }
 
-    public async Task<UpdateServiceByIdResponse> UpdateServiceByIdAsync(UpdateServiceByIdRequest request, string accessToken)
+    public async Task<UpdateService> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
@@ -122,7 +122,7 @@ public class ServicesService(
         if (request.Id == Guid.Empty)
             throw new ArgumentException("Service id cannot be empty.");
 
-        var service = await servicesRepository.SearchServiceByIdAsync1(request.Id);
+        var service = await serviceRepository.SearchServiceByIdAsync1(request.Id);
         if (service == null)
             throw new Exception("Service not found");
 
@@ -158,10 +158,10 @@ public class ServicesService(
             }
         }
         if (newMedias.Any())
-            await mediaRepository.AddAsync1(newMedias);
-        var success = await servicesRepository.UpdateServiceByIdAsync(service);
+            await mediaRepository.AddListOfMediaAsync(newMedias);
+        var success = await serviceRepository.UpdateServiceByIdAsync(service);
 
-        return new UpdateServiceByIdResponse
+        return new UpdateService
         {
            Id = service.Id,
            Name = service.Name,
@@ -174,7 +174,7 @@ public class ServicesService(
     }
 
   
-   public async Task<DeleteServiceByIdResponse> DeleteServiceByIdAsync(DeleteServiceByIdRequest request, string accessToken)
+   public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
    {
        var role = JwtHelper.GetRoleFromToken(accessToken);
        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
@@ -185,7 +185,7 @@ public class ServicesService(
        if (request.Id == Guid.Empty)
            throw new ArgumentException("Service id cannot be empty.");
    
-       var service = await servicesRepository.SearchServiceByIdAsync1(request.Id);
+       var service = await serviceRepository.SearchServiceByIdAsync1(request.Id);
        if (service == null)
            throw new KeyNotFoundException("Service not found.");
    
@@ -197,9 +197,9 @@ public class ServicesService(
        }
    
        // Delete the service (soft delete or hard delete)
-       var success = await servicesRepository.DeleteServiceByIdAsync(request.Id);
+       var success = await serviceRepository.DeleteServiceByIdAsync(request.Id);
    
-       return new DeleteServiceByIdResponse
+       return new DeleteServiceResponse
        {
            Success = success,
            Message = success ? "Xóa dịch vụ và ảnh thành công" : "Xóa dịch vụ thất bại"
