@@ -1,7 +1,5 @@
-import { ACCOUNT_STORE_STRING } from '@/Constants/Auth'
 import { TokenizedAccount } from '@/Interfaces/Auth/Schema/token'
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
 
 export type AccountStore = {
 	account: TokenizedAccount | null
