@@ -3,13 +3,17 @@ import { useAccountStore } from '@/Hooks/useAccount'
 import React from 'react'
 
 const DashBoard = () => {
-	const accountStore = useAccountStore()
-	const accountdata = accountStore.data?.account
+	const { data: store, isLoading } = useAccountStore()
+	const accountData = store?.account
+
+	if (isLoading) {
+		return <div className='h-full w-full center-all'>Loading....</div>
+	}
 
 	return (
 		<div className='h-full w-full center-all flex-col'>
-			<div>Account id: {accountdata?.id}</div>
-			<div>Role: {accountdata?.role}</div>
+			<div>Account id: {accountData?.id}</div>
+			<div>Role: {accountData?.role}</div>
 		</div>
 	)
 }

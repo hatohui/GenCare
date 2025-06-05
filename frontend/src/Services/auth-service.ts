@@ -31,7 +31,7 @@ const authApi = {
 			})
 			.then(res => res.data)
 	},
-	logout: () => {
+	logout: (handleLogout: () => void) => {
 		return axios
 			.post(
 				`${AUTH_URL}/logout`,
@@ -41,7 +41,7 @@ const authApi = {
 				}
 			)
 			.then(res => {
-				if (res.status === 204) useToken().removeAccessToken()
+				if (res.status === 204) handleLogout()
 				return res.data
 			})
 	},
@@ -66,7 +66,9 @@ export const useOauthAccount = () => {
 }
 
 export const useLogoutAccount = () => {
+	const tokenStore = useToken()
+
 	return useMutation({
-		mutationFn: authApi.logout,
+		mutationFn: () => authApi.logout(tokenStore.removeAccessToken),
 	})
 }

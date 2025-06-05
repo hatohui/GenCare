@@ -22,8 +22,8 @@ const useToken = create<TokenStore>()(
 		{
 			name: TOKEN_STORE_STRING,
 			storage: createJSONStorage(() => sessionStorage),
-			onRehydrateStorage(state) {
-				state.isDehydrated = true
+			onRehydrateStorage: state => {
+				if (state) state.isDehydrated = true
 			},
 		}
 	)

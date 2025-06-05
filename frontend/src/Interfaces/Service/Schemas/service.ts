@@ -12,7 +12,7 @@ export type CreateServiceApiRequest = Omit<
 export type DeleteServiceApiRequest = {
 	id: string
 }
-export type EditServiceApiRequest = Omit<
+export type UpdateServiceApiRequest = Omit<
 	Service,
 	'id' | 'createdAt' | 'updatedAt'
 >
