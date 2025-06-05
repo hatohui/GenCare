@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace Application.DTOs.Auth.Responses;
 public class ForgotPasswordResponse
 {
-    public string CallbackUrl { get; set; } = string.Empty;
+    public string? CallbackUrl { get; set; }
 }

@@ -60,7 +60,7 @@ public class AuthController
     /// <response code="400">Invalid refresh token.</response>
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest dto)
+    public Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest dto)
     {
         throw new NotImplementedException("Token refresh is not implemented yet.");
     }
