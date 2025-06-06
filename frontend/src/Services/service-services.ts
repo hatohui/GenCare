@@ -60,7 +60,7 @@ const serviceApi = {
 	getByPage: (page: number, count: number) =>
 		axios
 			.get<GetServiceApiByPageResponse>(
-				`${SERVICE_URL}?Page=${page}&&Count=${count}`
+				`${SERVICE_URL}?Page=${page}&Count=${count}`
 			)
 			.then(res => {
 				console.log(res.data)
