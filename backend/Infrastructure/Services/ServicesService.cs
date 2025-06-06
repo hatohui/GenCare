@@ -55,7 +55,7 @@ public class ServicesService
         // Gọi repository để lấy dữ liệu
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(guidId);
 
-        // Nếu không tìm thấy thì throw exception hoặc trả về null 
+        // Nếu không tìm thấy thì throw exception hoặc trả về null
         if (service == null)
         {
             throw new AppException(404, "Service not found.");
@@ -71,7 +71,6 @@ public class ServicesService
             Price = service.Price,
             ImageUrls = imUrls,
             CreatedAt = service.CreatedAt
-
         };
     }
 
@@ -158,7 +157,6 @@ public class ServicesService
 
         service.UpdatedBy = accountId;
 
-
         if (!string.IsNullOrWhiteSpace(request.Name))
         {
             service.Name = request.Name;
@@ -211,7 +209,6 @@ public class ServicesService
             UpdatedAt = service.CreatedAt
         };
     }
-
 
     public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
     {

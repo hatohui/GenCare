@@ -71,7 +71,6 @@ public class AccountService
         };
     }
 
-
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
         //find user by email
@@ -246,7 +245,6 @@ public class AccountService
         return (accessToken, refreshToken);
     }
 
-
     public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
     {
         var skip = page * count;
@@ -272,6 +270,7 @@ public class AccountService
 
         return result;
     }
+
     public async Task<Account> GetAccountByIdAsync(Guid accountId)
     {
         // Gọi repository để truy xuất tài khoản từ accountId

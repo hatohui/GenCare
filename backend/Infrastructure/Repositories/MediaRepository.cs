@@ -16,31 +16,31 @@ public class MediaRepository(IApplicationDbContext dbContext) : IMediaRepository
 
     public async Task AddListOfMediaAsync(List<Media> media)
     {
-       await dbContext.Media.AddRangeAsync(media);
-       await dbContext.SaveChangesAsync();
+        await dbContext.Media.AddRangeAsync(media);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task SaveChangesAsync() => await dbContext.SaveChangesAsync();
 
     public async Task<Media?> GetNewestByServiceIdAsync(Guid serviceId)
     {
-       return await dbContext.Media
-            .Where(m => Guid.Equals(m.Url, serviceId))
-            .OrderByDescending(m => m.CreatedAt)
-            .FirstOrDefaultAsync();
+        return await dbContext.Media
+             .Where(m => Guid.Equals(m.Url, serviceId))
+             .OrderByDescending(m => m.CreatedAt)
+             .FirstOrDefaultAsync();
     }
 
     public async Task<List<Media>?> GetAllMediaByServiceIdAsync(Guid serviceId)
     {
         return await dbContext.Media.Where(m => m.ServiceId == serviceId).OrderByDescending(m => m.CreatedAt).ToListAsync();
     }
-    
+
     public async Task DeleteAllByServiceIdAsync(Guid serviceId)
     {
         var medias = await dbContext.Media
             .Where(m => m.ServiceId == serviceId)
             .ToListAsync();
-    
+
         if (medias.Any())
         {
             dbContext.Media.RemoveRange(medias);
