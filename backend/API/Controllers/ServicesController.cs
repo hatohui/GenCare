@@ -86,7 +86,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <param name="request">Service update info (including Id)</param>
     /// <returns>Update result</returns>
     [HttpPost("update")]
-    [ProducesResponseType(typeof(UpdateService), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

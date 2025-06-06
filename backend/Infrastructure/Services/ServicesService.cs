@@ -66,7 +66,7 @@ public class ServicesService(
     public async Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
-        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         // Validate quyền
         if (role != RoleNames.Admin && role != RoleNames.Admin)
@@ -113,10 +113,10 @@ public class ServicesService(
         };
     }
 
-    public async Task<UpdateService> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
+    public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
-        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         if (role != RoleNames.Admin && role != RoleNames.Admin)
             throw new AppException(403,"UNAUTHORIZED");
@@ -142,7 +142,7 @@ public class ServicesService(
         if (request.IsDeleted != service.IsDeleted)
             service.IsDeleted = request.IsDeleted;
 
-        var newMedias = new List<Media>();
+        var newMedias = new List<Media?>();
         foreach (var url in request.ImageUrls)
         {
             if (!service.Media.Any(m => m.Url == url))
@@ -162,7 +162,7 @@ public class ServicesService(
             await mediaRepository.AddListOfMediaAsync(newMedias);
         var success = await serviceRepository.UpdateServiceByIdAsync(service);
 
-        return new UpdateService
+        return new UpdateServiceResponse
         {
            Id = service.Id,
            Name = service.Name,
@@ -178,7 +178,7 @@ public class ServicesService(
    public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
    {
        var role = JwtHelper.GetRoleFromToken(accessToken);
-       var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
+       var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
    
        if (role != "admin" && role != "staff")
            throw new UnauthorizedAccessException();

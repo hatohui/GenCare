@@ -1,4 +1,4 @@
-using Domain.Entities;
+﻿using Domain.Entities;
 
 namespace Application.Repositories;
 
@@ -15,5 +15,6 @@ public interface IAccountRepository
     Task<List<Account>> GetAccountsByPageAsync(int skip, int take);
 
     Task UpdateAccount(Account user);
+    Task<Account?> DeleteAccountByAccountId(Guid userId);
 }
 

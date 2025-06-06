@@ -10,4 +10,5 @@ public interface IMediaRepository
     Task<Media?> GetNewestByServiceIdAsync(Guid serviceId);
     Task<List<Media>?> GetAllMediaByServiceIdAsync(Guid serviceId);
     Task DeleteAllByServiceIdAsync(Guid serviceId);
+    
 }

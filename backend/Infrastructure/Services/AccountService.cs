@@ -2,12 +2,13 @@
 using Application.DTOs.Account;
 using Application.DTOs.Account.Responses;
 using System.Net;
-
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
@@ -230,5 +231,24 @@ public class AccountService
             }).ToList()
         };
         return result;
+    }
+
+    public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)
+    {
+        var role = JwtHelper.GetRoleFromToken(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+        if (role != RoleNames.Admin) throw new AppException(403, "UNAUTHORIZED");
+        if( request.Id == Guid.Empty) throw new AppException(400, "Guid cannot be empty.");
+        var account = await accountRepo.DeleteAccountByAccountId(request.Id);
+        if(account == null) throw new AppException(401, "Account not found,delete failed.");
+
+        return new DeleteAccountResponse
+        {
+            Id = account.Id,
+            Email = account.Email,
+            IsDeleted = account.IsDeleted,
+            DeletedBy = accountId.ToString(),
+        };
+
     }
 }

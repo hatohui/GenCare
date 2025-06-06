@@ -1,3 +1,4 @@
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
@@ -19,4 +20,5 @@ public interface IAccountService
     Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
+    Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
 }

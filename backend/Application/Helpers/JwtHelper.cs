@@ -138,7 +138,7 @@ namespace Application.Helpers
         /// <param name="token">The JWT token.</param>
         /// <returns>The account ID as a Guid if token is valid; otherwise, throws an exception.</returns>
       
-        public static Guid GetAccountIdFromToken1(string token)
+        public static Guid GetAccountIdFromToken(string token)
         {
             var principal = ValidateToken(token);
             // Thử lấy từ nhiều loại claim phổ biến

@@ -47,6 +47,17 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<Account?> DeleteAccountByAccountId(Guid userId)
+    {
+       return await dbContext.Accounts 
+            .Where(a => a.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(e => e.IsDeleted, true)
+                .SetProperty(e => e.DeletedBy, userId)) > 0
+            ? await GetByAccountIdAsync(userId) 
+            : null;
+    }
+
     public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
     {
         return await dbContext.Accounts

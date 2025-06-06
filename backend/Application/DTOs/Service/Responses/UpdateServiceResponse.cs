@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Service.Responses;
 
-public class UpdateService
+public class UpdateServiceResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
