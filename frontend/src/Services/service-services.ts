@@ -68,11 +68,9 @@ const serviceApi = {
 				return res.data
 			}),
 
-	getById: (header: string, id: string) =>
+	getById: (id: string) =>
 		axios
-			.get<GetServiceWithIdResponse>(`${SERVICE_URL}/${id}`, {
-				headers: { Authorization: header },
-			})
+			.get<GetServiceWithIdResponse>(`${SERVICE_URL}/${id}`)
 			.then(res => res.data),
 
 	create: (header: string, data: any) =>
@@ -107,11 +105,9 @@ export const useServiceByPage = (page: number, count: number) => {
 }
 
 export const useServiceById = (id: string) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['service', id],
-		queryFn: () => serviceApi.getById(header, id),
+		queryFn: () => serviceApi.getById(id),
 	})
 }
 

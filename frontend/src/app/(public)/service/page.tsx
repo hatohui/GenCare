@@ -16,13 +16,13 @@ export default function Page() {
 		page: 1,
 		count: 0,
 	})
-	const { data: serviceDatam } = useServiceByPage(1, 6)
+	const { data: serviceData } = useServiceByPage(1, 6)
 
 	useEffect(() => {
-		if (serviceDatam?.payload) {
-			setServices(serviceDatam)
+		if (serviceData?.payload) {
+			setServices(serviceData)
 		}
-	}, [serviceDatam])
+	}, [serviceData])
 
 	return (
 		<main className='relative min-h-screen  text-gray-900'>
@@ -41,7 +41,7 @@ export default function Page() {
 					Dịch Vụ Nổi Bật
 				</h2>
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-					<Suspense fallback={LoadingSkeleton()}>
+					<Suspense fallback={<LoadingSkeleton />}>
 						{services?.payload.map((item, index) => (
 							<motion.div
 								key={item.id}
