@@ -57,11 +57,10 @@ export const samplePayload: {
 ]
 
 const serviceApi = {
-	getByPage: (header: string, page: number, count: number) =>
+	getByPage: (page: number, count: number) =>
 		axios
 			.get<GetServiceApiByPageResponse>(
-				`${SERVICE_URL}?Page=${page}&&Count=${count}`,
-				{ headers: { Authorization: header } }
+				`${SERVICE_URL}?Page=${page}&&Count=${count}`
 			)
 			.then(res => {
 				console.log(res.data)
@@ -99,11 +98,11 @@ const serviceApi = {
 }
 
 export const useServiceByPage = (page: number, count: number) => {
-	const header = useAccessTokenHeader()
+	// const header = useAccessTokenHeader()
 
 	return useQuery({
 		queryKey: ['services', page, count],
-		queryFn: () => serviceApi.getByPage(header, page, count),
+		queryFn: () => serviceApi.getByPage(page, count),
 	})
 }
 
