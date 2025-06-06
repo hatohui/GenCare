@@ -1,13 +1,13 @@
 import { NavComponentProps } from '@/Interfaces/NavBar/Types/NavBarComponents'
 import MotionLink from '../MotionLink'
 import clsx from 'clsx'
-import useAccountStore from '@/Hooks/useToken'
 import { UserSVG } from '../SVGs'
 import { useRouter } from 'next/navigation'
 import { useLogoutAccount } from '@/Services/auth-service'
+import useToken from '@/Hooks/useToken'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
-	const accountStore = useAccountStore()
+	const tokenStore = useToken()
 	const router = useRouter()
 	const { mutate: logout } = useLogoutAccount()
 
@@ -24,7 +24,7 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 		})
 	}
 
-	return accountStore.account ? (
+	return tokenStore.accessToken ? (
 		<button
 			className={clsx(
 				'rounded-full px-2 py-1 duration-200 cursor-pointer select-none',

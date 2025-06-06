@@ -16,9 +16,6 @@ export function parseTokenClaims(raw: RawClaims): DecodedTokenData {
 		throw new Error('Invalid token claims: subject and role are required')
 	}
 
-	// const genderString =
-	// 	raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender']
-
 	const account: TokenizedAccount = {
 		id: raw.sub,
 		role: raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
