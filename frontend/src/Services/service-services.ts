@@ -60,10 +60,14 @@ const serviceApi = {
 	getByPage: (header: string, page: number, count: number) =>
 		axios
 			.get<GetServiceApiByPageResponse>(
-				`${SERVICE_URL}?page=${page}&count=${count}`,
+				`${SERVICE_URL}?Page=${page}&&Count=${count}`,
 				{ headers: { Authorization: header } }
 			)
-			.then(res => res.data),
+			.then(res => {
+				console.log(res.data)
+
+				return res.data
+			}),
 
 	getById: (header: string, id: string) =>
 		axios

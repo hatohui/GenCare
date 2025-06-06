@@ -2,7 +2,6 @@
 
 import { ServiceCard } from '@/Components/Services/ServiceCard'
 import { CartButton } from '@/Components/Services/ServiceCart'
-import useInput from '@/Hooks/Form/useInput'
 import { Suspense, useEffect, useState } from 'react'
 import { samplePayload, useServiceByPage } from '@/Services/service-services'
 import { GetServiceApiByPageResponse } from '@/Interfaces/Service/Schemas/service'
@@ -11,14 +10,13 @@ import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 
 export default function Page() {
-	const { ...search } = useInput('', 'text')
 	const [services, setServices] = useState<GetServiceApiByPageResponse>({
 		//sample datahere change later
 		payload: samplePayload,
 		page: 1,
 		count: 0,
 	})
-	const { data: serviceDatam } = useServiceByPage(1, 2)
+	const { data: serviceDatam } = useServiceByPage(1, 6)
 
 	useEffect(() => {
 		if (serviceDatam?.payload) {
