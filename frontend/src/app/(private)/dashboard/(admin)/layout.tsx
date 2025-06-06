@@ -7,15 +7,7 @@ import { ADMIN_TEAM } from '@/Constants/Management'
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const { data } = useAccountStore()
 
-	if (!data) {
-		return (
-			<div className='h-screen w-screen animate-pulse center-all'>
-				Getting account data....
-			</div>
-		)
-	}
-
-	if (!ADMIN_TEAM.includes(data.account.role)) {
+	if (!data?.account.role || !ADMIN_TEAM.includes(data.account.role)) {
 		forbidden()
 	}
 
