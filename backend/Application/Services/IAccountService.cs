@@ -15,6 +15,7 @@ public interface IAccountService
     Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request);
 
     Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request);
+
     Task<bool> RevokeRefreshTokenAsync(string refreshToken);
 
     Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefreshToken);
@@ -22,5 +23,6 @@ public interface IAccountService
     Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search);
+
     Task<Account> GetAccountByIdAsync(Guid accountId);
 }

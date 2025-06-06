@@ -127,7 +127,6 @@ public class AuthController
                 Path = "/"
             });
 
-
         return Ok(new AccountLoginResponse(accessToken));
     }
 
