@@ -1,8 +1,6 @@
-
+using System.Net;
 using Application.DTOs.Account;
 using Application.DTOs.Account.Responses;
-using System.Net;
-
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
 using Application.Helpers;
@@ -11,8 +9,6 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Newtonsoft.Json.Linq;
-
 
 namespace Infrastructure.Services;
 
@@ -74,7 +70,6 @@ public class AccountService
             AccessTokenExpiration = accExpiration
         };
     }
-
 
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
@@ -185,7 +180,7 @@ public class AccountService
         }
 
         // 4) Lấy user
-        var user = await accountRepo.GetByAccountIdAsync(stored.AccountId)
+        var user = await accountRepo.GetAccountByIdAsync(stored.AccountId)
                    ?? throw new AppException(404, "User not found");
 
         // 5) Phát hành token mới (dùng DateTime.Now)
@@ -262,7 +257,6 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-
             }).ToList()
         };
         return result;
@@ -271,6 +265,5 @@ public class AccountService
     public async Task<Account> GetAccountByIdAsync(Guid accountId)
     {
         return await accountRepo.GetAccountByIdAsync(accountId);
-
     }
 }

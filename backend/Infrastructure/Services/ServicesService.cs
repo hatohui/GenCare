@@ -1,5 +1,4 @@
-﻿
-using Application.DTOs.Service.Requests;
+﻿using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
 using Application.Helpers;
 using Application.Repositories;
@@ -49,17 +48,17 @@ public class ServicesService(
     {
         // Validate Id là Guid hợp lệ
         if (!Guid.TryParse(request.Id, out var guidId))
-            throw new AppException(400,"Invalid id format.");
+            throw new AppException(400, "Invalid id format.");
 
         // Gọi repository để lấy dữ liệu
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(guidId);
 
         // Nếu không tìm thấy thì throw exception hoặc trả về null
         if (service == null)
-            throw new AppException(404,"Service not found.");
+            throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
-        
-        var imUrls = mediaService?.Select(m  =>m.Url).ToList();         
+
+        var imUrls = mediaService?.Select(m => m.Url).ToList();
         return new ViewServiceResponse()
         {
             Id = service.Id.ToString(),
@@ -68,27 +67,26 @@ public class ServicesService(
             Price = service.Price,
             ImageUrls = imUrls,
             CreatedAt = service.CreatedAt
-
         };
     }
 
     public async Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
-        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         // Validate quyền
         if (role != RoleNames.Admin && role != RoleNames.Admin)
             throw new UnauthorizedAccessException();
         // Validate not null
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new AppException(400,"Service name cannot be empty.");
+            throw new AppException(400, "Service name cannot be empty.");
         //check exists
         if (await serviceRepository.ExistsByNameAsync(request.Name))
-            throw new AppException(400,"Service name already exists.");
+            throw new AppException(400, "Service name already exists.");
         //price is not negative
         if (request.Price < 0)
-            throw new AppException(400,"Service price cannot be negative.");
+            throw new AppException(400, "Service price cannot be negative.");
         Media? media = null;
         if (!string.IsNullOrWhiteSpace(request.UrlImage))
         {
@@ -116,7 +114,7 @@ public class ServicesService(
             Description = service.Description ?? "",
             Price = service.Price,
             UrlImage = media?.Url ?? "",
-            IsDeleted = service.IsDeleted ,
+            IsDeleted = service.IsDeleted,
             CreatedAt = service.CreatedAt,
             UpdatedAt = service.CreatedAt,
         };
@@ -125,17 +123,17 @@ public class ServicesService(
     public async Task<UpdateService> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
-        var accountId = JwtHelper.GetAccountIdFromToken1(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         if (role != RoleNames.Admin && role != RoleNames.Admin)
-            throw new AppException(403,"UNAUTHORIZED");
+            throw new AppException(403, "UNAUTHORIZED");
 
         if (request.Id == Guid.Empty)
-            throw new AppException(400,"Guid cannot be empty.");
+            throw new AppException(400, "Guid cannot be empty.");
 
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
         if (service == null)
-            throw new AppException(404,"Service not found");
+            throw new AppException(404, "Service not found");
 
         service.UpdatedBy = accountId;
 
@@ -159,7 +157,7 @@ public class ServicesService(
                 {
                     Url = url,
                     ServiceId = service.Id,
-                    Type ="Image of service",
+                    Type = "Image of service",
                     CreatedBy = accountId,
                 };
                 service.Media.Add(media);
@@ -172,16 +170,15 @@ public class ServicesService(
 
         return new UpdateService
         {
-           Id = service.Id,
-           Name = service.Name,
-           Description = service.Description ?? "",
-           Price = service.Price,
-           IsDeleted = service.IsDeleted,
-           CreatedAt = service.CreatedAt,
-           UpdatedAt = service.CreatedAt,
+            Id = service.Id,
+            Name = service.Name,
+            Description = service.Description ?? "",
+            Price = service.Price,
+            IsDeleted = service.IsDeleted,
+            CreatedAt = service.CreatedAt,
+            UpdatedAt = service.CreatedAt,
         };
     }
-
 
     public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
     {

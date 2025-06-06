@@ -27,7 +27,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request)
+    public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request, [FromQuery] string? search)
     {
         if (request.Page < 0)
         {
@@ -37,7 +37,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
         {
             return BadRequest("Count must be greater than 0.");
         }
-        var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count);
+        var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count, search);
         return Ok(result);
     }
 }

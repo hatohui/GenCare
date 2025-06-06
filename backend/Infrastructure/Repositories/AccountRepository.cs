@@ -33,7 +33,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .FirstOrDefaultAsync(a => a.Email == email);
     }
 
-    public async Task<Account?> GetByAccountIdAsync(Guid accountId)
+    public async Task<Account?> GetAccountByIdAsync(Guid accountId)
     {
         return await dbContext.Accounts
             .Include(a => a.Role)
