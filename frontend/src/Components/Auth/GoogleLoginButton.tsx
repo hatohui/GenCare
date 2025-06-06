@@ -1,6 +1,6 @@
+import useToken from '@/Hooks/useToken'
 import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 import { useOauthAccount } from '@/Services/auth-service'
-import { setAccessToken } from '@/Utils/setTokens'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -14,14 +14,15 @@ export default function GoogleLoginButton({
 }) {
 	const router = useRouter()
 	const handleOauth = useOauthAccount()
+	const tokenStore = useToken()
+
 	const handleCredentialResponse = (response: OauthResponse) => {
 		handleOauth.mutate(
 			{ credential: response.credential },
 			{
 				onSuccess: data => {
 					console.log('OAuth successful:', data)
-
-					setAccessToken(data)
+					tokenStore.setAccessToken(data.accessToken)
 					router.push('/dashboard')
 				},
 				onError: error => {

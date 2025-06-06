@@ -10,14 +10,16 @@ public interface IAccountService
 {
     Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request);
 
-    Task<AccountLoginResponse?> LoginAsync(AccountLoginRequest request);
+    Task<(string AccessToken, string RefreshToken)> LoginAsync(AccountLoginRequest request);
 
     Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request);
 
     Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request);
     Task<bool> RevokeRefreshTokenAsync(string refreshToken);
+  
+    Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefreshToken);
 
-    Task<AccountLoginResponse> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
+    Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);

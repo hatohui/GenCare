@@ -127,7 +127,7 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 				<div className='h-[1px] flex-1 bg-gray-300'></div>
 			</div>
 
-			<GoogleLoginButton text='signin_with' className='mt-2' />
+			<GoogleLoginButton text='signin_with' className='mt-2 mx-auto' />
 		</motion.div>
 	)
 }
