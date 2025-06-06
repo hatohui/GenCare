@@ -23,6 +23,14 @@ public class ServicesService(
         var services = await serviceRepository.SearchServiceAsync(request.Page, request.Count);
         var response = new ViewServiceByPageResponse
         {
+            Page = request.Page,
+            Count = request.Count,
+            Payload = new List<ServicePayLoad>()
+        };
+
+        foreach (var s in services)
+        {
+            var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
             response.Payload.Add(new ServicePayLoad()
             {
                 Id = s.Id,
