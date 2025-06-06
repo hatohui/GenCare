@@ -9,27 +9,16 @@ export function parseTokenClaims(raw: RawClaims): DecodedTokenData {
 		throw new Error('Invalid token claims: raw claims object is required')
 	}
 
-	if (!raw.sub || !raw.email) {
-		throw new Error('Invalid token claims: subject and email are required')
+	if (
+		!raw.sub ||
+		!raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+	) {
+		throw new Error('Invalid token claims: subject and role are required')
 	}
-
-	const genderString =
-		raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender']
 
 	const account: TokenizedAccount = {
 		id: raw.sub,
 		role: raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
-		email: raw.email,
-		firstName:
-			raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'],
-		lastName:
-			raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'],
-		gender: genderString === 'Male',
-		phoneNumber:
-			raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'],
-		dateOfBirth:
-			raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth'],
-		avatarUrl: raw['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/uri'],
 	}
 
 	return {

@@ -1,5 +1,7 @@
 ﻿using Application.DTOs.Auth.Requests;
+using Application.DTOs.Auth.Responses;
 using Application.Services;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -41,14 +43,24 @@ public class AuthController
     /// <response code="200">Successfully logged in and token generated.</response>
     /// <response code="400">Invalid credentials.</response>
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> LoginAsync([FromBody] AccountLoginRequest request)
     {
-        var result = await accountService.LoginAsync(request);
-        if (result is null)
-        {
-            return BadRequest("Invalid credentials.");
-        }
-        return Ok(result);
+        var (accessToken, refreshToken) = await accountService.LoginAsync(request);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+        return Ok(new AccountLoginResponse(accessToken));
     }
 
     /// <summary>
@@ -60,9 +72,28 @@ public class AuthController
     /// <response code="400">Invalid refresh token.</response>
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest dto)
+    public async Task<IActionResult> RefreshTokenAsync()
     {
-        throw new NotImplementedException("Token refresh is not implemented yet.");
+        if (!Request.Cookies.TryGetValue("refreshToken", out var oldRefresh))
+        {
+            throw new AppException(401, "Missing refresh token cookie");
+        }
+
+        var (accessToken, newRefresh) = await accountService.RefreshAccessTokenAsync(oldRefresh);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            newRefresh,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+        return Ok(new { accessToken });
     }
 
     /// <summary>
@@ -98,8 +129,22 @@ public class AuthController
 
         var payload = await googleCredentialService.VerifyGoogleCredentialAsync(clientId, request.Credential);
 
-        var response = await accountService.LoginWithGoogleAsync(payload);
-        return Ok(response);
+        var (accessToken, refreshToken) = await accountService.LoginWithGoogleAsync(payload);
+
+        Response.Cookies.Append(
+            "refreshToken",
+            refreshToken,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.Now.AddDays(7),
+                Path = "/"
+            });
+
+
+        return Ok(new AccountLoginResponse(accessToken));
     }
 
     /// <summary>
@@ -113,7 +158,9 @@ public class AuthController
     [HttpPost("logout")]
     public async Task<IActionResult> LogoutAsync([FromBody] RevokeTokenRequest dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.RefreshToken))
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (string.IsNullOrWhiteSpace(refreshToken))
+
         {
             return BadRequest("Refresh token is required.");
         }
@@ -123,12 +170,24 @@ public class AuthController
         {
             return BadRequest("Failed to revoke token or token not found.");
         }
-
-        return NoContent(); // 204
+        Response.Cookies.Delete("refreshToken");
+        return NoContent(); // 204 No Content
     }
 
     /// <summary>
-    /// Initiates the forgot password process by sending a reset password link to the user's email.
+    ///     Test endpoint to throw an exception for testing error handling.
+    /// </summary>
+    /// <returns>Throws a test exception.</returns>
+    /// <response code="500">Throws a test error.</response>
+    [HttpGet("test-exception")]
+    public IActionResult ThrowTest()
+    {
+        throw new Exception("This is a test error");
+    }
+
+
+    /// <summary>
+    ///     Initiates the forgot password process by sending a reset password link to the user's email.
     /// </summary>
     /// <param name="request">forgot password request</param>
     /// <returns>response containing forgot password URL</returns>
@@ -140,7 +199,7 @@ public class AuthController
     }
 
     /// <summary>
-    /// Resets the user's password using a reset token and new password.
+    ///     Resets the user's password using a reset token and new password.
     /// </summary>
     /// <param name="request">reset password request</param>
     /// <returns>message of resetting password successfully</returns>

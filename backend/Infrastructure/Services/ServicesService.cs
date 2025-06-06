@@ -17,22 +17,31 @@ public class ServicesService(
 {
     public async Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request)
     {
+        if (request.Page <= 0 || request.Count <= 0)
+            throw new AppException(400, "Page and Count must be greater than zero.");
+
         var services = await serviceRepository.SearchServiceAsync(request.Page, request.Count);
-        ViewServiceByPageResponse response = new ViewServiceByPageResponse();
-        response.Page = request.Page;
-        response.Count = request.Count;
-        
-        services.ForEach(s =>
+        var response = new ViewServiceByPageResponse
         {
-            response.Payload.Add(new ServicePayload()
+            Page = request.Page,
+            Count = request.Count,
+            Payload = new List<ServicePayload>()
+        };
+
+        foreach (var s in services)
+        {
+            var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
+            response.Payload.Add(new ServicePayload
+
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description ?? "",
                 Price = s.Price,
-                ImageUrl = mediaRepository.GetNewestByServiceIdAsync(s.Id).Result?.Url ?? string.Empty
+                ImageUrl = image?.Url ?? string.Empty
             });
-        });
+        }
+
         return response;
     }
 
