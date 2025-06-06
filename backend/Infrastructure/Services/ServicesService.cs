@@ -24,7 +24,7 @@ public class ServicesService(
         
         services.ForEach(s =>
         {
-            response.Payload.Add(new ServicePayload()
+            response.Payload.Add(new ServicePayLoad()
             {
                 Id = s.Id,
                 Name = s.Name,
