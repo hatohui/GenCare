@@ -158,7 +158,9 @@ public class AuthController
     [HttpPost("logout")]
     public async Task<IActionResult> LogoutAsync([FromBody] RevokeTokenRequest dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.RefreshToken))
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (string.IsNullOrWhiteSpace(refreshToken))
+
         {
             return BadRequest("Refresh token is required.");
         }
@@ -168,8 +170,8 @@ public class AuthController
         {
             return BadRequest("Failed to revoke token or token not found.");
         }
-
-        return NoContent(); // 204
+        Response.Cookies.Delete("refreshToken");
+        return NoContent(); // 204 No Content
     }
 
     /// <summary>
