@@ -9,11 +9,19 @@ export async function middleware(request: NextRequest) {
 
 		if (!token) throw new Error('No session found.')
 
-		const decoded = jwtDecode(token)
+		let decoded: any
+		try {
+			decoded = jwtDecode(token)
+		} catch (decodeError) {
+			throw new Error('Invalid token format')
+		}
 
-		const timeUntilExpire = decoded.exp
-			? decoded.exp - Math.floor(Date.now() / 1000)
-			: 0
+		if (!decoded.exp || typeof decoded.exp !== 'number') {
+			throw new Error('Invalid token: missing or invalid expiration')
+		}
+
+		const timeUntilExpire = decoded.exp - Math.floor(Date.now() / 1000)
+
 		console.log(`Token Expiration: ${timeUntilExpire} seconds`)
 
 		// Check expiration

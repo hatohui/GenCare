@@ -7,19 +7,17 @@ import {
 	GetServiceWithIdResponse,
 	UpdateServiceApiRequest,
 } from '@/Interfaces/Service/Schemas/service'
+import { Service } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
-export const samplePayload: {
-	id: string
-	name: string
-	description: string
-	price: number
-	imageUrl?: string
-}[] = [
+export const samplePayload: Omit<
+	Service,
+	'createdAt' | 'updatedAt' | 'isDeleted'
+>[] = [
 	{
 		id: '1',
 		name: 'Basic Health Checkup',
