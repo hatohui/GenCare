@@ -12,7 +12,8 @@ export async function middleware(request: NextRequest) {
 		let decoded: any
 		try {
 			decoded = jwtDecode(token)
-		} catch (decodeError) {
+		} catch (error) {
+			console.error('Token decoding error:', error)
 			throw new Error('Invalid token format')
 		}
 
