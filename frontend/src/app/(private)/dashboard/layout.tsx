@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}, 5000)
 
 		return clearTimeout(verificationTimeout)
-	}, [])
+	}, [isLoading, router])
 
 	useEffect(() => {
 		setIsClient(true)

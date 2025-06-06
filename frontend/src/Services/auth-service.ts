@@ -32,7 +32,12 @@ const authApi = {
 			})
 			.then(res => res.data)
 	},
-	logout: (header: string, logoutHandler: () => void) => {
+	logout: (header: string | undefined, logoutHandler: () => void) => {
+		if (!header || header?.endsWith('undefined')) {
+			logoutHandler()
+			return Promise.resolve()
+		}
+
 		return axios
 			.post(
 				`${AUTH_URL}/logout`,

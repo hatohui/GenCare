@@ -8,7 +8,7 @@ const ServiceList = ({
 	handleDelete,
 }: {
 	data: GetServiceByPageResponse
-	handleDelete: () => void
+	handleDelete: (id: string) => void
 }) => {
 	return (
 		<>
@@ -32,8 +32,8 @@ const ServiceList = ({
 								label={service.name}
 								secondaryLabel={`${service.price}`}
 								status={service.isDeleted ? 'FAILED' : 'SUCCESS'}
-								date={service.description}
-								path='/account/'
+								thirdLabel={service.description}
+								path='/services/'
 								handleDelete={handleDelete}
 							/>
 						))

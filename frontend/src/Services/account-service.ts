@@ -19,6 +19,7 @@ const accountApi = {
 			})
 			.then(res => res.data)
 	},
+
 	getById: (header: string, id: string) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axios
@@ -33,7 +34,7 @@ export const useGetAccountsByPage = (count: number, page: number) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['accounts', page],
+		queryKey: ['accounts', page, count],
 		queryFn: () => accountApi.getByPage(header, count, page),
 		placeholderData: keepPreviousData,
 	})

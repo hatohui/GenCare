@@ -44,11 +44,11 @@ const Pagination = ({
 							currentPage === pageNumber ? 'bg-accent' : 'text-gray-800'
 						)}
 						aria-current={currentPage === pageNumber ? 'page' : undefined}
-						whileHover={{ opacity: 0.7, border: '1px' }}
+						whileHover={{ opacity: 0.7 }}
 						transition={{ duration: 0.2 }}
 						disabled={currentPage === pageNumber}
 					>
-						{pageNumber}
+						{pageNumber}c
 					</motion.button>
 				))}
 			</div>

@@ -11,11 +11,11 @@ export type ItemCardProps = {
 	id: string
 	label: string
 	status?: Status
-	date: string | Date
+	thirdLabel: string | Date
 	path: string
 	delay: number
 	secondaryLabel: string
-	handleDelete: () => void
+	handleDelete: (id: string) => void
 }
 
 const ItemCard = ({
@@ -24,15 +24,15 @@ const ItemCard = ({
 	status,
 	delay,
 	path = '/',
-	date = '00/00/0000',
+	thirdLabel = '00/00/0000',
 	secondaryLabel = 'aaa',
 	handleDelete,
 }: ItemCardProps) => {
 	const router = useRouter()
 	let statusClass = ''
 
-	if (date instanceof Date) {
-		date = date.toString()
+	if (thirdLabel instanceof Date) {
+		thirdLabel = thirdLabel.toString()
 	}
 
 	switch (status) {
@@ -55,7 +55,7 @@ const ItemCard = ({
 
 	const handleDeleteFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
-		handleDelete()
+		handleDelete(id)
 	}
 
 	return (
@@ -69,7 +69,7 @@ const ItemCard = ({
 			transition={{ delay: delay / 15, type: 'spring' }}
 			tabIndex={0}
 		>
-			<div className='absolute h-full w-full opacity-60 asfaltBackground' />
+			<div className='absolute inset-0 opacity-30 asfaltBackground pointer-events-none' />
 			<div className='flex flex-1 items-center gap-3 text-shadow-sm p-3'>
 				<div
 					className={clsx(
@@ -89,7 +89,7 @@ const ItemCard = ({
 
 			<div className='xl:justify-center items-center flex justify-end gap-2 flex-1'>
 				<p className='truncate text-slate-950 text-left flex-1 font-mono hidden xl:block'>
-					{date}
+					{thirdLabel}
 				</p>
 				<div className='flex gap-2 p-3 justify-end'>
 					<div

@@ -8,7 +8,7 @@ const AccountList = ({
 	handleDelete,
 }: {
 	data: GetAccountByPageResponse
-	handleDelete: () => void
+	handleDelete: (id: string) => void
 }) => {
 	return (
 		<>
@@ -32,8 +32,8 @@ const AccountList = ({
 								label={`${account.firstName} ${account.lastName}`}
 								secondaryLabel={account.email}
 								status={account.isDeleted ? 'FAILED' : 'SUCCESS'}
-								date={account.dateOfBirth}
-								path='/account/'
+								thirdLabel={account.dateOfBirth}
+								path='/accounts/'
 								handleDelete={handleDelete}
 							/>
 						))

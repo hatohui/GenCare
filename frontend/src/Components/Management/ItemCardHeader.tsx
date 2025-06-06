@@ -18,7 +18,7 @@ const ItemCardHeader = ({
 			className='bg-gradient-to-r from-white to-general overflow-hidden text-slate font-semibold px-3 w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center'
 			aria-label={`Table's Category`}
 		>
-			<div className='absolute h-full w-full opacity-60 asfaltBackground' />
+			<div className='absolute top-0 left-0 h-full w-full opacity-60 asfaltBackground' />
 			<div className='flex flex-1 items-center gap-3 text-shadow-sm p-3'>
 				<p>{label}</p>
 			</div>

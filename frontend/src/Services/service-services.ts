@@ -55,7 +55,7 @@ export const useGetServiceByPage = (page: number, count: number) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['services', page],
+		queryKey: ['services', page, count],
 		queryFn: () => serviceApi.getByPage(header, page, count),
 		placeholderData: keepPreviousData,
 	})
