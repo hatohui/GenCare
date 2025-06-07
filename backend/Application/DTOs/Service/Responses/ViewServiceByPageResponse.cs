@@ -2,9 +2,8 @@
 
 public record class ViewServiceByPageResponse
 {
-    public int Page { get; set; }
-    public int Count { get; set; }
-    public List<ServicePayLoad>? Payload { get; set; } 
+    public int TotalCount { get; set; }
+    public List<ServicePayLoadForStaff> Services{ get; set; } 
     
 }
 

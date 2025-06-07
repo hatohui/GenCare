@@ -16,4 +16,7 @@ public interface  IServiceRepository
     Task<bool> ExistsByIdAsync(Guid idService);
     public Task<Service?> SearchServiceByIdForStaffAsync(Guid idService);
     Task<bool> DeleteServiceByIdAsync(Guid idService);
+    Task<List<Service?>>SearchServiceIncludeDeletedAsync(int page, int count);
+    Task<int> CountServicesIncludeDeletedAsync();
+    Task<int> CountServicesAsync();
 }
