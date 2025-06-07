@@ -5,7 +5,7 @@ public class RateLimitMiddleware(RequestDelegate next)
     private const int MaxRequests = 10;
     private static int _requestCounter;
     private static DateTime _startTime = DateTime.Now;
-    private static readonly object _lock = new object();
+    private static readonly object _lock = new();
 
     public async Task InvokeAsync(HttpContext context)
     {
