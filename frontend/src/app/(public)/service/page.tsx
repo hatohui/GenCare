@@ -1,17 +1,21 @@
+'use client'
+
 import { CartButton } from '@/Components/Services/ServiceCart'
 import { Suspense } from 'react'
 
 import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
+import SearchBar from '@/Components/Management/SearchBar'
+import useInput from '@/Hooks/Form/useInput'
 
 export default function Page() {
+	// const { ...search } = useInput('', 'text')
 	return (
-		<main className='relative min-h-screen  text-gray-900'>
-			<div className='bg-general shadow-md'>
-				<div className='h-20' />
-				<div className='mx-auto px-6 py-4 flex items-center justify-between'>
-					{/* <ServiceSearch search={search} /> */}
+		<section className='relative min-h-screen  text-gray-900'>
+			<div className='relative bg-general shadow-md overflow-hidden'>
+				<div className='mx-auto px-6 py-4 flex items-center justify-between z-1 pt-20'>
+					{/* <SearchBar value={search.value} handleSearch={search.onChange} /> */}
 					<div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
 						<CartButton />
 					</div>
@@ -29,6 +33,6 @@ export default function Page() {
 				</div>
 				<FlorageBackground />
 			</div>
-		</main>
+		</section>
 	)
 }
