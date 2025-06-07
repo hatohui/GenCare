@@ -6,8 +6,8 @@ import { Suspense } from 'react'
 import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
-import SearchBar from '@/Components/Management/SearchBar'
-import useInput from '@/Hooks/Form/useInput'
+// import SearchBar from '@/Components/Management/SearchBar'
+// import useInput from '@/Hooks/Form/useInput'
 
 export default function Page() {
 	// const { ...search } = useInput('', 'text')
