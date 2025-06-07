@@ -1,3 +1,4 @@
+'use client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -14,13 +15,16 @@ const Forbidden = () => {
 	}, [router])
 
 	return (
-		<div className='flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4'>
+		<div className='flex flex-col items-center justify-center min-h-screen bg-rose-200 p-4'>
 			<div className='w-full max-w-md p-8 bg-white rounded-lg shadow-md'>
 				<div className='text-center space-y-4'>
 					<h1 className='text-2xl font-bold text-red-600'>Access Denied</h1>
 
-					<div className='pt-4'>
-						<Link href='/' className='w-full bg-blue-600 hover:bg-blue-700'>
+					<div className='pt-4 center-all'>
+						<Link
+							href='/'
+							className='w-full bg-accent px-4 py-3 text-white hover:bg-accent/50 transition-colors duration-200'
+						>
 							Return to Main
 						</Link>
 					</div>

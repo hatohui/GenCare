@@ -3,12 +3,12 @@ import {
 	CreateServiceApiResponse,
 	DeleteServiceApiResponse,
 	UpdateServiceApiResponse,
-	GetServiceApiByPageResponse,
+	GetServiceByPageResponse,
 	GetServiceWithIdResponse,
 	UpdateServiceApiRequest,
 } from '@/Interfaces/Service/Schemas/service'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
@@ -16,7 +16,7 @@ const SERVICE_URL = `${DEFAULT_API_URL}/services`
 const serviceApi = {
 	getByPage: (header: string, page: number, count: number) =>
 		axios
-			.get<GetServiceApiByPageResponse>(
+			.get<GetServiceByPageResponse>(
 				`${SERVICE_URL}?page=${page}&count=${count}`,
 				{ headers: { Authorization: header } }
 			)
@@ -51,16 +51,17 @@ const serviceApi = {
 			.then(res => res.data),
 }
 
-export const useServiceByPage = (page: number, count: number) => {
+export const useGetServiceByPage = (page: number, count: number) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
 		queryKey: ['services', page, count],
 		queryFn: () => serviceApi.getByPage(header, page, count),
+		placeholderData: keepPreviousData,
 	})
 }
 
-export const useServiceById = (id: string) => {
+export const useGetServiceById = (id: string) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
