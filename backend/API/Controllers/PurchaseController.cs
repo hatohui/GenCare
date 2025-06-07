@@ -3,6 +3,7 @@ using Application.Helpers;
 using Application.Services;
 
 namespace API.Controllers;
+
 /// <summary>
 /// handles purchase-related actions such as booking services.
 /// </summary>

@@ -10,6 +10,7 @@ namespace Application.Helpers
     {
         public static readonly string JwtKey = Environment.GetEnvironmentVariable("JWT_KEY")!;
         public static readonly string JwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")!;
+
         public static readonly string JwtAudience = Environment.GetEnvironmentVariable(
             "JWT_AUDIENCE"
         )!;
@@ -89,14 +90,7 @@ namespace Application.Helpers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
                 //.ToString("D"): định dạng Guid thành chuỗi chuẩn (dashed format)
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role?.Name ?? ""),
-                new Claim(ClaimTypes.GivenName, user.FirstName ?? ""),
-                new Claim(ClaimTypes.Surname, user.LastName ?? ""),
-                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth?.ToString() ?? ""),
-                new Claim(ClaimTypes.Gender, user.Gender ? "Male" : "Female"),
-                new Claim(ClaimTypes.Uri, user.AvatarUrl ?? ""),
-                new Claim(ClaimTypes.MobilePhone, user.Phone ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("type", tokenType), // Đánh dấu loại token
             };
@@ -137,17 +131,17 @@ namespace Application.Helpers
         /// </summary>
         /// <param name="token">The JWT token.</param>
         /// <returns>The account ID as a Guid if token is valid; otherwise, throws an exception.</returns>
-      
-        public static Guid GetAccountIdFromToken1(string token)
+
+        public static Guid GetAccountIdFromToken(string token)
         {
             var principal = ValidateToken(token);
             // Thử lấy từ nhiều loại claim phổ biến
             var possibleClaimTypes = new[]
             {
-        JwtRegisteredClaimNames.Sub,
-        "sub",
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    };
+                JwtRegisteredClaimNames.Sub,
+                "sub",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            };
 
             string? accountIdString = null;
             foreach (var type in possibleClaimTypes)
@@ -161,10 +155,7 @@ namespace Application.Helpers
                 return accountId;
             }
             throw new ArgumentException("Invalid account ID format in token.");
-            
         }
-
-
 
         /// <summary>
         /// Extract the email from a JWT token.
@@ -187,6 +178,7 @@ namespace Application.Helpers
             var principal = ValidateToken(token);
             return principal.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
+
         public static string GetRoleFromAccessToken(string accessToken)
         {
             var principal = ValidateToken(accessToken);
@@ -198,7 +190,6 @@ namespace Application.Helpers
             }
             return roleClaim.Value;
         }
-
 
         /// <summary>
         /// Extract the token type (access or refresh) from a JWT token.
@@ -257,7 +248,6 @@ namespace Application.Helpers
 
         // Todo: Figure out a way to fetch the account with Id string so that we can verify the user exist for the new access Token
 
-
         /// <summary>
         /// generate the reset password token
         /// </summary>
@@ -270,21 +260,21 @@ namespace Application.Helpers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             // Set token expiration time
-            var expiration = DateTime.Now.AddMinutes(expiresInMinutes); 
+            var expiration = DateTime.Now.AddMinutes(expiresInMinutes);
 
             // Create JWT token with claims
-            var claims = new[] 
-            {   
+            var claims = new[]
+            {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString("D")),
             new Claim("purpose", "password_reset")
         };
 
             var token = new JwtSecurityToken(
-                issuer: JwtIssuer, 
+                issuer: JwtIssuer,
                 audience: JwtAudience,
                 claims: claims,
-                expires: expiration, 
-                signingCredentials: credentials 
+                expires: expiration,
+                signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -299,15 +289,15 @@ namespace Application.Helpers
         {
             userId = Guid.Empty;
             var tokenHandler = new JwtSecurityTokenHandler();
-       
+
             var tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true, 
+                ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = true, 
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = JwtIssuer, 
-                ValidAudience = JwtAudience, 
+                ValidIssuer = JwtIssuer,
+                ValidAudience = JwtAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey))
             };
 
