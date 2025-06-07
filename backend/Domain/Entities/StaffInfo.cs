@@ -10,7 +10,7 @@ public class StaffInfo
 
     public int YearOfExperience { get; set; }
 
-    public string Biography { get; set; } = null!;
+    public string? Biography { get; set; }
 
     public Account Account { get; set; } = null!;
 

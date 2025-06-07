@@ -21,19 +21,19 @@ public class AuthController
     IGoogleCredentialService googleCredentialService
 ) : ControllerBase
 {
-        /// <summary>
-        /// Registers a new user in the system.
-        /// </summary>
-        /// <param name="request">The user registration details.</param>
-        /// <returns>An action result containing refresh token, access token and access token expiration.</returns>
-        /// <response code="200">User registered successfully.</response>
-        /// <response code="400">Bad request if the user data is invalid.</response>
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
-        {
-            var response = await accountService.RegisterAsync(request);
-            return Ok(response);
-        }
+    /// <summary>
+    /// Registers a new user in the system.
+    /// </summary>
+    /// <param name="request">The user registration details.</param>
+    /// <returns>An action result containing refresh token, access token and access token expiration.</returns>
+    /// <response code="200">User registered successfully.</response>
+    /// <response code="400">Bad request if the user data is invalid.</response>
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterAsync([FromBody] AccountRegisterRequest request)
+    {
+        var response = await accountService.RegisterAsync(request);
+        return Ok(response);
+    }
 
     /// <summary>
     ///     Logs in a user and generates a JWT access token.
@@ -143,48 +143,29 @@ public class AuthController
                 Path = "/"
             });
 
-
         return Ok(new AccountLoginResponse(accessToken));
     }
 
-    /// <summary>
-    ///     Logs out the current user by revoking their refresh token.
-    /// </summary>
-    /// <param name="dto">The refresh token to revoke.</param>
-    /// <returns>Returns 204 if successful.</returns>
-    /// <response code="204">Token revoked successfully.</response>
-    /// <response code="400">Invalid or missing token.</response>
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> LogoutAsync([FromBody] RevokeTokenRequest dto)
+
+    public async Task<IActionResult> LogoutAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrWhiteSpace(refreshToken))
-
         {
             return BadRequest("Refresh token is required.");
         }
 
-        var success = await accountService.RevokeRefreshTokenAsync(dto.RefreshToken);
+        var success = await accountService.RevokeRefreshTokenAsync(refreshToken);
         if (!success)
         {
             return BadRequest("Failed to revoke token or token not found.");
         }
+
         Response.Cookies.Delete("refreshToken");
-        return NoContent(); // 204 No Content
+        return NoContent();
     }
-
-    /// <summary>
-    ///     Test endpoint to throw an exception for testing error handling.
-    /// </summary>
-    /// <returns>Throws a test exception.</returns>
-    /// <response code="500">Throws a test error.</response>
-    [HttpGet("test-exception")]
-    public IActionResult ThrowTest()
-    {
-        throw new Exception("This is a test error");
-    }
-
 
     /// <summary>
     ///     Initiates the forgot password process by sending a reset password link to the user's email.

@@ -27,6 +27,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         var services = await servicesService.SearchServiceExcludeDeletedAsync(request);
         return Ok(services);
     }
+
     /// <summary>
     /// Get all services by page, including deleted services.
     /// </summary>
@@ -72,7 +73,6 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         {
             return NotFound();
         }
-
     }
 
     /// <summary>
@@ -106,6 +106,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
     /// Update a service. Only admin or staff can update.
     /// </summary>
@@ -141,10 +142,11 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         {
             if (ex.Message == "Service not found")
                 return NotFound(ex.Message);
-        
+
             return BadRequest(ex.Message);
         }
     }
+
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(DeleteServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -156,9 +158,9 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
             ? tokenHeader.Substring(7)
             : string.Empty;
-    
+
         var request = new DeleteServiceRequest { Id = id };
-    
+
         try
         {
             var result = await servicesService.DeleteServiceByIdAsync(request, accessToken);

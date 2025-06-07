@@ -21,7 +21,6 @@ export default function GoogleLoginButton({
 			{ credential: response.credential },
 			{
 				onSuccess: data => {
-					console.log('OAuth successful:', data)
 					tokenStore.setAccessToken(data.accessToken)
 					router.push('/dashboard')
 				},

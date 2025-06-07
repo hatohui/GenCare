@@ -26,8 +26,6 @@ export const isTokenValid = (token: string | null): TokenValidationResult => {
 
 	const currentTime = Math.floor(Date.now() / 1000)
 
-	console.log(currentTime - decodedToken.expireInSeconds)
-
 	if (
 		decodedToken.expireInSeconds &&
 		currentTime >= decodedToken.expireInSeconds - 5

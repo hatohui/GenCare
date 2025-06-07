@@ -30,10 +30,10 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
     public async Task<Account?> GetByEmailAsync(string email)
     {
         return await dbContext.Accounts.Include(a => a.Role)
-            .FirstOrDefaultAsync(a => a.Email == email);
+            .FirstOrDefaultAsync(a => a.Email.ToLower() == email.ToLower());
     }
 
-    public async Task<Account?> GetByAccountIdAsync(Guid accountId)
+    public async Task<Account?> GetAccountByIdAsync(Guid accountId)
     {
         return await dbContext.Accounts
             .Include(a => a.Role)
@@ -66,5 +66,17 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .Skip(skip)
             .Take(take)
             .ToListAsync();
+    }
+
+    public async Task<int> GetTotalAccountCountAsync(string? search)
+    {
+        var query = dbContext.Accounts.AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(a => a.Email.Contains(search) || a.FirstName.Contains(search) || a.LastName.Contains(search));
+        }
+
+        return await query.CountAsync();
     }
 }

@@ -1,7 +1,6 @@
-
+using System.Net;
 using Application.DTOs.Account;
 using Application.DTOs.Account.Responses;
-using System.Net;
 using Application.DTOs.Account.Requests;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
@@ -12,8 +11,6 @@ using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Newtonsoft.Json.Linq;
-
 
 namespace Infrastructure.Services;
 
@@ -75,8 +72,6 @@ public class AccountService
             AccessTokenExpiration = accExpiration
         };
     }
-
-
 
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
@@ -187,7 +182,7 @@ public class AccountService
         }
 
         // 4) Lấy user
-        var user = await accountRepo.GetByAccountIdAsync(stored.AccountId)
+        var user = await accountRepo.GetAccountByIdAsync(stored.AccountId)
                    ?? throw new AppException(404, "User not found");
 
         // 5) Phát hành token mới (dùng DateTime.Now)
@@ -246,16 +241,19 @@ public class AccountService
         return (accessToken, refreshToken);
     }
 
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
     {
         var skip = page * count;
         var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
+        var totalCount = await accountRepo.GetTotalAccountCountAsync(search);
+
         var result = new GetAccountByPageResponse
         {
-            Accounts = accounts.Select(a => new AccountViewModel
+            Accounts = accounts.ConvertAll
+            (a => new AccountViewModel
             {
                 Id = a.Id,
-                Role = a.Role?.Name ?? "Unknown",
+                RoleName = a.Role.Name,
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
@@ -263,11 +261,16 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-
-            }).ToList()
+            }
+            ),
+            TotalCount = totalCount
         };
         return result;
+    }
 
+    public async Task<Account> GetAccountByIdAsync(Guid accountId)
+    {
+        return await accountRepo.GetAccountByIdAsync(accountId);
     }
 
     public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)

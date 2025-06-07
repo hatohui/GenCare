@@ -41,7 +41,6 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
             .FirstOrDefaultAsync(s => s.Id == idService && !s.IsDeleted);
     }
 
-
     public async Task<Service?> SearchServiceByIdForStaffAsync(Guid idService)
     {
         return await dbContext.Services
@@ -67,7 +66,6 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
                 .SetProperty(e => e.IsDeleted, service.IsDeleted)
             );
         return affectedRows > 0;
-
     }
 
     public async Task<bool> ExistsByNameAsync(string name)

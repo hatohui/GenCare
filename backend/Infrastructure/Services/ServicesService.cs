@@ -26,7 +26,6 @@ public class ServicesService(
             Total = totalCount,
             Services = new List<ServicePayLoad>()
         };
-
         foreach (var s in services)
         {
             var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
@@ -88,7 +87,7 @@ public class ServicesService(
         // Gọi repository để lấy dữ liệu
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(guidId);
 
-        // Nếu không tìm thấy thì throw exception hoặc trả về null 
+        // Nếu không tìm thấy thì throw exception hoặc trả về null
         if (service == null)
             throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
@@ -214,7 +213,6 @@ public class ServicesService(
         };
     }
 
-
     public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
@@ -243,7 +241,9 @@ public class ServicesService(
         return new DeleteServiceResponse
         {
             Success = success,
-            Message = success ? "Xóa dịch vụ và ảnh thành công" : "Xóa dịch vụ thất bại"
+            Message = success
+                ? "Xóa dịch vụ và ảnh thành công"
+                : "Xóa dịch vụ thất bại"
         };
     }
 }
