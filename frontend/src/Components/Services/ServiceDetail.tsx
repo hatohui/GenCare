@@ -13,7 +13,12 @@ export default function ServiceDetail({
 				{/* Left Panel */}
 				<div className='space-y-6'>
 					<h1 className='text-3xl font-bold text-gray-800'>{name}</h1>
-					<p className='text-2xl text-accent font-semibold'>{price}</p>
+					<p className='text-2xl text-accent font-semibold'>
+						{price.toLocaleString('vi-VN', {
+							style: 'currency',
+							currency: 'VND',
+						})}
+					</p>
 					<button className='bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-full text-lg font-medium transition duration-300 hover:from-pink-600 hover:to-rose-500'>
 						Booking
 					</button>

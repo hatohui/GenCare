@@ -23,7 +23,6 @@ export type CreateServiceApiResponse = Service
 export type DeleteServiceApiResponse = Service
 export type UpdateServiceApiResponse = Service
 export type GetServiceApiByPageResponse = {
-	page: number
 	count: number
 	payload: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrl'>[]
 }
