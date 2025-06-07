@@ -4,6 +4,7 @@ import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
+import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
@@ -17,33 +18,25 @@ const authApi = {
 			.then(res => res.data)
 	},
 	login: (data: LoginApi) => {
-		return axios
-			.post<TokenData>(`${AUTH_URL}/login`, data, {
-				withCredentials: true,
-			})
+		return axiosInstance
+			.post<TokenData>(`${AUTH_URL}/login`, data)
 			.then(res => {
 				return res.data
 			})
 	},
 	Oauth: (data: OauthAPI) => {
-		return axios
+		return axiosInstance
 			.post<TokenData>(`${AUTH_URL}/google`, {
 				credential: data.credential,
 			})
 			.then(res => res.data)
 	},
 	logout: (header: string | undefined, logoutHandler: () => void) => {
-		if (!header || header?.endsWith('undefined')) {
-			logoutHandler()
-			return Promise.resolve()
-		}
-
 		return axios
 			.post(
 				`${AUTH_URL}/logout`,
 				{},
 				{
-					headers: { Authorization: header },
 					withCredentials: true,
 				}
 			)
