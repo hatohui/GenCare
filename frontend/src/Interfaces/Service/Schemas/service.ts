@@ -27,3 +27,11 @@ export type GetServiceByPageResponse = {
 	count: number
 	payload: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrl'>[]
 }
+
+export type GetServiceByPageAdminResponse = {
+	count: number
+	payload: Pick<
+		Service,
+		'id' | 'name' | 'description' | 'price' | 'imageUrl' | 'isDeleted'
+	>[]
+}

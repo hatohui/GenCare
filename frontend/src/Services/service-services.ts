@@ -6,6 +6,7 @@ import {
 	GetServiceByPageResponse,
 	GetServiceWithIdResponse,
 	UpdateServiceApiRequest,
+	GetServiceByPageAdminResponse,
 } from '@/Interfaces/Service/Schemas/service'
 import { Service } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
@@ -65,6 +66,19 @@ const serviceApi = {
 
 				return res.data
 			}),
+	getByPageAdmin: (header: string, page: number, count: number) =>
+		axios
+			.get<GetServiceByPageAdminResponse>(
+				`${SERVICE_URL}?Page=${page}&Count=${count}`,
+				{
+					headers: { Authorization: header },
+				}
+			)
+			.then(res => {
+				console.log(res.data)
+
+				return res.data
+			}),
 
 	getById: (id: string) =>
 		axios
@@ -99,6 +113,16 @@ export const useServiceByPage = (page: number, count: number) => {
 	return useQuery({
 		queryKey: ['services', page, count],
 		queryFn: () => serviceApi.getByPage(page, count),
+		placeholderData: keepPreviousData,
+	})
+}
+
+export const useServiceByPageAdmin = (page: number, count: number) => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['services', page, count],
+		queryFn: () => serviceApi.getByPageAdmin(header, page, count),
 		placeholderData: keepPreviousData,
 	})
 }
