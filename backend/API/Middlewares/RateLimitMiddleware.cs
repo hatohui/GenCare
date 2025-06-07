@@ -2,7 +2,7 @@
 
 public class RateLimitMiddleware(RequestDelegate next)
 {
-    private const int MaxRequests = 100;
+    private const int MaxRequests = 10;
     private int _requestCounter;
     private DateTime _startTime = DateTime.Now;
 
@@ -10,7 +10,7 @@ public class RateLimitMiddleware(RequestDelegate next)
     {
         var currentTime = DateTime.Now;
         var elapsedSeconds = (currentTime - _startTime).TotalSeconds;
-        if (elapsedSeconds >= 10000)
+        if (elapsedSeconds >= 1)
         {
             _requestCounter = 0;
             _startTime = currentTime;
