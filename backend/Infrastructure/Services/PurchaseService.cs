@@ -21,7 +21,7 @@ public class PurchaseService
         //get account id from access token
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         //get account by id
-        var account = await accountRepository.GetByAccountIdAsync(accountId) ?? throw new Exception("Account not found");
+        var account = await accountRepository.GetAccountByIdAsync(accountId) ?? throw new Exception("Account not found");
         //create purchase
         var purchase = new Purchase
         {

@@ -8,8 +8,6 @@ namespace API.Controllers;
 [Route("api/services")]
 public class ServicesController(IServicesService servicesService) : ControllerBase
 {
- 
-
     /// <summary>
     /// Search and get all services by optional name or price filter.
     /// </summary>
@@ -22,6 +20,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         var services = await servicesService.SearchServiceAsync(request);
         return Ok(services);
     }
+
     /// <summary>
     /// Get service details by Id.
     /// </summary>
@@ -46,7 +45,6 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         {
             return NotFound();
         }
-
     }
 
     /// <summary>
@@ -80,6 +78,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
             return BadRequest(ex.Message);
         }
     }
+
     /// <summary>
     /// Update a service. Only admin or staff can update.
     /// </summary>
@@ -115,10 +114,11 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         {
             if (ex.Message == "Service not found")
                 return NotFound(ex.Message);
-        
+
             return BadRequest(ex.Message);
         }
     }
+
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(DeleteServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -130,9 +130,9 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
         var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
             ? tokenHeader.Substring(7)
             : string.Empty;
-    
+
         var request = new DeleteServiceRequest { Id = id };
-    
+
         try
         {
             var result = await servicesService.DeleteServiceByIdAsync(request, accessToken);

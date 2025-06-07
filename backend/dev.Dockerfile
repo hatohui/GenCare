@@ -19,12 +19,14 @@ COPY . .
 WORKDIR /src/API
 
 # Expose port for development
+# Add before ENTRYPOINT
+
+# Configure ASP.NET Core to use the certificate
+ENV ASPNETCORE_ENVIRONMENT=Development \
+    ASPNETCORE_URLS=http://+:8080\
+    DOTNET_USE_POLLING_FILE_WATCHER=true
+
 EXPOSE 8080
 
-# Set environment variables for development and hot reload
-ENV DOTNET_USE_POLLING_FILE_WATCHER=true \
-    ASPNETCORE_ENVIRONMENT=Development \
-    ASPNETCORE_URLS=http://+:8080
-
-# Start the app with hot reload
 ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:8080"]
+
