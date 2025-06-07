@@ -240,16 +240,18 @@ public class AccountService
     }
 
     public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
-
     {
         var skip = page * count;
         var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
+        var totalCount = await accountRepo.GetTotalAccountCountAsync(search);
+
         var result = new GetAccountByPageResponse
         {
-            Accounts = accounts.Select(a => new AccountViewModel
+            Accounts = accounts.ConvertAll
+            (a => new AccountViewModel
             {
                 Id = a.Id,
-                Role = a.Role?.Name ?? "Unknown",
+                RoleName = a.Role.Name,
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
@@ -257,7 +259,9 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-            }).ToList()
+            }
+            ),
+            TotalCount = totalCount
         };
         return result;
     }

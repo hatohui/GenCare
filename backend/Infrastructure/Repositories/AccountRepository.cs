@@ -56,4 +56,16 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .Take(take)
             .ToListAsync();
     }
+
+    public async Task<int> GetTotalAccountCountAsync(string? search)
+    {
+        var query = dbContext.Accounts.AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(a => a.Email.Contains(search) || a.FirstName.Contains(search) || a.LastName.Contains(search));
+        }
+
+        return await query.CountAsync();
+    }
 }

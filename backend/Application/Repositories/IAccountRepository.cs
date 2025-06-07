@@ -15,4 +15,6 @@ public interface IAccountRepository
     Task<List<Account>> GetAccountsByPageAsync(int skip, int take);
 
     Task UpdateAccount(Account user);
+
+    Task<int> GetTotalAccountCountAsync(string? search);
 }

@@ -90,14 +90,7 @@ namespace Application.Helpers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
                 //.ToString("D"): định dạng Guid thành chuỗi chuẩn (dashed format)
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role?.Name ?? ""),
-                new Claim(ClaimTypes.GivenName, user.FirstName ?? ""),
-                new Claim(ClaimTypes.Surname, user.LastName ?? ""),
-                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth?.ToString() ?? ""),
-                new Claim(ClaimTypes.Gender, user.Gender ? "Male" : "Female"),
-                new Claim(ClaimTypes.Uri, user.AvatarUrl ?? ""),
-                new Claim(ClaimTypes.MobilePhone, user.Phone ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("type", tokenType), // Đánh dấu loại token
             };
@@ -145,10 +138,10 @@ namespace Application.Helpers
             // Thử lấy từ nhiều loại claim phổ biến
             var possibleClaimTypes = new[]
             {
-        JwtRegisteredClaimNames.Sub,
-        "sub",
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    };
+                JwtRegisteredClaimNames.Sub,
+                "sub",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            };
 
             string? accountIdString = null;
             foreach (var type in possibleClaimTypes)
