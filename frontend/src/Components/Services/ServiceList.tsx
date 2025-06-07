@@ -1,13 +1,13 @@
 'use client'
 
-import { GetServiceApiByPageResponse } from '@/Interfaces/Service/Schemas/service'
+import { GetServiceByPageResponse } from '@/Interfaces/Service/Schemas/service'
 import { samplePayload, useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
 import React, { useEffect, useState } from 'react'
 import { ServiceCard } from './ServiceCard'
 
 const ServiceList = () => {
-	const [services, setServices] = useState<GetServiceApiByPageResponse>({
+	const [services, setServices] = useState<GetServiceByPageResponse>({
 		//sample datahere change later
 		payload: samplePayload,
 
