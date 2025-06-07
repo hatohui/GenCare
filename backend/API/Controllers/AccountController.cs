@@ -47,9 +47,6 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [HttpPost("staff-create")]
     public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
     {
-        //check if request is null
-        if (request == null)
-            return BadRequest("Request body cannot be null.");
         //get access token from header
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
         //check if access token is null or empty
