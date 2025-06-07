@@ -2,8 +2,6 @@
 
 import { CartButton } from '@/Components/Services/ServiceCart'
 import { Suspense } from 'react'
-import { ApiError } from 'next/dist/server/api-utils'
-
 import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
