@@ -156,7 +156,7 @@ public class AuthController
     /// <response code="400">Invalid or missing token.</response>
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> LogoutAsync([FromBody] RevokeTokenRequest dto)
+    public async Task<IActionResult> LogoutAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrWhiteSpace(refreshToken))
