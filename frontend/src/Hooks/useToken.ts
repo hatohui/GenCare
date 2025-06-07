@@ -16,7 +16,7 @@ const useToken = create<TokenStore>()(
 			isDehydrated: false,
 			setAccessToken: (token: string) => set({ accessToken: token }),
 			removeAccessToken: () => {
-				set({ accessToken: null })
+				set({ accessToken: null, isDehydrated: false })
 			},
 		}),
 		{
