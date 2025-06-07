@@ -4,6 +4,7 @@ import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
+import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -31,17 +32,26 @@ const authApi = {
 			})
 			.then(res => res.data)
 	},
-	logout: (handleLogout: () => void) => {
+	logout: (header: string | undefined, logoutHandler: () => void) => {
+		if (!header || header?.endsWith('undefined')) {
+			logoutHandler()
+			return Promise.resolve()
+		}
+
 		return axios
 			.post(
 				`${AUTH_URL}/logout`,
 				{},
 				{
+					headers: { Authorization: header },
 					withCredentials: true,
 				}
 			)
 			.then(res => {
-				if (res.status === 204) handleLogout()
+				if (res.status === 204) {
+					logoutHandler()
+				}
+
 				return res.data
 			})
 	},
@@ -67,8 +77,9 @@ export const useOauthAccount = () => {
 
 export const useLogoutAccount = () => {
 	const tokenStore = useToken()
+	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: () => authApi.logout(tokenStore.removeAccessToken),
+		mutationFn: () => authApi.logout(header, tokenStore.removeAccessToken),
 	})
 }
