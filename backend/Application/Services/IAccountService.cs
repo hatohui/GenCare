@@ -26,4 +26,11 @@ public interface IAccountService
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search);
 
     Task<Account> GetAccountByIdAsync(Guid accountId);
+
+    Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken);
+
+    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search);
+
+    Task<Account> GetAccountByIdAsync(Guid accountId);
+
 }

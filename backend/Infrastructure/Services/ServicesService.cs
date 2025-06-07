@@ -26,7 +26,6 @@ public class ServicesService(
             Count = request.Count,
             Payload = new List<ServicePayload>()
         };
-
         foreach (var s in services)
         {
             var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
