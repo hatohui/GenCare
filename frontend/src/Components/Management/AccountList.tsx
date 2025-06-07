@@ -15,7 +15,9 @@ const AccountList = ({}) => {
 		page ? page : 1
 	)
 
-	const pageCount = data?.totalCount ? data.totalCount : 5
+	const pageCount = data?.totalCount
+		? Math.ceil(data.totalCount / itemsPerPage)
+		: 5
 
 	const handleDelete = () => {
 		alert('Account is getting deleted')
@@ -23,7 +25,7 @@ const AccountList = ({}) => {
 
 	return (
 		<>
-			<div className='flex-1 overflow-y-auto scroll-bar'>
+			<div className='flex-1 overflow-y-scroll scroll-bar'>
 				<div className='flex flex-col gap-3 px-2 py-1' role='list'>
 					{data?.accounts && data.accounts.length === 0 ? (
 						<div className='w-full h-full center-all'>No data found.</div>
