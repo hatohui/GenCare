@@ -4,7 +4,7 @@ import SearchBar from '@/Components/Management/SearchBar'
 import ServiceList from '@/Components/Management/ServiceList'
 import { PlusSVG } from '@/Components/SVGs'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
-import { useGetServiceByPage } from '@/Services/service-services'
+import { useServiceByPageAdmin } from '@/Services/service-services'
 import { debounce } from '@/Utils/debounce'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
@@ -21,7 +21,7 @@ const ServicesPage = () => {
 	const [searchParam, setSearchParam] = useState(search)
 	const totalPages = 5
 
-	const { isError, isFetching, data, isLoading } = useGetServiceByPage(
+	const { isError, isFetching, data, isLoading } = useServiceByPageAdmin(
 		currentPage,
 		itemsPerPage
 	)
