@@ -8,7 +8,7 @@ namespace Application.Services;
 
 public interface IServicesService
 {
-    Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request);
+   
     Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request);
     Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken);
     Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken);

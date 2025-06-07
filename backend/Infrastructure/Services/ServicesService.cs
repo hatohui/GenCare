@@ -77,10 +77,7 @@ public class ServicesService(
         return response;
     }
 
-    public Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request)
-    {
-        throw new NotImplementedException();
-    }
+ 
 
     public async Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
     {
@@ -115,7 +112,7 @@ public class ServicesService(
 
         // Validate quyền
         if (role != RoleNames.Admin && role != RoleNames.Admin)
-            throw new UnauthorizedAccessException();
+            throw new AppException(403, "UNAUTHORIZED");
         // Validate not null
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new AppException(400, "Service name cannot be empty.");
