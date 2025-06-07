@@ -277,6 +277,29 @@ public class AccountService
         return await accountRepo.GetAccountByIdAsync(accountId);
     }
 
+    public Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)
+    {
+        var role = JwtHelper.GetRoleFromToken(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+        if (role != RoleNames.Admin) throw new AppException(403, "UNAUTHORIZED");
+        if( request.Id == Guid.Empty) throw new AppException(400, "Guid cannot be empty.");
+        var account = await accountRepo.DeleteAccountByAccountId(request.Id);
+        if(account == null) throw new AppException(401, "Account not found,delete failed.");
+
+        return new DeleteAccountResponse()
+        {
+            Id = account.Id,
+            Email = account.Email,
+            IsDeleted = account.IsDeleted,
+            DeletedBy = accountId.ToString(),
+        };
+    }
+
     public async Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken)
     {
         //check if the user has permission to create staff accounts
