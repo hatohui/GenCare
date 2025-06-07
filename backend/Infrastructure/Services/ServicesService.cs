@@ -169,10 +169,7 @@ public class ServicesService(
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
         if (service == null)
             throw new AppException(404, "Service not found");
-
         service.UpdatedBy = accountId;
-
-
         if (!string.IsNullOrWhiteSpace(request.Name))
             service.Name = request.Name;
 
