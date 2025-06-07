@@ -6,7 +6,7 @@ namespace Application.Services;
 public interface IServicesService
 {
    
-    Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request);
+   
 
     Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request);
 

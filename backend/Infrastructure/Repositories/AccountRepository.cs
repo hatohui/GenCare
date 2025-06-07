@@ -49,13 +49,20 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> DeleteAccountByAccountId(Guid userId)
     {
-       return await dbContext.Accounts 
-            .Where(a => a.Id == userId)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(e => e.IsDeleted, true)
-                .SetProperty(e => e.DeletedBy, userId)) > 0
-            ? await GetByAccountIdAsync(userId) 
-            : null;
+        var account = await dbContext.Accounts
+            .FirstOrDefaultAsync(a => a.Id == userId);
+
+        if (account == null)
+        {
+            return null;
+        }
+
+        account.IsDeleted = true;
+        
+        dbContext.Accounts.Update(account);
+        await dbContext.SaveChangesAsync();
+
+        return account;
     }
 
     public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
