@@ -14,6 +14,25 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
             .Skip((page - 1) * count)
             .Take(count)
             .ToListAsync();
+
+    }
+    public async Task<List<Service>>? SearchServiceIncludeDeletedAsync(int page, int count)
+    {
+        return await dbContext.Services
+            .OrderByDescending(s => s.CreatedAt)
+            .Skip((page - 1) * count)
+            .Take(count)
+            .ToListAsync();
+    }
+    public async Task<int> CountServicesAsync()
+    {
+        return await dbContext.Services
+            .CountAsync(s => !s.IsDeleted);
+    }
+    public async Task<int> CountServicesIncludeDeletedAsync()
+    {
+        return await dbContext.Services
+            .CountAsync();
     }
 
     public async Task<Service?> SearchServiceByIdAsync(Guid idService)
