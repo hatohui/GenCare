@@ -212,7 +212,6 @@ csx/
 
 #frontend
 .vercel
-dev
 
 # Microsoft Azure Emulator
 ecf/

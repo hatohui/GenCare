@@ -1,5 +1,4 @@
-﻿
-using Application.DTOs.Service.Requests;
+﻿using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
 using Application.Helpers;
 using Application.Repositories;
@@ -17,22 +16,31 @@ public class ServicesService(
 {
     public async Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request)
     {
+        if (request.Page <= 0 || request.Count <= 0)
+            throw new AppException(400, "Page and Count must be greater than zero.");
+
         var services = await serviceRepository.SearchServiceAsync(request.Page, request.Count);
-        ViewServiceByPageResponse response = new ViewServiceByPageResponse();
-        response.Page = request.Page;
-        response.Count = request.Count;
-        
-        services.ForEach(s =>
+        var response = new ViewServiceByPageResponse
         {
-            response.Payload!.Add(new ServicePayload()
+            Page = request.Page,
+            Count = request.Count,
+            Payload = new List<ServicePayload>()
+        };
+
+        foreach (var s in services)
+        {
+            var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
+            response.Payload.Add(new ServicePayload
+
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description ?? "",
                 Price = s.Price,
-                ImageUrl = mediaRepository.GetNewestByServiceIdAsync(s.Id).Result?.Url ?? string.Empty
+                ImageUrl = image?.Url ?? string.Empty
             });
-        });
+        }
+
         return response;
     }
 
@@ -40,17 +48,17 @@ public class ServicesService(
     {
         // Validate Id là Guid hợp lệ
         if (!Guid.TryParse(request.Id, out var guidId))
-            throw new AppException(400,"Invalid id format.");
+            throw new AppException(400, "Invalid id format.");
 
         // Gọi repository để lấy dữ liệu
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(guidId);
 
-        // Nếu không tìm thấy thì throw exception hoặc trả về null 
+        // Nếu không tìm thấy thì throw exception hoặc trả về null
         if (service == null)
-            throw new AppException(404,"Service not found.");
+            throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
-        
-        var imUrls = mediaService?.Select(m  =>m.Url).ToList();         
+
+        var imUrls = mediaService?.Select(m => m.Url).ToList();
         return new ViewServiceResponse()
         {
             Id = service.Id.ToString(),
@@ -58,8 +66,7 @@ public class ServicesService(
             Description = service.Description ?? "",
             Price = service.Price,
             ImageUrls = imUrls,
-            CreatedAt = service.CreatedAt,
-            
+            CreatedAt = service.CreatedAt
         };
     }
 
@@ -73,13 +80,13 @@ public class ServicesService(
             throw new UnauthorizedAccessException();
         // Validate not null
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new AppException(400,"Service name cannot be empty.");
+            throw new AppException(400, "Service name cannot be empty.");
         //check exists
         if (await serviceRepository.ExistsByNameAsync(request.Name))
-            throw new AppException(400,"Service name already exists.");
+            throw new AppException(400, "Service name already exists.");
         //price is not negative
         if (request.Price < 0)
-            throw new AppException(400,"Service price cannot be negative.");
+            throw new AppException(400, "Service price cannot be negative.");
         Media? media = null;
         if (!string.IsNullOrWhiteSpace(request.UrlImage))
         {
@@ -107,7 +114,7 @@ public class ServicesService(
             Description = service.Description ?? "",
             Price = service.Price,
             UrlImage = media?.Url ?? "",
-            IsDeleted = service.IsDeleted ,
+            IsDeleted = service.IsDeleted,
             CreatedAt = service.CreatedAt,
             UpdatedAt = service.CreatedAt,
         };
@@ -119,17 +126,16 @@ public class ServicesService(
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         if (role != RoleNames.Admin && role != RoleNames.Admin)
-            throw new AppException(403,"UNAUTHORIZED");
+            throw new AppException(403, "UNAUTHORIZED");
 
         if (request.Id == Guid.Empty)
-            throw new AppException(400,"Guid cannot be empty.");
+            throw new AppException(400, "Guid cannot be empty.");
 
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
         if (service == null)
-            throw new AppException(404,"Service not found");
+            throw new AppException(404, "Service not found");
 
         service.UpdatedBy = accountId;
-        
 
         if (!string.IsNullOrWhiteSpace(request.Name))
             service.Name = request.Name;
@@ -151,7 +157,7 @@ public class ServicesService(
                 {
                     Url = url,
                     ServiceId = service.Id,
-                    Type ="Image of service",
+                    Type = "Image of service",
                     CreatedBy = accountId,
                 };
                 service.Media.Add(media);
@@ -164,46 +170,53 @@ public class ServicesService(
 
         return new UpdateService
         {
-           Id = service.Id,
-           Name = service.Name,
-           Description = service.Description ?? "",
-           Price = service.Price,
-           IsDeleted = service.IsDeleted,
-           CreatedAt = service.CreatedAt,
-           UpdatedAt = service.CreatedAt,
+            Id = service.Id,
+            Name = service.Name,
+            Description = service.Description ?? "",
+            Price = service.Price,
+            IsDeleted = service.IsDeleted,
+            CreatedAt = service.CreatedAt,
+            UpdatedAt = service.CreatedAt,
         };
     }
 
-  
-   public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
-   {
-       var role = JwtHelper.GetRoleFromToken(accessToken);
-       var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
-   
-       if (role != "admin" && role != "staff")
-           throw new UnauthorizedAccessException();
-   
-       if (request.Id == Guid.Empty)
-           throw new ArgumentException("Service id cannot be empty.");
-   
-       var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
-       if (service == null)
-           throw new KeyNotFoundException("Service not found.");
-   
-       // Delete all media linked to this service
-       var medias = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
-       if (medias != null && medias.Any())
-       {
-           await mediaRepository.DeleteAllByServiceIdAsync(request.Id);
-       }
-   
-       // Delete the service (soft delete or hard delete)
-       var success = await serviceRepository.DeleteServiceByIdAsync(request.Id);
-   
-       return new DeleteServiceResponse
-       {
-           Success = success,
-           Message = success ? "Xóa dịch vụ và ảnh thành công" : "Xóa dịch vụ thất bại"
-       };
-   }
+    public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
+    {
+        var role = JwtHelper.GetRoleFromToken(accessToken);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+
+        if (role != "admin" && role != "staff")
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        if (request.Id == Guid.Empty)
+        {
+            throw new ArgumentException("Service id cannot be empty.");
+        }
+
+        var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
+        if (service == null)
+        {
+            throw new KeyNotFoundException("Service not found.");
+        }
+
+        // Delete all media linked to this service
+        var medias = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
+        if (medias != null && medias.Any())
+        {
+            await mediaRepository.DeleteAllByServiceIdAsync(request.Id);
+        }
+
+        // Delete the service (soft delete or hard delete)
+        var success = await serviceRepository.DeleteServiceByIdAsync(request.Id);
+
+        return new DeleteServiceResponse
+        {
+            Success = success,
+            Message = success
+                ? "Xóa dịch vụ và ảnh thành công"
+                : "Xóa dịch vụ thất bại"
+        };
+    }
 }

@@ -2,21 +2,25 @@
 
 public class RateLimitMiddleware(RequestDelegate next)
 {
-    private const int MaxRequests = 100;
-    private int _requestCounter;
-    private DateTime _startTime = DateTime.Now;
+    private const int MaxRequests = 10;
+    private static int _requestCounter;
+    private static DateTime _startTime = DateTime.Now;
+    private static readonly object _lock = new();
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var currentTime = DateTime.Now;
-        var elapsedSeconds = (currentTime - _startTime).TotalSeconds;
-        if (elapsedSeconds >= 10000)
+        lock (_lock)
         {
-            _requestCounter = 0;
-            _startTime = currentTime;
-        }
+            var currentTime = DateTime.Now;
+            var elapsedSeconds = (currentTime - _startTime).TotalSeconds;
+            if (elapsedSeconds >= 1)
+            {
+                _requestCounter = 0;
+                _startTime = currentTime;
+            }
 
-        _requestCounter++;
+            _requestCounter++;
+        }
 
         if (_requestCounter > MaxRequests)
         {
@@ -24,6 +28,7 @@ public class RateLimitMiddleware(RequestDelegate next)
             await context.Response.WriteAsync("Too many requests. Please try again later.");
             return;
         }
+
         await next(context);
     }
 }

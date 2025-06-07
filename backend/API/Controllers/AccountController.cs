@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Account.Requests;
+﻿using Application.DTOs.Account;
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.Helpers;
 using Application.Services;
@@ -28,7 +29,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request)
+    public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request, [FromQuery] string? search)
     {
         if (request.Page < 0)
         {
@@ -38,9 +39,10 @@ public class AccountController(IAccountService accountService) : ControllerBase
         {
             return BadRequest("Count must be greater than 0.");
         }
-        var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count);
+        var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count, search);
         return Ok(result);
     }
+
 
     [HttpPost("staff-create")]
     public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
@@ -56,5 +58,34 @@ public class AccountController(IAccountService accountService) : ControllerBase
         //create
         var result = await accountService.CreateStaffAccountAsync(request, accessToken);
         return Ok(result);
+    }
+    
+    [HttpGet("me")]
+    [ProducesResponseType(typeof(AccountViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize] // Đảm bảo người dùng đã đăng nhập
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var token = AuthHelper.GetAccessToken(HttpContext);
+
+        // Trích xuất thông tin tài khoản từ token
+        var accountId = JwtHelper.GetAccountIdFromToken(token);
+
+        var account = await accountService.GetAccountByIdAsync(accountId);
+
+        var accountViewModel = new AccountViewModel
+        {
+            Id = accountId,
+            FirstName = account.FirstName ?? string.Empty,
+            LastName = account.LastName ?? string.Empty,
+            AvatarUrl = account.AvatarUrl,
+            DateOfBirth = account.DateOfBirth,
+            Email = account.Email,
+            Gender = account.Gender,
+            RoleName = account.Role.Name,
+            IsDeleted = account.IsDeleted
+        };
+
+        return Ok(accountViewModel);
     }
 }

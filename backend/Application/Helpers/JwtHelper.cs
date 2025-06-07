@@ -10,6 +10,7 @@ namespace Application.Helpers
     {
         public static readonly string JwtKey = Environment.GetEnvironmentVariable("JWT_KEY")!;
         public static readonly string JwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")!;
+
         public static readonly string JwtAudience = Environment.GetEnvironmentVariable(
             "JWT_AUDIENCE"
         )!;
@@ -89,14 +90,7 @@ namespace Application.Helpers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString("D")), // Chuyển Guid thành string định dạng chuẩn
                 //.ToString("D"): định dạng Guid thành chuỗi chuẩn (dashed format)
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role?.Name ?? ""),
-                new Claim(ClaimTypes.GivenName, user.FirstName ?? ""),
-                new Claim(ClaimTypes.Surname, user.LastName ?? ""),
-                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth?.ToString() ?? ""),
-                new Claim(ClaimTypes.Gender, user.Gender ? "Male" : "Female"),
-                new Claim(ClaimTypes.Uri, user.AvatarUrl ?? ""),
-                new Claim(ClaimTypes.MobilePhone, user.Phone ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("type", tokenType), // Đánh dấu loại token
             };
@@ -164,8 +158,6 @@ namespace Application.Helpers
 
         }
 
-
-
         /// <summary>
         /// Extract the email from a JWT token.
         /// </summary>
@@ -187,6 +179,7 @@ namespace Application.Helpers
             var principal = ValidateToken(token);
             return principal.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
+
         public static string GetRoleFromAccessToken(string accessToken)
         {
             var principal = ValidateToken(accessToken);
@@ -198,7 +191,6 @@ namespace Application.Helpers
             }
             return roleClaim.Value;
         }
-
 
         /// <summary>
         /// Extract the token type (access or refresh) from a JWT token.
@@ -256,7 +248,6 @@ namespace Application.Helpers
         // }
 
         // Todo: Figure out a way to fetch the account with Id string so that we can verify the user exist for the new access Token
-
 
         /// <summary>
         /// generate the reset password token

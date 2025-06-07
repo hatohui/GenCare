@@ -1,4 +1,10 @@
-import { AccountSVG, CustomerSVG, HomeSVG, MoneySVG } from '@/Components/SVGs'
+import {
+	AccountSVG,
+	CustomerSVG,
+	HomeSVG,
+	MoneySVG,
+	ServiceSVG,
+} from '@/Components/SVGs'
 import { RouterButtonProps } from '@/Components/NavBar/RouterButton'
 
 export type SideNavButtonProp = RouterButtonProps & { svg: React.ReactNode }
@@ -16,4 +22,5 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		svg: <AccountSVG />,
 	},
 	{ label: 'Customers', to: '/dashboard/customers', svg: <CustomerSVG /> },
+	{ label: 'Services', to: '/dashboard/services', svg: <ServiceSVG /> },
 ]
