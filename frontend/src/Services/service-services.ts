@@ -57,9 +57,8 @@ export const samplePayload: Omit<
 const serviceApi = {
 	getByPage: (page: number, count: number) =>
 		axios
-			.get<GetServiceApiByPageResponse>(
+			.get<GetServiceByPageResponse>(
 				`${SERVICE_URL}?Page=${page}&Count=${count}`
-
 			)
 			.then(res => {
 				console.log(res.data)
@@ -94,19 +93,17 @@ const serviceApi = {
 			.then(res => res.data),
 }
 
-
 export const useServiceByPage = (page: number, count: number) => {
 	// const header = useAccessTokenHeader()
 
 	return useQuery({
 		queryKey: ['services', page, count],
 		queryFn: () => serviceApi.getByPage(page, count),
-    placeholderData: keepPreviousData,
+		placeholderData: keepPreviousData,
 	})
 }
 
 export const useServiceById = (id: string) => {
-
 	return useQuery({
 		queryKey: ['service', id],
 		queryFn: () => serviceApi.getById(id),
