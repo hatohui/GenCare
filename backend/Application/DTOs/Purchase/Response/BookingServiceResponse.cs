@@ -7,6 +7,5 @@ using System.Threading.Tasks;
 namespace Application.DTOs.Purchase.Response;
 public record class BookingServiceResponse
 {
-    //public Guid PurchaseId { get; set; }
     public string? message { get; set; }
 }

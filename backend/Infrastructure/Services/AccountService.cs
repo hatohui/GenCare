@@ -9,6 +9,10 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
+using Newtonsoft.Json.Linq;
+using Application.DTOs.Account.Requests;
+using Infrastructure.Repositories;
+using Domain.Common.Constants;
 
 namespace Infrastructure.Services;
 
@@ -17,7 +21,9 @@ public class AccountService
     IAccountRepository accountRepo,
     IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo,
-    IEmailService emailService
+    IEmailService emailService,
+    IDepartmentRepository departmentRepo,
+    IStaffInfoRepository staffInfoRepo
 ) : IAccountService
 {
     public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
@@ -74,7 +80,7 @@ public class AccountService
     public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
         //find user by email
-        var user = await accountRepo.GetByEmailAsync(request.Email);
+        var user = await accountRepo.GetByEmailAsync(request.Email!);
         if (user is null)
         {
             throw new Exception("User not found");
@@ -91,7 +97,7 @@ public class AccountService
         var msg = $"Link to reset your password: {callbackUrl}";
         //send email with reset password link
         await emailService.SendEmailAsync(
-            request.Email,
+            request.Email!,
             "Reset Password",
             msg
         );
@@ -215,7 +221,7 @@ public class AccountService
                 FirstName = payload.GivenName ?? string.Empty,
                 LastName = payload.FamilyName ?? string.Empty,
                 AvatarUrl = payload.Picture ?? string.Empty,
-                PasswordHash = null,
+                PasswordHash = null!,
                 RoleId = role.Id,
                 Role = role,
                 Gender = true,
@@ -270,4 +276,61 @@ public class AccountService
     {
         return await accountRepo.GetAccountByIdAsync(accountId);
     }
+
+    public async Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken)
+    {
+        //check if the user has permission to create staff accounts
+        var role = JwtHelper.GetRoleFromAccessToken(accessToken);
+        if(role == null)
+            throw new Exception("Invalid access token. Role not found.");
+        if (role.ToLower() != RoleNames.Admin.ToLower())
+            throw new Exception("Invalid account to create staff account");
+        //get account id in access token
+        var id = JwtHelper.GetAccountIdFromToken(accessToken);
+        // Check if the account already exists
+        var existingStaff = await accountRepo.GetByEmailAsync(request.AccountRequest!.Email);
+        if (existingStaff != null)
+            throw new UnauthorizedAccessException("Account with this email already exists.");
+        // Create the account
+        Account newAcc = new()
+        {
+            Email = request.AccountRequest.Email,
+            FirstName = request.AccountRequest.FirstName,
+            LastName = request.AccountRequest.LastName,
+            Gender = request.AccountRequest.Gender,
+            Phone = request.AccountRequest.PhoneNumber,
+            DateOfBirth = request.AccountRequest.DateOfBirth,
+            PasswordHash = PasswordHasher.Hash(request.AccountRequest.Password),
+            //RoleId = Guid.Parse(request.AccountRequest.RoleId),
+            Role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.AccountRequest.RoleId))
+                   ?? throw new Exception("Role not found"),
+            CreatedBy = id,
+        };
+        // add account to the database
+        await accountRepo.AddAsync(newAcc);
+
+
+        //check if staff info in request exists
+        if (request.StaffInfoRequest != null)
+        {
+            StaffInfo staffInfo = new()
+            {
+                Degree = request.StaffInfoRequest.Degree,
+                YearOfExperience = request.StaffInfoRequest.YearOfExperience,
+                Biography = request.StaffInfoRequest.Biography == null ? string.Empty : request.StaffInfoRequest.Biography,
+                Department = await departmentRepo.GetDepartmentByIdAsync(Guid.Parse(request.StaffInfoRequest.DepartmentId)) ?? throw new Exception("Department not found"),   
+                Account = newAcc,
+            };
+            //add staff info to database
+            await staffInfoRepo.AddStaffInfoAsync(staffInfo);
+            //add staff info to corresponding account
+            newAcc.StaffInfo = staffInfo;
+        }
+
+        return new StaffAccountCreateResponse()
+        {
+            account = newAcc
+        };
+    }
+
 }
