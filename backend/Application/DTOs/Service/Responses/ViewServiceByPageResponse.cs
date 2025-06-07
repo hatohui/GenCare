@@ -4,7 +4,7 @@ public record class ViewServiceByPageResponse
 {
     public int Page { get; set; }
     public int Count { get; set; }
-    public List<ServicePayload> Payload { get; set; } 
+    public List<ServicePayload>? Payload { get; set; } 
     
 }
 

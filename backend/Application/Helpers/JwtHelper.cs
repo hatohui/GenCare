@@ -155,6 +155,7 @@ namespace Application.Helpers
                 return accountId;
             }
             throw new ArgumentException("Invalid account ID format in token.");
+
         }
 
         /// <summary>

@@ -26,7 +26,6 @@ public class ServicesService(
             Count = request.Count,
             Payload = new List<ServicePayload>()
         };
-
         foreach (var s in services)
         {
             var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
@@ -149,7 +148,7 @@ public class ServicesService(
             service.IsDeleted = request.IsDeleted;
 
         var newMedias = new List<Media>();
-        foreach (var url in request.ImageUrls)
+        foreach (var url in request.ImageUrls!)
         {
             if (!service.Media.Any(m => m.Url == url))
             {

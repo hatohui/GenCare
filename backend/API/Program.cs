@@ -128,6 +128,8 @@ builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServicesService, ServicesService>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 //
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();

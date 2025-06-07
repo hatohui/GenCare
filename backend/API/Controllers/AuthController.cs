@@ -147,7 +147,8 @@ public class AuthController
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("logout")]
+
     public async Task<IActionResult> LogoutAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"];
@@ -189,4 +190,5 @@ public class AuthController
         var response = await accountService.ResetPasswordAsync(request);
         return Ok(response);
     }
+
 }

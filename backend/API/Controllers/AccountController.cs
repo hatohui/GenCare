@@ -43,6 +43,20 @@ public class AccountController(IAccountService accountService) : ControllerBase
         return Ok(result);
     }
 
+
+    [HttpPost("staff-create")]
+    public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
+    {
+        //get access token from header
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+        //check if access token is null or empty
+        if (string.IsNullOrEmpty(accessToken))
+            return Unauthorized("Access token is required.");
+        //create
+        var result = await accountService.CreateStaffAccountAsync(request, accessToken);
+        return Ok(result);
+    }
+    
     [HttpGet("me")]
     [ProducesResponseType(typeof(AccountViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
