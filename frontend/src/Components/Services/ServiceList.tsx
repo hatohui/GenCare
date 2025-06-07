@@ -10,7 +10,6 @@ const ServiceList = () => {
 	const [services, setServices] = useState<GetServiceByPageResponse>({
 		//sample datahere change later
 		payload: samplePayload,
-
 		count: 0,
 	})
 	const { data: serviceData } = useServiceByPage(1, 6)

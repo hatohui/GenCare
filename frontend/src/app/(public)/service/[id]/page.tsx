@@ -6,10 +6,17 @@ import { use } from 'react'
 import { samplePayload } from '@/Services/service-services'
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = use(params)
-	const { data: service } = useServiceById(id)
+	const { data: service, isLoading, error } = useServiceById(id)
+	if (isLoading) {
+		return <div>Loading...</div>
+	}
 
-	const serviceData = samplePayload.find(item => item.id === id) ||
-		service || {
+	if (error) {
+		return <div>Error loading service</div>
+	}
+
+	const serviceData = service ||
+		samplePayload.find(item => item.id === id) || {
 			id: '',
 			name: '',
 			description: '',
