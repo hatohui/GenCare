@@ -4,7 +4,6 @@ import { Suspense } from 'react'
 import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
-import ServiceSearch from '@/Components/Services/ServiceSearch'
 
 export default function Page() {
 	return (

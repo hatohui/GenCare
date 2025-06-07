@@ -16,9 +16,9 @@ const ServiceList = () => {
 	const { data: serviceData } = useServiceByPage(1, 6)
 
 	useEffect(() => {
-		// if (serviceData?.payload) {
-		// 	setServices(serviceData)
-		// }
+		if (serviceData?.payload) {
+			setServices(serviceData)
+		}
 	}, [serviceData])
 
 	return (
