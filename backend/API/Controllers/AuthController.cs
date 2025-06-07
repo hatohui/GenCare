@@ -132,16 +132,16 @@ public class AuthController
         var (accessToken, refreshToken) = await accountService.LoginWithGoogleAsync(payload);
 
         Response.Cookies.Append(
-            "refreshToken",
-            refreshToken,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.Now.AddDays(7),
-                Path = "/"
-            });
+                    "refreshToken",
+                    refreshToken,
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
+                        Expires = DateTimeOffset.Now.AddDays(7),
+                        Path = "/"
+                    });
 
         return Ok(new AccountLoginResponse(accessToken));
     }

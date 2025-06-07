@@ -18,25 +18,39 @@ const authApi = {
 			.then(res => res.data)
 	},
 	login: (data: LoginApi) => {
-		return axiosInstance
-			.post<TokenData>(`${AUTH_URL}/login`, data)
+		return axios
+			.post<TokenData>(`${AUTH_URL}/login`, data, {
+				withCredentials: true,
+			})
 			.then(res => {
 				return res.data
 			})
 	},
 	Oauth: (data: OauthAPI) => {
 		return axiosInstance
-			.post<TokenData>(`${AUTH_URL}/google`, {
-				credential: data.credential,
-			})
+			.post<TokenData>(
+				`${AUTH_URL}/google`,
+				{
+					credential: data.credential,
+				},
+				{
+					withCredentials: true,
+				}
+			)
 			.then(res => res.data)
 	},
 	logout: (header: string | undefined, logoutHandler: () => void) => {
-		return axios
+		if (!header || header?.endsWith('undefined')) {
+			logoutHandler()
+			return Promise.resolve()
+		}
+
+		return axiosInstance
 			.post(
 				`${AUTH_URL}/logout`,
 				{},
 				{
+					headers: { Authorization: header },
 					withCredentials: true,
 				}
 			)

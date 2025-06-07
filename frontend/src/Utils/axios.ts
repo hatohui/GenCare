@@ -1,6 +1,7 @@
 // /app/lib/axios.ts
 import axios from 'axios'
 import { DEFAULT_API_URL } from '@/Constants/API'
+import useToken from '@/Hooks/useToken'
 
 const axiosInstance = axios.create({
 	baseURL: DEFAULT_API_URL,
@@ -17,7 +18,7 @@ axiosInstance.interceptors.response.use(
 
 			try {
 				// Call refresh token API (cookie refresh_token will be sent automatically)
-				await axiosInstance.post(
+				const data = await axiosInstance.post(
 					'/refresh-token',
 					{},
 					{
@@ -25,11 +26,14 @@ axiosInstance.interceptors.response.use(
 					}
 				)
 
+				//set access token
+				useToken().setAccessToken(data.data.accessToken)
+
 				// Re-send the original failed request
 				return axiosInstance(originalRequest)
 			} catch (refreshError) {
 				// Optional: logout the user or redirect to login
-				// window.location.href = '/login'; (if you want to force re-login)
+				window.location.href = '/login' // (if you want to force re-login)
 				return Promise.reject(refreshError)
 			}
 		}
