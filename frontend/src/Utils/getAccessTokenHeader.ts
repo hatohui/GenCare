@@ -10,7 +10,7 @@ export const useAccessTokenHeader = (): string => {
 
 		return `Bearer ${accessToken}`
 	} catch (error) {
-		console.error('Invalid token')
+		console.error(error)
 
 		return ''
 	}
