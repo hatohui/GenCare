@@ -17,14 +17,14 @@ public class EmailService(IConfiguration configuration) : IEmailService
         };
 
         client.Credentials = credential;
-        client.Host = configuration["Email:Smtp:Host"];
-        client.Port = int.Parse(configuration["Email:Smtp:Port"]);
-        client.EnableSsl = bool.Parse(configuration["Email:Smtp:EnableSsl"]);
+        client.Host = configuration["Email:Smtp:Host"]!;
+        client.Port = int.Parse(configuration["Email:Smtp:Port"]!);
+        client.EnableSsl = bool.Parse(configuration["Email:Smtp:EnableSsl"]!);
 
         using var emailMessage = new MailMessage 
         {
             To = { new MailAddress(email) }, 
-            From = new MailAddress(Environment.GetEnvironmentVariable("GMAIL_FROM")), 
+            From = new MailAddress(Environment.GetEnvironmentVariable("GMAIL_FROM")!), 
             Subject = subject,
             Body = message,
             IsBodyHtml = true

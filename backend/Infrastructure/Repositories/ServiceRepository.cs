@@ -16,8 +16,6 @@ public class ServiceRepository(IApplicationDbContext dbContext): IServiceReposit
             .Skip((page - 1) * count)
             .Take(count)
             .ToListAsync();
-
-        
     }
 
     public async Task<Service?> SearchServiceByIdAsync(Guid idService) => await dbContext.Services

@@ -137,17 +137,17 @@ namespace Application.Helpers
         /// </summary>
         /// <param name="token">The JWT token.</param>
         /// <returns>The account ID as a Guid if token is valid; otherwise, throws an exception.</returns>
-      
-        public static Guid GetAccountIdFromToken1(string token)
+
+        public static Guid GetAccountIdFromToken(string token)
         {
             var principal = ValidateToken(token);
             // Thử lấy từ nhiều loại claim phổ biến
             var possibleClaimTypes = new[]
             {
-        JwtRegisteredClaimNames.Sub,
-        "sub",
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    };
+                JwtRegisteredClaimNames.Sub,
+                "sub",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            };
 
             string? accountIdString = null;
             foreach (var type in possibleClaimTypes)
@@ -161,7 +161,7 @@ namespace Application.Helpers
                 return accountId;
             }
             throw new ArgumentException("Invalid account ID format in token.");
-            
+
         }
 
 
@@ -270,21 +270,21 @@ namespace Application.Helpers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             // Set token expiration time
-            var expiration = DateTime.Now.AddMinutes(expiresInMinutes); 
+            var expiration = DateTime.Now.AddMinutes(expiresInMinutes);
 
             // Create JWT token with claims
-            var claims = new[] 
-            {   
+            var claims = new[]
+            {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString("D")),
             new Claim("purpose", "password_reset")
         };
 
             var token = new JwtSecurityToken(
-                issuer: JwtIssuer, 
+                issuer: JwtIssuer,
                 audience: JwtAudience,
                 claims: claims,
-                expires: expiration, 
-                signingCredentials: credentials 
+                expires: expiration,
+                signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -299,15 +299,15 @@ namespace Application.Helpers
         {
             userId = Guid.Empty;
             var tokenHandler = new JwtSecurityTokenHandler();
-       
+
             var tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true, 
+                ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = true, 
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = JwtIssuer, 
-                ValidAudience = JwtAudience, 
+                ValidIssuer = JwtIssuer,
+                ValidAudience = JwtAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtKey))
             };
 

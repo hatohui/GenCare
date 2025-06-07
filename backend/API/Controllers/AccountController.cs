@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
+using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -38,6 +39,22 @@ public class AccountController(IAccountService accountService) : ControllerBase
             return BadRequest("Count must be greater than 0.");
         }
         var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count);
+        return Ok(result);
+    }
+
+    [HttpPost("staff-create")]
+    public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
+    {
+        //check if request is null
+        if (request == null)
+            return BadRequest("Request body cannot be null.");
+        //get access token from header
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+        //check if access token is null or empty
+        if (string.IsNullOrEmpty(accessToken))
+            return Unauthorized("Access token is required.");
+        //create
+        var result = await accountService.CreateStaffAccountAsync(request, accessToken);
         return Ok(result);
     }
 }

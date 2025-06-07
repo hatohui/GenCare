@@ -1,3 +1,4 @@
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
@@ -21,4 +22,6 @@ public interface IAccountService
     Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
+
+    Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken);
 }
