@@ -32,6 +32,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 		const validation = isTokenValid(token)
 
+		console.log(validation)
+
 		if (!validation.valid) {
 			accountStore.removeAccount()
 			tokenStore.removeAccessToken()
