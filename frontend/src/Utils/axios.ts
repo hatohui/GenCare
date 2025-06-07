@@ -26,8 +26,12 @@ axiosInstance.interceptors.response.use(
 					}
 				)
 
-				//set access token
-				useToken().setAccessToken(data.data.accessToken)
+				useToken.getState().setAccessToken(data.data.accessToken)
+
+				originalRequest.headers = originalRequest.headers || {}
+				originalRequest.headers[
+					'Authorization'
+				] = `Bearer ${data.data.accessToken}`
 
 				// Re-send the original failed request
 				return axiosInstance(originalRequest)
