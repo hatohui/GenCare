@@ -131,6 +131,7 @@ namespace Application.Helpers
         /// </summary>
         /// <param name="token">The JWT token.</param>
         /// <returns>The account ID as a Guid if token is valid; otherwise, throws an exception.</returns>
+      
 
         public static Guid GetAccountIdFromToken(string token)
         {

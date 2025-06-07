@@ -15,4 +15,5 @@ public interface IMediaRepository
     Task<List<Media>?> GetAllMediaByServiceIdAsync(Guid serviceId);
 
     Task DeleteAllByServiceIdAsync(Guid serviceId);
+    
 }
