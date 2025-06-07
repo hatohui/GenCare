@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
 	images: {
 		dangerouslyAllowSVG: true,
 	},
+	experimental: {
+		authInterrupts: true,
+	},
 }
 
 export default nextConfig

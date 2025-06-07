@@ -1,13 +1,17 @@
 import useToken from '@/Hooks/useToken'
 
 export const useAccessTokenHeader = (): string => {
-	const store = useToken()
-	const token = store.accessToken
+	const { accessToken } = useToken()
 
-	console.log('token: ', token)
+	try {
+		if (!accessToken) {
+			throw new Error('Invalid or missing access Token')
+		}
 
-	if (!token || typeof token !== 'string') {
-		throw new Error('Access Token is missing or invalid')
+		return `Bearer ${accessToken}`
+	} catch (error) {
+		console.error(error)
+
+		return ''
 	}
-	return `Bearer ${token}`
 }
