@@ -49,6 +49,21 @@
 	display: none;
 }
 
+.scroll-bar::-webkit-scrollbar {
+	width: 6px; /* Ensure it's not too small */
+	display: block;
+}
+
+.scroll-bar::-webkit-scrollbar-track {
+	background: var(--color-accent); /* Remove quotes */
+	border-radius: 3px;
+}
+
+.scroll-bar::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.5); /* Darker thumb so it’s visible */
+	border-radius: 3px;
+}
+
 ::-webkit-scrollbar-track {
 	position: sticky;
 	background: transparent;

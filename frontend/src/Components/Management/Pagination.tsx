@@ -20,7 +20,7 @@ const Pagination = ({
 		<nav aria-label='Pagination' className='flex justify-center mx-6 gap-4'>
 			<motion.button
 				onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-				disabled={currentPage === 1 || isFetching}
+				disabled={isFetching}
 				aria-label='Previous page'
 				whileHover={{ scale: currentPage !== 1 ? 1.05 : 1 }}
 				transition={{ duration: 0.2 }}
@@ -48,7 +48,7 @@ const Pagination = ({
 						transition={{ duration: 0.2 }}
 						disabled={currentPage === pageNumber}
 					>
-						{pageNumber}c
+						{pageNumber}
 					</motion.button>
 				))}
 			</div>
