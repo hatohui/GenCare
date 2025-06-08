@@ -287,9 +287,9 @@ public class AccountService
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         if (role != RoleNames.Admin) throw new AppException(403, "UNAUTHORIZED");
-        if( request.Id == Guid.Empty) throw new AppException(400, "Guid cannot be empty.");
+        if (request.Id == Guid.Empty) throw new AppException(400, "Guid cannot be empty.");
         var account = await accountRepo.DeleteAccountByAccountId(request.Id);
-        if(account == null) throw new AppException(401, "Account not found,delete failed.");
+        if (account == null) throw new AppException(401, "Account not found,delete failed.");
 
         return new DeleteAccountResponse()
         {
@@ -304,16 +304,16 @@ public class AccountService
     {
         //check if the user has permission to create staff accounts
         var role = JwtHelper.GetRoleFromAccessToken(accessToken);
-        if(role == null)
-            throw new Exception("Invalid access token. Role not found.");
+        if (role == null)
+            throw new AppException(401, "Invalid access token. Role not found.");
         if (role.ToLower() != RoleNames.Admin.ToLower())
-            throw new Exception("Invalid account to create staff account");
+            throw new AppException(401, "Invalid account to create staff account.");
         //get account id in access token
         var id = JwtHelper.GetAccountIdFromToken(accessToken);
         // Check if the account already exists
         var existingStaff = await accountRepo.GetByEmailAsync(request.AccountRequest!.Email);
         if (existingStaff != null)
-            throw new UnauthorizedAccessException("Account with this email already exists.");
+            throw new AppException(409, "Account with this email already exists.");
         // Create the account
         Account newAcc = new()
         {
@@ -322,6 +322,7 @@ public class AccountService
             LastName = request.AccountRequest.LastName,
             Gender = request.AccountRequest.Gender,
             Phone = request.AccountRequest.PhoneNumber,
+            AvatarUrl = request.AccountRequest.AvatarUrl,
             DateOfBirth = request.AccountRequest.DateOfBirth,
             PasswordHash = PasswordHasher.Hash(request.AccountRequest.Password),
             //RoleId = Guid.Parse(request.AccountRequest.RoleId),
@@ -334,25 +335,36 @@ public class AccountService
 
 
         //check if staff info in request exists
-        if (request.StaffInfoRequest != null)
+
+        StaffInfo staffInfo = new()
         {
-            StaffInfo staffInfo = new()
-            {
-                Degree = request.StaffInfoRequest.Degree,
-                YearOfExperience = request.StaffInfoRequest.YearOfExperience,
-                Biography = request.StaffInfoRequest.Biography == null ? string.Empty : request.StaffInfoRequest.Biography,
-                Department = await departmentRepo.GetDepartmentByIdAsync(Guid.Parse(request.StaffInfoRequest.DepartmentId)) ?? throw new Exception("Department not found"),   
-                Account = newAcc,
-            };
-            //add staff info to database
-            await staffInfoRepo.AddStaffInfoAsync(staffInfo);
-            //add staff info to corresponding account
-            newAcc.StaffInfo = staffInfo;
-        }
+            Degree = request.StaffInfoRequest.Degree,
+            YearOfExperience = request.StaffInfoRequest.YearOfExperience,
+            Biography = request.StaffInfoRequest.Biography ?? string.Empty,
+            Department = await departmentRepo.GetDepartmentByIdAsync(Guid.Parse(request.StaffInfoRequest.DepartmentId)) ?? throw new Exception("Department not found"),
+            Account = newAcc,
+        };
+        //add staff info to database
+        await staffInfoRepo.AddStaffInfoAsync(staffInfo);
+        //add staff info to corresponding account
+        newAcc.StaffInfo = staffInfo;
+
 
         return new StaffAccountCreateResponse()
         {
-            account = newAcc
+            Id = newAcc.Id.ToString("D"),
+            Role = newAcc.Role.Name,
+            Email = newAcc.Email,
+            FirstName = newAcc.FirstName,
+            LastName = newAcc.LastName,
+            Gender = newAcc.Gender,
+            PhoneNumber = newAcc.Phone,
+            DateOfBirth = newAcc.DateOfBirth ?? default,
+            AvatarUrl = newAcc.AvatarUrl,
+            Degree = newAcc.StaffInfo.Degree,
+            YearOfExperience = newAcc.StaffInfo.YearOfExperience,
+            Biography = newAcc.StaffInfo.Biography,
+            DepartmentName = newAcc.StaffInfo.Department.Name
         };
     }
 
