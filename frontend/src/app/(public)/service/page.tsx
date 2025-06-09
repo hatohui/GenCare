@@ -13,9 +13,9 @@ export default function Page() {
 	return (
 		<section className='relative min-h-screen  text-gray-900'>
 			<div className='relative bg-general shadow-md overflow-hidden'>
-				<div className='mx-auto px-6 py-4 flex items-center justify-between pt-20 '>
+				<div className='mx-auto px-6 py-4 flex items-center justify-around pt-20 '>
 					<SearchBar value={search.value} handleSearch={search.onChange} />
-					<div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between flex-1/15'>
+					<div className='mx-auto px-6 py-4 flex items-center justify-end flex-1/20'>
 						<CartButton />
 					</div>
 				</div>
