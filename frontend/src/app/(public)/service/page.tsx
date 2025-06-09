@@ -5,17 +5,17 @@ import { Suspense } from 'react'
 import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
-// import SearchBar from '@/Components/Management/SearchBar'
-// import useInput from '@/Hooks/Form/useInput'
+import SearchBar from '@/Components/Management/SearchBar'
+import useInput from '@/Hooks/Form/useInput'
 
 export default function Page() {
-	// const { ...search } = useInput('', 'text')
+	const { ...search } = useInput('', 'text')
 	return (
 		<section className='relative min-h-screen  text-gray-900'>
 			<div className='relative bg-general shadow-md overflow-hidden'>
-				<div className='mx-auto px-6 py-4 flex items-center justify-between z-1 pt-20'>
-					{/* <SearchBar value={search.value} handleSearch={search.onChange} /> */}
-					<div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
+				<div className='mx-auto px-6 py-4 flex items-center justify-around pt-20 '>
+					<SearchBar value={search.value} handleSearch={search.onChange} />
+					<div className='mx-auto px-6 py-4 flex items-center justify-end flex-1/20'>
 						<CartButton />
 					</div>
 				</div>
