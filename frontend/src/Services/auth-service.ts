@@ -51,6 +51,7 @@ const authApi = {
 				{},
 				{
 					withCredentials: true,
+					headers: { Authorization: header },
 				}
 			)
 			.then(res => {
