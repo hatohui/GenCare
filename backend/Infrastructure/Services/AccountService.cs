@@ -314,7 +314,7 @@ public class AccountService
         // Check if the account already exists by email
 
         //check in cache
-        var cacheKey = $"account:{request.AccountRequest!.Email}"; // using email as cache key
+        var cacheKey = $"account:{request.AccountRequest!.Email.ToLower()}"; // using email as cache key
         var cachedAccount = await distributedCache.GetStringAsync(cacheKey);
         if (!string.IsNullOrEmpty(cachedAccount))
         {
