@@ -9,10 +9,10 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Newtonsoft.Json.Linq;
 using Application.DTOs.Account.Requests;
-using Infrastructure.Repositories;
 using Domain.Common.Constants;
+using Microsoft.Extensions.Caching.Distributed;
+
 
 namespace Infrastructure.Services;
 
@@ -23,7 +23,8 @@ public class AccountService
     IRoleRepository roleRepo,
     IEmailService emailService,
     IDepartmentRepository departmentRepo,
-    IStaffInfoRepository staffInfoRepo
+    IStaffInfoRepository staffInfoRepo,
+    IDistributedCache distributedCache
 ) : IAccountService
 {
     public async Task<AccountRegisterResponse> RegisterAsync(AccountRegisterRequest request)
@@ -310,10 +311,39 @@ public class AccountService
             throw new AppException(401, "Invalid account to create staff account.");
         //get account id in access token
         var id = JwtHelper.GetAccountIdFromToken(accessToken);
-        // Check if the account already exists
+        // Check if the account already exists by email
+
+        //check in cache
+        var cacheKey = $"account:{request.AccountRequest!.Email}"; // using email as cache key
+        var cachedAccount = await distributedCache.GetStringAsync(cacheKey);
+        if (!string.IsNullOrEmpty(cachedAccount))
+        {
+            // If found in cache, deserialize and return
+            // convert string to Account object
+            var existingAccount = Newtonsoft.Json.JsonConvert.DeserializeObject<Account>(cachedAccount);
+
+            if (existingAccount != null)
+                throw new AppException(409, "Account with this email already exists.");
+        }
+        //check in database
         var existingStaff = await accountRepo.GetByEmailAsync(request.AccountRequest!.Email);
         if (existingStaff != null)
+        {
+            // store the account in cache in 10 minutes
+            // convert Account to string
+            var accountJson = Newtonsoft.Json.JsonConvert.SerializeObject(existingStaff);
+            // set cache with 10 minutes expiration
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            };
+            // set cache
+            await distributedCache.SetStringAsync(cacheKey, accountJson, cacheOptions);
+
             throw new AppException(409, "Account with this email already exists.");
+        }
+
+
         // Create the account
         Account newAcc = new()
         {
@@ -349,6 +379,15 @@ public class AccountService
         //add staff info to corresponding account
         newAcc.StaffInfo = staffInfo;
 
+        // store the new account in cache in 10 minutes
+        await distributedCache.SetStringAsync(
+            cacheKey, 
+            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc), 
+            new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+                }
+        );
 
         return new StaffAccountCreateResponse()
         {
