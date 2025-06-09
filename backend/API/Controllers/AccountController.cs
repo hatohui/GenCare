@@ -43,6 +43,21 @@ public class AccountController(IAccountService accountService) : ControllerBase
         return Ok(result);
     }
 
+
+    [HttpPost]
+    public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
+    {
+        //get access token from header
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+        //check if access token is null or empty
+        if (string.IsNullOrEmpty(accessToken))
+            return Unauthorized("Access token is required.");
+        //create
+        var result = await accountService.CreateStaffAccountAsync(request, accessToken);
+        return Created($"api/accounts/{result.Id}", result);
+        //IActionResult: Ok, BadRequest, Unauthorized, NotFound, etc.
+    }
+
     [HttpGet("me")]
     [ProducesResponseType(typeof(AccountViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -71,4 +86,33 @@ public class AccountController(IAccountService accountService) : ControllerBase
 
         return Ok(accountViewModel);
     }
+
+    /// <summary>
+    ///     Deletes a user account by ID.
+    /// </summary>
+    /// <param name="id">The ID of the account to delete.</param>
+    /// <returns>
+    ///     No content if successful.
+    /// </returns>
+    /// <response code="204">Account successfully deleted.</response>
+    /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
+    /// <response code="403">Forbidden. Only users with Admin role can access this endpoint.</response>
+    /// <response code="404">Not found. Account with the specified ID does not exist.</response>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAccountController(Guid id)
+    {
+        var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
+            ? tokenHeader.Substring(7)
+            : string.Empty;
+        var result = await accountService.DeleteAccountAsync(new DeleteAccountRequest { Id = id }, accessToken);
+        if (result == null) throw new ApplicationException("Delete account failed.");
+        return Ok(result);
+    }
+
 }

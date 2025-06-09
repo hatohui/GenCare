@@ -55,7 +55,7 @@ public class AuthController
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddDays(7),
                 Path = "/"
             });
@@ -88,7 +88,7 @@ public class AuthController
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddDays(7),
                 Path = "/"
             });
@@ -132,13 +132,14 @@ public class AuthController
         var (accessToken, refreshToken) = await accountService.LoginWithGoogleAsync(payload);
 
         Response.Cookies.Append(
+
             "refreshToken",
             refreshToken,
             new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.Now.AddDays(7),
                 Path = "/"
             });
@@ -148,7 +149,6 @@ public class AuthController
 
     [Authorize]
     [HttpPost("logout")]
-
     public async Task<IActionResult> LogoutAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"];
@@ -190,5 +190,4 @@ public class AuthController
         var response = await accountService.ResetPasswordAsync(request);
         return Ok(response);
     }
-
 }

@@ -14,35 +14,69 @@ public class ServicesService(
     IMediaRepository mediaRepository
 ) : IServicesService
 {
-    public async Task<ViewServiceByPageResponse> SearchServiceAsync(ViewServicesByPageRequest request)
+    public async Task<ViewServiceForUserResponse> SearchServiceExcludeDeletedAsync(ViewServicesByPageRequest request)
     {
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
 
         var services = await serviceRepository.SearchServiceAsync(request.Page, request.Count);
-        var response = new ViewServiceByPageResponse
+        int totalCount = await serviceRepository.CountServicesAsync();
+        var response = new ViewServiceForUserResponse()
         {
-            Page = request.Page,
-            Count = request.Count,
-            Payload = new List<ServicePayload>()
+            Total = totalCount,
+            Services = new List<ServicePayLoad>()
         };
-
         foreach (var s in services)
         {
             var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
-            response.Payload.Add(new ServicePayload
-
+            response.Services.Add(new ServicePayLoad()
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description ?? "",
                 Price = s.Price,
-                ImageUrl = image?.Url ?? string.Empty
             });
         }
 
         return response;
     }
+
+    public async Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServicesByPageRequest request)
+    {
+        if (request.Page <= 0 || request.Count <= 0)
+            throw new AppException(400, "Page and Count must be greater than zero.");
+
+        var services = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count);
+        int totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
+        var response = new ViewServiceByPageResponse
+        {
+            TotalCount = totalCount,
+            Services = new List<ServicePayLoadForStaff>()
+        };
+
+        foreach (var s in services)
+        {
+            var image = await mediaRepository.GetAllMediaByServiceIdAsync(s.Id);
+            response.Services.Add(new ServicePayLoadForStaff()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description ?? "",
+                Price = s.Price,
+                ImageUrls = image?.Select(m => m.Url).ToList() ?? new List<string>(),
+                IsDeleted = s.IsDeleted,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                CreatedById = s.CreatedBy.ToString(),
+                DeletedById = s.CreatedBy.ToString(),
+                UpdatedById = s.UpdatedBy.ToString()
+            });
+        }
+
+        return response;
+    }
+
+ 
 
     public async Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
     {
@@ -66,7 +100,7 @@ public class ServicesService(
             Description = service.Description ?? "",
             Price = service.Price,
             ImageUrls = imUrls,
-            CreatedAt = service.CreatedAt
+            CreatedAt = service.CreatedAt,
         };
     }
 
@@ -77,7 +111,7 @@ public class ServicesService(
 
         // Validate quyền
         if (role != RoleNames.Admin && role != RoleNames.Admin)
-            throw new UnauthorizedAccessException();
+            throw new AppException(403, "UNAUTHORIZED");
         // Validate not null
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new AppException(400, "Service name cannot be empty.");
@@ -120,7 +154,7 @@ public class ServicesService(
         };
     }
 
-    public async Task<UpdateService> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
+    public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
@@ -134,9 +168,7 @@ public class ServicesService(
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
         if (service == null)
             throw new AppException(404, "Service not found");
-
         service.UpdatedBy = accountId;
-
         if (!string.IsNullOrWhiteSpace(request.Name))
             service.Name = request.Name;
 
@@ -148,7 +180,7 @@ public class ServicesService(
         if (request.IsDeleted != service.IsDeleted)
             service.IsDeleted = request.IsDeleted;
 
-        var newMedias = new List<Media>();
+        var newMedias = new List<Media?>();
         foreach (var url in request.ImageUrls)
         {
             if (!service.Media.Any(m => m.Url == url))
@@ -164,11 +196,12 @@ public class ServicesService(
                 newMedias.Add(media);
             }
         }
+
         if (newMedias.Any())
             await mediaRepository.AddListOfMediaAsync(newMedias);
         var success = await serviceRepository.UpdateServiceByIdAsync(service);
 
-        return new UpdateService
+        return new UpdateServiceResponse
         {
             Id = service.Id,
             Name = service.Name,
@@ -186,20 +219,14 @@ public class ServicesService(
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         if (role != "admin" && role != "staff")
-        {
             throw new UnauthorizedAccessException();
-        }
 
         if (request.Id == Guid.Empty)
-        {
             throw new ArgumentException("Service id cannot be empty.");
-        }
 
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
         if (service == null)
-        {
             throw new KeyNotFoundException("Service not found.");
-        }
 
         // Delete all media linked to this service
         var medias = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);

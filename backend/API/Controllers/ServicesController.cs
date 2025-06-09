@@ -1,6 +1,8 @@
 ﻿using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
 using Application.Services;
+using Domain.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
@@ -15,16 +17,42 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <returns>Paged result with total count and list of services</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Search([FromQuery] ViewServicesByPageRequest request)
+    public async Task<IActionResult> Search([FromQuery] int page, [FromQuery] int count)
     {
-        var services = await servicesService.SearchServiceAsync(request);
+        var request = new ViewServicesByPageRequest
+        {
+            Page = page,
+            Count = count
+        };
+        var services = await servicesService.SearchServiceExcludeDeletedAsync(request);
         return Ok(services);
     }
 
     /// <summary>
-    /// Get service details by Id.
+    /// Get all services by page, including deleted services.
     /// </summary>
+    /// <param name="request">Pagination parameters (page, count)</param>
+    /// <returns>Paged result with total count and list of services including deleted ones</returns>
+    [HttpGet]
+    [Route("/api/services/all")]
+    [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")] 
+    public async Task<IActionResult> GetAllServices([FromQuery] int page, [FromQuery] int count)
+    {
+        var request = new ViewServicesByPageRequest
+        {
+            Page = page,
+            Count = count
+        };
+    
+        var services = await servicesService.SearchServiceIncludeDeletedAsync(request);
+        return Ok(services);
+    }
+    /// <summary>
+    /// For Bearer ${Access_Token} requirement
+    /// Get service details by Id.
     /// <param name="id">Service Id</param>
+    /// </summary>
     /// <returns>Service details</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ViewServiceResponse), StatusCodes.Status200OK)]
@@ -85,7 +113,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <param name="request">Service update info (including Id)</param>
     /// <returns>Update result</returns>
     [HttpPost("update")]
-    [ProducesResponseType(typeof(UpdateService), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
