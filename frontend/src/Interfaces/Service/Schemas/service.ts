@@ -22,11 +22,16 @@ export type GetServiceWithIdResponse = Service
 export type CreateServiceApiResponse = Service
 export type DeleteServiceApiResponse = Service
 export type UpdateServiceApiResponse = Service
+
 export type GetServiceByPageResponse = {
-	page: number
+	count: number
+	payload: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrl'>[]
+}
+
+export type GetServiceByPageAdminResponse = {
 	count: number
 	payload: Pick<
 		Service,
-		'id' | 'name' | 'description' | 'price' | 'isDeleted'
+		'id' | 'name' | 'description' | 'price' | 'imageUrl' | 'isDeleted'
 	>[]
 }

@@ -128,10 +128,20 @@ builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServicesService, ServicesService>();
-//
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+
+//===========Redis Configuration===========
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = Environment.GetEnvironmentVariable("REDIS_URI")
+        ?? throw new InvalidOperationException("Redis connection string is missing.");
+});
+
+//===========Database Configuration===========
 
 var env = builder.Environment;
 
