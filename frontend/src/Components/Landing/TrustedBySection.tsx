@@ -1,11 +1,10 @@
 'use client'
 
 import { motion } from 'motion/react'
-import FlorageBackground from './FlorageBackground'
 
 export default function TrustedBySection() {
 	return (
-		<section className='relative md:absolute py-10 bg-general text-center flex flex-col items-center justify-center px-6 rounded-[30px] w-3xl max-w-5xl mx-auto top-auto left-1/2 -translate-x-1/2 -translate-y-1/2 '>
+		<section className='relative md:absolute py-10 bg-general  text-center flex flex-col items-center justify-center px-6 rounded-[30px] w-3xl max-w-5xl mx-auto left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-2xl '>
 			<motion.p
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}

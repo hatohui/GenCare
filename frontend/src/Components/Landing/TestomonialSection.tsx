@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 export default function TestimonialsSection() {
 	return (
@@ -9,7 +9,7 @@ export default function TestimonialsSection() {
 				initial={{ opacity: 0, y: 50 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='text-4xl font-bold mb-12'
+				className='text-4xl font-bold mb-12 text-white'
 			>
 				Khách Hàng Nói Gì
 			</motion.h2>

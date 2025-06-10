@@ -1,10 +1,10 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 export default function ServicesSection() {
 	return (
-		<section className='snap-start py-20 bg-gradient-to-b from-white to-general text-center'>
+		<section className='snap-start py-20 bg-gradient-to-b from-white to-main text-center'>
 			<motion.h2
 				initial={{ opacity: 0, y: 50 }}
 				whileInView={{ opacity: 1, y: 0 }}
