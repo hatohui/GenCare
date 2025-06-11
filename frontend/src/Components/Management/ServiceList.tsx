@@ -1,5 +1,5 @@
 import React from 'react'
-import ItemCardHeader from './ItemCardHeader'
+import ItemCardHeader from './AccountListHeader'
 import ItemCard from './ItemCard'
 import { GetServiceByPageAdminResponse } from '@/Interfaces/Service/Schemas/service'
 

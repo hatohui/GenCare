@@ -1,9 +1,9 @@
 import AccountList from '@/Components/Management/AccountList'
 import AddNewButton from '@/Components/Management/AddNewButton'
-import ItemCardHeader from '@/Components/Management/ItemCardHeader'
 import SearchBar from '@/Components/Management/SearchBar'
 import clsx from 'clsx'
 import React, { Suspense } from 'react'
+import AccountListHeader from '@/Components/Management/AccountListHeader'
 
 const AccountPage = () => {
 	return (
@@ -15,17 +15,18 @@ const AccountPage = () => {
 				<div className='w-full'>
 					<h1 className='text-2xl font-bold'>Search</h1>
 					<div className='flex gap-3 grow overflow-scroll'>
-						<SearchBar />
+						<SearchBar waitTime={1000} />
 						<AddNewButton />
 					</div>
 				</div>
 			</div>
 
-			<ItemCardHeader
+			<AccountListHeader
 				label='Họ và Tên'
 				secondaryLabel='Email'
-				thirdLabel='Ngày sinh'
-				fourthLabel='Tác vụ'
+				thirdLabel='Vai trò'
+				fourthLabel='Ngày sinh'
+				fifthLabel='Tác vụ'
 			/>
 
 			<Suspense

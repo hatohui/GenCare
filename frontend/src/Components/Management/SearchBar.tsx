@@ -1,11 +1,18 @@
 'use client'
 
 import { debounce } from '@/Utils/debounce'
+import clsx from 'clsx'
 import { motion } from 'motion/react'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useState, useMemo, useCallback } from 'react'
 
-const SearchBar = () => {
+const SearchBar = ({
+	waitTime = 1000,
+	className = '',
+}: {
+	waitTime?: number
+	className?: string
+}) => {
 	const searchParams = useSearchParams()
 	const search = searchParams.get('search')
 	const [searchParam, setSearchParam] = useState(search)
@@ -30,7 +37,7 @@ const SearchBar = () => {
 		() =>
 			debounce((value: string) => {
 				router.push(pathname + '?' + createQueryString('search', value))
-			}, 1000),
+			}, waitTime),
 		[router, pathname, createQueryString]
 	)
 
@@ -40,7 +47,10 @@ const SearchBar = () => {
 			id='search'
 			placeholder='Search...'
 			value={searchParam ?? ''}
-			className='min-h-[2rem] grow bg-main/10 border-2 text-slate-800 font-light rounded-sm p-2 ring-0 focus:ring-0 outline-none'
+			className={clsx(
+				className,
+				'min-h-[2rem] grow bg-main/10 border-2 text-slate-800 font-light rounded-sm p-2 ring-0 focus:ring-0 outline-none'
+			)}
 			onChange={handleSearch}
 			autoComplete='off'
 			tabIndex={0}

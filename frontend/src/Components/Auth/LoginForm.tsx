@@ -60,7 +60,7 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 
 	return (
 		<motion.div
-			className='flex-col flex items-center pb-5 justify-center w-[500px] rounded-2xl bg-white shadow-lg p-4'
+			className='flex-col z-10 flex items-center pb-5 justify-center w-[500px] rounded-2xl bg-white shadow-lg p-4'
 			initial={{ translateX: -20, opacity: 0 }}
 			animate={{ translateX: 0, opacity: 1 }}
 			transition={{ duration: 1.2, ease: 'easeOut' }}

@@ -5,20 +5,13 @@ import ServiceList from '@/Components/Management/ServiceList'
 import { PlusSVG } from '@/Components/SVGs'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import { useServiceByPageAdmin } from '@/Services/service-services'
-import { debounce } from '@/Utils/debounce'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 const ServicesPage = () => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
-	const router = useRouter()
-	const searchParams = useSearchParams()
-	const pathname = usePathname()
-	const search = searchParams.get('search')
-	const [searchParam, setSearchParam] = useState(search)
 	const totalPages = 5
 
 	const { isError, isFetching, data, isLoading } = useServiceByPageAdmin(
@@ -26,33 +19,9 @@ const ServicesPage = () => {
 		itemsPerPage
 	)
 
-	const createQueryString = useCallback(
-		(name: string, value: string) => {
-			const params = new URLSearchParams(searchParams.toString())
-			params.set(name, value)
-			return params.toString()
-		},
-		[searchParams]
-	)
-
 	//delete
 	const handleDelete = () => {
 		alert('Account is getting deleted')
-	}
-
-	//debounce query search
-	const debouncedPush = useMemo(
-		() =>
-			debounce((value: string) => {
-				router.push(pathname + '?' + createQueryString('search', value))
-			}, 1000),
-		[router, pathname, createQueryString]
-	)
-
-	//handle search
-	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSearchParam(event.target.value)
-		debouncedPush(event.target.value)
 	}
 
 	if (isError)
@@ -67,11 +36,7 @@ const ServicesPage = () => {
 				<div className='w-full'>
 					<h1 className='text-2xl font-bold'>Search</h1>
 					<div className='flex gap-3 grow overflow-scroll'>
-						<SearchBar
-							value={searchParam ?? ''}
-							handleSearch={handleSearch}
-							aria-label='Search accounts'
-						/>
+						<SearchBar />
 						<motion.button
 							className='rounded-[30px] z-50 drop-shadow-smt cursor-pointer flex center-all gap-2 border px-3'
 							tabIndex={0}

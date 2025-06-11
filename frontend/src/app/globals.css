@@ -34,6 +34,10 @@
 	.itemCardButton {
 		@apply py-2 z-50 px-4 opacity-75 rounded-[30px] hover:scale-105 transition duration-200 border ease-in;
 	}
+
+	.secondary-item-card-button {
+		@apply items-center text-sm text-slate-700 font-light truncate;
+	}
 }
 
 /*  */

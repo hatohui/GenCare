@@ -39,6 +39,7 @@ const AccountList = ({}) => {
 								secondaryLabel={account.email}
 								status={account.isDeleted ? 'FAILED' : 'SUCCESS'}
 								thirdLabel={account.dateOfBirth}
+								fourthLabel={account.role}
 								path='/accounts/'
 								handleDelete={handleDelete}
 							/>
@@ -57,12 +58,14 @@ const AccountList = ({}) => {
 				</div>
 			</div>
 
-			<Pagination
-				currentPage={page}
-				isFetching={isFetching}
-				setCurrentPage={setPage}
-				totalPages={pageCount}
-			/>
+			<div className='center-all'>
+				<Pagination
+					currentPage={page}
+					isFetching={isFetching}
+					setCurrentPage={setPage}
+					totalPages={pageCount}
+				/>
+			</div>
 		</>
 	)
 }
