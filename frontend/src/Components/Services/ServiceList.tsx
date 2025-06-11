@@ -31,7 +31,7 @@ const ServiceList = () => {
 						delay: index * 0.15,
 						duration: 0.5,
 					}}
-					className=' rounded-2xl p-2 duration-300'
+					className=' rounded-[30px] p-2 duration-300'
 				>
 					<ServiceCard {...item} />
 				</motion.div>

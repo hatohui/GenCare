@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { ServiceCardProps } from './ServiceCard'
 
 export default function ServiceDetail({
+	id,
 	name,
 	price,
 	description,

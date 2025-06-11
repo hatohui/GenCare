@@ -5,8 +5,8 @@ import { Suspense } from 'react'
 import { LoadingSkeleton } from '@/Components/Skeletons'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
-import SearchBar from '@/Components/Management/SearchBar'
 import useInput from '@/Hooks/Form/useInput'
+import SearchBar from '@/Components/Management/SearchBar'
 
 export default function Page() {
 	const { ...search } = useInput('', 'text')
@@ -22,9 +22,7 @@ export default function Page() {
 			</div>
 
 			<div className=' max-w-7xl mx-auto px-6 py-8'>
-				<h2 className='text-2xl font-bold text-gray-800 mb-6'>
-					Dịch Vụ Nổi Bật
-				</h2>
+				<h2 className='text-2xl font-bold text-main mb-6'>Dịch Vụ Nổi Bật</h2>
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
 					<Suspense fallback={<LoadingSkeleton />}>
 						<ServiceList />

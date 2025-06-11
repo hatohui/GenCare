@@ -26,7 +26,8 @@ export default function TestimonialsSection() {
 								😊
 							</div>
 							<p className='text-gray-600 text-sm mb-2'>
-								"Dịch vụ tuyệt vời! Tôi cảm thấy được lắng nghe và hỗ trợ."
+								&quot;Dịch vụ tuyệt vời! Tôi cảm thấy được lắng nghe và hỗ
+								trợ.&quot;
 							</p>
 							<div className='font-bold'>Khách hàng {i + 1}</div>
 						</motion.div>
