@@ -38,7 +38,7 @@ const SearchBar = ({
 			debounce((value: string) => {
 				router.push(pathname + '?' + createQueryString('search', value))
 			}, waitTime),
-		[router, pathname, createQueryString]
+		[router, pathname, createQueryString, waitTime]
 	)
 
 	return (

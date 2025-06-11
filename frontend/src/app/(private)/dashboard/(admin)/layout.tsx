@@ -7,8 +7,6 @@ import { ADMIN_TEAM } from '@/Constants/Management'
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const { data } = useAccountStore()
 
-	console.log('data in dashboard statistic: ', data)
-
 	if (!data?.account.role || !ADMIN_TEAM.includes(data.account.role)) {
 		forbidden()
 	}

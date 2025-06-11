@@ -6,7 +6,7 @@ import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import { useGetAccountsByPage } from '@/Services/account-service'
 import Pagination from './Pagination'
 
-const AccountList = ({}) => {
+const AccountList = () => {
 	const [page, setPage] = useState<number>(1)
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
 
@@ -47,7 +47,7 @@ const AccountList = ({}) => {
 					)}
 					{(isFetching || isLoading) && (
 						<div className='h-full center-all w-full animate-pulse'>
-							Fetching your data...
+							Đang tải dữ liệu...
 						</div>
 					)}
 					{isError && (

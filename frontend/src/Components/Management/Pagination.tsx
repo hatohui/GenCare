@@ -39,7 +39,9 @@ const Pagination = ({
 
 			<div className='flex gap-2 select-none'>
 				{getPageNumbers(totalPages, currentPage).map((page, idx) => (
-					<Fragment key={idx}>
+					<Fragment
+						key={typeof page === 'number' ? `page-${page}` : `ellipsis-${idx}`}
+					>
 						{typeof page === 'number' ? (
 							<motion.button
 								onClick={() => setCurrentPage(page)}
