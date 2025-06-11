@@ -13,12 +13,8 @@ import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
  * @requires header - access-token
  * @returns {200} Success response status
  */
-export type GetAccountByPageRequest = {
-	page: number
-	count: number
-}
-
 export type GetAccountByPageResponse = {
+	totalCount: number
 	accounts: Account[]
 }
 

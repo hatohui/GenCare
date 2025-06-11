@@ -34,6 +34,10 @@
 	.itemCardButton {
 		@apply py-2 z-50 px-4 opacity-75 rounded-[30px] hover:scale-105 transition duration-200 border ease-in;
 	}
+
+	.secondary-item-card-button {
+		@apply items-center text-sm text-slate-700 font-light truncate;
+	}
 }
 
 /*  */
@@ -47,6 +51,21 @@
 	opacity: 0;
 	background: transparent;
 	display: none;
+}
+
+.scroll-bar::-webkit-scrollbar {
+	width: 6px; /* Ensure it's not too small */
+	display: block;
+}
+
+.scroll-bar::-webkit-scrollbar-track {
+	background: var(--color-accent); /* Remove quotes */
+	border-radius: 3px;
+}
+
+.scroll-bar::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.5); /* Darker thumb so it’s visible */
+	border-radius: 3px;
 }
 
 ::-webkit-scrollbar-track {

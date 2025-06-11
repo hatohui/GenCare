@@ -11,7 +11,7 @@ const ACCOUNT_URL = `${DEFAULT_API_URL}/account`
 
 const accountApi = {
 	getByPage: (header: string, count: number, page: number) => {
-		const queryUrl = `${ACCOUNT_URL}s?page=${page}&count=${count}`
+		const queryUrl = `${ACCOUNT_URL}s?page=${page - 1}&count=${count}`
 
 		return axios
 			.get<GetAccountByPageResponse>(queryUrl, {

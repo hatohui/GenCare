@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
 import useToken from '@/Hooks/useToken'
-import { forbidden, useRouter } from 'next/navigation'
-import { MANAGEMENT_TEAM } from '@/Constants/Management'
+import { useRouter } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { isTokenValid } from '@/Utils/isTokenValid'
 
@@ -56,10 +55,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		const { decodedToken } = validation
 
 		accountStore.setAccount(decodedToken)
-
-		if (!MANAGEMENT_TEAM.includes(decodedToken.account.role)) {
-			forbidden()
-		}
 
 		setIsLoading(false)
 	}, [token, isClient, router])
