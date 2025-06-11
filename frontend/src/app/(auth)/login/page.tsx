@@ -2,6 +2,7 @@
 
 import LoginForm from '@/Components/Auth/LoginForm'
 import LoadingPage from '@/Components/Loading'
+import { REDIRECT_AFTER_LOGIN } from '@/Constants/Auth'
 import useToken from '@/Hooks/useToken'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
@@ -27,7 +28,7 @@ export default function Login() {
 			onSuccess: data => {
 				tokenStore.setAccessToken(data.accessToken)
 				setFormError('')
-				router.push('/dashboard')
+				router.push(REDIRECT_AFTER_LOGIN)
 			},
 			onError: error => {
 				const err = error as AxiosError<ApiErrorResponse>
@@ -46,6 +47,7 @@ export default function Login() {
 	return (
 		<>
 			<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4'>
+				<div className='absolute top-0 left-0 full-screen florageBackground' />
 				<LoginForm handleLogin={handleLogin} formError={formError} />
 			</div>
 		</>

@@ -12,6 +12,7 @@ import LoadingPage from '@/Components/Loading'
 import { AxiosError } from 'axios'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import useToken from '@/Hooks/useToken'
+import { REDIRECT_AFTER_LOGIN } from '@/Constants/Auth'
 
 const Register = () => {
 	const router = useRouter()
@@ -30,12 +31,10 @@ const Register = () => {
 			password: formData.password,
 		}
 
-		console.log(formData)
-
 		registerMutation.mutate(apiData, {
 			onSuccess: data => {
 				tokenStore.setAccessToken(data.accessToken)
-				router.push('/dashboard')
+				router.push(REDIRECT_AFTER_LOGIN)
 			},
 
 			onError: error => {
