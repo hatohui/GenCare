@@ -80,7 +80,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
             DateOfBirth = account.DateOfBirth,
             Email = account.Email,
             Gender = account.Gender,
-            RoleName = account.Role.Name,
+            Role = account.Role,
             IsDeleted = account.IsDeleted
         };
 
