@@ -4,12 +4,12 @@ import { motion } from 'motion/react'
 
 export default function TestimonialsSection() {
 	return (
-		<section className='snap-start py-20 bg-gradient-to-t from-main to-secondary text-center'>
+		<section className='py-20 bg-gradient-to-b from-general/40 to-main text-center'>
 			<motion.h2
 				initial={{ opacity: 0, y: 50 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='text-4xl font-bold mb-12 text-white'
+				className='text-4xl font-bold mb-12 text-secondary'
 			>
 				Khách Hàng Nói Gì
 			</motion.h2>

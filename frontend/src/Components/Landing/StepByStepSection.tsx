@@ -9,11 +9,11 @@ export default function ProcessSteps() {
 				initial={{ opacity: 0, y: 50 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='text-4xl font-bold mb-12'
+				className='text-4xl font-bold py-5'
 			>
 				Quy Trình Kiểm Tra Sức Khỏe Tại GenCare
 			</motion.h2>
-			<div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-6'>
+			<div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-6 py-6'>
 				{[
 					{
 						step: '1',

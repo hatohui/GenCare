@@ -1,9 +1,8 @@
 'use client'
 
 import BlogSection from '@/Components/Landing/Blogsection'
+import FooterSection from '@/Components/Landing/Footer'
 import LandingPart from '@/Components/Landing/LandingPart'
-import FooterSection from '@/Components/Landing/PrivacySectioni'
-import PrivacySection from '@/Components/Landing/PrivacySectioni'
 import ServicesSection from '@/Components/Landing/ServicesSection'
 import ProcessSteps from '@/Components/Landing/StepByStepSection'
 import TestimonialsSection from '@/Components/Landing/TestomonialSection'
