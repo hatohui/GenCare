@@ -14,5 +14,5 @@ public class Feedback
 
     public Guid CreatedBy { get; set; }
 
-    public  Service Service { get; set; } = null!;
+    public Service Service { get; set; } = null!;
 }

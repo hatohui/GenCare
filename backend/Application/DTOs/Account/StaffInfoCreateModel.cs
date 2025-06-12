@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.DTOs.Account;
 
-namespace Application.DTOs.Account;
 public class StaffInfoCreateModel
 {
     public string Degree { get; set; } = null!;
