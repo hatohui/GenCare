@@ -3,15 +3,24 @@ import {
 	GetAccountByIdResponse,
 	GetAccountByPageResponse,
 } from '@/Interfaces/Account/Schema/account'
+import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
-const ACCOUNT_URL = `${DEFAULT_API_URL}/account`
+const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 
 const accountApi = {
+	getMe: (header: string) => {
+		const queryUrl = `${ACCOUNT_URL}/me`
+		return axios
+			.get<GetAccountByIdResponse>(queryUrl, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
 	getByPage: (header: string, count: number, page: number) => {
-		const queryUrl = `${ACCOUNT_URL}s?page=${page - 1}&count=${count}`
+		const queryUrl = `${ACCOUNT_URL}?page=${page - 1}&count=${count}`
 
 		return axios
 			.get<GetAccountByPageResponse>(queryUrl, {
@@ -28,6 +37,15 @@ const accountApi = {
 			})
 			.then(res => res.data)
 	},
+}
+
+export const useGetMe = () => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['me'],
+		queryFn: () => accountApi.getMe(header),
+	})
 }
 
 export const useGetAccountsByPage = (count: number, page: number) => {

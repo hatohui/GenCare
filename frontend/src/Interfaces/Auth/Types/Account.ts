@@ -1,6 +1,12 @@
+export type Role = {
+	id: string
+	name: string
+	description: string
+}
+
 export type Account = {
 	id: string
-	role: string
+	role: Role
 	email: string
 	firstName: string
 	lastName: string
