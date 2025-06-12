@@ -12,51 +12,83 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     {
         var birthControl = await birthControlRepository.GetBirthControlAsync(birthControlId);
         
+        var menstrualStart = birthControl.StartDate;
+        var menstrualEnd = birthControl.StartDate.AddDays(4); 
+        
+        var firstSafeStart = birthControl.StartDate;
+        var firstSafeEnd = birthControl.StartUnsafeDate.AddDays(-1);
 
+        var secondSafeStart = birthControl.EndUnsafeDate.AddDays(1);
+        var secondSafeEnd = birthControl.EndDate;
         return new ViewBirthControlResponse
         {
             StartDate = birthControl.StartDate,
             EndDate = birthControl.EndDate,
-            StartSafeDate = birthControl.StartSafeDate,
-            EndSafeDate = birthControl.EndSafeDate,
+            
+            MenstrualStartDate = menstrualStart,
+            MenstrualEndDate = menstrualEnd,
+
             StartUnsafeDate = birthControl.StartUnsafeDate,
             EndUnsafeDate = birthControl.EndUnsafeDate,
+
+            StartSafeDate = firstSafeStart,
+            EndSafeDate= firstSafeEnd,
+
+            SecondSafeStart = secondSafeStart,
+            SecondSafeEnd = secondSafeEnd
         };
     }
 
     public async Task<CreateBirthControlResponse> AddBirthControlAsync(CreateBirthControlRequest request)
     {
-        var accountId  = await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId);
+        var accountId = await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId);
+
         if (request.StartDate > request.EndDate)
         {
             throw new ArgumentException("Start date cannot be after end date.");
         }
-        if(request.StartDate < DateTime.UtcNow)
+        if (request.StartDate < DateTime.UtcNow)
         {
             throw new ArgumentException("Start date cannot be in the past.");
         }
-        var startDate = request.StartDate.Date;
-        var endDate = request.EndDate?.Date ?? startDate.AddDays(27); // Tổng 28 ngày
 
-        var startUnsafeDate = startDate.AddDays(9);   // ngày 10
-        var endUnsafeDate = startDate.AddDays(16);    // ngày 17
+        // Convert to Unspecified to avoid PostgreSQL timestamp type error
+        DateTime ToUnspecified(DateTime dt) => DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
 
-        var startSafeDate = startDate;                // ngày 1
-        var endFirstSafeDate = startDate.AddDays(8);  // ngày 9
+        var startDate = ToUnspecified(request.StartDate.Date);
+        var endDate = ToUnspecified(request.EndDate?.Date ?? request.StartDate.Date.AddDays(27)); // 28 ngày
 
-        var startSecondSafeDate = startDate.AddDays(17); // ngày 18
-        var endSafeDate = endDate;                        // ngày 28
+        var menstrualStart = startDate;
+        var menstrualEnd = ToUnspecified(startDate.AddDays(4));
+
+        var startUnsafeDate = ToUnspecified(startDate.AddDays(9));
+        var endUnsafeDate = ToUnspecified(startDate.AddDays(16));
+
+        var startSafeDate = ToUnspecified(menstrualEnd.AddDays(1));
+        var endFirstSafeDate = ToUnspecified(startUnsafeDate.AddDays(-1));
+
+        var startSecondSafeDate = ToUnspecified(endUnsafeDate.AddDays(1));
+        var endSafeDate = endDate;
 
         var birthControl = new BirthControl
         {
             AccountId = request.AccountId,
+
             StartDate = startDate,
             EndDate = endDate,
-            StartSafeDate = request.StartSafeDate,
-            EndSafeDate = request.EndSafeDate,
-            StartUnsafeDate = request.StartUnsafeDate,
-            EndUnsafeDate = request.EndUnsafeDate
+
+            StartSafeDate = startSafeDate,
+            EndSafeDate = endSafeDate,
+
+            StartUnsafeDate = startUnsafeDate,
+            EndUnsafeDate = endUnsafeDate
         };
-        
+
+        await birthControlRepository.AddBirthControlAsync(birthControl);
+        return new CreateBirthControlResponse
+        {
+            Success = true,
+            Message = "Birth control added successfully.",
+        };
     }
 }
