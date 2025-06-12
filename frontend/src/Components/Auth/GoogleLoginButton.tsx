@@ -49,10 +49,11 @@ export default function GoogleLoginButton({
 	}, [])
 
 	return (
-		<div
-			id='google-signin-button'
-			className={clsx('w-full', className)}
-			data-client-id={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-		/>
+		<div className={clsx('w-full', className)}>
+			<div
+				id='google-signin-button'
+				data-client-id={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+			/>
+		</div>
 	)
 }

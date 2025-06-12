@@ -1,6 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿namespace Application.DTOs.Account.Responses;
 
-namespace Application.DTOs.Account.Responses;
 public class StaffAccountCreateResponse
 {
     public string Id { get; set; } = null!;

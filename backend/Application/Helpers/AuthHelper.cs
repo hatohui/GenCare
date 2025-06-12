@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 
 namespace Application.Helpers;
+
 public static class AuthHelper
 {
     /// <summary>

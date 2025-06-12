@@ -1,18 +1,18 @@
 using System.Net;
 using Application.DTOs.Account;
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
+using Application.DTOs.Role;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Application.DTOs.Account.Requests;
-using Domain.Common.Constants;
 using Microsoft.Extensions.Caching.Distributed;
-
 
 namespace Infrastructure.Services;
 
@@ -246,19 +246,25 @@ public class AccountService
         return (accessToken, refreshToken);
     }
 
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request)
     {
-        var skip = page * count;
-        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
-        var totalCount = await accountRepo.GetTotalAccountCountAsync(search);
+        // Correct paging logic: (Page - 1) * Count
+        var skip = (request.Page - 1) * request.Count;
 
-        var result = new GetAccountByPageResponse
+        // Now passing the correct skip value and other filters to the repository
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, request.Count, request.Search, request.Role, request.Active);
+        var totalCount = await accountRepo.GetTotalAccountCountAsync(request.Search, request.Role, request.Active);
+
+        return new GetAccountByPageResponse
         {
-            Accounts = accounts.ConvertAll
-            (a => new AccountViewModel
+            Accounts = accounts.ConvertAll(a => new AccountViewModel
             {
                 Id = a.Id,
-                Role= a.Role,
+                Role = new RoleViewModel
+                {
+                    Name = a.Role.Name,
+                    Description = a.Role.Description
+                },
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
@@ -266,21 +272,14 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-            }
-            ),
+            }),
             TotalCount = totalCount
         };
-        return result;
     }
 
     public async Task<Account> GetAccountByIdAsync(Guid accountId)
     {
         return await accountRepo.GetAccountByIdAsync(accountId);
-    }
-
-    public Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)
@@ -343,7 +342,6 @@ public class AccountService
             throw new AppException(409, "Account with this email already exists.");
         }
 
-
         // Create the account
         Account newAcc = new()
         {
@@ -363,7 +361,6 @@ public class AccountService
         // add account to the database
         await accountRepo.AddAsync(newAcc);
 
-
         //check if staff info in request exists
 
         StaffInfo staffInfo = new()
@@ -381,12 +378,12 @@ public class AccountService
 
         // store the new account in cache in 10 minutes
         await distributedCache.SetStringAsync(
-            cacheKey, 
-            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc), 
+            cacheKey,
+            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc),
             new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-                }
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            }
         );
 
         return new StaffAccountCreateResponse()
@@ -407,4 +404,46 @@ public class AccountService
         };
     }
 
+    public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
+    {
+        // Get account details
+        var account = await accountRepo.GetAccountByIdAsync(accountId);
+        if (account == null)
+        {
+            throw new Exception("Account not found.");
+        }
+
+        // Get role information
+        var role = await roleRepo.GetRoleByIdAsync(account.RoleId);
+        if (role == null)
+        {
+            throw new Exception("Role not found.");
+        }
+
+        // Get staff info (if exists)
+        var staffInfo = await staffInfoRepo.GetStaffInfoByAccountIdAsync(accountId);
+
+        // Prepare profile response
+        var profile = new ProfileViewModel
+        {
+            Id = account.Id,
+            Email = account.Email,
+            FirstName = account.FirstName ?? string.Empty,
+            LastName = account.LastName ?? string.Empty,
+            Gender = account.Gender,
+            DateOfBirth = account.DateOfBirth,
+            AvatarUrl = account.AvatarUrl,
+            IsDeleted = account.IsDeleted,
+            Role = new RoleViewModel
+            {
+                Name = role.Name,
+                Description = role.Description
+            },
+            Degree = staffInfo?.Degree,
+            YearOfExperience = staffInfo?.YearOfExperience,
+            Biography = staffInfo?.Biography
+        };
+
+        return profile;
+    }
 }

@@ -58,30 +58,55 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         }
 
         account.IsDeleted = true;
-        
+
         dbContext.Accounts.Update(account);
         await dbContext.SaveChangesAsync();
 
         return account;
     }
 
-    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take)
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int pageSize, string? search, string? role, bool? active)
     {
-        return await dbContext.Accounts
-            .Include(a => a.Role)
-            .OrderBy(a => a.FirstName)
-            .Skip(skip)
-            .Take(take)
-            .ToListAsync();
+        var query = dbContext.Accounts.Include(a => a.Role).AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(a => a.Email.Contains(search) || a.FirstName.Contains(search) || a.LastName.Contains(search));
+        }
+
+        if (!string.IsNullOrEmpty(role))
+        {
+            query = query.Where(a => a.Role.Name.Contains(role));
+        }
+
+        if (active.HasValue)
+        {
+            query = query.Where(a => a.IsDeleted != active.Value);
+        }
+
+        return await query.OrderBy(a => a.FirstName)
+                          .Skip(skip)
+                          .Take(pageSize)
+                          .ToListAsync();
     }
 
-    public async Task<int> GetTotalAccountCountAsync(string? search)
+    public async Task<int> GetTotalAccountCountAsync(string? search, string? role, bool? active)
     {
         var query = dbContext.Accounts.AsQueryable();
 
         if (!string.IsNullOrEmpty(search))
         {
             query = query.Where(a => a.Email.Contains(search) || a.FirstName.Contains(search) || a.LastName.Contains(search));
+        }
+
+        if (!string.IsNullOrEmpty(role))
+        {
+            query = query.Where(a => a.Role.Name.Contains(role));
+        }
+
+        if (active.HasValue)
+        {
+            query = query.Where(a => a.IsDeleted != active.Value);
         }
 
         return await query.CountAsync();
