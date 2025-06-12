@@ -1,13 +1,13 @@
 import React from 'react'
-import ItemCardHeader from './ItemCardHeader'
+import ItemCardHeader from './AccountListHeader'
 import ItemCard from './ItemCard'
-import { GetServiceByPageResponse } from '@/Interfaces/Service/Schemas/service'
+import { GetServiceByPageAdminResponse } from '@/Interfaces/Service/Schemas/service'
 
 const ServiceList = ({
 	data,
 	handleDelete,
 }: {
-	data: GetServiceByPageResponse
+	data: GetServiceByPageAdminResponse
 	handleDelete: (id: string) => void
 }) => {
 	return (

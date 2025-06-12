@@ -11,7 +11,8 @@ export type ItemCardProps = {
 	id: string
 	label: string
 	status?: Status
-	thirdLabel: string | Date
+	thirdLabel?: string | Date
+	fourthLabel?: string
 	path: string
 	delay: number
 	secondaryLabel: string
@@ -25,6 +26,7 @@ const ItemCard = ({
 	delay,
 	path = '/',
 	thirdLabel = '00/00/0000',
+	fourthLabel = '',
 	secondaryLabel = 'aaa',
 	handleDelete,
 }: ItemCardProps) => {
@@ -61,7 +63,7 @@ const ItemCard = ({
 	return (
 		<motion.button
 			id={id}
-			className='bg-gradient-to-r border border-white hover:border-teal-300 from-white to-general w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center rounded-[30px]'
+			className='bg-gradient-to-r px-4 py-2 border border-white hover:border-teal-300 from-white to-general w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center rounded-[30px] relative overflow-hidden'
 			aria-label={`Item card for ${label}`}
 			onClick={() => router.push(`${path}/${id}`)}
 			initial={{ translateY: -40, opacity: 0 }}
@@ -69,8 +71,11 @@ const ItemCard = ({
 			transition={{ delay: delay / 15, type: 'spring' }}
 			tabIndex={0}
 		>
+			{/* Background overlay */}
 			<div className='absolute inset-0 opacity-30 asfaltBackground pointer-events-none' />
-			<div className='flex flex-1 items-center gap-3 text-shadow-sm p-3'>
+
+			{/* 1. Status + Label */}
+			<div className='flex items-center gap-3 flex-3/12'>
 				<div
 					className={clsx(
 						'rounded-full size-4 transition-all animate-pulse duration-300',
@@ -80,32 +85,39 @@ const ItemCard = ({
 					role='status'
 					aria-label={`Status: ${status}`}
 				/>
-				<p className='font-semibold truncate text-slate-900'>{label}</p>
+				<p className='font-semibold text-sm truncate text-slate-900'>{label}</p>
 			</div>
 
-			<p className='hidden text-sm flex-1 sm:block text-slate-700 text-left truncate font-light'>
+			{/* 2. Secondary Label */}
+			<div className='secondary-item-card-button hidden flex-3/12 text-left sm:flex'>
 				{secondaryLabel}
-			</p>
+			</div>
 
-			<div className='xl:justify-center items-center flex justify-end gap-2 flex-1'>
-				<p className='truncate text-slate-950 text-left flex-1 font-mono hidden xl:block'>
-					{thirdLabel}
-				</p>
-				<div className='flex gap-2 p-3 justify-end'>
-					<div
-						className='itemCardButton bg-gradient-to-r from-amber-300 to-amber-400 hover:shadow-[0_0_15px_rgba(253,224,71,0.7)]'
-						onClick={handleEditFunc}
-						tabIndex={1}
-					>
-						<PencilSVG className='size-5 text-violet-950' />
-					</div>
-					<div
-						className='itemCardButton bg-gradient-to-r from-red-400 to-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
-						onClick={handleDeleteFunc}
-						tabIndex={1}
-					>
-						<TrashCanSVG className='size-5 text-white' />
-					</div>
+			{/* 3. Fixed "Role" Text */}
+			<div className='secondary-item-card-button hidden justify-center flex-1/12 xl:flex'>
+				{fourthLabel}
+			</div>
+
+			{/* 4. Third Label */}
+			<div className='secondary-item-card-button hidden justify-center flex-2/12 xl:flex'>
+				{thirdLabel}
+			</div>
+
+			{/* 5. Action Buttons */}
+			<div className='flex items-center justify-end flex-1/12 gap-2'>
+				<div
+					className='itemCardButton bg-gradient-to-r from-amber-300 to-amber-400 hover:shadow-[0_0_15px_rgba(253,224,71,0.7)]'
+					onClick={handleEditFunc}
+					tabIndex={1}
+				>
+					<PencilSVG className='size-5 text-violet-950' />
+				</div>
+				<div
+					className='itemCardButton bg-gradient-to-r from-red-400 to-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
+					onClick={handleDeleteFunc}
+					tabIndex={1}
+				>
+					<TrashCanSVG className='size-5 text-white' />
 				</div>
 			</div>
 		</motion.button>

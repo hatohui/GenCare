@@ -50,8 +50,8 @@ const authApi = {
 				`${AUTH_URL}/logout`,
 				{},
 				{
-					headers: { Authorization: header },
 					withCredentials: true,
+					headers: { Authorization: header },
 				}
 			)
 			.then(res => {
