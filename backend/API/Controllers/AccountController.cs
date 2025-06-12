@@ -4,6 +4,7 @@ using Application.DTOs.Account.Responses;
 using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -29,18 +30,10 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request, [FromQuery] string? search)
+    public async Task<IActionResult> GetAccountsByPageAsync([FromQuery] GetAccountByPageRequest request)
     {
-        if (request.Page < 0)
-        {
-            return BadRequest("Page index must be greater than or equal to 0.");
-        }
-        if (request.Count <= 0)
-        {
-            return BadRequest("Count must be greater than 0.");
-        }
-        var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count, search);
-        return Ok(result);
+        var response = await accountService.GetAccountsByPageAsync(request);
+        return Ok(response);
     }
 
 
