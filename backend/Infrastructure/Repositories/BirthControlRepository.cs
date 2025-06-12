@@ -1,9 +1,10 @@
 ﻿using Application.Repositories;
+using Domain.Abstractions;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
 
-public class BirthControlRepository: IBirthControlRepository
+public class BirthControlRepository(IApplicationDbContext dbContext): IBirthControlRepository
 {
     public Task<bool> AddBirthControlAsync(Guid birthControlId)
     {
@@ -20,8 +21,9 @@ public class BirthControlRepository: IBirthControlRepository
         throw new NotImplementedException();
     }
 
-    public Task<BirthControl> GetBirthControlAsync(Guid birthControlId)
+    public async Task<BirthControl?> GetBirthControlAsync(Guid accountId)
     {
-        throw new NotImplementedException();
+        return await dbContext.BirthControls.Where(b => b.AccountId == accountId).FirstOrDefaultAsync();
+        
     }
 }
