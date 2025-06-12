@@ -23,10 +23,9 @@ public interface IAccountService
 
     Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
     Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken);
-    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search);
+    Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request);
 
     Task<Account> GetAccountByIdAsync(Guid accountId);
 
-    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
 }
