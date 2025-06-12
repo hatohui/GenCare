@@ -23,8 +23,7 @@ public class GetAccountByPageRequestValidator : AbstractValidator<GetAccountByPa
             .When(x => !string.IsNullOrEmpty(x.Role));
 
         RuleFor(x => x.Active)
-            .Must(value => value == null || value == true || value == false)
-            .WithMessage("Active must be a boolean value.")
-            .When(x => x.Active.HasValue);
+            .NotNull()
+            .WithMessage("Active must be provided (true or false).");
     }
 }
