@@ -248,7 +248,11 @@ public class AccountService
 
     public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request)
     {
-        var accounts = await accountRepo.GetAccountsByPageAsync(request.Page, request.Count, request.Search, request.Role, request.Active);
+        // Correct paging logic: (Page - 1) * Count
+        var skip = (request.Page - 1) * request.Count;
+
+        // Now passing the correct skip value and other filters to the repository
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, request.Count, request.Search, request.Role, request.Active);
         var totalCount = await accountRepo.GetTotalAccountCountAsync(request.Search, request.Role, request.Active);
 
         return new GetAccountByPageResponse

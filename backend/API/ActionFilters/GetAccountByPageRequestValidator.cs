@@ -19,7 +19,7 @@ public class GetAccountByPageRequestValidator : AbstractValidator<GetAccountByPa
             .MaximumLength(100).WithMessage("Search term cannot exceed 100 characters.");
 
         RuleFor(x => x.Role)
-            .Matches(@"^[a-zA-Z0-9]+$").WithMessage("Role must be alphanumeric.")
+            .Matches("^[a-zA-Z0-9._-]+$").WithMessage("Role must be alphanumeric.")
             .When(x => !string.IsNullOrEmpty(x.Role));
 
         RuleFor(x => x.Active)

@@ -66,7 +66,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         return account;
     }
 
-    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int take, string? search, string? role, bool? active)
+    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int pageSize, string? search, string? role, bool? active)
     {
         var query = dbContext.Accounts.Include(a => a.Role).AsQueryable();
 
@@ -87,7 +87,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
         return await query.OrderBy(a => a.FirstName)
                           .Skip(skip)
-                          .Take(take)
+                          .Take(pageSize)
                           .ToListAsync();
     }
 
