@@ -472,7 +472,7 @@ public class AccountService
                 Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
 
                 //check if account is consultants or staffs
-                if(a.Role.Name.ToLower() == RoleNames.Staff.ToLower() ||
+                if (a.Role.Name.ToLower() == RoleNames.Staff.ToLower() ||
                     a.Role.Name.ToLower() == RoleNames.Consultant.ToLower())
                 {
                     //update account
@@ -500,6 +500,7 @@ public class AccountService
             }
 
         }
+    }
     public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
     {
         // Get account details
