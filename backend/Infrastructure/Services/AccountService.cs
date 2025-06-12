@@ -260,7 +260,7 @@ public class AccountService
             Accounts = accounts.ConvertAll(a => new AccountViewModel
             {
                 Id = a.Id,
-                RoleName = a.Role.Name,
+                Role= a.Role,
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
