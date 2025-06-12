@@ -16,10 +16,12 @@ const accountApi = {
 			.get<GetAccountByIdResponse>(queryUrl, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data)
+			.then(res => {
+				return res.data
+			})
 	},
 	getByPage: (header: string, count: number, page: number) => {
-		const queryUrl = `${ACCOUNT_URL}?page=${page - 1}&count=${count}`
+		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}`
 
 		return axios
 			.get<GetAccountByPageResponse>(queryUrl, {

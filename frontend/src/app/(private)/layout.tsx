@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter()
 	const { accessToken: token } = tokenStore
 	const [isLoading, setIsLoading] = useState(true)
-	const data = useGetMe()
+	const { data } = useGetMe()
 
 	useEffect(() => {
 		const verificationTimeout = setTimeout(() => {
@@ -55,15 +55,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			return
 		}
 
-		if (data.data) {
-			accountStore.setAccount(data.data)
-			if (!MANAGEMENT_TEAM.includes(data.data.role.name)) {
+		if (data) {
+			accountStore.setAccount(data)
+			if (!MANAGEMENT_TEAM.includes(data.role.name)) {
 				forbidden()
 			}
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router])
+	}, [token, isClient, router, data])
 
 	if (!isClient || isLoading) {
 		return (

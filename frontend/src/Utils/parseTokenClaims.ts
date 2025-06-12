@@ -19,7 +19,6 @@ export function parseTokenClaims(raw: RawClaims): DecodedTokenData {
 	const account: TokenizedAccount = {
 		id: raw.sub,
 		role: {
-			id: raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
 			name: raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
 			description:
 				raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],

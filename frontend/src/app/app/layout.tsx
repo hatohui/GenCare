@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter()
 	const { accessToken: token } = tokenStore
 	const [isLoading, setIsLoading] = useState(true)
-	const me = useGetMe()
+	const { data } = useGetMe()
 
 	useEffect(() => {
 		const verificationTimeout = setTimeout(() => {
@@ -54,8 +54,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			return
 		}
 
-		if (me.data) {
-			accountStore.setAccount(me.data)
+		if (data) {
+			accountStore.setAccount(data)
 		}
 
 		setIsLoading(false)
