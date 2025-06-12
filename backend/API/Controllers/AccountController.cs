@@ -1,6 +1,9 @@
-﻿using Application.DTOs.Account;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Application.DTOs.Account;
 using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
+using Application.DTOs.Role;
 using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
@@ -61,20 +64,24 @@ public class AccountController(IAccountService accountService) : ControllerBase
 
         // Trích xuất thông tin tài khoản từ token
         var accountId = JwtHelper.GetAccountIdFromToken(token);
-
         var account = await accountService.GetAccountByIdAsync(accountId);
 
+        // Tạo DTO cho Account và Role
         var accountViewModel = new AccountViewModel
         {
             Id = accountId,
+            Email = account.Email,
             FirstName = account.FirstName ?? string.Empty,
             LastName = account.LastName ?? string.Empty,
             AvatarUrl = account.AvatarUrl,
-            DateOfBirth = account.DateOfBirth,
-            Email = account.Email,
             Gender = account.Gender,
-            Role = account.Role,
-            IsDeleted = account.IsDeleted
+            IsDeleted = account.IsDeleted,
+            Role = new RoleViewModel
+            {
+                Id = account.Role.Id,
+                Name = account.Role.Name,
+                Description = account.Role.Description
+            }
         };
 
         return Ok(accountViewModel);
