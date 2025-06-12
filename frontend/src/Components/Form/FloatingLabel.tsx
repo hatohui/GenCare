@@ -78,7 +78,7 @@ export default function FloatingLabelInput({
 					},
 				}}
 				transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-				className='absolute font-semibold left-0 cursor-text z-10 transform-gpu pointer-events-none select-none'
+				className='absolute font-semibold left-0 cursor-text transform-gpu pointer-events-none select-none'
 			>
 				{label}
 			</motion.label>
