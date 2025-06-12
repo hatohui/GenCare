@@ -12,6 +12,7 @@ using Google.Apis.Auth;
 using Application.DTOs.Account.Requests;
 using Domain.Common.Constants;
 using Microsoft.Extensions.Caching.Distributed;
+using Application.DTOs.Role;
 
 
 namespace Infrastructure.Services;
@@ -260,7 +261,12 @@ public class AccountService
             Accounts = accounts.ConvertAll(a => new AccountViewModel
             {
                 Id = a.Id,
-                Role= a.Role,
+                Role = new RoleViewModel
+                {
+                    Id = a.Role.Id,
+                    Name = a.Role.Name,
+                    Description = a.Role.Description
+                },
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
