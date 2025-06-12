@@ -102,7 +102,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
     {
         var affectedRows = await dbContext.Services
             .Where(s => s.Id == idService && !s.IsDeleted)
-            .ExecuteDeleteAsync();
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsDeleted, true));
 
         return affectedRows > 0;
     }
