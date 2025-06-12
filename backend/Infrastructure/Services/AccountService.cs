@@ -13,7 +13,6 @@ using Application.DTOs.Account.Requests;
 using Domain.Common.Constants;
 using Microsoft.Extensions.Caching.Distributed;
 
-
 namespace Infrastructure.Services;
 
 public class AccountService
