@@ -115,4 +115,12 @@ public class AccountController(IAccountService accountService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequest request, [FromRoute] string id)
+    {
+        string accessToken = AuthHelper.GetAccessToken(HttpContext);
+        await accountService.UpdateAccountAsync(request, accessToken, id);
+        return Ok();
+    }
 }

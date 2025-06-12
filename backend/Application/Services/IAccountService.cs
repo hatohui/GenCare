@@ -29,4 +29,6 @@ public interface IAccountService
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
+
+    Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string accountId);
 }
