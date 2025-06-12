@@ -246,16 +246,14 @@ public class AccountService
         return (accessToken, refreshToken);
     }
 
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request)
     {
-        var skip = page * count;
-        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
-        var totalCount = await accountRepo.GetTotalAccountCountAsync(search);
+        var accounts = await accountRepo.GetAccountsByPageAsync(request.Page, request.Count, request.Search, request.Role, request.Active);
+        var totalCount = await accountRepo.GetTotalAccountCountAsync(request.Search, request.Role, request.Active);
 
-        var result = new GetAccountByPageResponse
+        return new GetAccountByPageResponse
         {
-            Accounts = accounts.ConvertAll
-            (a => new AccountViewModel
+            Accounts = accounts.ConvertAll(a => new AccountViewModel
             {
                 Id = a.Id,
                 RoleName = a.Role.Name,
@@ -266,21 +264,14 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-            }
-            ),
+            }),
             TotalCount = totalCount
         };
-        return result;
     }
 
     public async Task<Account> GetAccountByIdAsync(Guid accountId)
     {
         return await accountRepo.GetAccountByIdAsync(accountId);
-    }
-
-    public Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)
@@ -381,8 +372,8 @@ public class AccountService
 
         // store the new account in cache in 10 minutes
         await distributedCache.SetStringAsync(
-            cacheKey, 
-            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc), 
+            cacheKey,
+            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc),
             new DistributedCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
