@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			if (isLoading) router.push('/login?error=verification_timeout')
 		}, 5000)
 
-		return () => clearTimeout(verificationTimeout)
+		return clearTimeout(verificationTimeout)
 	}, [isLoading, router])
 
 	useEffect(() => {
@@ -73,10 +73,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	}
 
 	return (
-		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground'>
-			<div className='w-full flex-none md:w-64'>
-				<Sidenav />
-			</div>
+		<div className='flex flex-col md:flex-row  h-screen florageBackground'>
+			<Sidenav />
 			<main className='flex-1 p-7 h-full scroll-smooth'>{children}</main>
 		</div>
 	)
