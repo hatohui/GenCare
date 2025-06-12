@@ -3,7 +3,6 @@ import {
 	GetAccountByIdResponse,
 	GetAccountByPageResponse,
 } from '@/Interfaces/Account/Schema/account'
-import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import axios from 'axios'

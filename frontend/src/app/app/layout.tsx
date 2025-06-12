@@ -5,6 +5,7 @@ import useToken from '@/Hooks/useToken'
 import { useRouter } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { isTokenValid } from '@/Utils/isTokenValid'
+import { useGetMe } from '@/Services/account-service'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)
@@ -13,6 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter()
 	const { accessToken: token } = tokenStore
 	const [isLoading, setIsLoading] = useState(true)
+	const me = useGetMe()
 
 	useEffect(() => {
 		const verificationTimeout = setTimeout(() => {
@@ -52,9 +54,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			return
 		}
 
-		const { decodedToken } = validation
-
-		accountStore.setAccount(decodedToken)
+		if (me.data) {
+			accountStore.setAccount(me.data)
+		}
 
 		setIsLoading(false)
 	}, [token, isClient, router])

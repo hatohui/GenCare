@@ -1,7 +1,5 @@
 // stores/authStore.ts
 import { create } from 'zustand'
-import { DecodedTokenData } from '@/Interfaces/Auth/Schema/token'
-import { StaffAccount } from '@/Interfaces/Account/Types/StaffAccount'
 import { Account } from '@/Interfaces/Auth/Types/Account'
 
 type AccountStore = {

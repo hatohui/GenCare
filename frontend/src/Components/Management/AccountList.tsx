@@ -39,7 +39,7 @@ const AccountList = () => {
 								secondaryLabel={account.email}
 								status={account.isDeleted ? 'FAILED' : 'SUCCESS'}
 								thirdLabel={account.dateOfBirth}
-								fourthLabel={account.role}
+								fourthLabel={account.role.name}
 								path='/accounts/'
 								handleDelete={handleDelete}
 							/>
