@@ -6,9 +6,10 @@ namespace Infrastructure.Repositories;
 
 public class BirthControlRepository(IApplicationDbContext dbContext): IBirthControlRepository
 {
-    public Task<bool> AddBirthControlAsync(Guid birthControlId)
+    public Task<bool> AddBirthControlAsync(BirthControl birthControl)
     {
-        throw new NotImplementedException();
+        dbContext.BirthControls.Add(birthControl);
+        return dbContext.SaveChangesAsync().ContinueWith(t => t.Result > 0);
     }
 
     public Task<bool> RemoveBirthControlAsync(Guid birthControlId)
@@ -25,5 +26,10 @@ public class BirthControlRepository(IApplicationDbContext dbContext): IBirthCont
     {
         return await dbContext.BirthControls.Where(b => b.AccountId == accountId).FirstOrDefaultAsync();
         
+    }
+
+    public async Task<bool> CheckBirthControlExistsAsync(Guid accountId)
+    {
+        return await dbContext.BirthControls.AnyAsync(b => b.AccountId == accountId);
     }
 }
