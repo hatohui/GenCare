@@ -1,5 +1,4 @@
-﻿
-namespace Application.DTOs.Auth.Requests;
+﻿namespace Application.DTOs.Auth.Requests;
 public record class ResetPasswordRequest
 {
     public string Email { get; set; } = null!;

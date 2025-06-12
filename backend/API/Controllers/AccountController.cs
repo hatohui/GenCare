@@ -29,20 +29,11 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> GetAccountsByPage([FromQuery] GetAccountByPageRequest request, [FromQuery] string? search)
+    public async Task<IActionResult> GetAccountsByPageAsync([FromQuery] GetAccountByPageRequest request)
     {
-        if (request.Page < 0)
-        {
-            return BadRequest("Page index must be greater than or equal to 0.");
-        }
-        if (request.Count <= 0)
-        {
-            return BadRequest("Count must be greater than 0.");
-        }
-        var result = await accountService.GetAccountsByPageAsync(request.Page, request.Count, search);
-        return Ok(result);
+        var response = await accountService.GetAccountsByPageAsync(request);
+        return Ok(response);
     }
-
 
     [HttpPost]
     public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
@@ -59,32 +50,16 @@ public class AccountController(IAccountService accountService) : ControllerBase
     }
 
     [HttpGet("me")]
-    [ProducesResponseType(typeof(AccountViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProfileViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Authorize] // Đảm bảo người dùng đã đăng nhập
+    [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
         var token = AuthHelper.GetAccessToken(HttpContext);
-
-        // Trích xuất thông tin tài khoản từ token
         var accountId = JwtHelper.GetAccountIdFromToken(token);
+        var profile = await accountService.GetProfileAsync(accountId);
 
-        var account = await accountService.GetAccountByIdAsync(accountId);
-
-        var accountViewModel = new AccountViewModel
-        {
-            Id = accountId,
-            FirstName = account.FirstName ?? string.Empty,
-            LastName = account.LastName ?? string.Empty,
-            AvatarUrl = account.AvatarUrl,
-            DateOfBirth = account.DateOfBirth,
-            Email = account.Email,
-            Gender = account.Gender,
-            RoleName = account.Role.Name,
-            IsDeleted = account.IsDeleted
-        };
-
-        return Ok(accountViewModel);
+        return Ok(profile);
     }
 
     /// <summary>

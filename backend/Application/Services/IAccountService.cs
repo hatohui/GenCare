@@ -1,3 +1,4 @@
+using Application.DTOs.Account;
 using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
@@ -22,13 +23,15 @@ public interface IAccountService
     Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefreshToken);
 
     Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
+
     Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken);
-    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search);
+
+    Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request);
 
     Task<Account> GetAccountByIdAsync(Guid accountId);
 
-    Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count);
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
 
     Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string accountId);
+    Task<ProfileViewModel> GetProfileAsync(Guid accountId);
 }

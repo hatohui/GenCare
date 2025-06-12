@@ -1,9 +1,9 @@
 ﻿using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
+
 public class DepartmentRepository(IApplicationDbContext dbContext) : IDepartmentRepository
 {
     public async Task<Department?> GetDepartmentByIdAsync(Guid id)

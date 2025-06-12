@@ -63,7 +63,7 @@ const ItemCard = ({
 	return (
 		<motion.button
 			id={id}
-			className='bg-gradient-to-r px-4 py-2 border border-white hover:border-teal-300 from-white to-general w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center rounded-[30px] relative overflow-hidden'
+			className='bg-gradient-to-r pl-4 border border-white hover:border-teal-300 from-white to-general w-full flex justify-between drop-shadow-sm transition-colors duration-300 items-center round relative overflow-hidden'
 			aria-label={`Item card for ${label}`}
 			onClick={() => router.push(`${path}/${id}`)}
 			initial={{ translateY: -40, opacity: 0 }}
@@ -104,7 +104,7 @@ const ItemCard = ({
 			</div>
 
 			{/* 5. Action Buttons */}
-			<div className='flex items-center justify-end flex-1/12 gap-2'>
+			<div className='flex items-center justify-end flex-1/12 gap-2 py-2 pr-4'>
 				<div
 					className='itemCardButton bg-gradient-to-r from-amber-300 to-amber-400 hover:shadow-[0_0_15px_rgba(253,224,71,0.7)]'
 					onClick={handleEditFunc}

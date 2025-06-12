@@ -16,5 +16,4 @@ public class RoleRepository(IApplicationDbContext context) : IRoleRepository
     {
         return await context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == name.ToLower());
     }
-
 }
