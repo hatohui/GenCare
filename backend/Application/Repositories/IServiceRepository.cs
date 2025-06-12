@@ -4,7 +4,7 @@ namespace Application.Repositories;
 
 public interface IServiceRepository
 {
-    Task<List<Service>> SearchServiceAsync(int page, int count);
+    Task<List<Service>> SearchServiceAsync(int page, int count, string? name,bool? orderByPrice, bool? includeDeleted);
 
     Task<Service?> SearchServiceByIdAsync(Guid idService);
 

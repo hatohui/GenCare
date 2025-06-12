@@ -14,13 +14,30 @@ public class ServicesService(
     IMediaRepository mediaRepository
 ) : IServicesService
 {
-    public async Task<ViewServiceForUserResponse> SearchServiceExcludeDeletedAsync(ViewServicesByPageRequest request)
+    public async Task<ViewServiceForUserResponse> SearchServiceAsync(ViewServicesByPageRequest request)
     {
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
-
-        var services = await serviceRepository.SearchServiceAsync(request.Page, request.Count);
-        int totalCount = await serviceRepository.CountServicesAsync();
+        
+        var services = await serviceRepository.SearchServiceAsync(
+            request.Page,
+            request.Count,
+            request.Search,
+            request.SortByPrice,
+            request.IncludeDeleted
+        );
+        // int totalCount = await serviceRepository.CountServicesAsync();
+        int totalCount;
+        if (request.IncludeDeleted == true)
+        {
+            //count all services including deleted
+            totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
+        }
+        else
+        {
+            // count only active services
+            totalCount = await serviceRepository.CountServicesAsync();
+        }
         var response = new ViewServiceForUserResponse()
         {
             Total = totalCount,
