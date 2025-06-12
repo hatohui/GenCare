@@ -1,13 +1,9 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Application.DTOs.Account;
+﻿using Application.DTOs.Account;
 using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
-using Application.DTOs.Role;
 using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -39,7 +35,6 @@ public class AccountController(IAccountService accountService) : ControllerBase
         return Ok(response);
     }
 
-
     [HttpPost]
     public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
     {
@@ -55,36 +50,16 @@ public class AccountController(IAccountService accountService) : ControllerBase
     }
 
     [HttpGet("me")]
-    [ProducesResponseType(typeof(AccountViewModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProfileViewModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Authorize] // Đảm bảo người dùng đã đăng nhập
+    [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
         var token = AuthHelper.GetAccessToken(HttpContext);
-
-        // Trích xuất thông tin tài khoản từ token
         var accountId = JwtHelper.GetAccountIdFromToken(token);
-        var account = await accountService.GetAccountByIdAsync(accountId);
+        var profile = await accountService.GetProfileAsync(accountId);
 
-        // Tạo DTO cho Account và Role
-        var accountViewModel = new AccountViewModel
-        {
-            Id = accountId,
-            Email = account.Email,
-            FirstName = account.FirstName ?? string.Empty,
-            LastName = account.LastName ?? string.Empty,
-            AvatarUrl = account.AvatarUrl,
-            Gender = account.Gender,
-            IsDeleted = account.IsDeleted,
-            Role = new RoleViewModel
-            {
-                Id = account.Role.Id,
-                Name = account.Role.Name,
-                Description = account.Role.Description
-            }
-        };
-
-        return Ok(accountViewModel);
+        return Ok(profile);
     }
 
     /// <summary>
@@ -114,5 +89,4 @@ public class AccountController(IAccountService accountService) : ControllerBase
         if (result == null) throw new ApplicationException("Delete account failed.");
         return Ok(result);
     }
-
 }

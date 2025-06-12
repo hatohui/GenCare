@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Application.DTOs.Role;
-using Domain.Entities;
+﻿using Application.DTOs.Role;
 
 namespace Application.DTOs.Account;
 

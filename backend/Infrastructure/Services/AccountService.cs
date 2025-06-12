@@ -1,19 +1,18 @@
 using System.Net;
 using Application.DTOs.Account;
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
+using Application.DTOs.Role;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Application.DTOs.Account.Requests;
-using Domain.Common.Constants;
 using Microsoft.Extensions.Caching.Distributed;
-using Application.DTOs.Role;
-
 
 namespace Infrastructure.Services;
 
@@ -263,7 +262,6 @@ public class AccountService
                 Id = a.Id,
                 Role = new RoleViewModel
                 {
-                    Id = a.Role.Id,
                     Name = a.Role.Name,
                     Description = a.Role.Description
                 },
@@ -344,7 +342,6 @@ public class AccountService
             throw new AppException(409, "Account with this email already exists.");
         }
 
-
         // Create the account
         Account newAcc = new()
         {
@@ -363,7 +360,6 @@ public class AccountService
         };
         // add account to the database
         await accountRepo.AddAsync(newAcc);
-
 
         //check if staff info in request exists
 
@@ -385,9 +381,9 @@ public class AccountService
             cacheKey,
             Newtonsoft.Json.JsonConvert.SerializeObject(newAcc),
             new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-                }
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            }
         );
 
         return new StaffAccountCreateResponse()
@@ -408,4 +404,46 @@ public class AccountService
         };
     }
 
+    public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
+    {
+        // Get account details
+        var account = await accountRepo.GetAccountByIdAsync(accountId);
+        if (account == null)
+        {
+            throw new Exception("Account not found.");
+        }
+
+        // Get role information
+        var role = await roleRepo.GetRoleByIdAsync(account.RoleId);
+        if (role == null)
+        {
+            throw new Exception("Role not found.");
+        }
+
+        // Get staff info (if exists)
+        var staffInfo = await staffInfoRepo.GetStaffInfoByAccountIdAsync(accountId);
+
+        // Prepare profile response
+        var profile = new ProfileViewModel
+        {
+            Id = account.Id,
+            Email = account.Email,
+            FirstName = account.FirstName ?? string.Empty,
+            LastName = account.LastName ?? string.Empty,
+            Gender = account.Gender,
+            DateOfBirth = account.DateOfBirth,
+            AvatarUrl = account.AvatarUrl,
+            IsDeleted = account.IsDeleted,
+            Role = new RoleViewModel
+            {
+                Name = role.Name,
+                Description = role.Description
+            },
+            Degree = staffInfo?.Degree,
+            YearOfExperience = staffInfo?.YearOfExperience,
+            Biography = staffInfo?.Biography
+        };
+
+        return profile;
+    }
 }

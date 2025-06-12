@@ -1,6 +1,4 @@
-﻿
-
-using Application.DTOs.Account.Requests;
+﻿using Application.DTOs.Account.Requests;
 using FluentValidation;
 
 namespace API.ActionFilters;
@@ -10,10 +8,12 @@ public class GetAccountByPageRequestValidator : AbstractValidator<GetAccountByPa
     public GetAccountByPageRequestValidator()
     {
         RuleFor(x => x.Page)
-            .GreaterThanOrEqualTo(0).WithMessage("Page index must be greater than or equal to 0.");
+             .GreaterThan(0)
+             .WithMessage("Page index must be greater than or equal to 0.");
 
         RuleFor(x => x.Count)
-            .GreaterThan(0).WithMessage("Count must be greater than 0.");
+            .GreaterThan(0)
+            .WithMessage("Count must be greater than 0.");
 
         RuleFor(x => x.Search)
             .MaximumLength(100).WithMessage("Search term cannot exceed 100 characters.");
