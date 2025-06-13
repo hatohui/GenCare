@@ -1,6 +1,6 @@
 ﻿using Application.DTOs.BirthControl.Request;
 using Application.DTOs.BirthControl.Response;
-using Domain.Entities;
+
 
 namespace Application.Services;
 
@@ -12,9 +12,9 @@ public interface IBirthControlService
     /// <summary>
     /// Retrieves detailed information about a specific birth control record.
     /// </summary>
-    /// <param name="birthControlId">The unique identifier of the birth control record.</param>
+    /// <param name="accountId">The unique identifier of the birth control record.</param>
     /// <returns>A response containing the details of the birth control record.</returns>
-    Task<ViewBirthControlResponse?> ViewBirthControlAsync(Guid birthControlId);
+    Task<ViewBirthControlResponse?> ViewBirthControlAsync(Guid accountId);
 
     /// <summary>
     /// Adds a new birth control record to the system.
