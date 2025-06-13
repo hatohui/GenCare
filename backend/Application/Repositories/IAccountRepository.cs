@@ -12,11 +12,11 @@ public interface IAccountRepository
 
     Task<Account?> GetAccountByEmailPasswordAsync(string email, string password);
 
-    Task<List<Account>> GetAccountsByPageAsync(int skip, int take);
-
     Task UpdateAccount(Account user);
-    
+
     Task<Account?> DeleteAccountByAccountId(Guid userId);
 
-    Task<int> GetTotalAccountCountAsync(string? search);
+    Task<List<Account>> GetAccountsByPageAsync(int skip, int take, string? search, string? role, bool? active);
+
+    Task<int> GetTotalAccountCountAsync(string? search, string? role, bool? active);
 }

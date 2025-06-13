@@ -10,13 +10,13 @@ const Logo = ({
 	withLabel?: boolean
 }) => {
 	return (
-		<div className='center-all'>
+		<div className={clsx(className, 'center-all gap-1')}>
 			<Image
 				src='/images/gencarelogo.png'
 				alt='gencare-logo'
 				width={1000}
 				height={1000}
-				className={clsx(className, 'object-contain w-8')}
+				className='object-contain w-8'
 				quality={100}
 				priority
 			/>

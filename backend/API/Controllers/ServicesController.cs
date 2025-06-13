@@ -42,7 +42,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     [HttpGet]
     [Route("/api/services/all")]
     [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")] 
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
     public async Task<IActionResult> GetAllServices([FromQuery] int page, [FromQuery] int count)
     {
         var request = new ViewServicesByPageRequest
@@ -50,10 +50,11 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
             Page = page,
             Count = count
         };
-    
+
         var services = await servicesService.SearchServiceIncludeDeletedAsync(request);
         return Ok(services);
     }
+
     /// <summary>
     /// For Bearer ${Access_Token} requirement
     /// Get service details by Id.

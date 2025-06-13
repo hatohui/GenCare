@@ -1,0 +1,44 @@
+import AccountList from '@/Components/Management/AccountList'
+import AddNewButton from '@/Components/Management/AddNewButton'
+import SearchBar from '@/Components/Management/SearchBar'
+import clsx from 'clsx'
+import React, { Suspense } from 'react'
+import AccountListHeader from '@/Components/Management/AccountListHeader'
+
+const AccountPage = () => {
+	return (
+		<section
+			className={clsx('flex h-full flex-col gap-4 md:gap-5')}
+			aria-label='Account Management'
+		>
+			<div className='w-full flex gap-3 px-1'>
+				<div className='w-full'>
+					<div className='flex gap-3 grow overflow-scroll'>
+						<SearchBar waitTime={1000} />
+						<AddNewButton />
+					</div>
+				</div>
+			</div>
+
+			<AccountListHeader
+				label='Họ và Tên'
+				secondaryLabel='Email'
+				thirdLabel='Vai trò'
+				fourthLabel='Ngày sinh'
+				fifthLabel='Tác vụ'
+			/>
+
+			<Suspense
+				fallback={
+					<div className='h-full center-all w-full animate-pulse'>
+						Fetching data...
+					</div>
+				}
+			>
+				<AccountList />
+			</Suspense>
+		</section>
+	)
+}
+
+export default AccountPage

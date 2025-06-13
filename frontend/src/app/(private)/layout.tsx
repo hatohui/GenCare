@@ -32,8 +32,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 		const validation = isTokenValid(token)
 
-		console.log(validation)
-
 		if (!validation.valid) {
 			accountStore.removeAccount()
 			tokenStore.removeAccessToken()
@@ -75,10 +73,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	}
 
 	return (
-		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground'>
-			<div className='w-full flex-none md:w-64'>
-				<Sidenav />
-			</div>
+		<div className='flex flex-col md:flex-row  h-screen florageBackground'>
+			<Sidenav />
 			<main className='flex-1 p-7 h-full scroll-smooth'>{children}</main>
 		</div>
 	)

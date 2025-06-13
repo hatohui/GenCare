@@ -34,6 +34,40 @@
 	.itemCardButton {
 		@apply py-2 z-50 px-4 opacity-75 rounded-[30px] hover:scale-105 transition duration-200 border ease-in;
 	}
+
+	.secondary-item-card-button {
+		@apply items-center text-sm text-slate-700 font-light truncate;
+	}
+
+	.main-gradient-bg {
+		@apply bg-gradient-to-b from-main to-secondary;
+	}
+
+	.round {
+		@apply rounded-[30px];
+	}
+
+	/* for media query */
+	.show-pc-only {
+		@apply hidden md:block;
+	}
+
+	.show-mobile-only {
+		@apply block md:hidden;
+	}
+
+	/* for text */
+	.big-font {
+		@apply text-lg font-semibold;
+	}
+
+	.button {
+		@apply px-4 py-2;
+	}
+
+	.hoverable {
+		@apply transition-all  duration-150 hover:bg-blue-500/60 hover:shadow-inner;
+	}
 }
 
 /*  */
@@ -49,6 +83,21 @@
 	display: none;
 }
 
+.scroll-bar::-webkit-scrollbar {
+	width: 6px; /* Ensure it's not too small */
+	display: block;
+}
+
+.scroll-bar::-webkit-scrollbar-track {
+	background: var(--color-accent); /* Remove quotes */
+	border-radius: 3px;
+}
+
+.scroll-bar::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.5); /* Darker thumb so it’s visible */
+	border-radius: 3px;
+}
+
 ::-webkit-scrollbar-track {
 	position: sticky;
 	background: transparent;
@@ -62,8 +111,6 @@
 
 /* Firefox */
 * {
-	scroll-snap-type: proximity;
-	overflow-y: overlay;
 	font-family: var(--font-inter);
 }
 
@@ -74,29 +121,6 @@
 	display: none;
 }
 
-html,
-body,
-*,
-*:hover,
-*:focus {
-	/* cursor: none; */
-}
-
 body {
 	background-color: var(--color-general);
 }
-
-/* .custom-cursor {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	background: white;
-	mix-blend-mode: difference;
-	pointer-events: none;
-	z-index: 9999;
-	transform: translate(-50%, -50%);
-	will-change: transform; 
-} */

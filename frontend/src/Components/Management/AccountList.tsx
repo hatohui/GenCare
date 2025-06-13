@@ -1,28 +1,34 @@
-import React from 'react'
-import ItemCardHeader from './ItemCardHeader'
-import { GetAccountByPageResponse } from '@/Interfaces/Account/Schema/account'
-import ItemCard from './ItemCard'
+'use client'
 
-const AccountList = ({
-	data,
-	handleDelete,
-}: {
-	data: GetAccountByPageResponse
-	handleDelete: (id: string) => void
-}) => {
+import React, { useState } from 'react'
+import ItemCard from './ItemCard'
+import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
+import { useGetAccountsByPage } from '@/Services/account-service'
+import Pagination from './Pagination'
+
+const AccountList = () => {
+	const [page, setPage] = useState<number>(1)
+	const itemsPerPage = ITEMS_PER_PAGE_COUNT
+
+	const { isLoading, isError, isFetching, data } = useGetAccountsByPage(
+		itemsPerPage,
+		page ? page : 1
+	)
+
+	const pageCount = data?.totalCount
+		? Math.ceil(data.totalCount / itemsPerPage)
+		: 5
+
+	const handleDelete = () => {
+		alert('Account is getting deleted')
+	}
+
 	return (
 		<>
-			<ItemCardHeader
-				label='Họ và Tên'
-				secondaryLabel='Email'
-				thirdLabel='Ngày sinh'
-				fourthLabel='Tác vụ'
-			/>
-
-			<div className='flex-1 overflow-y-auto'>
+			<div className='flex-1 overflow-y-scroll scroll-bar'>
 				<div className='flex flex-col gap-3 px-2 py-1' role='list'>
-					{data.accounts && data.accounts.length === 0 ? (
-						<div className='w-full h-full center-all'>No data found</div>
+					{data?.accounts && data.accounts.length === 0 ? (
+						<div className='w-full h-full center-all'>No data found.</div>
 					) : (
 						data?.accounts.map((account, key) => (
 							<ItemCard
@@ -33,12 +39,32 @@ const AccountList = ({
 								secondaryLabel={account.email}
 								status={account.isDeleted ? 'FAILED' : 'SUCCESS'}
 								thirdLabel={account.dateOfBirth}
+								fourthLabel={account.role}
 								path='/accounts/'
 								handleDelete={handleDelete}
 							/>
 						))
 					)}
+					{(isFetching || isLoading) && (
+						<div className='h-full center-all w-full animate-pulse'>
+							Đang tải dữ liệu...
+						</div>
+					)}
+					{isError && (
+						<div className='h-full center-all w-full text-red-500'>
+							Internal Server Error.
+						</div>
+					)}
 				</div>
+			</div>
+
+			<div className='center-all'>
+				<Pagination
+					currentPage={page}
+					isFetching={isFetching}
+					setCurrentPage={setPage}
+					totalPages={pageCount}
+				/>
 			</div>
 		</>
 	)

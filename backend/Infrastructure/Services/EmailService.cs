@@ -24,8 +24,8 @@ public class EmailService(IConfiguration configuration) : IEmailService
 
         using var emailMessage = new MailMessage
         {
-            To = { new MailAddress(email) }, 
-            From = new MailAddress(Environment.GetEnvironmentVariable("GMAIL_FROM")!), 
+            To = { new MailAddress(email) },
+            From = new MailAddress(Environment.GetEnvironmentVariable("GMAIL_FROM")!),
             Subject = subject,
             Body = message,
             IsBodyHtml = true

@@ -8,21 +8,22 @@ import { ServiceCard } from './ServiceCard'
 
 const ServiceList = () => {
 	const [services, setServices] = useState<GetServiceByPageResponse>({
-		//sample datahere change later
 		payload: samplePayload,
 		count: 0,
 	})
 	const { data: serviceData } = useServiceByPage(1, 6)
 
+	console.log(serviceData)
+
 	useEffect(() => {
-		if (serviceData?.payload) {
+		if (serviceData && serviceData?.payload) {
 			setServices(serviceData)
 		}
 	}, [serviceData])
 
 	return (
 		<>
-			{services?.payload.map((item, index) => (
+			{services.payload.map((item, index) => (
 				<motion.div
 					key={item.id}
 					initial={{ opacity: 0 }}

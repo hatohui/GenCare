@@ -1,8 +1,7 @@
-﻿
-namespace Application.DTOs.Auth.Requests;
+﻿namespace Application.DTOs.Auth.Requests;
 public record class ResetPasswordRequest
 {
-    public string? Email { get; set; }
-    public string? NewPassword { get; set; }
-    public string? ResetPasswordToken { get; set; }
+    public string Email { get; set; } = null!;
+    public string NewPassword { get; set; } = null!;
+    public string ResetPasswordToken { get; set; } = null!;
 }
