@@ -56,5 +56,16 @@ public class BirthControlController(IBirthControlService birthControlService): C
             return StatusCode(500, "Something went wrong.");
         }
     }
+    [HttpPatch]
+    public async Task<IActionResult> UpdateBirthControl([FromBody] UpdateBirthControlRequest request)
+    {
+        var updated = await birthControlService.UpdateBirthControlAsync(request);
+
+        if (updated.Success)
+            return NoContent(); 
+        else
+            return BadRequest(); 
+    }
+
     
 }
