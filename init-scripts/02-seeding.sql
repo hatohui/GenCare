@@ -14,6 +14,11 @@ INSERT INTO "department" (name, description) VALUES
 -- 3. Insert accounts
 INSERT INTO "account" (role_id, email, password_hash, first_name, last_name, phone, date_of_birth, gender, avatar_url, created_at, is_deleted)
 VALUES
+  ((SELECT id FROM "role" WHERE name = 'admin'), 'khoahldse182425@fpt.edu.vn', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Admin', 'User', '1234567890', '1990-01-01', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'admin'), 'phatntse182742@fpt.edu.vn', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Admin', 'User', '1234567890', '1990-01-01', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'admin'), 'phamanhkiet.dev@gmail.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Admin', 'User', '1234567890', '1990-01-01', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'admin'), 'minebinroyal1@gmail.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Admin', 'User', '1234567890', '1990-01-01', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'admin'), 'hatospapal@gmail.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Admin', 'User', '1234567890', '1990-01-01', TRUE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'admin'), 'admin@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Alice', 'Admin', '1234567890', '1980-01-01', TRUE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'staff'), 'staff1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Bob', 'Staff', '0987654321', '1990-02-02', TRUE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant1@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Tom', 'Consultant', '1231231234', '1987-07-07', TRUE, NULL, NOW(), FALSE),
