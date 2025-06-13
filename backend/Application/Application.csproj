@@ -23,5 +23,6 @@
 
 	<ItemGroup>
 	  <Folder Include="DTOs\Department\Request\" />
+	  <Folder Include="DTOs\Schedule\Response\" />
 	</ItemGroup>
 </Project>

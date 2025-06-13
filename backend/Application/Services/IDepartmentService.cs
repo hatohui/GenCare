@@ -1,9 +1,19 @@
-﻿
-using Application.DTOs.Department.Response;
+﻿using Application.DTOs.Department.Response;
 using Application.Repositories;
 
-namespace Application.Services;
-public interface IDepartmentService
+namespace Application.Services
 {
-    Task<List<DepartmentGetResponse>> GetAllDepartment();
+    /// <summary>
+    /// Provides department-related service operations.
+    /// </summary>
+    public interface IDepartmentService
+    {
+        /// <summary>
+        /// Retrieves all departments.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains a list of <see cref="DepartmentGetResponse"/> objects.
+        /// </returns>
+        Task<List<DepartmentGetResponse>> GetAllDepartment();
+    }
 }

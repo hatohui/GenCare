@@ -132,7 +132,9 @@ builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
-builder.Services.AddTransient<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
