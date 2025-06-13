@@ -46,6 +46,8 @@ export const useGetMe = () => {
 	return useQuery({
 		queryKey: ['me'],
 		queryFn: () => accountApi.getMe(header),
+		enabled: !!header,
+		staleTime: Infinity,
 	})
 }
 

@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			if (isLoading) router.push('/login?error=verification_timeout')
 		}, 5000)
 
-		return () => clearTimeout(verificationTimeout)
+		return clearTimeout(verificationTimeout)
 	}, [isLoading, router])
 
 	useEffect(() => {
