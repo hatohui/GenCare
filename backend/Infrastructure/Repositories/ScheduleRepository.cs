@@ -15,4 +15,26 @@ public class ScheduleRepository(IApplicationDbContext dbContext) : IScheduleRepo
         await dbContext.Schedules.AddAsync(s);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task Delete(Schedule s)
+    {
+        dbContext.Schedules.Remove(s);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<Schedule>> GetAll()
+    {
+        return await dbContext.Schedules.ToListAsync();    
+    }
+
+    public async Task<Schedule?> GetById(Guid id)
+    {
+        return await dbContext.Schedules.FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
+    }
+
+    public async Task Update(Schedule s)
+    {
+        dbContext.Schedules.Update(s);
+        await dbContext.SaveChangesAsync();
+    }
 }

@@ -10,4 +10,10 @@ namespace Application.Services;
 public interface IScheduleService
 {
     Task AddScheduleAsync(ScheduleCreateRequest request);
+
+    //Task<List<Schedule>> GetAllSchedulesAsync();
+
+    Task UpdateScheduleAsync(ScheduleUpdateRequest request);
+
+    Task DeleteScheduleAsync(string scheduleId);
 }

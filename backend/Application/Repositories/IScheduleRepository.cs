@@ -9,4 +9,12 @@ namespace Application.Repositories;
 public interface IScheduleRepository
 {
     Task Add(Schedule s);
+
+    Task<List<Schedule>> GetAll();
+
+    Task Update(Schedule s);
+
+    Task Delete(Schedule s);
+
+    Task<Schedule?> GetById(Guid id);
 }

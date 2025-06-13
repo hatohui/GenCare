@@ -11,10 +11,26 @@ namespace API.Controllers;
 public class ScheduleController(IScheduleService scheduleService) : ControllerBase
 {
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Manager}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
     public async Task<IActionResult> CreateSchedule([FromBody] ScheduleCreateRequest request)
     {
         await scheduleService.AddScheduleAsync(request);
-        return Created();
+        return Created(); //201
+    }
+
+    [HttpPut]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
+    public async Task<IActionResult> UpdateSchedule([FromBody] ScheduleUpdateRequest request)
+    {
+        await scheduleService.UpdateScheduleAsync(request);
+        return NoContent(); //204 
+    }
+
+    [HttpDelete("{scheduleId}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
+    public async Task<IActionResult> DeleteSchedule([FromRoute] string scheduleId)
+    {
+        await scheduleService.DeleteScheduleAsync(scheduleId);
+        return NoContent(); //204
     }
 }
