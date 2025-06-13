@@ -6,6 +6,7 @@ import { forbidden, useRouter } from 'next/navigation'
 import { MANAGEMENT_TEAM } from '@/Constants/Management'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { isTokenValid } from '@/Utils/isTokenValid'
+import { useGetMe } from '@/Services/account-service'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)
@@ -14,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter()
 	const { accessToken: token } = tokenStore
 	const [isLoading, setIsLoading] = useState(true)
+	const { data } = useGetMe()
 
 	useEffect(() => {
 		const verificationTimeout = setTimeout(() => {
@@ -53,16 +55,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			return
 		}
 
-		const { decodedToken } = validation
-
-		accountStore.setAccount(decodedToken)
-
-		if (!MANAGEMENT_TEAM.includes(decodedToken.account.role)) {
-			forbidden()
+		if (data) {
+			accountStore.setAccount(data)
+			if (!MANAGEMENT_TEAM.includes(data.role.name)) {
+				forbidden()
+			}
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router])
+	}, [token, isClient, router, data])
 
 	if (!isClient || isLoading) {
 		return (
