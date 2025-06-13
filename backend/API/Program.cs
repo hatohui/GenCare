@@ -135,6 +135,10 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
+builder.Services.AddScoped<IBirthControlService, BirthControlService>();
+
+
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
