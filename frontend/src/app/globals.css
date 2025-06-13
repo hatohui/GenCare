@@ -82,7 +82,6 @@
 /* Firefox */
 * {
 	scroll-snap-type: proximity;
-	overflow-y: overlay;
 	font-family: var(--font-inter);
 }
 

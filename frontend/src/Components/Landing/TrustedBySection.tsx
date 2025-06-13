@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'motion/react'
-import FlorageBackground from './FlorageBackground'
 
 export default function TrustedBySection() {
 	return (
