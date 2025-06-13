@@ -415,4 +415,3 @@ yarn-error.log*
 next-env.d.ts
 .next
 frontend/.env.local
-/backend/Application/Repositories/IRoleRepository.cs
