@@ -26,7 +26,6 @@ public class ServicesService(
             request.SortByPrice,
             request.IncludeDeleted
         );
-        // int totalCount = await serviceRepository.CountServicesAsync();
         int totalCount;
         if (request.IncludeDeleted == true)
         {
@@ -45,7 +44,7 @@ public class ServicesService(
         };
         foreach (var s in services)
         {
-            var image = await mediaRepository.GetNewestByServiceIdAsync(s.Id);
+             await mediaRepository.GetNewestByServiceIdAsync(s.Id);
             response.Services.Add(new ServicePayLoad()
             {
                 Id = s.Id,
@@ -125,7 +124,7 @@ public class ServicesService(
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         // Validate quyền
-        if (role != RoleNames.Admin && role != RoleNames.Admin)
+        if (role != RoleNames.Admin && role != RoleNames.Manager)
             throw new AppException(403, "UNAUTHORIZED");
         // Validate not null
         if (string.IsNullOrWhiteSpace(request.Name))
@@ -174,7 +173,7 @@ public class ServicesService(
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
-        if (role != RoleNames.Admin && role != RoleNames.Admin)
+        if (role != RoleNames.Admin && role != RoleNames.Manager)
             throw new AppException(403, "UNAUTHORIZED");
 
         if (request.Id == Guid.Empty)
@@ -198,7 +197,7 @@ public class ServicesService(
         var newMedias = new List<Media?>();
         foreach (var url in request.ImageUrls)
         {
-            if (!service.Media.Any(m => m.Url == url))
+            if (service.Media.Any(m => m.Url == url))
             {
                 var media = new Media
                 {
@@ -214,7 +213,8 @@ public class ServicesService(
 
         if (newMedias.Any())
             await mediaRepository.AddListOfMediaAsync(newMedias);
-        var success = await serviceRepository.UpdateServiceByIdAsync(service);
+        // Update the service in the repository
+            await serviceRepository.UpdateServiceByIdAsync(service);
 
         return new UpdateServiceResponse
         {
@@ -231,7 +231,6 @@ public class ServicesService(
     public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
-        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         if (role != "admin" && role != "staff")
             throw new UnauthorizedAccessException();
