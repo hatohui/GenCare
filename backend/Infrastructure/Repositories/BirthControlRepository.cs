@@ -12,9 +12,9 @@ public class BirthControlRepository(IApplicationDbContext dbContext): IBirthCont
         return await dbContext.SaveChangesAsync().ContinueWith(t => t.Result > 0);
     }
 
-    public async Task<bool> RemoveBirthControlAsync(Guid birthControlId)
+    public async Task<bool> RemoveBirthControlAsync(Guid accountlId)
     {
-        return await dbContext.BirthControls.Where(x => x.AccountId == birthControlId).ExecuteDeleteAsync() >0;
+        return await dbContext.BirthControls.Where(x => x.AccountId == accountlId).ExecuteDeleteAsync() >0;
         
     }
 

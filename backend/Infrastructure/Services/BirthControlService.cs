@@ -22,11 +22,11 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     /// Retrieves and calculates detailed information about a user's birth control cycle, 
     /// including menstrual, unsafe, and safe periods.
     /// </summary>
-    /// <param name="birthControlId">The unique identifier for the birth control cycle.</param>
+    /// <param name="accountId">The unique identifier for the birth control cycle.</param>
     /// <returns>A response DTO containing the calculated periods.</returns>
-    public async Task<ViewBirthControlResponse> ViewBirthControlAsync(Guid birthControlId)
+    public async Task<ViewBirthControlResponse?> ViewBirthControlAsync(Guid accountId)
     {
-        var birthControl = await birthControlRepository.GetBirthControlAsync(birthControlId);
+        var birthControl = await birthControlRepository.GetBirthControlAsync(accountId);
         
         var menstrualStart = birthControl.StartDate;
         var menstrualEnd = birthControl.StartDate.AddDays(4); 
@@ -61,7 +61,7 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     /// <returns>A response DTO indicating the operation result.</returns>
     /// <exception cref="ArgumentException">Thrown if input dates are invalid.</exception>
 
-    public async Task<CreateBirthControlResponse> AddBirthControlAsync(CreateBirthControlRequest request)
+    public async Task<CreateBirthControlResponse?> AddBirthControlAsync(CreateBirthControlRequest request)
     {
         var accountId = await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId);
         if (accountId == true)
@@ -123,17 +123,14 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     public async Task<bool> RemoveBirthControlAsync(Guid accountId) => await birthControlRepository.RemoveBirthControlAsync(accountId);
     
     /// Updates an existing birth control cycle, recalculating periods and validating input.
-    /// </summary>
     /// <param name="request">The request DTO with updated information.</param>
     /// <returns>A response DTO indicating the operation result.</returns>
     /// <exception cref="AppException">Thrown if the cycle cannot be found or dates are invalid.</exception>
     public async Task<UpdateBirthControlResponse> UpdateBirthControlAsync(UpdateBirthControlRequest request)
     {
-        var birthControl = await birthControlRepository.GetBirthControlAsync(request.AccountId);
-        if (birthControl == null)
-        {
+        var birthControl = await birthControlRepository.GetBirthControlAsync(request.AccountId)??
             throw new AppException(404,"Birth control not found.");
-        }
+        
         if (request.StartDate >= request.EndDate)
         {
             throw new AppException(403,"Start date cannot be after end date.");

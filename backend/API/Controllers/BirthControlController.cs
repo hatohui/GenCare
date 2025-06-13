@@ -1,7 +1,5 @@
 ﻿using Application.DTOs.BirthControl.Request;
-using Application.DTOs.BirthControl.Response;
 using Application.Services;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace API.Controllers;
 
@@ -13,11 +11,6 @@ public class BirthControlController(IBirthControlService birthControlService): C
     public async Task<IActionResult> ViewBirthControlById(Guid id)
     {
         var result = await birthControlService.ViewBirthControlAsync(id);
-
-        if (result == null)
-        {
-            return NotFound();
-        }
 
         return Ok(result);
     }

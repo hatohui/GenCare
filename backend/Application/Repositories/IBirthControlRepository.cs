@@ -4,7 +4,7 @@ namespace Application.Repositories;
 
 public interface IBirthControlRepository
 {
-    Task<bool> AddBirthControlAsync(BirthControl accountId);
+    Task<bool> AddBirthControlAsync(BirthControl birthControl);
     Task<bool> RemoveBirthControlAsync(Guid accountId);
     Task<bool> UpdateBirthControlAsync(BirthControl accountId);
     Task<BirthControl> GetBirthControlAsync(Guid accountId);
