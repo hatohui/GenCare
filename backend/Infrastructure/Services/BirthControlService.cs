@@ -91,4 +91,9 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             Message = "Birth control added successfully.",
         };
     }
+
+    public async Task<bool> RemoveBirthControlAsync(Guid accountId) => await birthControlRepository.RemoveBirthControlAsync(accountId);
+    
+    
+    
 }
