@@ -63,18 +63,13 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
 
     public async Task<CreateBirthControlResponse?> AddBirthControlAsync(CreateBirthControlRequest request)
     {
-        var accountId = await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId);
-        if (accountId == true)
-        {
+        if (await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId))
             throw new ArgumentException("Birth control already exists for this account.");
-        }
-       
-
         if (request.StartDate > request.EndDate)
         {
             throw new ArgumentException("Start date cannot be after end date.");
         }
-        if (request.StartDate < DateTime.UtcNow)
+        if (request.StartDate < DateTime.Now)
         {
             throw new ArgumentException("Start date cannot be in the past.");
         }
@@ -135,7 +130,7 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         {
             throw new AppException(403,"Start date cannot be after end date.");
         }
-        if (request.StartDate < DateTime.UtcNow)
+        if (request.StartDate < DateTime.Now)
         {
             throw new AppException(403,"Start date cannot be in the past.");
         }
