@@ -35,6 +35,16 @@ public class AccountController(IAccountService accountService) : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    ///     Creates a new staff account.
+    /// </summary>
+    /// <param name="request">The staff account creation request.</param>
+    /// <returns>
+    ///     The created staff account information.
+    /// </returns>
+    /// <response code="201">Staff account created successfully.</response>
+    /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
+    /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPost]
     public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
     {
@@ -90,6 +100,17 @@ public class AccountController(IAccountService accountService) : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    ///     Updates an existing user account.
+    /// </summary>
+    /// <param name="request">The update account request containing updated information.</param>
+    /// <param name="id">The ID of the account to update.</param>
+    /// <returns>
+    ///     An <see cref="IActionResult"/> indicating the result of the update operation.
+    /// </returns>
+    /// <response code="200">Account updated successfully.</response>
+    /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
+    /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPut("{id}")]
     [Authorize]
     public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequest request, [FromRoute] string id)
