@@ -17,14 +17,20 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <returns>Paged result with total count and list of services</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Search([FromQuery] int page, [FromQuery] int count)
+    public async Task<IActionResult> Search([FromQuery] ViewServicesByPageRequest request)
     {
-        var request = new ViewServicesByPageRequest
+        // Validate pagination parameters
+        if (request.Page < 0)
         {
-            Page = page,
-            Count = count
-        };
-        var services = await servicesService.SearchServiceExcludeDeletedAsync(request);
+            return BadRequest("Page index must be greater than or equal to 0.");
+        }
+        if (request.Count <= 0)
+        {
+            return BadRequest("Count must be greater than 0.");
+        }
+
+        // Call service to get paginated services
+        var services = await servicesService.SearchServiceAsync(request);
         return Ok(services);
     }
 
