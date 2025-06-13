@@ -68,22 +68,22 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             throw new ArgumentException("Start date cannot be in the past.");
         }
 
-        // Convert to Unspecified to avoid PostgreSQL timestamp type error
+        // Casting time baseon timezone in PostgreSQL timestamp 
         DateTime ToUnspecified(DateTime dt) => DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
 
         var startDate = ToUnspecified(request.StartDate.Date);
-        var endDate = ToUnspecified(request.EndDate?.Date ?? request.StartDate.Date.AddDays(27)); // 28 ngày
+        var endDate = ToUnspecified(request.EndDate?.Date ?? request.StartDate.Date.AddDays(27)); // 1 cycle is 28 days
 
         var menstrualStart = startDate;
-        var menstrualEnd = ToUnspecified(startDate.AddDays(4));
+        var menstrualEnd = ToUnspecified(startDate.AddDays(4));// Menstrual period lasts 5 days
 
         var startUnsafeDate = ToUnspecified(startDate.AddDays(9));
-        var endUnsafeDate = ToUnspecified(startDate.AddDays(16));
+        var endUnsafeDate = ToUnspecified(startDate.AddDays(16));// Unsafe period lasts 8 days
 
         var startSafeDate = ToUnspecified(menstrualEnd.AddDays(1));
-        var endFirstSafeDate = ToUnspecified(startUnsafeDate.AddDays(-1));
+        var endFirstSafeDate = ToUnspecified(startUnsafeDate.AddDays(-1));// Safe period before unsafe period
 
-        var startSecondSafeDate = ToUnspecified(endUnsafeDate.AddDays(1));
+        var startSecondSafeDate = ToUnspecified(endUnsafeDate.AddDays(1));// Safe period after unsafe period
         var endSafeDate = endDate;
 
         var birthControl = new BirthControl
@@ -114,6 +114,12 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     /// <param name="accountId">The account's unique identifier.</param>
     /// <returns>True if removal was successful, otherwise false.</returns>
     public async Task<bool> RemoveBirthControlAsync(Guid accountId) => await birthControlRepository.RemoveBirthControlAsync(accountId);
+    
+    /// Updates an existing birth control cycle, recalculating periods and validating input.
+    /// </summary>
+    /// <param name="request">The request DTO with updated information.</param>
+    /// <returns>A response DTO indicating the operation result.</returns>
+    /// <exception cref="AppException">Thrown if the cycle cannot be found or dates are invalid.</exception>
     public async Task<UpdateBirthControlResponse> UpdateBirthControlAsync(UpdateBirthControlRequest request)
     {
         var birthControl = await birthControlRepository.GetBirthControlAsync(request.AccountId);
@@ -130,7 +136,7 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             throw new AppException(403,"Start date cannot be in the past.");
         }
         DateTime ToUnspecified(DateTime dt) => DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
-        var startDate = ToUnspecified(request.StartDate.Value.Date) ;
+        var startDate = ToUnspecified(request.StartDate!.Value.Date) ;
         var endDate = ToUnspecified(request.EndDate?.Date ?? startDate.AddDays(27));
 
         birthControl.StartDate = startDate;
