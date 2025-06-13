@@ -32,5 +32,6 @@ public interface IAccountService
 
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
 
+    Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string accountId);
     Task<ProfileViewModel> GetProfileAsync(Guid accountId);
 }
