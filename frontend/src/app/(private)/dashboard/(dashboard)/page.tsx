@@ -4,7 +4,6 @@ import React from 'react'
 
 const DashBoard = () => {
 	const { data, isLoading } = useAccountStore()
-	const accountData = data
 
 	if (isLoading) {
 		return <div className='h-full w-full center-all'>Loading....</div>
@@ -12,8 +11,8 @@ const DashBoard = () => {
 
 	return (
 		<div className='h-full w-full center-all flex-col'>
-			<div>Account id: {accountData?.id}</div>
-			<div>Role: {accountData?.role.name}</div>
+			<div>Account id: {data?.id}</div>
+			<div>Role: {data?.role.name}</div>
 		</div>
 	)
 }
