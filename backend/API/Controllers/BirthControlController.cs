@@ -21,41 +21,36 @@ public class BirthControlController(IBirthControlService birthControlService): C
 
         return Ok(result);
     }
+    
+    
     [HttpPost]
     public async Task<IActionResult> CreateBirthControl([FromBody] CreateBirthControlRequest request)
     {
-        try
+        var created = await birthControlService.AddBirthControlAsync(request);
+        if (created == null)
         {
-            await birthControlService.AddBirthControlAsync(request);
-            return Created();
+            return BadRequest("Failed to create birth control record.");
         }
-        catch (ArgumentException ex)
+        else
         {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-           
-            return StatusCode(500, "Something went wrong.");
+            return Ok(created);
         }
     }
+    
+    
     [HttpDelete("{accountId}")]
     public async Task<IActionResult> RemoveBirthControl(Guid accountId)
     {
-        try
-        {
-            var result = await birthControlService.RemoveBirthControlAsync(accountId);
-            if (result)
-            {
-                return NoContent();
-            }
+        var removed = await birthControlService.RemoveBirthControlAsync(accountId);
+
+        if (removed)
+            return NoContent(); 
+        else
             return NotFound();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Something went wrong.");
-        }
+        
     }
+    
+    
     [HttpPatch]
     public async Task<IActionResult> UpdateBirthControl([FromBody] UpdateBirthControlRequest request)
     {

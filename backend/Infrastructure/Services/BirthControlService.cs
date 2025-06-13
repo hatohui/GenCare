@@ -11,7 +11,13 @@ namespace Infrastructure.Services;
 /// The service calculates menstrual, unsafe, and safe periods based on the provided dates.
 /// </summary>
 public class BirthControlService(IBirthControlRepository birthControlRepository) : IBirthControlService
+
 {
+    //this method is used to convert DateTime to Unspecified kind
+    private static DateTime ToUnspecified(DateTime dt)
+    {
+        return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+    }
     /// <summary>
     /// Retrieves and calculates detailed information about a user's birth control cycle, 
     /// including menstrual, unsafe, and safe periods.
@@ -58,6 +64,11 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     public async Task<CreateBirthControlResponse> AddBirthControlAsync(CreateBirthControlRequest request)
     {
         var accountId = await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId);
+        if (accountId == true)
+        {
+            throw new ArgumentException("Birth control already exists for this account.");
+        }
+       
 
         if (request.StartDate > request.EndDate)
         {
@@ -68,22 +79,18 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             throw new ArgumentException("Start date cannot be in the past.");
         }
 
-        // Casting time baseon timezone in PostgreSQL timestamp 
-        DateTime ToUnspecified(DateTime dt) => DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+     
 
         var startDate = ToUnspecified(request.StartDate.Date);
         var endDate = ToUnspecified(request.EndDate?.Date ?? request.StartDate.Date.AddDays(27)); // 1 cycle is 28 days
 
-        var menstrualStart = startDate;
         var menstrualEnd = ToUnspecified(startDate.AddDays(4));// Menstrual period lasts 5 days
 
         var startUnsafeDate = ToUnspecified(startDate.AddDays(9));
         var endUnsafeDate = ToUnspecified(startDate.AddDays(16));// Unsafe period lasts 8 days
 
         var startSafeDate = ToUnspecified(menstrualEnd.AddDays(1));
-        var endFirstSafeDate = ToUnspecified(startUnsafeDate.AddDays(-1));// Safe period before unsafe period
 
-        var startSecondSafeDate = ToUnspecified(endUnsafeDate.AddDays(1));// Safe period after unsafe period
         var endSafeDate = endDate;
 
         var birthControl = new BirthControl
@@ -135,7 +142,6 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         {
             throw new AppException(403,"Start date cannot be in the past.");
         }
-        DateTime ToUnspecified(DateTime dt) => DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
         var startDate = ToUnspecified(request.StartDate!.Value.Date) ;
         var endDate = ToUnspecified(request.EndDate?.Date ?? startDate.AddDays(27));
 
