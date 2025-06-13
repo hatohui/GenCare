@@ -18,11 +18,16 @@ public class BirthControlRepository(IApplicationDbContext dbContext): IBirthCont
         
     }
 
-    public Task<bool> UpdateBirthControlAsync(Guid birthControlId)
+    public async Task<bool> UpdateBirthControlAsync(BirthControl birthControl)
     {
-        throw new NotImplementedException();
+        dbContext.BirthControls.Update(birthControl);
+        var affectedRows = await dbContext.SaveChangesAsync();
+
+        return affectedRows > 0;
+        
     }
 
+    
     public async Task<BirthControl?> GetBirthControlAsync(Guid accountId)
     {
         return await dbContext.BirthControls.Where(b => b.AccountId == accountId).FirstOrDefaultAsync();

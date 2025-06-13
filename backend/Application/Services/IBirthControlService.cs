@@ -29,4 +29,6 @@ public interface IBirthControlService
     /// <param name="accountId">The unique identifier of the account whose birth control record is to be removed.</param>
     /// <returns>A boolean indicating whether the removal was successful.</returns>
     Task<bool> RemoveBirthControlAsync(Guid accountId);
+    
+    Task<UpdateBirthControlResponse> UpdateBirthControlAsync(UpdateBirthControlRequest request);
 }
