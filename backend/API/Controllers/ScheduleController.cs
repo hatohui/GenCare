@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Schedule.Request;
+using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -32,5 +33,15 @@ public class ScheduleController(IScheduleService scheduleService) : ControllerBa
     {
         await scheduleService.DeleteScheduleAsync(scheduleId);
         return NoContent(); //204
+    }
+
+    [HttpGet("{id}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Consultant}")]
+    public async Task<IActionResult> GetSchedule([FromRoute] string id, [FromQuery] DateTime startAt, DateTime endAt)
+    {
+        //get access token from header
+        string accessToken = AuthHelper.GetAccessToken(HttpContext);
+        var response = await scheduleService.GetScheduleAsync(accessToken, id, startAt, endAt);
+        return Ok(response);
     }
 }
