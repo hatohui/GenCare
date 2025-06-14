@@ -29,7 +29,7 @@ public class ScheduleRepository(IApplicationDbContext dbContext) : IScheduleRepo
 
     public async Task<Schedule?> GetById(Guid id)
     {
-        return await dbContext.Schedules.FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
+        return await dbContext.Schedules.Include(s => s.Slot).FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
     }
 
     public async Task Update(Schedule s)

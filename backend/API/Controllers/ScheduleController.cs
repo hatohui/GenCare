@@ -37,7 +37,7 @@ public class ScheduleController(IScheduleService scheduleService) : ControllerBa
 
     [HttpGet("{id}")]
     [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Consultant}")]
-    public async Task<IActionResult> GetSchedule([FromRoute] string id, [FromQuery] DateTime startAt, DateTime endAt)
+    public async Task<IActionResult> GetSchedule([FromRoute] string id, [FromQuery] DateTime? startAt, DateTime? endAt)
     {
         //get access token from header
         string accessToken = AuthHelper.GetAccessToken(HttpContext);

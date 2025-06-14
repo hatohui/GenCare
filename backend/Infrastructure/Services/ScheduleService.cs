@@ -15,7 +15,8 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 public class ScheduleService(IScheduleRepository scheduleRepository,
-                             IAccountRepository accountRepository) : IScheduleService
+                             IAccountRepository accountRepository,
+                             ISlotRepository slotRepository) : IScheduleService
 {
     public async Task AddScheduleAsync(ScheduleCreateRequest request)
     {
@@ -36,7 +37,7 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
         await scheduleRepository.Delete(s);
     }
 
-    public async Task<ScheduleViewResponse> GetScheduleAsync(string accessToken, string id, DateTime startAt, DateTime endAt)
+    public async Task<ScheduleViewResponse> GetScheduleAsync(string accessToken, string id, DateTime? startAt, DateTime? endAt)
     {
         {
             //check authen
@@ -73,6 +74,9 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
             var schedules = account.Schedules;
             //result
             ScheduleViewResponse rs = new ScheduleViewResponse();
+            rs.Account = new AccountResponseModel();
+            rs.Slots = new List<SlotResponseModel>();
+
             rs.Account.Id = account.Id.ToString("D");
             rs.Account.Email = account.Email;
             rs.Account.PhoneNumber = account.Phone;
@@ -81,11 +85,12 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
 
             foreach (var schedule in schedules)
             {
+                var s = slotRepository.GetById(schedule.SlotId);
                 rs.Slots.Add(new SlotResponseModel()
                 {
-                    No = schedule.Slot.No,
-                    EndAt = schedule.Slot.EndAt,
-                    StartAt = schedule.Slot.StartAt
+                    No = s.Result == null ? default : s.Result.No,
+                    EndAt = s.Result == null ? default : s.Result.EndAt,
+                    StartAt = s.Result == null ? default : s.Result.StartAt
                 });
             }
             return rs;
