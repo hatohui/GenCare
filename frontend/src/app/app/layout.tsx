@@ -59,12 +59,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router])
+	}, [token, isClient, router, data])
 
 	if (!isClient || isLoading) {
 		return (
 			<div className='h-screen w-screen animate-pulse center-all'>
-				Verifying you....
+				xác minh người dùng....
 			</div>
 		)
 	}

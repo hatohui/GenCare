@@ -7,16 +7,16 @@ namespace Application.Repositories;
 public interface IAccountRepository
 {
     /// <summary>
-    /// Retrieves an account by its email address.
+    /// Retrieves an account by email address.
     /// </summary>
     /// <param name="email">The email address of the account.</param>
-    /// <returns>The account associated with the given email, or null if not found.</returns>
+    /// <returns>The account if found; otherwise, null.</returns>
     Task<Account?> GetByEmailAsync(string email);
 
     /// <summary>
-    /// Adds a new account to the database.
+    /// Adds a new account to the data store.
     /// </summary>
-    /// <param name="user">The account entity to be added.</param>
+    /// <param name="user">The account entity to add.</param>
     Task AddAsync(Account user);
 
     /// <summary>
@@ -35,7 +35,7 @@ public interface IAccountRepository
     Task<Account?> GetAccountByEmailPasswordAsync(string email, string password);
 
     /// <summary>
-    /// Updates an existing account in the database.
+    /// Updates an existing account in the data store.
     /// </summary>
     /// <param name="user">The account entity with updated information.</param>
     Task UpdateAccount(Account user);

@@ -47,7 +47,9 @@ export const useGetMe = () => {
 		queryKey: ['me'],
 		queryFn: () => accountApi.getMe(header),
 		enabled: !!header,
-		staleTime: Infinity,
+		staleTime: 0, // data is always considered stale
+		refetchOnMount: true,
+		refetchOnWindowFocus: true,
 	})
 }
 
