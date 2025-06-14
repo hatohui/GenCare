@@ -63,7 +63,7 @@ public class ServicesService(
             throw new AppException(400, "Page and Count must be greater than zero.");
 
         var services = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count);
-        int totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
+        var totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
         var response = new ViewServiceByPageResponse
         {
             TotalCount = totalCount,
@@ -94,14 +94,14 @@ public class ServicesService(
 
     public async Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
     {
-        // Validate Id là Guid hợp lệ
+        // Validate Id 
         if (!Guid.TryParse(request.Id, out var guidId))
             throw new AppException(400, "Invalid id format.");
 
-        // Gọi repository để lấy dữ liệu
+        // call repo to get data
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(guidId);
 
-        // Nếu không tìm thấy thì throw exception hoặc trả về null
+        // rejected null
         if (service == null)
             throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
@@ -123,7 +123,7 @@ public class ServicesService(
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
-        // Validate quyền
+        // Validate role
         if (role != RoleNames.Admin && role != RoleNames.Manager)
             throw new AppException(403, "UNAUTHORIZED");
         // Validate not null
@@ -195,20 +195,16 @@ public class ServicesService(
             service.IsDeleted = request.IsDeleted;
 
         var newMedias = new List<Media?>();
-        foreach (var url in request.ImageUrls)
+        foreach (var media in from url in request.ImageUrls where service.Media.Any(m => m.Url == url) select new Media
+                 {
+                     Url = url,
+                     ServiceId = service.Id,
+                     Type = "Image of service",
+                     CreatedBy = accountId,
+                 })
         {
-            if (service.Media.Any(m => m.Url == url))
-            {
-                var media = new Media
-                {
-                    Url = url,
-                    ServiceId = service.Id,
-                    Type = "Image of service",
-                    CreatedBy = accountId,
-                };
-                service.Media.Add(media);
-                newMedias.Add(media);
-            }
+            service.Media.Add(media);
+            newMedias.Add(media);
         }
 
         if (newMedias.Any())
