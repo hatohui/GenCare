@@ -132,8 +132,12 @@ builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
 builder.Services.AddScoped<IBirthControlService, BirthControlService>();
+builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 
 
 
