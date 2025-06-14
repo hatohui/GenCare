@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.BirthControl.Request;
-using Application.DTOs.BirthControl.Response;
 using Application.Services;
 
 namespace API.Controllers;
@@ -9,34 +8,52 @@ namespace API.Controllers;
 public class BirthControlController(IBirthControlService birthControlService): ControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<ViewBirthControlResponse>> ViewBirthControlById(Guid id)
+    public async Task<IActionResult> ViewBirthControlById(Guid id)
     {
         var result = await birthControlService.ViewBirthControlAsync(id);
 
-        if (result == null)
-        {
-            return NotFound();
-        }
-
         return Ok(result);
     }
+    
+    
     [HttpPost]
     public async Task<IActionResult> CreateBirthControl([FromBody] CreateBirthControlRequest request)
     {
-        try
+        var created = await birthControlService.AddBirthControlAsync(request);
+        if (created == null)
         {
-            await birthControlService.AddBirthControlAsync(request);
-            return Ok(200);
+            return BadRequest("Failed to create birth control record.");
         }
-        catch (ArgumentException ex)
+        else
         {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-           
-            return StatusCode(500, "Something went wrong.");
+            return Ok(created);
         }
     }
+    
+    
+    [HttpDelete("{accountId}")]
+    public async Task<IActionResult> RemoveBirthControl(Guid accountId)
+    {
+        var removed = await birthControlService.RemoveBirthControlAsync(accountId);
+
+        if (removed)
+            return NoContent(); 
+        else
+            return NotFound();
+        
+    }
+    
+    
+    [HttpPatch]
+    public async Task<IActionResult> UpdateBirthControl([FromBody] UpdateBirthControlRequest request)
+    {
+        var updated = await birthControlService.UpdateBirthControlAsync(request);
+
+        if (updated.Success)
+            return NoContent(); 
+        else
+            return BadRequest(); 
+    }
+
     
 }
