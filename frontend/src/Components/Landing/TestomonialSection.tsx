@@ -3,11 +3,18 @@
 import { motion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 
+/**
+ * Section for testimonials. Scroll-based animation for each testimonial.
+ * When scroll to the section, the background color will change from white to general.
+ * Each testimonial will have its own animation when scroll to that testimonial.
+ * The testimonial will scale up and fade in when scroll to it.
+ * @returns The TestimonialsSection component
+ */
 export default function TestimonialsSection() {
 	const targetRef = useRef<HTMLDivElement | null>(null)
 	const { scrollYProgress } = useScroll({ target: targetRef })
 
-	const x = useTransform(scrollYProgress, [0, 1], ['45%', '-95%'])
+	const x = useTransform(scrollYProgress, [0, 1.2], ['45%', '-95%'])
 
 	const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
 

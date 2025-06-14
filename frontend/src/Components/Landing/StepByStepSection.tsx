@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import { BookingSVG } from '../SVGs'
 
 export default function ProcessSteps() {
 	return (
@@ -20,7 +21,7 @@ export default function ProcessSteps() {
 						title: 'Đặt Lịch Hẹn',
 						description:
 							'Book an appointment via Website, Zalo, Facebook or Hotline 19001717.',
-						icon: '/images/step1-icon.png', // Replace with your icon path
+						icon: <BookingSVG className='w-12 h-12' />,
 					},
 					{
 						step: '2',
@@ -53,11 +54,7 @@ export default function ProcessSteps() {
 						</div>
 						<h3 className='text-xl font-semibold mb-2'>{item.title}</h3>
 						<p className='text-gray-600 text-sm mb-4'>{item.description}</p>
-						<img
-							src={item.icon}
-							alt={`Icon for ${item.title}`}
-							className='w-16 h-16 object-contain mb-4'
-						/>
+						{item.icon}
 					</motion.div>
 				))}
 			</div>
