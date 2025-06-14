@@ -33,9 +33,7 @@ export type GetAccountByIdRequest = {
 	id: string
 }
 
-export type GetAccountByIdResponse = {
-	account: StaffAccount
-}
+export type GetAccountByIdResponse = StaffAccount
 
 //------------------------------- ---------
 /**

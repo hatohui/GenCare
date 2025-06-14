@@ -6,6 +6,7 @@ import { forbidden, useRouter } from 'next/navigation'
 import { MANAGEMENT_TEAM } from '@/Constants/Management'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { isTokenValid } from '@/Utils/isTokenValid'
+import { useGetMe } from '@/Services/account-service'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)
@@ -14,19 +15,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter()
 	const { accessToken: token } = tokenStore
 	const [isLoading, setIsLoading] = useState(true)
+	const { data, isSuccess } = useGetMe()
 
 	useEffect(() => {
 		const verificationTimeout = setTimeout(() => {
 			if (isLoading) router.push('/login?error=verification_timeout')
 		}, 5000)
 
-		return () => clearTimeout(verificationTimeout)
+		return clearTimeout(verificationTimeout)
 	}, [isLoading, router])
 
 	useEffect(() => {
 		setIsClient(true)
 	}, [])
-
 	useEffect(() => {
 		if (!isClient) return
 
@@ -52,17 +53,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 			return
 		}
+	}, [token, isClient, router])
 
-		const { decodedToken } = validation
+	useEffect(() => {
+		// Only run after isSuccess
+		if (!isClient || !isSuccess || !data) return
 
-		accountStore.setAccount(decodedToken)
+		console.log('Data:', data)
 
-		if (!MANAGEMENT_TEAM.includes(decodedToken.account.role)) {
+		accountStore.setAccount(data)
+
+		if (!MANAGEMENT_TEAM.includes(data.role.name)) {
 			forbidden()
+			return
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router])
+	}, [isClient, isSuccess, data])
 
 	if (!isClient || isLoading) {
 		return (
@@ -73,10 +80,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	}
 
 	return (
-		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground'>
-			<div className='w-full flex-none md:w-64'>
-				<Sidenav />
-			</div>
+		<div className='flex flex-col md:flex-row  h-screen florageBackground'>
+			<Sidenav />
 			<main className='flex-1 p-7 h-full scroll-smooth'>{children}</main>
 		</div>
 	)

@@ -3,5 +3,5 @@ import { Department } from './Department'
 import { StaffInfo } from './StaffInfo'
 
 export type StaffAccount = Account &
-	Omit<Department, 'id'> &
-	Partial<Omit<StaffInfo, 'accountId' | 'departmentId'>>
+	Omit<Department, 'id' | 'description'> &
+	Partial<Omit<StaffInfo, 'accountId' | 'departmentId' | 'description'>>

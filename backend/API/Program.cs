@@ -1,4 +1,5 @@
-﻿using Api.Middlewares;
+﻿using System.Text;
+using Api.Middlewares;
 using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
@@ -12,12 +13,10 @@ using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -133,6 +132,10 @@ builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
+builder.Services.AddScoped<IBirthControlService, BirthControlService>();
+
+
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>

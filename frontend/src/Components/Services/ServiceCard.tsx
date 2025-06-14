@@ -26,8 +26,8 @@ export const ServiceCard = ({
 			className='bg-white rounded-2xl p-5 h-full shadow-md hover:shadow-lg transition-shadow duration-300'
 		>
 			{imageUrl ? (
-				<div className='h-[300px] bg-gray-500 animate-pulse rounded-[30px] center-all'>
-					<motion.circle
+				<div className='h-[300px] bg-gray-500 animate-pulse round center-all'>
+					<motion.div
 						animate={{
 							rotate: 360,
 							transition: { repeat: Infinity, duration: 2, ease: 'linear' },

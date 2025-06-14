@@ -7,7 +7,7 @@ import { ADMIN_TEAM } from '@/Constants/Management'
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const { data } = useAccountStore()
 
-	if (!data?.account.role || !ADMIN_TEAM.includes(data.account.role)) {
+	if (!data?.role.name || !ADMIN_TEAM.includes(data.role.name)) {
 		forbidden()
 	}
 

@@ -1,18 +1,18 @@
 using System.Net;
 using Application.DTOs.Account;
+using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
+using Application.DTOs.Role;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
-using Application.DTOs.Account.Requests;
-using Domain.Common.Constants;
 using Microsoft.Extensions.Caching.Distributed;
-
 
 namespace Infrastructure.Services;
 
@@ -246,19 +246,25 @@ public class AccountService
         return (accessToken, refreshToken);
     }
 
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count, string? search)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request)
     {
-        var skip = page * count;
-        var accounts = await accountRepo.GetAccountsByPageAsync(skip, count);
-        var totalCount = await accountRepo.GetTotalAccountCountAsync(search);
+        // Correct paging logic: (Page - 1) * Count
+        var skip = (request.Page - 1) * request.Count;
 
-        var result = new GetAccountByPageResponse
+        // Now passing the correct skip value and other filters to the repository
+        var accounts = await accountRepo.GetAccountsByPageAsync(skip, request.Count, request.Search, request.Role, request.Active);
+        var totalCount = await accountRepo.GetTotalAccountCountAsync(request.Search, request.Role, request.Active);
+
+        return new GetAccountByPageResponse
         {
-            Accounts = accounts.ConvertAll
-            (a => new AccountViewModel
+            Accounts = accounts.ConvertAll(a => new AccountViewModel
             {
                 Id = a.Id,
-                RoleName = a.Role.Name,
+                Role = new RoleViewModel
+                {
+                    Name = a.Role.Name,
+                    Description = a.Role.Description
+                },
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
@@ -266,21 +272,14 @@ public class AccountService
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
                 IsDeleted = a.IsDeleted
-            }
-            ),
+            }),
             TotalCount = totalCount
         };
-        return result;
     }
 
     public async Task<Account> GetAccountByIdAsync(Guid accountId)
     {
         return await accountRepo.GetAccountByIdAsync(accountId);
-    }
-
-    public Task<GetAccountByPageResponse> GetAccountsByPageAsync(int page, int count)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)
@@ -343,7 +342,6 @@ public class AccountService
             throw new AppException(409, "Account with this email already exists.");
         }
 
-
         // Create the account
         Account newAcc = new()
         {
@@ -363,7 +361,6 @@ public class AccountService
         // add account to the database
         await accountRepo.AddAsync(newAcc);
 
-
         //check if staff info in request exists
 
         StaffInfo staffInfo = new()
@@ -381,12 +378,12 @@ public class AccountService
 
         // store the new account in cache in 10 minutes
         await distributedCache.SetStringAsync(
-            cacheKey, 
-            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc), 
+            cacheKey,
+            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc),
             new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-                }
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            }
         );
 
         return new StaffAccountCreateResponse()
@@ -407,4 +404,143 @@ public class AccountService
         };
     }
 
+    public async Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string paramId)
+    {
+        var role = JwtHelper.GetRoleFromAccessToken(accessToken) ?? throw new AppException(400, "Role is not found in access token");
+        var accessId = JwtHelper.GetAccountIdFromToken(accessToken); //account id from access token
+        if (Guid.Equals(accessId, Guid.Parse(paramId))) //update themselves
+        {
+            //get account by param Id
+            Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
+            //update account
+            a.FirstName = request.Account.FirstName ?? a.FirstName;
+            a.LastName = request.Account.LastName ?? a.LastName;
+            a.Phone = request.Account.PhoneNumber ?? a.Phone;
+            a.Gender = request.Account.Gender ?? a.Gender;
+            a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
+            a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
+            //check if updated account is member or staff,..
+            //will not have staff info if it is a member
+            //have staff info if it is staff,...
+            if (role.ToLower() != RoleNames.Member.ToLower() && request.StaffInfo != null && a.StaffInfo != null)
+            {
+                //account now is staff, consultant, manager or admin
+                if (request.StaffInfo.DepartmentId != null)
+                    a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+                a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
+                a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
+                a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
+            }
+
+            //now update account in database
+            await accountRepo.UpdateAccount(a);
+        }
+        else
+        {
+            //admin can update all without other admin
+            if (role.ToLower() == RoleNames.Admin.ToLower())
+            {
+                //get account by param Id
+                Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
+                //update account
+                a.FirstName = request.Account.FirstName ?? a.FirstName;
+                a.LastName = request.Account.LastName ?? a.LastName;
+                a.Phone = request.Account.PhoneNumber ?? a.Phone;
+                a.Gender = request.Account.Gender ?? a.Gender;
+                a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
+                a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
+                //check if updated account is member or staff,..
+                //will not have staff info if it is a member
+                //have staff info if it is staff,...
+                if (request.StaffInfo != null && a.StaffInfo != null)
+                {
+                    //account now is staff, consultant, manager or admin
+                    if (request.StaffInfo.DepartmentId != null)
+                        a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+                    a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
+                    a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
+                    a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
+                }
+                //now update account in database
+                await accountRepo.UpdateAccount(a);
+            }
+            else if (role.ToLower() == RoleNames.Manager.ToLower())
+            {
+                //manager can update consultants, staffs
+
+                //get account by param Id
+                Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
+
+                //check if account is consultants or staffs
+                if (a.Role.Name.ToLower() == RoleNames.Staff.ToLower() ||
+                    a.Role.Name.ToLower() == RoleNames.Consultant.ToLower())
+                {
+                    //update account
+                    a.FirstName = request.Account.FirstName ?? a.FirstName;
+                    a.LastName = request.Account.LastName ?? a.LastName;
+                    a.Phone = request.Account.PhoneNumber ?? a.Phone;
+                    a.Gender = request.Account.Gender ?? a.Gender;
+                    a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
+                    a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
+                    //check if updated account is member or staff,..
+                    //will not have staff info if it is a member
+                    //have staff info if it is staff,...
+                    if (request.StaffInfo != null && a.StaffInfo != null)
+                    {
+                        //account now is staff, consultant, manager or admin
+                        if (request.StaffInfo.DepartmentId != null)
+                            a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+                        a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
+                        a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
+                        a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
+                    }
+                    //now update account in database
+                    await accountRepo.UpdateAccount(a);
+                }
+            }
+
+        }
+    }
+    public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
+    {
+        // Get account details
+        var account = await accountRepo.GetAccountByIdAsync(accountId);
+        if (account == null)
+        {
+            throw new Exception("Account not found.");
+        }
+
+        // Get role information
+        var role = await roleRepo.GetRoleByIdAsync(account.RoleId);
+        if (role == null)
+        {
+            throw new Exception("Role not found.");
+        }
+
+        // Get staff info (if exists)
+        var staffInfo = await staffInfoRepo.GetStaffInfoByAccountIdAsync(accountId);
+
+        // Prepare profile response
+        var profile = new ProfileViewModel
+        {
+            Id = account.Id,
+            Email = account.Email,
+            FirstName = account.FirstName ?? string.Empty,
+            LastName = account.LastName ?? string.Empty,
+            Gender = account.Gender,
+            DateOfBirth = account.DateOfBirth,
+            AvatarUrl = account.AvatarUrl,
+            IsDeleted = account.IsDeleted,
+            Role = new RoleViewModel
+            {
+                Name = role.Name,
+                Description = role.Description
+            },
+            Degree = staffInfo?.Degree,
+            YearOfExperience = staffInfo?.YearOfExperience,
+            Biography = staffInfo?.Biography
+        };
+
+        return profile;
+    }
 }

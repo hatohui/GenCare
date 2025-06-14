@@ -3,7 +3,5 @@
 public record class ViewServiceByPageResponse
 {
     public int TotalCount { get; set; }
-    public List<ServicePayLoadForStaff> Services{ get; set; } 
-    
+    public List<ServicePayLoadForStaff> Services { get; set; }
 }
-

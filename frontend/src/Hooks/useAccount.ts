@@ -1,12 +1,12 @@
 // stores/authStore.ts
 import { create } from 'zustand'
-import { DecodedTokenData } from '@/Interfaces/Auth/Schema/token'
+import { StaffAccount } from '@/Interfaces/Account/Types/StaffAccount'
 
 type AccountStore = {
-	data: DecodedTokenData | null
+	data: StaffAccount | null
 	isLoading: boolean
 	setIsLoading: (isLoading: boolean) => void
-	setAccount: (data: DecodedTokenData) => void
+	setAccount: (data: StaffAccount) => void
 	removeAccount: () => void
 }
 

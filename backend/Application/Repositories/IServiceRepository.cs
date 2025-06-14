@@ -4,7 +4,7 @@ namespace Application.Repositories;
 
 public interface IServiceRepository
 {
-    Task<List<Service>> SearchServiceAsync(int page, int count);
+    Task<List<Service>> SearchServiceAsync(int page, int count, string? name,bool? orderByPrice, bool? includeDeleted);
 
     Task<Service?> SearchServiceByIdAsync(Guid idService);
 
@@ -19,7 +19,10 @@ public interface IServiceRepository
     public Task<Service?> SearchServiceByIdForStaffAsync(Guid idService);
 
     Task<bool> DeleteServiceByIdAsync(Guid idService);
-    Task<List<Service?>>SearchServiceIncludeDeletedAsync(int page, int count);
+
+    Task<List<Service?>> SearchServiceIncludeDeletedAsync(int page, int count);
+
     Task<int> CountServicesIncludeDeletedAsync();
+
     Task<int> CountServicesAsync();
 }

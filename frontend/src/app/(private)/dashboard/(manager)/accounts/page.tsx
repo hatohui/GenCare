@@ -13,7 +13,6 @@ const AccountPage = () => {
 		>
 			<div className='w-full flex gap-3 px-1'>
 				<div className='w-full'>
-					<h1 className='text-2xl font-bold'>Search</h1>
 					<div className='flex gap-3 grow overflow-scroll'>
 						<SearchBar waitTime={1000} />
 						<AddNewButton />

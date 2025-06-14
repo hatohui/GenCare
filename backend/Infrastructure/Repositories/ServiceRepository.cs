@@ -6,16 +6,35 @@ namespace Infrastructure.Repositories;
 
 public class ServiceRepository(IApplicationDbContext dbContext) : IServiceRepository
 {
-    public async Task<List<Service>> SearchServiceAsync(int page, int count)
+    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name,bool? orderByPrice, bool? includeDeleted)
     {
-        return await dbContext.Services
-            .Where(s => !s.IsDeleted)
-            .OrderByDescending(s => s.CreatedAt)
-            .Skip((page - 1) * count)
-            .Take(count)
-            .ToListAsync();
+        var query = dbContext.Services.AsQueryable();
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            query = query.Where(s => s.Name.Contains(name) || s.Name.Contains(name));
+        }
+
+        if (includeDeleted.HasValue)
+        {
+            if (!includeDeleted.Value)
+                query = query.Where(s => !s.IsDeleted);
+            // if true, include all
+        }
+
+        if (orderByPrice.HasValue)
+        {
+            query = orderByPrice.Value
+                ? query.OrderBy(s => s.Price)
+                : query.OrderByDescending(s => s.Price);
+        }
+
+        query = query.Skip((page - 1) * count).Take(count);
+
+        return await query.ToListAsync();
 
     }
+
     public async Task<List<Service>>? SearchServiceIncludeDeletedAsync(int page, int count)
     {
         return await dbContext.Services
@@ -24,11 +43,13 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
             .Take(count)
             .ToListAsync();
     }
+
     public async Task<int> CountServicesAsync()
     {
         return await dbContext.Services
             .CountAsync(s => !s.IsDeleted);
     }
+
     public async Task<int> CountServicesIncludeDeletedAsync()
     {
         return await dbContext.Services
@@ -84,7 +105,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
     {
         var affectedRows = await dbContext.Services
             .Where(s => s.Id == idService && !s.IsDeleted)
-            .ExecuteDeleteAsync();
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsDeleted, true));
 
         return affectedRows > 0;
     }

@@ -1,9 +1,11 @@
-﻿namespace Application.DTOs.Account;
+﻿using Application.DTOs.Role;
+
+namespace Application.DTOs.Account;
 
 public class AccountViewModel
 {
     public Guid Id { get; set; }
-    public string RoleName { get; set; }
+    public RoleViewModel? Role { get; set; }
     public string Email { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
