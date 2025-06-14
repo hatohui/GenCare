@@ -9,7 +9,7 @@ namespace API.Controllers;
 /// </summary>
 /// <param name="purchaseService">The Purchase Service</param>
 [ApiController]
-[Route("api/purchase")]
+[Route("api/purchases")]
 public class PurchaseController(IPurchaseService purchaseService) : ControllerBase
 {
     /// <summary>
@@ -19,7 +19,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     /// <returns>An Action result containing message</returns>
     /// <response code="200">Service booked successfully.</response>
     /// <response code="401">Unauthorized if the user is not a member.</response>
-    [HttpPost("book")]
+    [HttpPost("booking")]
     public async Task<IActionResult> BookingServiceAsync([FromBody] BookingServiceRequest request)
     {
         // get access token from header
