@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import z4 from 'zod/v4'
 import {
 	RegisterFormData,
@@ -37,7 +37,8 @@ const RegisterForm = ({
 	const [errors, setErrors] = useState<Record<string, FloatingLabelErrorData>>(
 		{}
 	)
-	const checked = useRef(new Set<RegisterFormProps>())
+
+	const [step, setStep] = useState(1) // Step state to toggle between sections
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -56,7 +57,6 @@ const RegisterForm = ({
 		}
 
 		setForm(updatedForm)
-
 		validateForm(name as RegisterFormProps, updatedForm)
 	}
 
@@ -70,13 +70,9 @@ const RegisterForm = ({
 			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
 			const properties = z4.treeifyError(result.error).properties
 
-			checked.current.add(name)
-
-			checked.current.forEach(field => {
-				if (properties && properties[field]) {
-					filteredErrors[field] = properties[field]
-				}
-			})
+			if (properties && properties[name]) {
+				filteredErrors[name] = properties[name]
+			}
 
 			setErrors(filteredErrors)
 		} else {
@@ -123,6 +119,15 @@ const RegisterForm = ({
 		}
 	}
 
+	// Switch between steps (1 and 2)
+	const handleNext = () => {
+		setStep(2)
+	}
+
+	const handleBack = () => {
+		setStep(1)
+	}
+
 	return (
 		<form
 			className={clsx(
@@ -131,144 +136,181 @@ const RegisterForm = ({
 			)}
 			onSubmit={handleSubmit}
 		>
-			<h1 className='text-xl font-bold mb-4'>Đăng ký tài khoản</h1>
+			<h1 className='text-xl font-bold mb-4'>
+				{step === 1
+					? 'Đăng ký tài khoản (Bước 1)'
+					: 'Đăng ký tài khoản (Bước 2)'}
+			</h1>
 
-			<div className='flex gap-4'>
-				<FloatingLabel
-					label='Họ'
-					id='lastName'
-					name='lastName'
-					value={form.lastName}
-					onChange={handleChange}
-					error={errors.lastName}
-				/>
-				<FloatingLabel
-					label='Tên'
-					id='firstName'
-					name='firstName'
-					value={form.firstName}
-					onChange={handleChange}
-					error={errors.firstName}
-				/>
-			</div>
+			{/* Step 1: Basic Information */}
+			{step === 1 && (
+				<>
+					<div className='flex gap-4'>
+						<FloatingLabel
+							label='Họ'
+							id='lastName'
+							name='lastName'
+							value={form.lastName}
+							onChange={handleChange}
+							error={errors.lastName}
+						/>
+						<FloatingLabel
+							label='Tên'
+							id='firstName'
+							name='firstName'
+							value={form.firstName}
+							onChange={handleChange}
+							error={errors.firstName}
+						/>
+					</div>
 
-			<FloatingLabel
-				label='Email'
-				id='email'
-				name='email'
-				value={form.email}
-				onChange={handleChange}
-				error={errors.email}
-			/>
-
-			<FloatingLabel
-				label='Mật khẩu'
-				id='password'
-				type='password'
-				name='password'
-				value={form.password}
-				onChange={handleChange}
-				error={errors.password}
-			/>
-
-			<FloatingLabel
-				label='Xác nhận mật khẩu'
-				id='confirmPassword'
-				type='password'
-				name='confirmPassword'
-				value={form.confirmPassword}
-				onChange={handleChange}
-				error={errors.confirmPassword}
-			/>
-
-			<FloatingLabel
-				label='Số điện thoại'
-				id='phoneNumber'
-				name='phoneNumber'
-				value={form.phoneNumber}
-				onChange={handleChange}
-				error={errors.phoneNumber}
-			/>
-
-			{/* Ngày sinh (Date of Birth) */}
-			<div className='mb-4'>
-				<label
-					htmlFor='dateOfBirth'
-					className={`block text-sm font-medium mb-1 ${
-						errors.dateOfBirth ? 'text-red-500' : 'text-gray-700'
-					}`}
-				>
-					Ngày sinh (dd/mm/yyyy)
-				</label>
-				<input
-					type='date'
-					id='dateOfBirth'
-					name='dateOfBirth'
-					value={form.dateOfBirth}
-					onChange={handleChange}
-					className={`w-full px-3 py-2 border ${
-						errors.dateOfBirth
-							? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-							: 'border-gray-300 focus:ring-main focus:border-main'
-					} rounded-md shadow-sm focus:outline-none focus:ring-0`}
-				/>
-				{errors.dateOfBirth && (
-					<p className='text-red-500 text-sm mt-1'>
-						{errors.dateOfBirth.errors[0]}
-					</p>
-				)}
-			</div>
-			<div className='mb-4'>
-				<label
-					htmlFor='gender'
-					className='block text-sm font-medium text-gray-700 mb-1'
-				>
-					Giới tính:
-				</label>
-				<select
-					id='gender'
-					name='gender'
-					value={`${form.gender}`}
-					onChange={handleChange}
-					className={`w-full px-3 py-2 border ${
-						errors.gender ? 'border-red-500' : 'border-gray-300'
-					} rounded-md shadow-sm focus:ring-main focus:border-main focus:outline-none focus:ring-0`}
-				>
-					<option value='true'>Nam</option>
-					<option value='false'>Nữ</option>
-				</select>
-				{errors.gender && (
-					<p className='text-red-500 text-sm mt-1'>{errors.gender.errors[0]}</p>
-				)}
-			</div>
-
-			{/* Đồng ý điều khoản (Agree to terms) */}
-			<div className='mb-4 mt-2'>
-				<label
-					className={`flex items-center gap-2 text-gray-700'
-					`}
-				>
-					<input
-						type='checkbox'
-						name='agreeToTerms'
-						checked={form.agreeToTerms}
+					<FloatingLabel
+						label='Email'
+						id='email'
+						name='email'
+						value={form.email}
 						onChange={handleChange}
-						className={`w-4 h-4`}
+						error={errors.email}
 					/>
-					<span>Tôi đồng ý với điều khoản dịch vụ</span>
-				</label>
-				{errors.agreeToTerms && (
-					<p className='text-red-500 text-sm mt-1'>
-						{errors.agreeToTerms.errors[0]}
-					</p>
-				)}
-			</div>
 
-			<SubmitButton
-				label='Đăng kí'
-				buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent'
-			/>
+					<FloatingLabel
+						label='Mật khẩu'
+						id='password'
+						type='password'
+						name='password'
+						value={form.password}
+						onChange={handleChange}
+						error={errors.password}
+					/>
 
+					<FloatingLabel
+						label='Xác nhận mật khẩu'
+						id='confirmPassword'
+						type='password'
+						name='confirmPassword'
+						value={form.confirmPassword}
+						onChange={handleChange}
+						error={errors.confirmPassword}
+					/>
+
+					<FloatingLabel
+						label='Số điện thoại'
+						id='phoneNumber'
+						name='phoneNumber'
+						value={form.phoneNumber}
+						onChange={handleChange}
+						error={errors.phoneNumber}
+					/>
+
+					{/* Next button */}
+					<div className='mt-4'>
+						<button
+							type='button'
+							onClick={handleNext}
+							className='w-full p-2 rounded-full bg-main text-white'
+						>
+							Chuyển sang bước 2
+						</button>
+					</div>
+				</>
+			)}
+
+			{/* Step 2: Additional Information */}
+			{step === 2 && (
+				<>
+					{/* Ngày sinh (Date of Birth) */}
+					<div className='mb-4'>
+						<label
+							htmlFor='dateOfBirth'
+							className={`block text-sm font-medium mb-1 ${
+								errors.dateOfBirth ? 'text-red-500' : 'text-gray-700'
+							}`}
+						>
+							Ngày sinh (dd/mm/yyyy)
+						</label>
+						<input
+							type='date'
+							id='dateOfBirth'
+							name='dateOfBirth'
+							value={form.dateOfBirth}
+							onChange={handleChange}
+							className={`w-full px-3 py-2 border ${
+								errors.dateOfBirth
+									? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+									: 'border-gray-300 focus:ring-main focus:border-main'
+							} rounded-md shadow-sm focus:outline-none focus:ring-0`}
+						/>
+						{errors.dateOfBirth && (
+							<p className='text-red-500 text-sm mt-1'>
+								{errors.dateOfBirth.errors[0]}
+							</p>
+						)}
+					</div>
+					<div className='mb-4'>
+						<label
+							htmlFor='gender'
+							className='block text-sm font-medium text-gray-700 mb-1'
+						>
+							Giới tính:
+						</label>
+						<select
+							id='gender'
+							name='gender'
+							value={`${form.gender}`}
+							onChange={handleChange}
+							className={`w-full px-3 py-2 border ${
+								errors.gender ? 'border-red-500' : 'border-gray-300'
+							} rounded-md shadow-sm focus:ring-main focus:border-main focus:outline-none focus:ring-0`}
+						>
+							<option value='true'>Nam</option>
+							<option value='false'>Nữ</option>
+						</select>
+						{errors.gender && (
+							<p className='text-red-500 text-sm mt-1'>
+								{errors.gender.errors[0]}
+							</p>
+						)}
+					</div>
+
+					{/* Đồng ý điều khoản (Agree to terms) */}
+					<div className='mb-4 mt-2'>
+						<label className={`flex items-center gap-2 text-gray-700`}>
+							<input
+								type='checkbox'
+								name='agreeToTerms'
+								checked={form.agreeToTerms}
+								onChange={handleChange}
+								className={`w-4 h-4`}
+							/>
+							<span>Tôi đồng ý với điều khoản dịch vụ</span>
+						</label>
+						{errors.agreeToTerms && (
+							<p className='text-red-500 text-sm mt-1'>
+								{errors.agreeToTerms.errors[0]}
+							</p>
+						)}
+					</div>
+
+					{/* Submit button */}
+					<SubmitButton
+						label='Đăng kí'
+						buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent'
+					/>
+
+					{/* Back button */}
+					<div className='mt-4'>
+						<button
+							type='button'
+							onClick={handleBack}
+							className='w-full p-2 rounded-full bg-gray-500 text-white'
+						>
+							Quay lại bước 1
+						</button>
+					</div>
+				</>
+			)}
+
+			{/* Footer: Google Login & Redirect */}
 			<div className='text-center text-gray-500 mt-4'>
 				Đã có tài khoản?{' '}
 				<a href='/login' className='text-accent hover:underline'>
@@ -276,7 +318,7 @@ const RegisterForm = ({
 				</a>
 			</div>
 
-			<div className='text-center'>
+			<div className='text-center text-gray-500'>
 				<GoogleLoginButton text='signup_with' className='mt-4 h-10 mx-auto' />
 			</div>
 		</form>

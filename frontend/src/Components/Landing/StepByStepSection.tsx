@@ -1,8 +1,6 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { BookingSVG } from '../SVGs'
-
 export default function ProcessSteps() {
 	return (
 		<section className='snap-start py-20 bg-white text-center px-6'>
@@ -21,7 +19,7 @@ export default function ProcessSteps() {
 						title: 'Đặt Lịch Hẹn',
 						description:
 							'Book an appointment via Website, Zalo, Facebook or Hotline 19001717.',
-						icon: <BookingSVG className='w-12 h-12' />,
+						icon: 'as',
 					},
 					{
 						step: '2',

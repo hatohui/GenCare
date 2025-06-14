@@ -108,8 +108,6 @@ const serviceApi = {
 }
 
 export const useServiceByPage = (page: number, count: number) => {
-	// const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['services', page, count],
 		queryFn: () => serviceApi.getByPage(page, count),
