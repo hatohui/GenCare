@@ -19,4 +19,6 @@ public interface IScheduleService
     Task DeleteScheduleAsync(string scheduleId);
 
     Task<ScheduleViewResponse> GetScheduleAsync(string accessToken, string id, DateTime? startAt, DateTime? endAt);
+
+    Task<List<AllScheduleViewResponse>> GetAllScheduleAsync(DateTime? startAt, DateTime? endAt);
 }

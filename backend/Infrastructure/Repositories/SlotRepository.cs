@@ -22,7 +22,7 @@ public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
 
     public async Task<List<Slot>> GetAll()
     {
-        return await dbContext.Slots.ToListAsync();
+        return await dbContext.Slots.Include(s => s.Schedules).ToListAsync();
     }
 
     public async Task<Slot?> GetById(Guid id)

@@ -37,6 +37,53 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
         await scheduleRepository.Delete(s);
     }
 
+    public async Task<List<AllScheduleViewResponse>> GetAllScheduleAsync(DateTime? startAt, DateTime? endAt)
+    {
+        //get all slot
+        var slots = await slotRepository.GetAll();
+        slots = slots.OrderBy(s => s.No).ToList();
+        if (startAt != null && endAt != null)
+        {
+            slots = slots.Where(s => s.StartAt >= startAt && s.EndAt <= endAt).ToList();
+        }
+        //get schedule list of all slots
+        //get account of each schedule
+
+        List<AllScheduleViewResponse> rs = new();
+        foreach (var slot in slots)
+        {//duyệt qua từng slot
+            List<AccountResponseModel> accounts = new();
+            foreach (var schedule in slot.Schedules)//duyệt qua từng sche của từng slot 
+                                                    //để lấy từng account tương ứng
+            {
+                var account = await accountRepository.GetAccountByIdAsync(schedule.AccountId);//lay acc
+                if (account != null)
+                {
+                    //sau khi lấy được acc thì chúng ta chuyển nó sang model rồi add
+                    //nó vào account list -> cần account list để bỏ vào trong response
+                    accounts.Add(new AccountResponseModel()
+                    {
+                        Id = account.Id.ToString("D"),
+                        Email = account.Email,
+                        PhoneNumber = account.Phone,
+                        FirstName = account.FirstName,
+                        LastName = account.LastName
+                    });
+                }
+            }
+            //sau khi đã lấy được account list của từng slot thì chúng ta se add nao va slot
+            rs.Add(new AllScheduleViewResponse()
+            {
+                Acccounts = accounts,
+                No = slot.No,
+                StartAt = slot.StartAt,
+                EndAt = slot.EndAt
+            });
+        }
+        //rs
+        return rs;
+    }
+
     public async Task<ScheduleViewResponse> GetScheduleAsync(string accessToken, string id, DateTime? startAt, DateTime? endAt)
     {
         {
@@ -86,12 +133,29 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
             foreach (var schedule in schedules)
             {
                 var s = slotRepository.GetById(schedule.SlotId);
-                rs.Slots.Add(new SlotResponseModel()
+                //check time of slot
+                if (startAt != null && endAt != null)
                 {
-                    No = s.Result == null ? default : s.Result.No,
-                    EndAt = s.Result == null ? default : s.Result.EndAt,
-                    StartAt = s.Result == null ? default : s.Result.StartAt
-                });
+                    if (s.Result!.StartAt >= startAt && s.Result!.EndAt <= endAt)
+                    {
+                        rs.Slots.Add(new SlotResponseModel()
+                        {
+                            No = s.Result == null ? default : s.Result.No,
+                            EndAt = s.Result == null ? default : s.Result.EndAt,
+                            StartAt = s.Result == null ? default : s.Result.StartAt
+                        });
+                    }
+                }
+                else
+                {
+                    rs.Slots.Add(new SlotResponseModel()
+                    {
+                        No = s.Result == null ? default : s.Result.No,
+                        EndAt = s.Result == null ? default : s.Result.EndAt,
+                        StartAt = s.Result == null ? default : s.Result.StartAt
+                    });
+                }
+
             }
             return rs;
         }
