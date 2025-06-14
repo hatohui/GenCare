@@ -76,42 +76,42 @@ jobs:
           build-args: |
             CACHEBUST=${{ steps.cache-key.outputs.cache-key }}
 
-            - name: Deploy to EC2
-            uses: appleboy/ssh-action@v1.0.0
-            with:
-              host: ${{ secrets.EC2_HOST }}
-              username: ${{ secrets.EC2_USER }}
-              key: ${{ secrets.EC2_KEY }}
-              script: |
-                IMAGE=${{ env.IMAGE_NAME }}
-                SHA=${{ github.sha }}
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            IMAGE=${{ env.IMAGE_NAME }}
+            SHA=${{ github.sha }}
 
-                echo "🔄 Pulling latest image..."
-                sudo docker pull $IMAGE:$SHA
+            echo "🔄 Pulling latest image..."
+            sudo docker pull $IMAGE:$SHA
 
-                echo "🛑 Stopping and removing old container..."
-                sudo docker stop gencare-backend || true
-                sudo docker rm gencare-backend || true
+            echo "🛑 Stopping and removing old container..."
+            sudo docker stop gencare-backend || true
+            sudo docker rm gencare-backend || true
 
-                echo "🚀 Starting new container..."
-                sudo docker run -d --name gencare-backend -p 8080:8080 --env-file .env $IMAGE:$SHA
+            echo "🚀 Starting new container..."
+            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file .env $IMAGE:$SHA
 
-                echo "⏳ Waiting for health check..."
-                sleep 10
-                if ! curl -f http://localhost:8080/health; then
-                  echo "❌ Health check failed, rolling back..."
-                  sudo docker stop gencare-backend || true
-                  sudo docker rm gencare-backend || true
-                  sudo docker pull $IMAGE:previous || exit 1
-                  sudo docker run -d --name gencare-backend -p 8080:8080 $IMAGE:previous || exit 1
-                  exit 1
-                fi
+            echo "⏳ Waiting for health check..."
+            sleep 10
+            if ! curl -f http://localhost:8080/health; then
+              echo "❌ Health check failed, rolling back..."
+              sudo docker stop gencare-backend || true
+              sudo docker rm gencare-backend || true
+              sudo docker pull $IMAGE:previous || exit 1
+              sudo docker run -d --name gencare-backend -p 8080:8080 $IMAGE:previous || exit 1
+              exit 1
+            fi
 
-                echo "🧹 Pruning unused Docker images..."
-                # Delete all but current and previous
-                sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}} {{.ID}}" \
-                  | grep -v -E "(:${SHA}|:previous)" \
-                  | awk '{print $2}' \
-                  | xargs -r sudo docker rmi -f
+            echo "🧹 Pruning unused Docker images..."
+            # Delete all but current and previous
+            sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}} {{.ID}}" \
+              | grep -v -E "(:${SHA}|:previous)" \
+              | awk '{print $2}' \
+              | xargs -r sudo docker rmi -f
 
-                echo "✅ Deployment complete."
+            echo "✅ Deployment complete."
