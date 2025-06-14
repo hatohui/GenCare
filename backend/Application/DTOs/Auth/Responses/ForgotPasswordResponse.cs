@@ -2,5 +2,5 @@
 
 public class ForgotPasswordResponse
 {
-    public string? CallbackUrl { get; set; }
+    public string CallbackUrl { get; set; } = null!;
 }
