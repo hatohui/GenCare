@@ -48,7 +48,7 @@ const MonthPicker = ({
 			</button>
 
 			<p className='sr-only'>
-				Currently selected month: {currentDate.getMonth()}
+				Currently selected date: {format(currentDate, 'yyyy-MM-dd')}
 			</p>
 
 			<h2

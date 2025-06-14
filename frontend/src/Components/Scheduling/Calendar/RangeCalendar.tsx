@@ -23,28 +23,21 @@ const RangeCalendar = ({
 		if (!startDate || (startDate && endDate)) {
 			setStartDate(date)
 			setEndDate(null)
+			return
 		}
 
 		if (startDate && !endDate) {
+			if (isSameDay(date, startDate)) {
+				setStartDate(null)
+				return
+			}
+
 			if (isBefore(date, startDate)) {
 				setEndDate(startDate)
 				setStartDate(date)
-			} else if (!isSameDay(date, startDate)) {
+			} else {
 				setEndDate(date)
 			}
-		}
-
-		if (startDate && endDate) {
-			setStartDate(date)
-			setEndDate(null)
-		}
-
-		if (startDate && isSameDay(date, startDate)) {
-			setStartDate(null)
-		}
-
-		if (endDate && isSameDay(date, endDate)) {
-			setStartDate(null)
 		}
 	}
 
