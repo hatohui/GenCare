@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Api.Middlewares;
 using API.ActionFilters;
+using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Repositories;
@@ -21,7 +21,7 @@ using Microsoft.OpenApi.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Add services - API
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -38,7 +38,7 @@ builder.Services.AddSwaggerGen(options =>
             Scheme = "Bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "Nhập token theo dạng: Bearer {your token}"
+            Description = "Nhập token theo dạng: Bearer {your token}",
         }
     );
     options.AddSecurityRequirement(
@@ -50,11 +50,11 @@ builder.Services.AddSwaggerGen(options =>
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
+                        Id = "Bearer",
+                    },
                 },
                 Array.Empty<string>()
-            }
+            },
         }
     );
 });
@@ -87,7 +87,7 @@ builder
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
         };
     })
     .AddCookie()
@@ -98,6 +98,7 @@ builder
         options.SaveTokens = true;
         options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
+
 //================================================= CORS Configuration =================================================
 builder.Services.AddCors(options =>
 {
@@ -139,12 +140,11 @@ builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
 builder.Services.AddScoped<IBirthControlService, BirthControlService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 
-
-
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = Environment.GetEnvironmentVariable("REDIS_URI")
+    options.Configuration =
+        Environment.GetEnvironmentVariable("REDIS_URI")
         ?? throw new InvalidOperationException("Redis connection string is missing.");
 });
 
