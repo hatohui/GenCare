@@ -1,4 +1,5 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
+import { useAccountStore } from '@/Hooks/useAccount'
 import useToken from '@/Hooks/useToken'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
@@ -6,7 +7,7 @@ import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 
 const AUTH_URL = `${DEFAULT_API_URL}/auth`
@@ -18,7 +19,7 @@ const authApi = {
 			.then(res => res.data)
 	},
 	login: (data: LoginApi) => {
-		return axios
+		return axiosInstance
 			.post<TokenData>(`${AUTH_URL}/login`, data, {
 				withCredentials: true,
 			})
@@ -84,9 +85,17 @@ export const useOauthAccount = () => {
 
 export const useLogoutAccount = () => {
 	const tokenStore = useToken()
+	const accountStore = useAccountStore()
 	const header = useAccessTokenHeader()
+	const queryClient = useQueryClient()
+
+	const handleLogout = () => {
+		tokenStore.removeAccessToken()
+		accountStore.removeAccount()
+		queryClient.invalidateQueries({ queryKey: ['me'] })
+	}
 
 	return useMutation({
-		mutationFn: () => authApi.logout(header, tokenStore.removeAccessToken),
+		mutationFn: () => authApi.logout(header, handleLogout),
 	})
 }
