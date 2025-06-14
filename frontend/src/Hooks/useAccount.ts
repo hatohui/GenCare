@@ -1,6 +1,5 @@
 // stores/authStore.ts
 import { create } from 'zustand'
-import { Account } from '@/Interfaces/Auth/Types/Account'
 import { StaffAccount } from '@/Interfaces/Account/Types/StaffAccount'
 
 type AccountStore = {
