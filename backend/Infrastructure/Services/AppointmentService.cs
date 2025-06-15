@@ -32,7 +32,23 @@ public class AppointmentService(IAccountRepository accountRepository,
         await appointmentRepository.Add(appointment);
     }
 
-    public async Task UpdateAppointmentAsync(AppointmentUpdateRequest request, string appointmentId)
+    public async Task DeleteAppointmentAsync(string appointmentId, string deleteId)
+    {
+        //get appointment by id
+        var appointment = await appointmentRepository.GetById(appointmentId);
+        if (appointment == null)
+        {
+            throw new AppException(404, "Appointment not found");
+        }
+        //mark as deleted
+        appointment.IsDeleted = true;
+        appointment.DeletedAt = DateTime.Now;
+        appointment.DeletedBy = Guid.Parse(deleteId);
+
+        await appointmentRepository.Update(appointment);
+    }
+
+    public async Task UpdateAppointmentAsync(AppointmentUpdateRequest request, string appointmentId, string updateId)
     {
         //get appointment by id
         var appointment = await appointmentRepository.GetById(appointmentId);
@@ -54,6 +70,7 @@ public class AppointmentService(IAccountRepository accountRepository,
         if(request.ScheduleAt != null) appointment.ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt.Value, DateTimeKind.Unspecified);
         if (request.JoinUrl != null) appointment.JoinUrl = request.JoinUrl;
         appointment.UpdatedAt = DateTime.Now;
+        appointment.UpdatedBy = Guid.Parse(updateId);
         //update appointment
         await appointmentRepository.Update(appointment);
     }
@@ -72,7 +89,8 @@ public class AppointmentService(IAccountRepository accountRepository,
                 StaffId = appointment.Staff.Id.ToString("D"),
                 StaffName = $"{appointment.Staff.FirstName} {appointment.Staff.LastName}",
                 ScheduleAt = appointment.ScheduleAt,
-                JoinUrl = appointment.JoinUrl
+                JoinUrl = appointment.JoinUrl,
+                IsDeleted = appointment.IsDeleted
             });
         }
 
