@@ -36,27 +36,27 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
 
         bool isChanged = false;
 
-        if (ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate))
+        if (request.OrderDate != null && ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate.Value))
         {
-            testResult.OrderDate = ToUnspecified(request.OrderDate);
+            testResult.OrderDate = ToUnspecified(request.OrderDate.Value);
             isChanged = true;
         }
-        if (ToUnspecified(testResult.SampleDate.GetValueOrDefault()) != ToUnspecified(request.SampleDate.GetValueOrDefault()))
+        if (request.SampleDate != null && ToUnspecified(testResult.SampleDate.GetValueOrDefault()) != ToUnspecified(request.SampleDate.Value))
         {
-            testResult.SampleDate = request.SampleDate.HasValue ? ToUnspecified(request.SampleDate.Value) : (DateTime?)null;
+            testResult.SampleDate = ToUnspecified(request.SampleDate.Value);
             isChanged = true;
         }
-        if (ToUnspecified(testResult.ResultDate.GetValueOrDefault()) != ToUnspecified(request.ResultDate.GetValueOrDefault()))
+        if (request.ResultDate != null && ToUnspecified(testResult.ResultDate.GetValueOrDefault()) != ToUnspecified(request.ResultDate.Value))
         {
-            testResult.ResultDate = request.ResultDate.HasValue ? ToUnspecified(request.ResultDate.Value) : (DateTime?)null;
+            testResult.ResultDate = ToUnspecified(request.ResultDate.Value);
             isChanged = true;
         }
-        if (testResult.Status != request.Status)
+        if (request.Status != null && testResult.Status != request.Status.Value)
         {
-            testResult.Status = request.Status;
+            testResult.Status = request.Status.Value;
             isChanged = true;
         }
-        if (testResult.ResultData != request.ResultData)
+        if (request.ResultData != null && testResult.ResultData != request.ResultData)
         {
             testResult.ResultData = request.ResultData;
             isChanged = true;
