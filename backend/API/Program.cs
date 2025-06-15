@@ -3,6 +3,7 @@ using API.ActionFilters;
 using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
+using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
@@ -145,9 +146,14 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
 
+
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
+    var uri = Environment.GetEnvironmentVariable("REDIS_URI")
+                   ?? throw new InvalidOperationException("Missing REDIS_URI");
+    options.Configuration = RedisConnectionHelper.FromUri(uri);
+
     options.Configuration =
         Environment.GetEnvironmentVariable("REDIS_URI")
         ?? throw new InvalidOperationException("Redis connection string is missing.");
@@ -173,34 +179,23 @@ builder.Services.AddDbContext<GenCareDbContext>(options =>
 // ====== App Pipeline ======
 var app = builder.Build();
 
-// 1. Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// 2. Global Exception Middleware
 app.UseMiddleware<GlobalExceptionMiddleware>();
-
-// 3. Logging Middleware
 app.UseMiddleware<LoggingMiddleware>();
-
-// 4. HTTPS redirect
-app.UseHttpsRedirection();
-
-// 5. CORS
-app.UseCors("AllowFrontendOrigins");
-
-// 6. Rate Limiting Middleware (nếu bạn có)
 app.UseMiddleware<RateLimitMiddleware>();
 
-// 7. Authentication & Authorization
+app.UseHttpsRedirection();
+app.UseCors("AllowFrontendOrigins");
 app.UseAuthentication();
+app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
-// 8. Map Controllers
 app.MapControllers();
 
-// 9. Run the app
 await app.RunAsync();
+
