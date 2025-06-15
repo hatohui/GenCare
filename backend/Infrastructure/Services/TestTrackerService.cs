@@ -7,11 +7,20 @@ namespace Infrastructure.Services;
 
 public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : ITestTrackerService
 {
-    // Hàm xử lý DateTimeKind
+    /// <summary>
+    /// Converts a DateTime to Unspecified kind (removes timezone information).
+    /// </summary>
+    /// <param name="dt">Input DateTime value.</param>
+    /// <returns>DateTime with Kind = Unspecified.</returns>
     private static DateTime ToUnspecified(DateTime dt)
     {
         return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
     }
+    /// <summary>
+    /// Gets test result information by OrderDetailId.
+    /// </summary>
+    /// <param name="orderDetailId">ID of the test order detail.</param>
+    /// <returns>Test result information or throws if not found.</returns>
     public async Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId)
     {
         var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId)?? 
@@ -29,6 +38,13 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
         
     }
 
+    
+    /// <summary>
+    /// Updates a test result based on the provided information.
+    /// Only updates fields that are supplied (non-null), following PATCH semantics.
+    /// </summary>
+    /// <param name="request">Update request for the test result.</param>
+    /// <returns>Update result (success/failure, message).</returns>
     public async Task<UpdateTestResultResponse> UpdateTestResultAsync(UpdateTestResultRequest request)
     {
         var testResult = await testTrackerRepository.ViewTestTrackerAsync(request.OrderDetailId)
@@ -75,7 +91,11 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
         };
     }
 
-
+    /// <summary>
+    /// Deletes a test result by OrderDetailId.
+    /// </summary>
+    /// <param name="request">Delete request with OrderDetailId.</param>
+    /// <returns>Delete result (success/failure, message).</returns>
 
     public async Task<DeleteTestResultResponse> DeleteTestTrackerAsync(DeleteTestResultRequest request)
     {
