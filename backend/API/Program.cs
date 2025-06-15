@@ -6,6 +6,7 @@ using Application.DTOs.Auth.Requests;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
+using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -154,23 +156,17 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //===========Database Configuration===========
 
 var env = builder.Environment;
+var connectionString =
+    (
+        env.IsDevelopment()
+            ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
+            : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
+        ) ?? throw new InvalidOperationException(
+            "Missing connection string for the current environment."
+        ); ;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    var connectionString =
-        (
-            env.IsDevelopment()
-                ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
-                : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
-        ) ?? string.Empty;
-
-    if (string.IsNullOrWhiteSpace(connectionString))
-    {
-        throw new InvalidOperationException(
-            "Missing connection string for the current environment."
-        );
-    }
-
     options.UseNpgsql(connectionString);
 });
 

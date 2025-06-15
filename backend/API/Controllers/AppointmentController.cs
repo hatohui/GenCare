@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Appointment.Request;
 using Application.Helpers;
 using Application.Services;
+using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,5 +22,14 @@ public class AppointmentController(IAppointmentService appointmentService) : Con
         //call service
         await appointmentService.CreateAppointmentAsync(request, accountId.ToString(""));
         return Created();
+    }
+
+    [HttpGet]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
+    public async Task<IActionResult> ViewAllAppointment()
+    {
+        //call service
+        var appointments = await appointmentService.ViewAllAppointmentsAsync();
+        return Ok(appointments);
     }
 }

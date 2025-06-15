@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Appointment.Request;
+using Application.DTOs.Appointment.Response;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
@@ -31,5 +32,24 @@ public class AppointmentService(IAccountRepository accountRepository,
         await appointmentRepository.Add(appointment);
     }
 
+    public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync()
+    {
+        var list = await appointmentRepository.GetAll();
+        List<AllAppointmentViewResponse> rs = new();
+        foreach (var appointment in list)
+        {
+            rs.Add(new AllAppointmentViewResponse
+            {
+                Id = appointment.Id.ToString("D"),
+                MemberId = appointment.Member.Id.ToString("D"),
+                MemberName = $"{appointment.Member.FirstName} {appointment.Member.LastName}",
+                StaffId = appointment.Staff.Id.ToString("D"),
+                StaffName = $"{appointment.Staff.FirstName} {appointment.Staff.LastName}",
+                ScheduleAt = appointment.ScheduleAt,
+                JoinUrl = appointment.JoinUrl
+            });
+        }
 
+        return rs;
+    }
 }
