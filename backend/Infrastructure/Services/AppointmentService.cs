@@ -32,6 +32,32 @@ public class AppointmentService(IAccountRepository accountRepository,
         await appointmentRepository.Add(appointment);
     }
 
+    public async Task UpdateAppointmentAsync(AppointmentUpdateRequest request, string appointmentId)
+    {
+        //get appointment by id
+        var appointment = await appointmentRepository.GetById(appointmentId);
+        if(appointment == null)
+        {
+            throw new AppException(404, "Appointment not found");
+        }
+        //edit
+        if(request.MemberId != null)
+        {
+            var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
+            appointment.Member = member ?? throw new AppException(404, "member id is invalid");
+        }
+        if (request.StaffId != null)
+        {
+            var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
+            appointment.Staff = staff ?? throw new AppException(404, "staff id is invalid");
+        }
+        if(request.ScheduleAt != null) appointment.ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt.Value, DateTimeKind.Unspecified);
+        if (request.JoinUrl != null) appointment.JoinUrl = request.JoinUrl;
+        appointment.UpdatedAt = DateTime.Now;
+        //update appointment
+        await appointmentRepository.Update(appointment);
+    }
+
     public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync()
     {
         var list = await appointmentRepository.GetAll();

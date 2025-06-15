@@ -32,4 +32,12 @@ public class AppointmentController(IAppointmentService appointmentService) : Con
         var appointments = await appointmentService.ViewAllAppointmentsAsync();
         return Ok(appointments);
     }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
+    public async Task<IActionResult> UpdateAppointment([FromBody] AppointmentUpdateRequest request, [FromRoute] string id)
+    {
+        await appointmentService.UpdateAppointmentAsync(request, id);
+        return NoContent(); //204
+    }
 }

@@ -11,4 +11,5 @@ public interface IAppointmentService
 {
     Task CreateAppointmentAsync(AppointmentCreateRequest request, string accessId);
     Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync();
+    Task UpdateAppointmentAsync(AppointmentUpdateRequest request, string appointmentId);
 }
