@@ -1,8 +1,10 @@
 ﻿using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
+using Application.Helpers;
 using Application.Services;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace API.Controllers;
 
@@ -18,7 +20,8 @@ namespace API.Controllers;
 public class AuthController
 (
     IAccountService accountService,
-    IGoogleCredentialService googleCredentialService
+    IGoogleCredentialService googleCredentialService,
+    IDistributedCache cache
 ) : ControllerBase
 {
     /// <summary>
@@ -149,18 +152,31 @@ public class AuthController
 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> LogoutAsync()
+    public async Task<IActionResult> LogoutAsync(
+    [FromServices] IDistributedCache cache)
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrWhiteSpace(refreshToken))
-        {
             return BadRequest("Refresh token is required.");
-        }
 
         var success = await accountService.RevokeRefreshTokenAsync(refreshToken);
         if (!success)
-        {
             return BadRequest("Failed to revoke token or token not found.");
+
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            var remaining = JwtHelper.GetTokenRemainingTime(accessToken);
+
+            if (remaining.HasValue)
+            {
+                var key = $"blacklist:{accessToken}";
+                await cache.SetStringAsync(key, "revoked", new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = remaining.Value
+                });
+            }
         }
 
         Response.Cookies.Delete("refreshToken");

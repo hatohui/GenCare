@@ -314,11 +314,29 @@ namespace Application.Helpers
             // Get the user ID from the token
             var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userIdClaim != null && Guid.TryParse(userIdClaim, out userId))
-            {
-                return true;
-            }
-            return false;
+            return userIdClaim != null && Guid.TryParse(userIdClaim, out userId);
+        }
+
+        /// <summary>
+        /// Extracts the remaining lifetime from a JWT access token.
+        /// </summary>
+        /// <param name="accessToken">The access token in JWT format.</param>
+        /// <returns>The remaining <see cref="TimeSpan"/> until expiration, or null if invalid or expired.</returns>
+        public static TimeSpan? GetTokenRemainingTime(string accessToken)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return null;
+
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(accessToken))
+                return null;
+
+            var token = handler.ReadJwtToken(accessToken);
+            var expiryUtc = token.ValidTo; // always in UTC
+            var nowUtc = DateTime.UtcNow;
+
+            var remaining = expiryUtc - nowUtc;
+            return remaining > TimeSpan.Zero ? remaining : null;
         }
     }
 }

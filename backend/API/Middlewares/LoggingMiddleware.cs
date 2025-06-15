@@ -17,6 +17,14 @@ public class LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> 
         logger.LogInformation("➡️ [{Time}] HTTP {Method} {Path} from {IP}",
             timestamp, sanitizedMethod, sanitizedPath, sanitizedIP);
 
+        // 🔐 Ghi log access token nếu có
+        var authHeader = context.Request.Headers["Authorization"].ToString();
+        if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer "))
+        {
+            var accessToken = authHeader.Replace("Bearer ", "").Trim();
+            logger.LogDebug("🔐 [{Time}] Access Token: {Token}", timestamp, accessToken);
+        }
+
         try
         {
             await next(context); // tiếp tục đến middleware/handler kế tiếp
