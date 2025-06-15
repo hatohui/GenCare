@@ -83,17 +83,35 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo docker pull ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            IMAGE=${{ env.IMAGE_NAME }}
+            SHA=${{ github.sha }}
+
+            echo "🔄 Pulling latest image..."
+            sudo docker pull $IMAGE:$SHA
+
+            echo "🛑 Stopping and removing old container..."
             sudo docker stop gencare-backend || true
             sudo docker rm gencare-backend || true
-            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file .env ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+            echo "🚀 Starting new container..."
+            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file .env $IMAGE:$SHA
+
+            echo "⏳ Waiting for health check..."
             sleep 10
             if ! curl -f http://localhost:8080/health; then
-              echo "Health check failed, rolling back..."
+              echo "❌ Health check failed, rolling back..."
               sudo docker stop gencare-backend || true
               sudo docker rm gencare-backend || true
-              sudo docker pull ${{ env.IMAGE_NAME }}:previous || exit 1
-              sudo docker run -d --name gencare-backend -p 8080:8080 ${{ env.IMAGE_NAME }}:previous || exit 1
+              sudo docker pull $IMAGE:previous || exit 1
+              sudo docker run -d --name gencare-backend -p 8080:8080 $IMAGE:previous || exit 1
               exit 1
             fi
-            sudo docker image prune -f
+
+            echo "🧹 Pruning unused Docker images..."
+            # Delete all but current and previous
+            sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}} {{.ID}}" \
+              | grep -v -E "(:${SHA}|:previous)" \
+              | awk '{print $2}' \
+              | xargs -r sudo docker rmi -f
+
+            echo "✅ Deployment complete."
