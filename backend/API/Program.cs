@@ -148,6 +148,7 @@ builder.Services.AddScoped<ITestTrackerRepository, TestTrackerRepository>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 
 
 
@@ -158,9 +159,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
                    ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
 
-    options.Configuration =
-        Environment.GetEnvironmentVariable("REDIS_URI")
-        ?? throw new InvalidOperationException("Redis connection string is missing.");
+   
 });
 
 //===========Database Configuration===========
