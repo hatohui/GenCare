@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const router = useRouter()
 	const { accessToken: token } = tokenStore
 	const [isLoading, setIsLoading] = useState(true)
-	const { data } = useGetMe()
+	const { data, isSuccess } = useGetMe()
 
 	useEffect(() => {
 		const verificationTimeout = setTimeout(() => {
@@ -28,7 +28,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		setIsClient(true)
 	}, [])
-
 	useEffect(() => {
 		if (!isClient) return
 
@@ -54,16 +53,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 			return
 		}
+	}, [token, isClient, router])
 
-		if (data) {
-			accountStore.setAccount(data)
-			if (!MANAGEMENT_TEAM.includes(data.role.name)) {
-				forbidden()
-			}
+	useEffect(() => {
+		// Only run after isSuccess
+		if (!isClient || !isSuccess || !data) return
+
+		console.log('Data:', data)
+
+		accountStore.setAccount(data)
+
+		if (!MANAGEMENT_TEAM.includes(data.role.name)) {
+			forbidden()
+			return
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router, data])
+	}, [isClient, isSuccess, data])
 
 	if (!isClient || isLoading) {
 		return (

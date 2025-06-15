@@ -23,16 +23,25 @@ jobs:
           - language: javascript-typescript
             build-mode: none
     steps:
-      - name: Checkout repository
+      - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
+      - name: 🗃️ Cache CodeQL Database
+        uses: actions/cache@v4
+        with:
+          path: ~/.codeql/databases
+          key: codeql-db-fe-${{ runner.os }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            codeql-db-fe-${{ runner.os }}-${{ github.ref }}
+            codeql-db-fe-${{ runner.os }}
+
+      - name: 🛠️ Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
-      - name: Perform CodeQL Analysis
+      - name: 🔍 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"

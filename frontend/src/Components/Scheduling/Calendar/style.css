@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+/* colors */
+#calendar {
+	--color-range: var(--color-blue-200);
+}
+
+/* calendar */
+
+@layer utilities {
+	.calendar-button {
+		@apply transition-all py-1 border border-gray-300 px-2 ease-in duration-150 hover:bg-blue-500/40 shadow-md rounded;
+	}
+
+	.calendar-grid {
+		@apply grid grid-cols-7;
+	}
+
+	.selected-cell {
+		@apply shadow-sm hover:brightness-90 bg-gradient-to-b text-white from-[var(--color-main)] to-[var(--color-secondary)];
+	}
+
+	.today-cell {
+		@apply shadow-sm border-[var(--color-main)];
+	}
+
+	.start-cell {
+		@apply bg-gradient-to-r from-transparent from-50% to-50% to-[var(--color-range)];
+	}
+
+	.end-cell {
+		@apply bg-gradient-to-l from-transparent from-50% to-50% to-[var(--color-range)];
+	}
+
+	.disabled-cell {
+		@apply pointer-events-none opacity-20;
+	}
+
+	.month-rear-button {
+		@apply bg-[var(--color-range)];
+	}
+}
