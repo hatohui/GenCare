@@ -138,6 +138,9 @@ builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
 builder.Services.AddScoped<IBirthControlService, BirthControlService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
 
 
 

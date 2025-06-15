@@ -18,7 +18,8 @@ public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
 
     public async Task Delete(Slot s)
     {
-        dbContext.Slots.Remove(s);
+        var slot = await dbContext.Slots.FirstOrDefaultAsync(x => x.Id == s.Id);
+        if(slot != null) slot.IsDeleted = true;
         await dbContext.SaveChangesAsync();
     }
 
