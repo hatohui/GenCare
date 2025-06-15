@@ -134,6 +134,8 @@ builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
 builder.Services.AddScoped<IBirthControlService, BirthControlService>();
+builder.Services.AddScoped<ITestTrackerService, TestTrackerService>();
+builder.Services.AddScoped<ITestTrackerRepository, TestTrackerRepository>();
 
 
 
