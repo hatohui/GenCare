@@ -3,9 +3,11 @@ using API.ActionFilters;
 using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
+using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
+using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -138,70 +141,58 @@ builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
 builder.Services.AddScoped<IBirthControlService, BirthControlService>();
+builder.Services.AddScoped<ITestTrackerService, TestTrackerService>();
+builder.Services.AddScoped<ITestTrackerRepository, TestTrackerRepository>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration =
-        Environment.GetEnvironmentVariable("REDIS_URI")
-        ?? throw new InvalidOperationException("Redis connection string is missing.");
+    var uri = Environment.GetEnvironmentVariable("REDIS_URI") ?? throw new InvalidOperationException("Missing REDIS_URI");
+    options.Configuration = RedisConnectionHelper.FromUri(uri);
 });
 
 //===========Database Configuration===========
 
 var env = builder.Environment;
+var connectionString =
+    (
+        env.IsDevelopment()
+            ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
+            : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
+        ) ?? throw new InvalidOperationException(
+            "Missing connection string for the current environment."
+        ); ;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    var connectionString =
-        (
-            env.IsDevelopment()
-                ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
-                : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
-        ) ?? string.Empty;
-
-    if (string.IsNullOrWhiteSpace(connectionString))
-    {
-        throw new InvalidOperationException(
-            "Missing connection string for the current environment."
-        );
-    }
-
     options.UseNpgsql(connectionString);
 });
 
 // ====== App Pipeline ======
 var app = builder.Build();
 
-// 1. Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// 2. Global Exception Middleware
 app.UseMiddleware<GlobalExceptionMiddleware>();
-
-// 3. Logging Middleware
 app.UseMiddleware<LoggingMiddleware>();
-
-// 4. HTTPS redirect
-app.UseHttpsRedirection();
-
-// 5. CORS
-app.UseCors("AllowFrontendOrigins");
-
-// 6. Rate Limiting Middleware (nếu bạn có)
 app.UseMiddleware<RateLimitMiddleware>();
 
-// 7. Authentication & Authorization
+app.UseHttpsRedirection();
+app.UseCors("AllowFrontendOrigins");
 app.UseAuthentication();
+app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
-// 8. Map Controllers
 app.MapControllers();
 
-// 9. Run the app
 await app.RunAsync();
+

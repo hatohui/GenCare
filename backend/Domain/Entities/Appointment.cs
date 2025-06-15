@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Common.Enums;
+
+namespace Domain.Entities;
 
 public class Appointment
 {
