@@ -154,8 +154,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    var uri = Environment.GetEnvironmentVariable("REDIS_URI")
-                   ?? throw new InvalidOperationException("Missing REDIS_URI");
+    var uri = Environment.GetEnvironmentVariable("REDIS_URI") ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
 });
 
