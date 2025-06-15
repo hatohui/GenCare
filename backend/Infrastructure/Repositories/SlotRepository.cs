@@ -10,14 +10,17 @@ using Domain.Entities;
 namespace Infrastructure.Repositories;
 public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
 {
-    public Task Add(Slot s)
+    public async Task Add(Slot s)
     {
-        throw new NotImplementedException();
+        await dbContext.Slots.AddAsync(s);
+        await dbContext.SaveChangesAsync();
     }
 
-    public Task Delete(Slot s)
+    public async Task Delete(Slot s)
     {
-        throw new NotImplementedException();
+        var slot = await dbContext.Slots.FirstOrDefaultAsync(x => x.Id == s.Id);
+        if(slot != null) slot.IsDeleted = true;
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<List<Slot>> GetAll()
@@ -30,8 +33,9 @@ public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
         return await dbContext.Slots.FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
     }
 
-    public Task Update(Slot s)
+    public async Task Update(Slot s)
     {
-        throw new NotImplementedException();
+        dbContext.Slots.Update(s);
+        await dbContext.SaveChangesAsync();
     }
 }
