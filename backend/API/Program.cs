@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using API.ActionFilters;
+using API.Hubs;
 using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
@@ -26,6 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 
 // ====== Swagger ======
@@ -171,7 +173,7 @@ var connectionString =
             : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
         ) ?? throw new InvalidOperationException(
             "Missing connection string for the current environment."
-        ); ;
+        ); 
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
@@ -198,6 +200,7 @@ app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chatHub"); // đường dẫn này frontend sẽ kết nối tới
 
 await app.RunAsync();
 
