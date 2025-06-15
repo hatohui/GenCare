@@ -150,10 +150,30 @@ public class AuthController
         return Ok(new AccountLoginResponse(accessToken));
     }
 
+    /// <summary>
+    ///     Logs out the currently authenticated user by revoking their refresh token and blacklisting the access token.
+    /// </summary>
+    /// <remarks>
+    ///     This endpoint performs the following actions:
+    ///     <list type="number">
+    ///         <item>Retrieves the refresh token from the request cookies.</item>
+    ///         <item>Revokes the refresh token using the account service.</item>
+    ///         <item>If an access token is present, calculates its remaining lifetime and blacklists it in the distributed cache.</item>
+    ///         <item>Deletes the refresh token cookie from the response.</item>
+    ///     </list>
+    ///     If the refresh token is missing or invalid, a <c>400 Bad Request</c> is returned.
+    ///     If the token revocation fails, a <c>400 Bad Request</c> is returned.
+    ///     On success, a <c>204 No Content</c> response is returned.
+    /// </remarks>
+    /// <returns>
+    ///     <c>204 No Content</c> if logout is successful.<br/>
+    ///     <c>400 Bad Request</c> if the refresh token is missing or revocation fails.
+    /// </returns>
+    /// <response code="204">Logout successful; tokens revoked and blacklisted.</response>
+    /// <response code="400">Refresh token is missing or could not be revoked.</response>
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> LogoutAsync(
-    [FromServices] IDistributedCache cache)
+    public async Task<IActionResult> LogoutAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrWhiteSpace(refreshToken))
@@ -168,7 +188,6 @@ public class AuthController
         if (!string.IsNullOrEmpty(accessToken))
         {
             var remaining = JwtHelper.GetTokenRemainingTime(accessToken);
-
             if (remaining.HasValue)
             {
                 var key = $"blacklist:{accessToken}";
