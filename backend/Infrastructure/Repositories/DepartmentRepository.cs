@@ -6,6 +6,13 @@ namespace Infrastructure.Repositories;
 
 public class DepartmentRepository(IApplicationDbContext dbContext) : IDepartmentRepository
 {
+    public async Task<List<Department>> GetAll()
+    {
+        return await dbContext.Departments
+            .Include(d => d.StaffInfos)
+            .ToListAsync();
+    }
+
     public async Task<Department?> GetDepartmentByIdAsync(Guid id)
     {
         return await dbContext.Departments

@@ -17,6 +17,7 @@ const UserProfile = () => {
 				width={30}
 				height={30}
 			/>
+
 			<div>
 				<div className='text-sm text-general'>exampleName</div>
 				<div className='text-xs text-slate-300'>example.email.com</div>

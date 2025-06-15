@@ -7,32 +7,35 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  analyzebe:
-    name: Analyze Backend (${{ matrix.language }})
+  codeql-analyze:
+    name: Analyze Backend (C#)
     if: ${{ !contains(github.event.pull_request.body, '#skip') }}
     runs-on: ubuntu-latest
+
     permissions:
       security-events: write
-      packages: read
-      actions: read
       contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: csharp
-            build-mode: none
+
     steps:
-      - name: Checkout repository
+      - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
+      - name: 🗃️ Cache CodeQL Database
+        uses: actions/cache@v4
+        with:
+          path: ~/.codeql/databases
+          key: codeql-db-csharp-${{ runner.os }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            codeql-db-csharp-${{ runner.os }}-${{ github.ref }}
+            codeql-db-csharp-${{ runner.os }}
+
+      - name: 🛠️ Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
+          languages: csharp
+          build-mode: none
 
-      - name: Perform CodeQL Analysis
+      - name: 🔍 Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{ matrix.language }}"
+          category: "/language:csharp"

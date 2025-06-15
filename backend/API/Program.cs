@@ -1,12 +1,13 @@
 ﻿using System.Text;
-using Api.Middlewares;
 using API.ActionFilters;
+using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
+using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
             Scheme = "Bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "Nhập token theo dạng: Bearer {your token}"
+            Description = "Nhập token theo dạng: Bearer {your token}",
         }
     );
     options.AddSecurityRequirement(
@@ -51,11 +53,11 @@ builder.Services.AddSwaggerGen(options =>
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
+                        Id = "Bearer",
+                    },
                 },
                 Array.Empty<string>()
-            }
+            },
         }
     );
 });
@@ -88,7 +90,7 @@ builder
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
         };
     })
     .AddCookie()
@@ -99,6 +101,7 @@ builder
         options.SaveTokens = true;
         options.ClaimActions.MapJsonKey("picture", "picture", "url");
     });
+
 //================================================= CORS Configuration =================================================
 builder.Services.AddCors(options =>
 {
@@ -133,8 +136,16 @@ builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IBirthControlRepository, BirthControlRepository>();
 builder.Services.AddScoped<IBirthControlService, BirthControlService>();
+builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -142,28 +153,26 @@ builder.Services.AddStackExchangeRedisCache(options =>
     var uri = Environment.GetEnvironmentVariable("REDIS_URI")
                    ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
+
+    options.Configuration =
+        Environment.GetEnvironmentVariable("REDIS_URI")
+        ?? throw new InvalidOperationException("Redis connection string is missing.");
 });
 
 //===========Database Configuration===========
 
 var env = builder.Environment;
+var connectionString =
+    (
+        env.IsDevelopment()
+            ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
+            : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
+        ) ?? throw new InvalidOperationException(
+            "Missing connection string for the current environment."
+        ); ;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    var connectionString =
-        (
-            env.IsDevelopment()
-                ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
-                : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
-        ) ?? string.Empty;
-
-    if (string.IsNullOrWhiteSpace(connectionString))
-    {
-        throw new InvalidOperationException(
-            "Missing connection string for the current environment."
-        );
-    }
-
     options.UseNpgsql(connectionString);
 });
 
@@ -189,3 +198,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
+
