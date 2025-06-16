@@ -19,7 +19,7 @@ public interface IBlogTagRepository
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains the blog tag entity if found; otherwise, <c>null</c>.
     /// </returns>
-    Task<BlogTag?> GetByBlogId(string blogId);
+    Task<List<BlogTag>> GetByBlogId(string blogId);
 
     /// <summary>
     /// Retrieves a <see cref="BlogTag"/> entity by its associated tag identifier.
@@ -28,7 +28,7 @@ public interface IBlogTagRepository
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains the blog tag entity if found; otherwise, <c>null</c>.
     /// </returns>
-    Task<BlogTag?> GetByTagId(string tagId);
+    Task<List<BlogTag>> GetByTagId(string tagId);
 
     /// <summary>
     /// Adds a new <see cref="BlogTag"/> to the data store.

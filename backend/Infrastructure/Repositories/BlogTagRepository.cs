@@ -30,22 +30,16 @@ public class BlogTagRepository(IApplicationDbContext dbContext) : IBlogTagReposi
             .ToListAsync();
     }
 
-    public Task<BlogTag?> GetByBlogId(string blogId)
+    public async Task<List<BlogTag>> GetByBlogId(string blogId)
     {
         Guid gBlogId = Guid.Parse(blogId);
-        return dbContext.BlogTags
-            .Include(bt => bt.Blog)
-            .Include(bt => bt.Tag)
-            .FirstOrDefaultAsync(bt => Guid.Equals(bt.BlogId, gBlogId));
+        return await dbContext.BlogTags.Where(bl => Guid.Equals(bl.BlogId, gBlogId)).ToListAsync();
     }
 
-    public Task<BlogTag?> GetByTagId(string tagId)
+    public async Task<List<BlogTag>> GetByTagId(string tagId)
     {
         Guid gTagId = Guid.Parse(tagId);
-        return dbContext.BlogTags
-            .Include(bt => bt.Blog)
-            .Include(bt => bt.Tag)
-            .FirstOrDefaultAsync(bt => Guid.Equals(bt.TagId, gTagId));
+        return await dbContext.BlogTags.Where(bl => Guid.Equals(bl.TagId, gTagId)).ToListAsync();
     }
 
     public async Task Update(BlogTag blogTag)

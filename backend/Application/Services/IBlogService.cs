@@ -6,5 +6,5 @@ namespace Application.Services;
 public interface IBlogService
 {
     Task<List<AllBlogViewResponse>> GetAllBlogsAsync();
-    Task AddBlogAsync(BlogCreateRequest request);
+    Task AddBlogAsync(BlogCreateRequest request, string accountId);
 }

@@ -1,4 +1,8 @@
-﻿using Application.Services;
+﻿using Application.DTOs.Blog.Request;
+using Application.Helpers;
+using Application.Services;
+using Domain.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,5 +16,17 @@ public class BlogController(IBlogService blogService) : ControllerBase
     {
         var blogs = await blogService.GetAllBlogsAsync();
         return Ok(blogs);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Consultant},{RoleNames.Staff}")]
+    public async Task<IActionResult> AddBlog([FromBody] BlogCreateRequest request)
+    {
+        //get access token from header
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id by token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        await blogService.AddBlogAsync(request, accountId.ToString("D"));
+        return Created();
     }
 }
