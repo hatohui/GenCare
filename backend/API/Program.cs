@@ -146,6 +146,8 @@ builder.Services.AddScoped<ITestTrackerRepository, TestTrackerRepository>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 
 
 
