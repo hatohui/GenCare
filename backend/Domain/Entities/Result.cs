@@ -1,5 +1,5 @@
-﻿
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
+
 public class Result
 {
     public Guid OrderDetailId { get; set; }

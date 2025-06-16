@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Application.Helpers;
+﻿namespace Application.Helpers;
 
 /// <summary>
 /// Provides a helper to convert Redis URI to a StackExchange.Redis-compatible connection string.

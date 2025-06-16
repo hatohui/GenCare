@@ -1,16 +1,17 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
-using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -19,7 +20,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -121,6 +121,11 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
 
 // ====== Application Services ======
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
+// ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -148,8 +153,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
-
-
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -174,15 +178,30 @@ builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(opt =>
+    {
+        opt.UseNpgsqlConnection(connectionString);
+    }));
 
 // ====== App Pipeline ======
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = [new AllowAllDashboardAuthorizationFilter()]
+});
+
+RecurringJob.AddOrUpdate<IRefreshTokenService>(
+    "cleanup-revoked-refresh-tokens",
+    service => service.CleanupRevokedTokensAsync(),
+    Cron.Daily
+);
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
@@ -197,4 +216,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
-

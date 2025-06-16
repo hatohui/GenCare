@@ -6,6 +6,5 @@ public record class ViewServicesByPageRequest
     public int Count { get; set; }
     public string? Search { get; set; }
     public bool? SortByPrice { get; set; }
-    public  bool? IncludeDeleted { get; set; }
-
+    public bool? IncludeDeleted { get; set; }
 }

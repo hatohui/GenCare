@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Schedule.Request;
+﻿using Application.DTOs.Schedule.Request;
 using Application.DTOs.Schedule.Response;
-using Application.Helpers;
-using Domain.Common.Constants;
-using Domain.Entities;
 
 namespace Application.Services;
 

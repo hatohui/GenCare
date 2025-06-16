@@ -11,4 +11,6 @@ public interface IRefreshTokenRepository
     Task<RefreshToken?> GetByTokenAsync(string token);
 
     Task UpdateAsync(RefreshToken token);
+
+    Task DeleteRevokedTokensAsync();
 }

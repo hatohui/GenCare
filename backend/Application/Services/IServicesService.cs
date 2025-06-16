@@ -12,6 +12,8 @@ public interface IServicesService
     Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken);
 
     Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken);
+
     Task<ViewServiceForUserResponse> SearchServiceAsync(ViewServicesByPageRequest request);
+
     Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServicesByPageRequest request);
 }

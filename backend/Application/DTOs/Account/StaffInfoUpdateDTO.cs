@@ -1,5 +1,5 @@
-﻿
-namespace Application.DTOs.Account;
+﻿namespace Application.DTOs.Account;
+
 public class StaffInfoUpdateDTO
 {
     public string? DepartmentId { get; set; }

@@ -1,10 +1,9 @@
-﻿
-
-using Application.Repositories;
+﻿using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
+
 public class FeedbackRepository(IApplicationDbContext dbContext) : IFeedbackRepository
 {
     public async Task Add(Feedback feedback)

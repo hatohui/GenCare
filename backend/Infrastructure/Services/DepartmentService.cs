@@ -1,9 +1,9 @@
-﻿
-using Application.DTOs.Department.Response;
+﻿using Application.DTOs.Department.Response;
 using Application.Repositories;
 using Application.Services;
 
 namespace Infrastructure.Services;
+
 public class DepartmentService(IDepartmentRepository departmentRepository) : IDepartmentService
 {
     public async Task<List<DepartmentGetResponse>> GetAllDepartment()
