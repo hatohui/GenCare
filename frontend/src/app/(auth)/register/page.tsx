@@ -13,6 +13,9 @@ import { AxiosError } from 'axios'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import useToken from '@/Hooks/useToken'
 import { REDIRECT_AFTER_LOGIN } from '@/Constants/Auth'
+import Image from 'next/image'
+import FlorageBackground from '@/Components/Landing/FlorageBackground'
+import { motion } from 'motion/react'
 
 const Register = () => {
 	const router = useRouter()
@@ -54,9 +57,36 @@ const Register = () => {
 	if (registerMutation.isPending) return <LoadingPage />
 
 	return (
-		<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4 flex items-center justify-center'>
-			<RegisterPage className='mt-[3rem]' handleRegister={handleRegister} />
-		</div>
+		<main className='max-h-screen center-all p-4 flex-col items-center justify-center'>
+			<div className='flex items-center gap-2 mb-4'>
+				<Image
+					src={'/images/gencarelogo.png'}
+					alt='logo'
+					width={50}
+					height={50}
+				/>
+				<span className='text-xl font-semibold'>
+					<span className='text-accent'>G</span>ENCARE
+				</span>
+			</div>
+
+			<div className='w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center'>
+				<RegisterPage className='' handleRegister={handleRegister} />
+
+				<motion.div
+					initial={{ opacity: 0, x: 50 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={{ delay: 0.5 }}
+				>
+					<object
+						data='/svgs/register.svg'
+						className='hidden md:flex overflow-hidden h-[600px]'
+					/>
+				</motion.div>
+			</div>
+
+			<FlorageBackground />
+		</main>
 	)
 }
 
