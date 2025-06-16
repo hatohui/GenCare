@@ -13,6 +13,7 @@ public class MessageService(IMessageRepository messageRepository,
                             IMediaRepository mediaRepository,  
                             IHubContext<ChatHub> chatHub) : IMessageService
 {
+    
     private static DateTime ToUnspecified(DateTime dt)
     {
         return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
@@ -46,6 +47,9 @@ public class MessageService(IMessageRepository messageRepository,
                     Url = url,
                     Type = "Image",
                     MessageId = newMessage.Id,
+                    CreatedBy = accountId,
+                    CreatedAt = ToUnspecified(DateTime.Now),
+                    UpdatedBy = accountId,
                 });
             }
         }
@@ -68,7 +72,6 @@ public class MessageService(IMessageRepository messageRepository,
                 media = mediaList.Select(m => new { m.Url, m.Type })
             });
 
-        // Response trả về
         return new MessageResponse
         {
             Id = newMessage.Id,
