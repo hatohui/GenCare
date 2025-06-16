@@ -5,7 +5,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/birthcontrol")]
-public class BirthControlController(IBirthControlService birthControlService): ControllerBase
+public class BirthControlController(IBirthControlService birthControlService) : ControllerBase
 {
     [HttpGet("{id}")]
     public async Task<IActionResult> ViewBirthControlById(Guid id)
@@ -14,8 +14,7 @@ public class BirthControlController(IBirthControlService birthControlService): C
 
         return Ok(result);
     }
-    
-    
+
     [HttpPost]
     public async Task<IActionResult> CreateBirthControl([FromBody] CreateBirthControlRequest request)
     {
@@ -37,10 +36,9 @@ public class BirthControlController(IBirthControlService birthControlService): C
         var removed = await birthControlService.RemoveBirthControlAsync(Id);
 
         if (removed)
-            return NoContent(); 
+            return NoContent();
         else
             return NotFound();
-        
     }
     
     
@@ -50,10 +48,8 @@ public class BirthControlController(IBirthControlService birthControlService): C
         var updated = await birthControlService.UpdateBirthControlAsync(request);
 
         if (updated.Success)
-            return NoContent(); 
+            return NoContent();
         else
-            return BadRequest(); 
+            return BadRequest();
     }
-
-    
 }

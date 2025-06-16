@@ -69,7 +69,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<List<Account>> GetAccountsByPageAsync(int skip, int pageSize, string? search, string? role, bool? active)
     {
-        var query = dbContext.Accounts.Include(a => a.Role).AsQueryable();
+        var query = dbContext.Accounts.Include(a => a.Role).AsQueryable().AsNoTracking();
 
         if (!string.IsNullOrEmpty(search))
         {

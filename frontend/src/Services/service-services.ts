@@ -62,7 +62,7 @@ const serviceApi = {
 				`${SERVICE_URL}?Page=${page}&Count=${count}`
 			)
 			.then(res => {
-				console.log(res.data)
+				console.log('getByPage', res.data)
 
 				return res.data
 			}),

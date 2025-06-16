@@ -498,9 +498,9 @@ public class AccountService
                     await accountRepo.UpdateAccount(a);
                 }
             }
-
         }
     }
+
     public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
     {
         // Get account details

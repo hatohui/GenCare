@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Repositories;
 
-public class BirthControlRepository(IApplicationDbContext dbContext): IBirthControlRepository
+public class BirthControlRepository(IApplicationDbContext dbContext) : IBirthControlRepository
 {
     public async Task<bool> AddBirthControlAsync(BirthControl birthControl)
     {
@@ -14,8 +14,7 @@ public class BirthControlRepository(IApplicationDbContext dbContext): IBirthCont
 
     public async Task<bool> RemoveBirthControlAsync(Guid accountId)
     {
-        return await dbContext.BirthControls.Where(x => x.AccountId == accountId).ExecuteDeleteAsync() >0;
-        
+        return await dbContext.BirthControls.Where(x => x.AccountId == accountId).ExecuteDeleteAsync() > 0;
     }
 
     public async Task<bool> UpdateBirthControlAsync(BirthControl birthControl)
@@ -24,14 +23,11 @@ public class BirthControlRepository(IApplicationDbContext dbContext): IBirthCont
         var affectedRows = await dbContext.SaveChangesAsync();
 
         return affectedRows > 0;
-        
     }
 
-    
     public async Task<BirthControl?> GetBirthControlAsync(Guid accountId)
     {
         return await dbContext.BirthControls.Where(b => b.AccountId == accountId).FirstOrDefaultAsync();
-        
     }
 
     public async Task<bool> CheckBirthControlExistsAsync(Guid accountId)

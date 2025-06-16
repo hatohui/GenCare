@@ -21,10 +21,10 @@ const ServiceList = ({
 
 			<div className='flex-1 overflow-y-auto'>
 				<div className='flex flex-col gap-3 px-2 py-1' role='list'>
-					{data.payload && data.payload.length === 0 ? (
+					{data.services && data.services.length === 0 ? (
 						<div className='w-full h-full center-all'>No data found</div>
 					) : (
-						data?.payload.map((service, key) => (
+						data?.services.map((service, key) => (
 							<ItemCard
 								id={service.id}
 								delay={key}

@@ -10,6 +10,8 @@ using Domain.Abstractions;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Infrastructure.Database;
 using Infrastructure.HUbs;
 using Infrastructure.Repositories;
@@ -19,7 +21,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -122,6 +123,9 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
 
 // ====== Application Services ======
+builder.Services.AddHangfireServer();
+
+// ====== Application Services ======
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IApplicationDbContext, GenCareDbContext>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -155,6 +159,9 @@ builder.Services.AddSignalR();
 
 
 
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -174,23 +181,41 @@ var connectionString =
         env.IsDevelopment()
             ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
             : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
-        ) ?? throw new InvalidOperationException(
-            "Missing connection string for the current environment."
-        ); 
+    )
+    ?? throw new InvalidOperationException(
+        "Missing connection string for the current environment."
+    );
+;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(opt =>
+    {
+        opt.UseNpgsqlConnection(connectionString);
+    })
+);
 
 // ====== App Pipeline ======
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHangfireDashboard(
+    "/hangfire",
+    new DashboardOptions { Authorization = [new AllowAllDashboardAuthorizationFilter()] }
+);
+
+RecurringJob.AddOrUpdate<IRefreshTokenService>(
+    "cleanup-revoked-refresh-tokens",
+    service => service.CleanupRevokedTokensAsync(),
+    Cron.Daily
+);
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
@@ -205,5 +230,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");
 
-await app.RunAsync();
-
+await app.RunAsync(); //test

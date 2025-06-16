@@ -1,4 +1,5 @@
 # [GenCare](https://www.gencare.site/)
+[![backend-cd](https://github.com/hatohui/GenCare/actions/workflows/backend-cd.yaml/badge.svg)](https://github.com/hatohui/GenCare/actions/workflows/backend-cd.yaml)     [![frontend-cd](https://github.com/hatohui/GenCare/actions/workflows/frontend-cd.yaml/badge.svg)](https://github.com/hatohui/GenCare/actions/workflows/frontend-cd.yaml)
 
 ## [Documentations](https://docs.google.com/document/d/1XjSV5tjIUnbtGK0gRnviHctuyyV1d5tSxzv_fKDsAdA/edit?tab=t.0#heading=h.c2t5i58dg7of)
 

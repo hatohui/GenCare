@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Appointment.Request;
+﻿using Application.DTOs.Appointment.Request;
 using Application.DTOs.Appointment.Response;
 using Application.Repositories;
 using Application.Services;
@@ -11,6 +6,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
+
 public class AppointmentService(IAccountRepository accountRepository,
     IAppointmentRepository appointmentRepository) : IAppointmentService
 {
@@ -52,12 +48,12 @@ public class AppointmentService(IAccountRepository accountRepository,
     {
         //get appointment by id
         var appointment = await appointmentRepository.GetById(appointmentId);
-        if(appointment == null)
+        if (appointment == null)
         {
             throw new AppException(404, "Appointment not found");
         }
         //edit
-        if(request.MemberId != null)
+        if (request.MemberId != null)
         {
             var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
             appointment.Member = member ?? throw new AppException(404, "member id is invalid");
@@ -67,7 +63,7 @@ public class AppointmentService(IAccountRepository accountRepository,
             var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
             appointment.Staff = staff ?? throw new AppException(404, "staff id is invalid");
         }
-        if(request.ScheduleAt != null) appointment.ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt.Value, DateTimeKind.Unspecified);
+        if (request.ScheduleAt != null) appointment.ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt.Value, DateTimeKind.Unspecified);
         if (request.JoinUrl != null) appointment.JoinUrl = request.JoinUrl;
         appointment.UpdatedAt = DateTime.Now;
         appointment.UpdatedBy = Guid.Parse(updateId);
