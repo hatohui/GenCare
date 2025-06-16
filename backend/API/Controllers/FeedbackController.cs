@@ -19,7 +19,7 @@ public class FeedbackController(IFeedbackService feedbackService) : ControllerBa
         var accountId = JwtHelper.GetAccountIdFromToken(access);
         //call service
         await feedbackService.AddFeedbackAsync(request, accountId.ToString("D"));
-        return Ok();
+        return Created();
     }
 
     [HttpGet("{serviceId}")]
@@ -28,5 +28,18 @@ public class FeedbackController(IFeedbackService feedbackService) : ControllerBa
         //call service
         var feedbacks = await feedbackService.GetAllFeedbackByServiceAsync(serviceId);
         return Ok(feedbacks);
+    }
+
+    [HttpPut("{feedbackId}")]
+    [Authorize(Roles = $"{RoleNames.Member}")]
+    public async Task<IActionResult> UpdateFeedbackAsync([FromRoute] string feedbackId, [FromBody] FeedbackUpdateRequest request)
+    {
+        //get access token from HttpContext
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id from access token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        //call service
+        await feedbackService.UpdateFeedbackAsync(request, feedbackId, accountId.ToString("D"));
+        return NoContent();
     }
 }

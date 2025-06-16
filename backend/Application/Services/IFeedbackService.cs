@@ -6,7 +6,7 @@ public interface IFeedbackService
 {
     Task AddFeedbackAsync(FeedbackCreateRequest request, string id);
     Task<List<FeedbackViewByServiceResponse>> GetAllFeedbackByServiceAsync(string serviceId);
-    //Task<FeedbackDto?> GetFeedbackByIdAsync(string id);
-    //Task UpdateFeedbackAsync(string id, string detail, int rating);
+
+    Task UpdateFeedbackAsync(FeedbackUpdateRequest request, string feedbackId, string accountId);
     //Task DeleteFeedbackAsync(string id);
 }

@@ -56,4 +56,20 @@ public class FeedbackService(IFeedbackRepository feedbackRepository,
         }
         return rs;
     }
+
+    public async Task UpdateFeedbackAsync(FeedbackUpdateRequest request, string feedbackId, string accountId)
+    {
+        //get feedback by id
+        Feedback feedback = await feedbackRepository.GetById(feedbackId) ?? throw new AppException(404, "Feedback not found");
+        //check if feedback is created by that account
+        if (feedback.CreatedBy != Guid.Parse(accountId))
+        {
+            throw new AppException(403, "You are not allowed to update this feedback");
+        }
+        //update feedback
+        feedback.Detail = request.Detail ?? feedback.Detail;
+        feedback.Rating = request.Rating ?? feedback.Rating;
+        //update to db
+        await feedbackRepository.Update(feedback);
+    }
 }
