@@ -14,7 +14,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	}
 
 	if (error) {
-		return router.back()
+		router.back()
+		return <div>loading error</div>
 	}
 
 	const serviceData = service ||

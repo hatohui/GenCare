@@ -19,8 +19,8 @@ export const ServiceCard = ({
 }: ServiceCardProps) => {
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: -20 }}
-			animate={{ opacity: 1, x: 0 }}
+			initial={{ opacity: 0, x: -20, y: -10 }}
+			animate={{ opacity: 1, x: 0, y: 0 }}
 			whileHover={{ scale: 1.02 }}
 			transition={{ duration: 0.5, ease: 'easeOut' }}
 			className='bg-white rounded-2xl p-5 h-full shadow-md hover:shadow-lg transition-shadow duration-300'
@@ -49,7 +49,7 @@ export const ServiceCard = ({
 
 			<div className='pt-3'>
 				<h3 className='text-xl font-semibold mb-2'>{name}</h3>
-				<p className='text-accent mb-2'>{price} VND</p>
+				<p className='text-accent mb-2'>{price.toLocaleString('vi-VN')} VND</p>
 				<p className='text-gray-600 mb-4 truncate '>{description}</p>
 			</div>
 			<div className='flex items-end justify-end mb-4 gap-4'>
