@@ -2,6 +2,7 @@
 using Application.DTOs.Feedback;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -26,6 +27,30 @@ public class FeedbackService(IFeedbackRepository feedbackRepository,
             CreatedBy = account.Id
         };
         await feedbackRepository.Add(feedback);
+    }
+
+    public async Task DeleteFeedbackAsync(string feedbackId, string role, string accountId)
+    {
+        //get feedback by id
+        Feedback feedback = await feedbackRepository.GetById(feedbackId) ?? throw new AppException(404, "Feedback not found");
+        //check valid
+        var check = false;
+        if(role.ToLower() == RoleNames.Admin.ToLower() || role.ToLower() == RoleNames.Manager.ToLower())
+        {
+            check = true;
+        }
+        else if (role.ToLower() == RoleNames.Member.ToLower())
+        {
+            //check if feedback is created by that account
+            if (feedback.CreatedBy == Guid.Parse(accountId))
+            {
+                check = true;
+            }
+        }
+        //delete feedback
+        if (check) await feedbackRepository.Delete(feedback);
+
+        else throw new AppException(403, "You are not allowed to delete this feedback");
     }
 
     public async Task<List<FeedbackViewByServiceResponse>> GetAllFeedbackByServiceAsync(string serviceId)
