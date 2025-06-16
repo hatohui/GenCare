@@ -22,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="DTOs\Blog\Request\" />
 	  <Folder Include="DTOs\Department\Request\" />
 	</ItemGroup>
 </Project>
