@@ -13,6 +13,7 @@ using FluentValidation.AspNetCore;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Infrastructure.Database;
+using Infrastructure.HUbs;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -26,6 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 
 // ====== Swagger ======
@@ -149,6 +151,14 @@ builder.Services.AddScoped<ITestTrackerRepository, TestTrackerRepository>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IMessageService, MessageService>(); 
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddSignalR();
+
+
+
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -156,10 +166,11 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    var uri =
-        Environment.GetEnvironmentVariable("REDIS_URI")
-        ?? throw new InvalidOperationException("Missing REDIS_URI");
+    var uri = Environment.GetEnvironmentVariable("REDIS_URI")
+                   ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
+
+   
 });
 
 //===========Database Configuration===========
@@ -217,5 +228,6 @@ app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 await app.RunAsync(); //test
