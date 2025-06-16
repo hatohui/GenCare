@@ -121,8 +121,6 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
 
 // ====== Application Services ======
-builder.Services.AddHangfire(config =>
-    config.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHangfireServer();
 
 // ====== Application Services ======

@@ -31,8 +31,6 @@ public class RefreshTokenRepository(IApplicationDbContext context) : IRefreshTok
 
     public async Task DeleteRevokedTokensAsync()
     {
-        var tokens = context.RefreshTokens.Where(x => x.IsRevoked);
-        context.RefreshTokens.RemoveRange(tokens);
-        await context.SaveChangesAsync();
+        await context.RefreshTokens.Where(x => x.IsRevoked).ExecuteDeleteAsync();
     }
 }
