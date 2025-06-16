@@ -21,4 +21,12 @@ public class FeedbackController(IFeedbackService feedbackService) : ControllerBa
         await feedbackService.AddFeedbackAsync(request, accountId.ToString("D"));
         return Ok();
     }
+
+    [HttpGet("{serviceId}")]
+    public async Task<IActionResult> GetAllFeedbackByServiceAsync([FromRoute] string serviceId)
+    {
+        //call service
+        var feedbacks = await feedbackService.GetAllFeedbackByServiceAsync(serviceId);
+        return Ok(feedbacks);
+    }
 }
