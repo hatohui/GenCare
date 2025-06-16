@@ -6,10 +6,10 @@ namespace Infrastructure.Repositories;
 
 public class ConversationRepository(IApplicationDbContext dbContext) : IConversationRepository
 {
-    public async Task AddAsync(Conversation conversation)
+    public async Task<bool> AddAsync(Conversation conversation)
     {
-        dbContext.Conversations.Add(conversation);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Conversations.AddAsync(conversation);
+        return await dbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<Conversation?> GetByIdAsync(Guid id)

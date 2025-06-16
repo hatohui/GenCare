@@ -4,23 +4,17 @@ using Application.Services;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[conversation]")]
+[Route("api/conversation")]
 public class ConversationController(IConversationService conversationService): ControllerBase
 {
-    [HttpPost]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateConversationRequest request)
     {
         var result = await conversationService.CreateConversationAsync(request);
-        return result is null ? BadRequest("Failed to create") : Ok(result);
+        return Ok(result);        
     }
 
-    [HttpPost("join")]
-    public async Task<IActionResult> Join([FromBody] JoinConversationRequest request)
-    {
-        var result = await conversationService.JoinConversationAsync(request);
-        return result ? Ok("Joined successfully") : BadRequest("Join failed");
-    }
+   
 
     [HttpPost("{id}/end")]
     public async Task<IActionResult> End(Guid id)
@@ -34,5 +28,23 @@ public class ConversationController(IConversationService conversationService): C
     {
         var conversations = await conversationService.GetPendingConversationsAsync();
         return Ok(conversations);
+    }
+    
+    [HttpPut("edit")]
+    public async Task<IActionResult> EditConversation([FromBody] EditConversationRequest request)
+    {
+        var response = await conversationService.EditConversationAsync(request);
+        if (response.Success)
+            return Ok(response);
+        return BadRequest(response);
+    }
+
+    [HttpGet("view")]
+    public async Task<IActionResult> ViewConversation([FromQuery] ViewConversationRequest request)
+    {
+        var response = await conversationService.ViewConversationAsync(request);
+        if (response.ConversationId != Guid.Empty)
+            return Ok(response);
+        return NotFound(new { Message = "Conversation not found." });
     }
 }
