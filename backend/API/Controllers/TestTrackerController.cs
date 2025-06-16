@@ -18,7 +18,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
         
         return Ok(result);
     }
-    [HttpPatch]
+    [HttpPut]
     [Authorize(Roles = "admin,staff")]
     public async Task<IActionResult> UpdateTestResult([FromBody] UpdateTestResultRequest request)
     {
@@ -31,13 +31,13 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
 
         return NoContent();
     }
-    [HttpDelete("{orderDetailId}")]
+    [HttpDelete("{Id}")]
     [Authorize(Roles = "admin,staff")]
-    public async Task<IActionResult> DeleteTestTracker(Guid orderDetailId)
+    public async Task<IActionResult> DeleteTestTracker(Guid Id)
     {
         var request = new DeleteTestResultRequest
         {
-            OrderDetailId = orderDetailId
+            OrderDetailId = Id
         };
     
         var response = await testTrackerService.DeleteTestTrackerAsync(request);

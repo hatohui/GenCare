@@ -47,7 +47,6 @@ public class ConversationService(IConversationRepository conversationRepository)
         };
     }
 
-  
 
     public async Task<bool> EndConversationAsync(Guid conversationId)
     {
@@ -56,6 +55,22 @@ public class ConversationService(IConversationRepository conversationRepository)
         conversation.Status = false;
         return await conversationRepository.UpdateAsync(conversation);
         
+    }
+
+    public async Task<ViewAllConversationResponse> ViewAllConversationAsync()
+    {
+        var conversations = await conversationRepository.GetAllAsync();
+        return new ViewAllConversationResponse()
+        {
+            Conversations = conversations.Select(c => new ConversationPayLoad()
+            {
+                ConversationId = c.Id,
+                MemberId = c.MemberId,
+                StaffId = c.StaffId,
+                StartAt = c.StartAt,
+                Status = c.Status
+            }).ToList()
+        };
     }
 
     public async Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request)

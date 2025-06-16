@@ -1,5 +1,8 @@
 ﻿using Application.DTOs.Conversation.Request;
+using Application.DTOs.Conversation.Response;
 using Application.Services;
+using Domain.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
@@ -13,10 +16,15 @@ public class ConversationController(IConversationService conversationService): C
         var result = await conversationService.CreateConversationAsync(request);
         return Ok(result);        
     }
-
+    [HttpGet("all")]
+    public async Task<IActionResult> ViewAllConversations()
+    {
+        ViewAllConversationResponse response = await conversationService.ViewAllConversationAsync();
+        return Ok(response);
+    }
    
 
-    [HttpPost("{id}/end")]
+    [HttpPost("{id}")]
     public async Task<IActionResult> End(Guid id)
     {
         var result = await conversationService.EndConversationAsync(id);
@@ -31,6 +39,7 @@ public class ConversationController(IConversationService conversationService): C
     }
     
     [HttpPut("edit")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
     public async Task<IActionResult> EditConversation([FromBody] EditConversationRequest request)
     {
         var response = await conversationService.EditConversationAsync(request);

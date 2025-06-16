@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Message.Request;
 using Application.DTOs.Message.Response;
+using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
@@ -8,26 +9,37 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.Services;
 
-public class MessageService(IMessageRepository messageRepository, IMediaRepository mediaRepository,  IHubContext<ChatHub> chatHub) : IMessageService
+public class MessageService(IMessageRepository messageRepository, 
+                            IMediaRepository mediaRepository,  
+                            IHubContext<ChatHub> chatHub) : IMessageService
 {
-    public async Task<MessageResponse> CreateMessageAsync(MessageCreateRequest request)
+    private static DateTime ToUnspecified(DateTime dt)
     {
-        // Khởi tạo Message
+        return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+    }
+    public async Task<MessageResponse> CreateMessageAsync(MessageCreateRequest request,string accessToken)
+    {
+        //get account id from access token
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+
+        //create message
         var newMessage = new Message()
         {
             Id = Guid.NewGuid(),
             Content = request.Content,
             ConversationId = request.ConversationId,
-            CreatedBy = request.CreatedBy,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = ToUnspecified(DateTime.Now),
+            CreatedBy = accountId,
+            UpdatedBy = accountId,
         };
 
-        // Xử lý file ảnh nếu có
+        //handle media files
         var mediaList = new List<Media>();
         if (request.MediaUrls != null && request.MediaUrls.Any())
         {
             foreach (var url in request.MediaUrls)
             {
+                // add media to the list
                 mediaList.Add(new Media
                 {
                     Id = Guid.NewGuid(),
@@ -41,7 +53,7 @@ public class MessageService(IMessageRepository messageRepository, IMediaReposito
 
         newMessage.Media = mediaList;
 
-        // Lưu Message và Media
+        //save message and media
         await messageRepository.AddAsync(newMessage);
         await mediaRepository.AddListOfMediaAsync(mediaList);
 

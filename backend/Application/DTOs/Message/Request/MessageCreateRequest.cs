@@ -8,5 +8,5 @@ public class MessageCreateRequest
     
     public List<string>? MediaUrls { get; set; } = [];
     
-    public Guid CreatedBy { get; set; }
+    
 }

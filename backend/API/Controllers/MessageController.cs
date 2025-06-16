@@ -1,5 +1,7 @@
 ﻿using Application.DTOs.Message.Request;
 using Application.Services;
+using Domain.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 [ApiController]
@@ -7,9 +9,12 @@ namespace API.Controllers;
 public class MessageController(IMessageService messageService): ControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Staff}")]
     public async Task<IActionResult> Create([FromForm] MessageCreateRequest request)
     {
-        var result = await messageService.CreateMessageAsync(request);
+        var accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+
+        var result = await messageService.CreateMessageAsync(request,accessToken);
         return Ok(result);
     }
 

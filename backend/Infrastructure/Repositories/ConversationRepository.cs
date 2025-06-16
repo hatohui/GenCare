@@ -30,4 +30,11 @@ public class ConversationRepository(IApplicationDbContext dbContext) : IConversa
                             .Where(c => c.StaffId == Guid.Empty && !c.Status)
                                  .Include(c => c.Member)
                                      .ToListAsync();
+    public async Task<List<Conversation>> GetAllAsync()
+    {
+        return await dbContext.Conversations
+            .Include(c => c.Member)
+            .Include(c => c.Staff)
+            .ToListAsync();
+    }
 }

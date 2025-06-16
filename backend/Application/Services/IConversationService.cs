@@ -10,7 +10,7 @@ public interface IConversationService
     Task<ViewConversationResponse> ViewConversationAsync(ViewConversationRequest request);
     Task<bool> EndConversationAsync(Guid conversationId);
     Task<List<Conversation>> GetPendingConversationsAsync();
-
+    Task<ViewAllConversationResponse> ViewAllConversationAsync();
     Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request);
 }
     
