@@ -28,15 +28,7 @@ const AccountPage = () => {
 				fifthLabel='Tác vụ'
 			/>
 
-			<Suspense
-				fallback={
-					<div className='h-full center-all w-full animate-pulse'>
-						Fetching data...
-					</div>
-				}
-			>
-				<AccountList />
-			</Suspense>
+			<AccountList />
 		</section>
 	)
 }

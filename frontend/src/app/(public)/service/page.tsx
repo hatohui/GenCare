@@ -12,7 +12,7 @@ export default function Page() {
 		<section className='relative min-h-screen  text-gray-900'>
 			<div className='relative bg-general shadow-md overflow-hidden'>
 				<div className='mx-auto px-6 py-4 flex items-center justify-around pt-20 '>
-					<SearchBar />
+					<SearchBar className='flex-1/2 border-none backdrop-blur-2xl' />
 					<div className='mx-auto px-6 py-4 flex items-center justify-end flex-1/20'>
 						<CartButton />
 					</div>
@@ -21,11 +21,11 @@ export default function Page() {
 
 			<div className=' max-w-7xl mx-auto px-6 py-8'>
 				<h2 className='text-2xl font-bold text-main mb-6'>Dịch Vụ Nổi Bật</h2>
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
-					<Suspense fallback={<LoadingSkeleton />}>
-						<ServiceList />
-					</Suspense>
-				</div>
+
+				<Suspense fallback={<LoadingSkeleton />}>
+					<ServiceList />
+				</Suspense>
+
 				<FlorageBackground />
 			</div>
 		</section>

@@ -41,8 +41,6 @@ export default function TestimonialsSection() {
 						.map((_, i) => (
 							<motion.div
 								key={i}
-								initial={{ opacity: 0, scale: 0.5 }}
-								whileInView={{ opacity: 1, scale: 1 }}
 								whileHover={{ scale: 1.05 }}
 								className=' bg-white p-6 min-w-[300px] rounded-xl shadow hover:shadow-xl transition flex flex-col items-center'
 							>

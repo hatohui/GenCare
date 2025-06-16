@@ -1,8 +1,11 @@
 'use client'
 
+import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
 
 export default function ServicesSection() {
+	const { data, isLoading, isError } = useServiceByPage(1, 6)
+
 	return (
 		<section className='snap-start py-20 bg-gradient-to-b from-white to-main text-center'>
 			<motion.h2
@@ -14,14 +17,7 @@ export default function ServicesSection() {
 				Dịch Vụ Của Chúng Tôi
 			</motion.h2>
 			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6 py-2'>
-				{[
-					'Kiểm Tra STI',
-					'Tư Vấn Giới Tính',
-					'Điều Trị Hormone',
-					'Khám Sức Khỏe',
-					'Hỗ Trợ Tâm Lý',
-					'Sàng Lọc Bệnh',
-				].map((service, i) => (
+				{data?.services.map((service, i) => (
 					<motion.div
 						key={i}
 						whileHover={{ scale: 1.05 }}
@@ -31,11 +27,8 @@ export default function ServicesSection() {
 							<div className='w-16 h-16 mx-auto mb-4  bg-secondary rounded-full flex items-center justify-center text-2xl'>
 								🚑
 							</div>
-							<h3 className='text-lg font-bold mb-2'>{service}</h3>
-							<p className='text-gray-600 text-sm'>
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore
-								aspernatur nobis.
-							</p>
+							<h3 className='text-lg font-bold mb-2'>{service.name}</h3>
+							<p className='text-gray-600 text-sm'>{service.description}</p>
 						</div>
 						<motion.button
 							whileHover={{ scale: 1.1 }}

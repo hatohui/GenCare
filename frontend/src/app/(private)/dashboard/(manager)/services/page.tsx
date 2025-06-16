@@ -57,7 +57,7 @@ const ServicesPage = () => {
 				</div>
 			</div>
 
-			{!data || isLoading || isFetching || !data.payload ? (
+			{!data || isLoading || isFetching || !data.services ? (
 				<div className='h-full center-all w-full animate-pulse'>
 					Fetching data...
 				</div>
