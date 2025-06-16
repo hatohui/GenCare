@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
+
 public class AppointmentRepository(IApplicationDbContext dbContext) : IAppointmentRepository
 {
     public async Task Add(Appointment a)
@@ -37,7 +33,6 @@ public class AppointmentRepository(IApplicationDbContext dbContext) : IAppointme
             .Include(a => a.Staff)
             .FirstOrDefaultAsync(a => a.Id == Guid.Parse(id));
     }
-
 
     public async Task Update(Appointment a)
     {

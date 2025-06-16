@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories;
 
 public class ServiceRepository(IApplicationDbContext dbContext) : IServiceRepository
 {
-    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name,bool? orderByPrice, bool? includeDeleted)
+    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice, bool? includeDeleted)
     {
         var query = dbContext.Services.AsQueryable();
 
@@ -32,7 +32,6 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         query = query.Skip((page - 1) * count).Take(count);
 
         return await query.ToListAsync();
-
     }
 
     public async Task<List<Service>>? SearchServiceIncludeDeletedAsync(int page, int count)

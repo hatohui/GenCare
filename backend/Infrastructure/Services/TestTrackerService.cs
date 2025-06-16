@@ -16,6 +16,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
     {
         return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
     }
+
     /// <summary>
     /// Gets test result information by OrderDetailId.
     /// </summary>
@@ -23,9 +24,9 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
     /// <returns>Test result information or throws if not found.</returns>
     public async Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId)
     {
-        var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId)?? 
+        var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
-        
+
         return new ViewTestResultResponse
         {
             OrderDate = testResult.OrderDate,
@@ -35,10 +36,8 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
             ResultData = testResult.ResultData,
             UpdatedAt = testResult.UpdatedAt
         };
-        
     }
 
-    
     /// <summary>
     /// Updates a test result based on the provided information.
     /// Only updates fields that are supplied (non-null), following PATCH semantics.
@@ -100,7 +99,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
     public async Task<DeleteTestResultResponse> DeleteTestTrackerAsync(DeleteTestResultRequest request)
     {
         if (!await testTrackerRepository.CheckTestTrackerExistsAsync(request.OrderDetailId))
-            throw new InvalidOperationException("Test tracker not found.");        
+            throw new InvalidOperationException("Test tracker not found.");
 
         var deleted = await testTrackerRepository.DeleteTestTrackerAsync(request.OrderDetailId);
         return new DeleteTestResultResponse

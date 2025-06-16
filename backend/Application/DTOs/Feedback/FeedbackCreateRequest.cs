@@ -1,5 +1,5 @@
-﻿
-namespace Application.DTOs.Feedback;
+﻿namespace Application.DTOs.Feedback;
+
 public class FeedbackCreateRequest
 {
     public string Detail { get; set; } = null!;
@@ -7,4 +7,3 @@ public class FeedbackCreateRequest
     public DateTime CreatedAt { get; set; }
     public string ServiceId { get; set; } = null!;
 }
-

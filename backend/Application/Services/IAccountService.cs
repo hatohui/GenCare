@@ -7,6 +7,7 @@ using Domain.Entities;
 using Google.Apis.Auth;
 
 namespace Application.Services;
+
 /// <summary>
 /// Provides account-related service operations such as registration, authentication, profile management, and staff account management.
 /// </summary>
@@ -63,7 +64,6 @@ public interface IAccountService
     /// <param name="accountId">The unique identifier of the account to update.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string accountId);
-
 
     Task<ProfileViewModel> GetProfileAsync(Guid accountId);
 }

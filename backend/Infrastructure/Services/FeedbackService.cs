@@ -1,5 +1,4 @@
-﻿
-using Application.DTOs.Feedback;
+﻿using Application.DTOs.Feedback;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
@@ -7,6 +6,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
+
 public class FeedbackService(IFeedbackRepository feedbackRepository,
     IAccountRepository accountRepository,
     IServiceRepository serviceRepository) : IFeedbackService
@@ -35,7 +35,7 @@ public class FeedbackService(IFeedbackRepository feedbackRepository,
         Feedback feedback = await feedbackRepository.GetById(feedbackId) ?? throw new AppException(404, "Feedback not found");
         //check valid
         var check = false;
-        if(role.ToLower() == RoleNames.Admin.ToLower() || role.ToLower() == RoleNames.Manager.ToLower())
+        if (role.ToLower() == RoleNames.Admin.ToLower() || role.ToLower() == RoleNames.Manager.ToLower())
         {
             check = true;
         }
@@ -49,7 +49,6 @@ public class FeedbackService(IFeedbackRepository feedbackRepository,
         }
         //delete feedback
         if (check) await feedbackRepository.Delete(feedback);
-
         else throw new AppException(403, "You are not allowed to delete this feedback");
     }
 
@@ -57,13 +56,13 @@ public class FeedbackService(IFeedbackRepository feedbackRepository,
     {
         var feedbacks = await feedbackRepository.GetAll();
         //filter feedbacks
-        feedbacks = feedbacks.Where(f => f.ServiceId == Guid.Parse( serviceId)).ToList();
+        feedbacks = feedbacks.Where(f => f.ServiceId == Guid.Parse(serviceId)).ToList();
         //fill FeedbackViewByServiceResponse
         List<FeedbackViewByServiceResponse> rs = new();
         foreach (var feedback in feedbacks)
         {
             var account = await accountRepository.GetAccountByIdAsync(feedback.CreatedBy);
-            if(account == null)
+            if (account == null)
             {
                 throw new AppException(404, "Account not found for feedback");
             }

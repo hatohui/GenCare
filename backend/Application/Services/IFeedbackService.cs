@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Feedback;
 
 namespace Application.Services;
+
 /// <summary>
 /// Provides methods for managing feedback operations.
 /// </summary>
