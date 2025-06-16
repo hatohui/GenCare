@@ -8,7 +8,7 @@ public class TestTrackerRepository(IApplicationDbContext dbContext) : ITestTrack
 {
     public async Task<Result?> ViewTestTrackerAsync(Guid orderDetailId)
     {
-        return await  dbContext.Results
+        return await dbContext.Results
             .Where(t => t.OrderDetailId == orderDetailId)
             .FirstOrDefaultAsync();
     }
@@ -17,7 +17,7 @@ public class TestTrackerRepository(IApplicationDbContext dbContext) : ITestTrack
     {
         dbContext.Results.Update(result);
         await dbContext.SaveChangesAsync();
-        return true;    
+        return true;
     }
 
     public async Task<bool> DeleteTestTrackerAsync(Guid orderDetailId)

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.DTOs.Appointment.Request;
 
-namespace Application.DTOs.Appointment.Request;
 public class AppointmentCreateRequest
 {
     public String MemberId { get; set; } = null!;

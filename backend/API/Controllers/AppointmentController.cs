@@ -3,10 +3,9 @@ using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
+
 /// <summary>
 /// Handles appointment-related API endpoints such as creating, viewing, updating, and deleting appointments.
 /// </summary>

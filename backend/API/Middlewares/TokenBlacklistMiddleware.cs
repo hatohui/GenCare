@@ -1,6 +1,5 @@
 ﻿using Application.Helpers;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 
 namespace API.Middlewares;
 

@@ -1,5 +1,5 @@
-﻿
-namespace Application.DTOs.Schedule.Request;
+﻿namespace Application.DTOs.Schedule.Request;
+
 public class ScheduleCreateRequest
 {
     public string SlotId { get; set; } = null!;

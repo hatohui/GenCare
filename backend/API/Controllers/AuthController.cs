@@ -152,8 +152,7 @@ public class AuthController
 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> LogoutAsync(
-    [FromServices] IDistributedCache cache)
+    public async Task<IActionResult> LogoutAsync()
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (string.IsNullOrWhiteSpace(refreshToken))
