@@ -30,19 +30,38 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          DOCKERFILE_HASH=$(sha256sum backend/Dockerfile | awk '{print $1}')
+          FILES_HASH=$(find backend/ -type f -not -path 'backend/Dockerfile' -exec sha256sum {} + | sort | sha256sum | awk '{print $1}')
+          COMBINED_HASH=$(echo "${DOCKERFILE_HASH}${FILES_HASH}" | sha256sum | awk '{print $1}')
+          echo "cache-key=$COMBINED_HASH" >> $GITHUB_OUTPUT
+
+      - name: Cache Docker images
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ steps.cache-key.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Tag previous image for rollback
         run: |
           docker pull ${{ env.IMAGE_NAME }}:latest || true
           docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:previous || true
           docker push ${{ env.IMAGE_NAME }}:previous || true
 
-      - name: Pull and retag CI-built image
-        run: |
-          docker pull ${{ env.IMAGE_NAME }}:ci-${{ github.sha }} || { echo "❌ Failed to pull CI-built image"; exit 1; }
-          docker tag ${{ env.IMAGE_NAME }}:ci-${{ github.sha }} ${{ env.IMAGE_NAME }}:latest
-          docker tag ${{ env.IMAGE_NAME }}:ci-${{ github.sha }} ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:latest,${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          build-args: |
+            CACHEBUST=${{ steps.cache-key.outputs.cache-key }}
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
