@@ -1,9 +1,8 @@
 'use client'
 
-import { GetServiceByPageResponse } from '@/Interfaces/Service/Schemas/service'
-import { samplePayload, useServiceByPage } from '@/Services/service-services'
+import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ServiceCard } from './ServiceCard'
 import Pagination from '../Management/Pagination'
 
@@ -11,7 +10,7 @@ const ServiceList = () => {
 	const [page, setPage] = useState<number>(1)
 	const itemsPerPage = 6
 
-	const { isLoading, isError, isFetching, data } = useServiceByPage(
+	const { isError, isFetching, data } = useServiceByPage(
 		page ? page : 0,
 		itemsPerPage
 	)
@@ -20,9 +19,9 @@ const ServiceList = () => {
 		? Math.ceil(data.totalCount / itemsPerPage)
 		: 5
 
-	const handleDelete = () => {
-		alert('Account is getting deleted')
-	}
+	// const handleDelete = () => {
+	// 	alert('Account is getting deleted')
+	// }
 
 	return (
 		<>

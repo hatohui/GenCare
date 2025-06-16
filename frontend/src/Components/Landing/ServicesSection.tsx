@@ -4,7 +4,7 @@ import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
 
 export default function ServicesSection() {
-	const { data, isLoading, isError } = useServiceByPage(1, 6)
+	const { data } = useServiceByPage(1, 6)
 
 	return (
 		<section className='snap-start py-20 bg-gradient-to-b from-white to-main text-center'>
