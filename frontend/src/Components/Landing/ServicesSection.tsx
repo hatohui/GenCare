@@ -20,7 +20,7 @@ export default function ServicesSection() {
 				Dịch Vụ Của Chúng Tôi
 			</motion.h2>
 			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6 py-2'>
-				{data?.services.map((service, i) => (
+				{data?.services.map(service => (
 					<motion.div
 						key={service.id}
 						whileHover={{ scale: 1.05 }}
