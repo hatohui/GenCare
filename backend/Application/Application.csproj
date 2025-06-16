@@ -22,8 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="DTOs\Conversation\Response\" />
 	  <Folder Include="DTOs\Department\Request\" />
-	  <Folder Include="DTOs\Message\Request\" />
-	  <Folder Include="DTOs\Message\Response\" />
 	</ItemGroup>
 </Project>

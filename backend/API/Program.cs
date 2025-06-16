@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using API.ActionFilters;
-using API.Hubs;
 using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
@@ -8,11 +7,11 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
-using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Database;
+using Infrastructure.HUbs;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -149,6 +148,11 @@ builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IMessageService, MessageService>(); 
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddSignalR();
+
 
 
 
@@ -199,7 +203,7 @@ app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chatHub"); // đường dẫn này frontend sẽ kết nối tới
+app.MapHub<ChatHub>("/hubs/chat");
 
 await app.RunAsync();
 
