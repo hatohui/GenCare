@@ -83,17 +83,53 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo docker pull ${{ env.IMAGE_NAME }}:${{ github.sha }}
-            sudo docker stop gencare-backend || true
-            sudo docker rm gencare-backend || true
-            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file .env ${{ env.IMAGE_NAME }}:${{ github.sha }}
-            sleep 10
-            if ! curl -f http://localhost:8080/health; then
-              echo "Health check failed, rolling back..."
-              sudo docker stop gencare-backend || true
-              sudo docker rm gencare-backend || true
-              sudo docker pull ${{ env.IMAGE_NAME }}:previous || exit 1
-              sudo docker run -d --name gencare-backend -p 8080:8080 ${{ env.IMAGE_NAME }}:previous || exit 1
+            IMAGE=${{ env.IMAGE_NAME }}
+            SHA=${{ github.sha }}
+            ENV_FILE="/home/ubuntu/.env"
+
+            echo "🔍 Verifying .env file at $ENV_FILE..."
+            if [ ! -f "$ENV_FILE" ]; then
+              echo "❌ Error: .env file not found at $ENV_FILE"
               exit 1
             fi
-            sudo docker image prune -f
+            echo "📄 .env file contents (redacted):"
+            grep -v '^#' "$ENV_FILE" | grep -v '^$' || echo "No non-comment, non-empty lines found"
+
+            echo "🔄 Pulling latest image..."
+            sudo docker pull $IMAGE:$SHA || { echo "❌ Failed to pull image $IMAGE:$SHA"; exit 1; }
+
+            echo "🛑 Stopping and removing old container..."
+            sudo docker stop gencare-backend || true
+            sudo docker rm gencare-backend || true
+
+            echo "🚀 Starting new container..."
+            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file "$ENV_FILE" $IMAGE:$SHA || { echo "❌ Failed to start container"; exit 1; }
+
+            echo "⏳ Waiting for health check..."
+            for i in {1..5}; do
+              if curl -f http://localhost:8080/health; then
+                echo "✅ Health check passed"
+                break
+              fi
+              echo "Attempt $i failed, retrying in 5 seconds..."
+              sleep 5
+              if [ "$i" -eq 5 ]; then
+                echo "❌ Health check failed after 5 attempts, rolling back..."
+                sudo docker logs gencare-backend
+                sudo docker stop gencare-backend || true
+                sudo docker rm gencare-backend || true
+                echo "🔄 Pulling previous image..."
+                sudo docker pull $IMAGE:previous || { echo "❌ Failed to pull previous image"; exit 1; }
+                echo "🚀 Starting previous container..."
+                sudo docker run -d --name gencare-backend -p 8080:8080 --env-file "$ENV_FILE" $IMAGE:previous || { echo "❌ Failed to start previous container"; exit 1; }
+                exit 1
+              fi
+            done
+
+            echo "🧹 Pruning unused Docker images..."
+            sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}} {{.ID}}" \
+              | grep -v -E "(:${SHA}|:previous)" \
+              | awk '{print $2}' \
+              | xargs -r sudo docker rmi -f || true
+
+            echo "✅ Deployment complete."
