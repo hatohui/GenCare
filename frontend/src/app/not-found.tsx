@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
 	return (
-		<div className='relative flex flex-col items-center justify-center h-screen bg-main text-white overflow-hidden'>
+		<main className='relative flex flex-col items-center justify-center h-screen bg-main text-white overflow-hidden'>
 			<Image
 				src='/images/404NotFound.png'
 				alt='404'
@@ -18,6 +18,6 @@ export default function NotFound() {
 			>
 				Go Back
 			</Link>
-		</div>
+		</main>
 	)
 }

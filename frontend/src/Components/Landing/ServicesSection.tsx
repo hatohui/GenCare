@@ -2,9 +2,12 @@
 
 import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
+import { LoadingSkeleton } from '../Skeletons'
 
 export default function ServicesSection() {
-	const { data } = useServiceByPage(1, 6)
+	const { data, isLoading } = useServiceByPage(1, 6)
+
+	if (isLoading) return <LoadingSkeleton />
 
 	return (
 		<section className='snap-start py-20 bg-gradient-to-b from-white to-main text-center'>
@@ -19,7 +22,7 @@ export default function ServicesSection() {
 			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6 py-2'>
 				{data?.services.map((service, i) => (
 					<motion.div
-						key={i}
+						key={service.id}
 						whileHover={{ scale: 1.05 }}
 						className='bg-white p-6 rounded-xl shadow hover:shadow-xl transition border border-gray-100 flex flex-col justify-between'
 					>

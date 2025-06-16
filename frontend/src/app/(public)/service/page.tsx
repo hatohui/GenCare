@@ -12,8 +12,8 @@ export default function Page() {
 		<section className='relative min-h-screen  text-gray-900'>
 			<div className='relative bg-general shadow-md overflow-hidden'>
 				<div className='mx-auto px-6 py-4 flex items-center justify-around pt-20 '>
-					<SearchBar className='flex-1/2 border-none backdrop-blur-2xl' />
-					<div className='mx-auto px-6 py-4 flex items-center justify-end flex-1/20'>
+					<SearchBar className='border-none backdrop-blur-2xl' />
+					<div className='mx-auto px-6 py-4 flex items-center justify-end flex-1/2'>
 						<CartButton />
 					</div>
 				</div>
