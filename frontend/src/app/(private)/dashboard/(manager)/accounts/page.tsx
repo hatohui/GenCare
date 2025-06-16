@@ -2,7 +2,7 @@ import AccountList from '@/Components/Management/AccountList'
 import AddNewButton from '@/Components/Management/AddNewButton'
 import SearchBar from '@/Components/Management/SearchBar'
 import clsx from 'clsx'
-import React, { Suspense } from 'react'
+import React from 'react'
 import AccountListHeader from '@/Components/Management/AccountListHeader'
 
 const AccountPage = () => {
@@ -28,15 +28,7 @@ const AccountPage = () => {
 				fifthLabel='Tác vụ'
 			/>
 
-			<Suspense
-				fallback={
-					<div className='h-full center-all w-full animate-pulse'>
-						Fetching data...
-					</div>
-				}
-			>
-				<AccountList />
-			</Suspense>
+			<AccountList />
 		</section>
 	)
 }

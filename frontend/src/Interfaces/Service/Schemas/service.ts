@@ -24,13 +24,16 @@ export type DeleteServiceApiResponse = Service
 export type UpdateServiceApiResponse = Service
 
 export type GetServiceByPageResponse = {
-	count: number
-	payload: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrl'>[]
+	totalCount: number
+	services: Pick<
+		Service,
+		'id' | 'name' | 'description' | 'price' | 'imageUrl'
+	>[]
 }
 
 export type GetServiceByPageAdminResponse = {
-	count: number
-	payload: Pick<
+	totalCount: number
+	services: Pick<
 		Service,
 		'id' | 'name' | 'description' | 'price' | 'imageUrl' | 'isDeleted'
 	>[]
