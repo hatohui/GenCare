@@ -85,15 +85,9 @@ jobs:
           script: |
             IMAGE=${{ env.IMAGE_NAME }}
             SHA=${{ github.sha }}
-            ENV_FILE="/home/ubuntu/.env"
 
-            echo "🔍 Verifying .env file at $ENV_FILE..."
-            if [ ! -f "$ENV_FILE" ]; then
-              echo "❌ Error: .env file not found at $ENV_FILE"
-              exit 1
-            fi
-            echo "📄 .env file contents (redacted):"
-            grep -v '^#' "$ENV_FILE" | grep -v '^$' || echo "No non-comment, non-empty lines found"
+            echo "🔄 Fetching secrets from Doppler..."
+            DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format env > /tmp/env_vars || { echo "❌ Failed to fetch Doppler secrets"; exit 1; }
 
             echo "🔄 Pulling latest image..."
             sudo docker pull $IMAGE:$SHA || { echo "❌ Failed to pull image $IMAGE:$SHA"; exit 1; }
@@ -102,8 +96,11 @@ jobs:
             sudo docker stop gencare-backend || true
             sudo docker rm gencare-backend || true
 
-            echo "🚀 Starting new container..."
-            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file "$ENV_FILE" $IMAGE:$SHA || { echo "❌ Failed to start container"; exit 1; }
+            echo "🚀 Starting new container with Doppler secrets..."
+            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:$SHA || { echo "❌ Failed to start container"; exit 1; }
+
+            echo "🧹 Cleaning up temporary env file..."
+            rm -f /tmp/env_vars
 
             echo "⏳ Waiting for health check..."
             for i in {1..5}; do
@@ -120,8 +117,10 @@ jobs:
                 sudo docker rm gencare-backend || true
                 echo "🔄 Pulling previous image..."
                 sudo docker pull $IMAGE:previous || { echo "❌ Failed to pull previous image"; exit 1; }
-                echo "🚀 Starting previous container..."
-                sudo docker run -d --name gencare-backend -p 8080:8080 --env-file "$ENV_FILE" $IMAGE:previous || { echo "❌ Failed to start previous container"; exit 1; }
+                echo "🚀 Starting previous container with Doppler secrets..."
+                DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format env > /tmp/env_vars || { echo "❌ Failed to fetch Doppler secrets for rollback"; exit 1; }
+                sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:previous || { echo "❌ Failed to start previous container"; exit 1; }
+                rm -f /tmp/env_vars
                 exit 1
               fi
             done
