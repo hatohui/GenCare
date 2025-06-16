@@ -1,12 +1,12 @@
 'use client'
+import AddNewButton from '@/Components/Management/AddNewButton'
+import ItemCardHeader from '@/Components/Management/ItemCardHeader'
 import Pagination from '@/Components/Management/Pagination'
 import SearchBar from '@/Components/Management/SearchBar'
 import ServiceList from '@/Components/Management/ServiceList'
-import { PlusSVG } from '@/Components/SVGs'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import { useServiceByPageAdmin } from '@/Services/service-services'
 import clsx from 'clsx'
-import { motion } from 'motion/react'
 import React, { useState } from 'react'
 
 const ServicesPage = () => {
@@ -29,33 +29,24 @@ const ServicesPage = () => {
 
 	return (
 		<section
-			className={clsx('flex h-full flex-col gap-4 md:gap-5')}
+			className={clsx('flex w-full h-full flex-col gap-4 md:gap-5')}
 			aria-label='Account Management'
 		>
 			<div className='w-full flex gap-3 px-1'>
 				<div className='w-full'>
-					<h1 className='text-2xl font-bold'>Search</h1>
-					<div className='flex gap-3 grow overflow-scroll'>
-						<SearchBar />
-						<motion.button
-							className='rounded-[30px] z-50 drop-shadow-smt cursor-pointer flex center-all gap-2 border px-3'
-							tabIndex={0}
-							whileHover={{
-								backgroundColor: 'var(--color-accent)',
-								color: 'var(--color-general)',
-							}}
-							transition={{ duration: 0.2 }}
-						>
-							<span className='pointer-events-none'>
-								<PlusSVG />
-							</span>
-							<span className='whitespace-nowrap pointer-events-none hidden md:block'>
-								Add
-							</span>
-						</motion.button>
+					<div className='flex items-center px-5 gap-3 grow shadow-sm bg-general py-1 pt-2 round overflow-scroll'>
+						<SearchBar className='mx-2' waitTime={1000} />
+						<AddNewButton />
 					</div>
 				</div>
 			</div>
+
+			<ItemCardHeader
+				label='Tên dịch vụ'
+				secondaryLabel='Miêu tả'
+				fourthLabel='Giá'
+				fifthLabel='Tác vụ'
+			/>
 
 			{!data || isLoading || isFetching || !data.services ? (
 				<div className='h-full center-all w-full animate-pulse'>
@@ -65,12 +56,14 @@ const ServicesPage = () => {
 				<ServiceList data={data} handleDelete={handleDelete} />
 			)}
 
-			<Pagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				isFetching={isFetching}
-				setCurrentPage={setCurrentPage}
-			/>
+			<div className='center-all'>
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					isFetching={isFetching}
+					setCurrentPage={setCurrentPage}
+				/>
+			</div>
 		</section>
 	)
 }

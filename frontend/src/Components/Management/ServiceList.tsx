@@ -1,5 +1,4 @@
 import React from 'react'
-import ItemCardHeader from './AccountListHeader'
 import ItemCard from './ItemCard'
 import { GetServiceByPageAdminResponse } from '@/Interfaces/Service/Schemas/service'
 
@@ -12,13 +11,6 @@ const ServiceList = ({
 }) => {
 	return (
 		<>
-			<ItemCardHeader
-				label='Tên dịch vụ'
-				secondaryLabel='Giá dịch vụ'
-				thirdLabel='Ngày khởi tạo'
-				fourthLabel='Tác vụ'
-			/>
-
 			<div className='flex-1 overflow-y-auto'>
 				<div className='flex flex-col gap-3 px-2 py-1' role='list'>
 					{data.services && data.services.length === 0 ? (
@@ -30,10 +22,10 @@ const ServiceList = ({
 								delay={key}
 								key={service.id}
 								label={service.name}
-								secondaryLabel={`${service.price}`}
+								secondaryLabel={service.description}
 								status={service.isDeleted ? 'FAILED' : 'SUCCESS'}
-								thirdLabel={service.description}
-								path='/services/'
+								thirdLabel={service.price.toString()}
+								path='/dashboard/services/'
 								handleDelete={handleDelete}
 							/>
 						))

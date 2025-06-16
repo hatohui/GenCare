@@ -19,8 +19,10 @@ const SearchBar = ({
 	const pathname = usePathname()
 
 	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSearchParam(event.target.value)
-		debouncedPush(event.target.value)
+		const trimmedValue = event.target.value.trim()
+
+		setSearchParam(trimmedValue)
+		debouncedPush(trimmedValue)
 	}
 
 	const createQueryString = useCallback(
@@ -46,10 +48,7 @@ const SearchBar = ({
 			type='text'
 			id='search'
 			value={searchParam ?? ''}
-			className={clsx(
-				className ? className : '',
-				'min-h-[2rem] grow bg-main/10 border-2 text-slate-800 focus:border-accent focus:border-2 font-light rounded-sm p-2 ring-0 focus:ring-0 outline-none'
-			)}
+			className={clsx(className ? className : '', 'font-light')}
 			onChange={handleSearch}
 			aria-label='Search bar'
 		/>
