@@ -29,7 +29,9 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> GetAccountsByPageAsync([FromQuery] GetAccountByPageRequest request)
+    public async Task<IActionResult> GetAccountsByPageAsync(
+        [FromQuery] GetAccountByPageRequest request
+    )
     {
         var response = await accountService.GetAccountsByPageAsync(request);
         return Ok(response);
@@ -46,7 +48,9 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
     /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPost]
-    public async Task<IActionResult> CreateStaffAccountAsync([FromBody] StaffAccountCreateRequest request)
+    public async Task<IActionResult> CreateStaffAccountAsync(
+        [FromBody] StaffAccountCreateRequest request
+    )
     {
         //get access token from header
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
@@ -92,11 +96,20 @@ public class AccountController(IAccountService accountService) : ControllerBase
     public async Task<IActionResult> DeleteAccountController(Guid id)
     {
         var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
-            ? tokenHeader.Substring(7)
-            : string.Empty;
-        var result = await accountService.DeleteAccountAsync(new DeleteAccountRequest { Id = id }, accessToken);
-        if (result == null) throw new ApplicationException("Delete account failed.");
+
+        var accessToken =
+            tokenHeader != null && tokenHeader.StartsWith("Bearer ")
+                ? tokenHeader.Substring(7)
+                : string.Empty;
+
+        var result = await accountService.DeleteAccountAsync(
+            new DeleteAccountRequest { Id = id },
+            accessToken
+        );
+
+        if (result == null)
+            throw new ApplicationException("Delete account failed.");
+
         return Ok(result);
     }
 
@@ -113,10 +126,43 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequest request, [FromRoute] string id)
+    public async Task<IActionResult> UpdateAccount(
+        [FromBody] UpdateAccountRequest request,
+        [FromRoute] string id
+    )
     {
         string accessToken = AuthHelper.GetAccessToken(HttpContext);
         await accountService.UpdateAccountAsync(request, accessToken, id);
         return Ok();
+    }
+
+    /// <summary>
+    ///     Retrieves a user account by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the account to retrieve.</param>
+    /// <returns>
+    ///     An <see cref="IActionResult"/> containing the account details if found.
+    /// </returns>
+    /// <response code="200">Returns the account details successfully.</response>
+    /// <response code="400">Bad request. Invalid input data.</response>
+    /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
+    /// <response code="403">Forbidden. Only authorized users can access this endpoint.</response>
+    /// <response code="404">Not found. Account with the specified ID does not exist.</response>
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize]
+    public async Task<IActionResult> GetAccountById(Guid id)
+    {
+        var result = await accountService.GetAccountByIdAsync(id);
+
+        if (result == null)
+            return NotFound();
+
+        return Ok(result);
     }
 }
