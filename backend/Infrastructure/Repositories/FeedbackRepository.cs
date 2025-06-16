@@ -1,10 +1,9 @@
-﻿
-
-using Application.Repositories;
+﻿using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
+
 public class FeedbackRepository(IApplicationDbContext dbContext) : IFeedbackRepository
 {
     public async Task Add(Feedback feedback)
@@ -28,9 +27,10 @@ public class FeedbackRepository(IApplicationDbContext dbContext) : IFeedbackRepo
 
     public async Task<Feedback?> GetById(string id)
     {
+        Guid gId = Guid.Parse(id);
         return await dbContext.Feedbacks
             .Include(f => f.Service)
-            .FirstOrDefaultAsync(f => f.Id.ToString("D") == id);
+            .FirstOrDefaultAsync(f => Guid.Equals(f.Id, gId));
     }
 
     public async Task Update(Feedback feedback)

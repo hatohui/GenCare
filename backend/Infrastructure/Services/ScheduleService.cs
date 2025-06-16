@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Schedule.Model;
+﻿using Application.DTOs.Schedule.Model;
 using Application.DTOs.Schedule.Request;
 using Application.DTOs.Schedule.Response;
 using Application.Helpers;
@@ -14,6 +9,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
+
 public class ScheduleService(IScheduleRepository scheduleRepository,
                              IAccountRepository accountRepository,
                              ISlotRepository slotRepository) : IScheduleService
@@ -53,7 +49,7 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
         foreach (var slot in slots)
         {//duyệt qua từng slot
             List<AccountResponseModel> accounts = new();
-            foreach (var schedule in slot.Schedules)//duyệt qua từng sche của từng slot 
+            foreach (var schedule in slot.Schedules)//duyệt qua từng sche của từng slot
                                                     //để lấy từng account tương ứng
             {
                 var account = await accountRepository.GetAccountByIdAsync(schedule.AccountId);//lay acc
@@ -120,7 +116,7 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
             //here, validate successfully
             var schedules = account.Schedules;
             //result
-            ScheduleViewResponse rs = new ScheduleViewResponse();
+            ScheduleViewResponse rs = new();
             rs.Account = new AccountResponseModel();
             rs.Slots = new List<SlotResponseModel>();
 
@@ -155,7 +151,6 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
                         StartAt = s.Result == null ? default : s.Result.StartAt
                     });
                 }
-
             }
             return rs;
         }

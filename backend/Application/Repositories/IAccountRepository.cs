@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 
 namespace Application.Repositories;
+
 /// <summary>
 /// Represents the repository interface for managing account-related operations.
 /// </summary>

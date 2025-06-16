@@ -18,7 +18,7 @@ public class ServicesService(
     {
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
-        
+
         var services = await serviceRepository.SearchServiceAsync(
             request.Page,
             request.Count,
@@ -44,7 +44,7 @@ public class ServicesService(
         };
         foreach (var s in services)
         {
-             await mediaRepository.GetNewestByServiceIdAsync(s.Id);
+            await mediaRepository.GetNewestByServiceIdAsync(s.Id);
             response.Services.Add(new ServicePayLoad()
             {
                 Id = s.Id,
@@ -94,7 +94,7 @@ public class ServicesService(
 
     public async Task<ViewServiceResponse> SearchServiceByIdAsync(ViewServiceWithIdRequest request)
     {
-        // Validate Id 
+        // Validate Id
         if (!Guid.TryParse(request.Id, out var guidId))
             throw new AppException(400, "Invalid id format.");
 
@@ -195,13 +195,15 @@ public class ServicesService(
             service.IsDeleted = request.IsDeleted;
 
         var newMedias = new List<Media?>();
-        foreach (var media in from url in request.ImageUrls where service.Media.Any(m => m.Url == url) select new Media
-                 {
-                     Url = url,
-                     ServiceId = service.Id,
-                     Type = "Image of service",
-                     CreatedBy = accountId,
-                 })
+        foreach (var media in from url in request.ImageUrls
+                              where service.Media.Any(m => m.Url == url)
+                              select new Media
+                              {
+                                  Url = url,
+                                  ServiceId = service.Id,
+                                  Type = "Image of service",
+                                  CreatedBy = accountId,
+                              })
         {
             service.Media.Add(media);
             newMedias.Add(media);
@@ -210,7 +212,7 @@ public class ServicesService(
         if (newMedias.Any())
             await mediaRepository.AddListOfMediaAsync(newMedias);
         // Update the service in the repository
-            await serviceRepository.UpdateServiceByIdAsync(service);
+        await serviceRepository.UpdateServiceByIdAsync(service);
 
         return new UpdateServiceResponse
         {

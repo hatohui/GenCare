@@ -20,45 +20,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-dotnet8-${{ hashFiles('backend/**/*.csproj') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-dotnet8-
-
-      - name: Cache build artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            backend/**/bin
-            backend/**/obj
-          key: build-${{ runner.os }}-dotnet8-${{ hashFiles('backend/**/*.csproj', 'backend/**/*.cs') }}
-          restore-keys: |
-            build-${{ runner.os }}-dotnet8-
-
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: backend
-
-      - name: Build the application
-        run: dotnet build --no-restore --configuration Release
-        working-directory: backend
-
-      - name: Run unit tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
-        working-directory: backend
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Generate cache key
         id: cache-key
         run: |

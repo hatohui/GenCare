@@ -1,5 +1,5 @@
-﻿
-namespace Application.DTOs.Department.Response;
+﻿namespace Application.DTOs.Department.Response;
+
 public class DepartmentGetResponse
 {
     public string Id { get; set; } = null!;

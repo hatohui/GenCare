@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Common.Enums;
+﻿namespace Application.DTOs.Appointment.Response;
 
-namespace Application.DTOs.Appointment.Response;
 public class AllAppointmentViewResponse
 {
     public String Id { get; set; } = null!;

@@ -3,10 +3,9 @@ using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
+
 [Route("api/schedules")]
 [ApiController]
 public class ScheduleController(IScheduleService scheduleService) : ControllerBase
@@ -24,7 +23,7 @@ public class ScheduleController(IScheduleService scheduleService) : ControllerBa
     public async Task<IActionResult> UpdateSchedule([FromBody] ScheduleUpdateRequest request)
     {
         await scheduleService.UpdateScheduleAsync(request);
-        return NoContent(); //204 
+        return NoContent(); //204
     }
 
     [HttpDelete("{scheduleId}")]

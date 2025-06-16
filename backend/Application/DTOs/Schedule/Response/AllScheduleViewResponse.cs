@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Schedule.Model;
+﻿using Application.DTOs.Schedule.Model;
 
 namespace Application.DTOs.Schedule.Response;
+
 public class AllScheduleViewResponse
 {
     public List<AccountResponseModel> Acccounts { get; set; } = new List<AccountResponseModel>();
