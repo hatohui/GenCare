@@ -58,7 +58,7 @@ const Register = () => {
 
 	return (
 		<main className='max-h-screen center-all p-4 flex-col items-center justify-center'>
-			<div className='flex items-center gap-2 mb-4'>
+			<div className='flex items-center gap-2 mb-5'>
 				<Image
 					src={'/images/gencarelogo.png'}
 					alt='logo'
@@ -70,7 +70,7 @@ const Register = () => {
 				</span>
 			</div>
 
-			<div className='w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center'>
+			<div className='w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center'>
 				<RegisterPage className='' handleRegister={handleRegister} />
 
 				<motion.div
@@ -80,7 +80,7 @@ const Register = () => {
 				>
 					<object
 						data='/svgs/register.svg'
-						className='hidden md:flex overflow-hidden h-[600px]'
+						className='hidden md:flex overflow-hidden h-[600px] w-full'
 					/>
 				</motion.div>
 			</div>

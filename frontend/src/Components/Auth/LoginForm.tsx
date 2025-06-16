@@ -34,6 +34,10 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 		e.preventDefault()
 
 		try {
+			if (remember.value) {
+				localStorage.setItem('remember', remember.value)
+			}
+
 			const parsed = loginSchema.safeParse({
 				email: email.value,
 				password: password.value,
