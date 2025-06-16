@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Api.Middlewares;
 using API.ActionFilters;
+using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Helpers;
@@ -156,7 +156,9 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    var uri = Environment.GetEnvironmentVariable("REDIS_URI") ?? throw new InvalidOperationException("Missing REDIS_URI");
+    var uri =
+        Environment.GetEnvironmentVariable("REDIS_URI")
+        ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
 });
 
@@ -168,9 +170,11 @@ var connectionString =
         env.IsDevelopment()
             ? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_DEV")
             : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING_PROD")
-        ) ?? throw new InvalidOperationException(
-            "Missing connection string for the current environment."
-        ); ;
+    )
+    ?? throw new InvalidOperationException(
+        "Missing connection string for the current environment."
+    );
+;
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
@@ -180,7 +184,8 @@ builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(opt =>
     {
         opt.UseNpgsqlConnection(connectionString);
-    }));
+    })
+);
 
 // ====== App Pipeline ======
 var app = builder.Build();
@@ -190,10 +195,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHangfireDashboard("/hangfire", new DashboardOptions
-{
-    Authorization = [new AllowAllDashboardAuthorizationFilter()]
-});
+app.UseHangfireDashboard(
+    "/hangfire",
+    new DashboardOptions { Authorization = [new AllowAllDashboardAuthorizationFilter()] }
+);
 
 RecurringJob.AddOrUpdate<IRefreshTokenService>(
     "cleanup-revoked-refresh-tokens",
@@ -213,4 +218,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.RunAsync();
+await app.RunAsync(); //test
