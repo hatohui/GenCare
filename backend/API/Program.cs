@@ -24,7 +24,7 @@ using Microsoft.OpenApi.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services //
+// Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
