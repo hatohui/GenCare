@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.DTOs.Blog.Request;
 using Application.DTOs.Blog.Response;
 using Application.Repositories;
 using Application.Services;
@@ -10,6 +11,11 @@ using Application.Services;
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository) : IBlogService
 {
+    public Task AddBlogAsync(BlogCreateRequest request)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<List<AllBlogViewResponse>> GetAllBlogsAsync()
     {
         var list = await blogRepository.GetAll();
