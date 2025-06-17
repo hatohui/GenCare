@@ -19,4 +19,10 @@ public interface IDepartmentRepository
     /// </summary>
     /// <returns>A list of all departments.</returns>
     Task<List<Department>> GetAll();
+    
+    Task<bool> AddAsync(string name, string description);
+
+    Task<bool> CheckNameDepartmentExists(string name);
+    
+    Task<bool> UpdateAsync(Department department);
 }

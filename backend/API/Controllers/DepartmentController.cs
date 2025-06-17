@@ -1,4 +1,7 @@
-﻿using Application.Services;
+﻿using Application.DTOs.Department.Request;
+using Application.Services;
+using Domain.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
@@ -18,5 +21,36 @@ public class DepartmentController(IDepartmentService departmentService) : Contro
     {
         var response = await departmentService.GetAllDepartment();
         return Ok(response);
+    }
+    [HttpPost]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> CreateDepartmentAsync([FromBody] CreateDepartmentRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return BadRequest("Invalid department data.");
+        }
+
+        var response = await departmentService.CreateDepartment(request);
+        if (response.Success)
+        {
+            return Ok(response);
+        }
+        
+        return BadRequest(response.Message);
+    }
+    [HttpPut]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> UpdateDepartmentAsync([FromBody] UpdateDepartmentRequest request)
+    {
+        
+
+        var response = await departmentService.UpdateDepartment(request);
+        if (response.Success)
+        {
+            return Ok(response);
+        }
+        
+        return BadRequest(response.Message);
     }
 }
