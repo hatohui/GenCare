@@ -2,12 +2,17 @@
 
 import LoginForm from '@/Components/Auth/LoginForm'
 import LoadingPage from '@/Components/Loading'
-import { REDIRECT_AFTER_LOGIN } from '@/Constants/Auth'
+import {
+	REDIRECT_MEMBER_AFTER_LOGIN_PATH,
+	REDIRECT_STAFF_AFTER_LOGIN_PATH,
+} from '@/Constants/Auth'
 import useToken from '@/Hooks/useToken'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { useLoginAccount } from '@/Services/auth-service'
-import { isTokenValid } from '@/Utils/isTokenValid'
+import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
+import { isTokenValid } from '@/Utils/Auth/isTokenValid'
+import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
 import { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -19,8 +24,16 @@ export default function Login() {
 	const tokenStore = useToken()
 	const token = tokenStore.accessToken
 
+	const postLoginRedirect = (token: string) => {
+		const role = getRoleFromToken(token)
+
+		if (PermissionLevel[role] >= PermissionLevel.consultant)
+			router.push(REDIRECT_MEMBER_AFTER_LOGIN_PATH)
+		else router.push(REDIRECT_STAFF_AFTER_LOGIN_PATH)
+	}
+
 	useEffect(() => {
-		if (token && isTokenValid(token).valid) router.push('/dashboard')
+		if (token && isTokenValid(token).valid) postLoginRedirect(token)
 	}, [router, token])
 
 	const handleLogin = (formData: LoginApi) => {
@@ -28,7 +41,7 @@ export default function Login() {
 			onSuccess: data => {
 				tokenStore.setAccessToken(data.accessToken)
 				setFormError('')
-				router.push(REDIRECT_AFTER_LOGIN)
+				postLoginRedirect(data.accessToken)
 			},
 			onError: error => {
 				const err = error as AxiosError<ApiErrorResponse>
