@@ -26,11 +26,11 @@ public class ScheduleController(IScheduleService scheduleService) : ControllerBa
         return NoContent(); //204
     }
 
-    [HttpDelete("{scheduleId}")]
+    [HttpDelete("{id}")]
     [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
-    public async Task<IActionResult> DeleteSchedule([FromRoute] string scheduleId)
+    public async Task<IActionResult> DeleteSchedule([FromRoute] string id)
     {
-        await scheduleService.DeleteScheduleAsync(scheduleId);
+        await scheduleService.DeleteScheduleAsync(id);
         return NoContent(); //204
     }
 
