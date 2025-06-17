@@ -4,8 +4,8 @@ import Sidenav from '@/Components/Dashboard/Sidenav'
 import useToken from '@/Hooks/useToken'
 import { useRouter } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
-import { isTokenValid } from '@/Utils/isTokenValid'
 import { useGetMe } from '@/Services/account-service'
+import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)

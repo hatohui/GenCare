@@ -1,11 +1,13 @@
-export type Role = {
-	name: string
+import { Role } from '@/Utils/Permissions/isAllowedRole'
+
+export type RoleRs = {
+	name: Role
 	description?: string
 }
 
 export type Account = {
 	id: string
-	role: Role
+	role: RoleRs
 	email: string
 	firstName: string
 	lastName: string
