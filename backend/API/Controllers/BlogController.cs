@@ -29,4 +29,16 @@ public class BlogController(IBlogService blogService) : ControllerBase
         await blogService.AddBlogAsync(request, accountId.ToString("D"));
         return Created();
     }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Consultant}")]
+    public async Task<IActionResult> UpdateBlog([FromRoute] string id, [FromBody] BlogUpdateRequest request)
+    {
+        //get access token from header
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id by token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        await blogService.UpdateBlogAsync(request, accountId.ToString("D"), id);
+        return NoContent(); //204
+    }
 }

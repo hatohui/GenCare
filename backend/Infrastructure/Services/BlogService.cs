@@ -6,6 +6,7 @@ using Application.DTOs.Blog.Response;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
+using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository,
@@ -105,5 +106,24 @@ public class BlogService(IBlogRepository blogRepository,
             });
         }
         return rs;
+    }
+
+    public async Task UpdateBlogAsync(BlogUpdateRequest request, string accountId, string blogId)
+    {
+        //get blog
+        var blog = await blogRepository.GetById(blogId);
+        if (blog == null)
+        {
+            throw new AppException(404, "Blog is not found");
+        }
+        //update blog
+        blog.Title = request.Title ?? blog.Title;
+        blog.Content = request.Content ?? blog.Content;
+        blog.Author = request.Author ?? blog.Author;
+        blog.UpdatedBy = Guid.Parse(accountId);
+        blog.UpdatedAt = DateTime.Now;
+
+        //save to db
+        await blogRepository.Update(blog);
     }
 }
