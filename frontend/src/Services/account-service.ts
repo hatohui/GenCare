@@ -13,7 +13,7 @@ const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 const accountApi = {
 	getMe: (header: string) => {
 		const queryUrl = `${ACCOUNT_URL}/me`
-		return axios
+		return axiosInstance
 			.get<GetAccountByIdResponse>(queryUrl, {
 				headers: { Authorization: header },
 			})
@@ -31,7 +31,7 @@ const accountApi = {
 	getByPage: (header: string, count: number, page: number) => {
 		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}`
 
-		return axios
+		return axiosInstance
 			.get<GetAccountByPageResponse>(queryUrl, {
 				headers: { Authorization: header },
 			})

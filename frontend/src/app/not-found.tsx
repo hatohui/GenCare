@@ -13,12 +13,12 @@ export default function NotFound() {
 				height={4000}
 				className='object-fill h-full'
 			/>
-			<div
+			<button
 				onClick={() => router.back()}
 				className='absolute top-6 left-6 bg-accent px-4 py-2 rounded-md text-general font-semibold hover:bg-accent/50 transition-colors duration-200'
 			>
 				Go Back
-			</div>
+			</button>
 		</main>
 	)
 }

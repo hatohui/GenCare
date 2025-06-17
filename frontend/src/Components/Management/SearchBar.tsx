@@ -19,10 +19,8 @@ const SearchBar = ({
 	const pathname = usePathname()
 
 	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const trimmedValue = event.target.value.trim()
-
-		setSearchParam(trimmedValue)
-		debouncedPush(trimmedValue)
+		setSearchParam(event.target.value)
+		debouncedPush(event.target.value)
 	}
 
 	const createQueryString = useCallback(
@@ -37,7 +35,7 @@ const SearchBar = ({
 	const debouncedPush = useMemo(
 		() =>
 			debounce((value: string) => {
-				router.push(pathname + '?' + createQueryString('search', value))
+				router.push(pathname + '?' + createQueryString('search', value.trim()))
 			}, waitTime),
 		[router, pathname, createQueryString, waitTime]
 	)

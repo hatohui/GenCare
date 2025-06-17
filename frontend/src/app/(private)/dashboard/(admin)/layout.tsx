@@ -8,9 +8,9 @@ import {
 } from '@/Utils/Permissions/isAllowedRole'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-	const { data } = useAccountStore()
+	const { data, isLoading } = useAccountStore()
 
-	if (!isAllowedRole(data?.role.name, PermissionLevel.admin)) {
+	if (!isLoading && !isAllowedRole(data?.role.name, PermissionLevel.admin)) {
 		forbidden()
 	}
 
