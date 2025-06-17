@@ -57,7 +57,8 @@ const Register = () => {
 	if (registerMutation.isPending) return <LoadingPage />
 
 	return (
-		<main className='max-h-screen center-all p-4 flex-col items-center justify-center'>
+		<main className='relative max-h-screen center-all bg-gradient-to-b from-general to-main p-4 flex-col items-center justify-center'>
+			<div className='absolute top-0 left-0 full-screen florageBackground -z-10' />
 			<div className='flex items-center gap-2 mb-5'>
 				<Image
 					src={'/images/gencarelogo.png'}
@@ -71,7 +72,13 @@ const Register = () => {
 			</div>
 
 			<div className='w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center'>
-				<RegisterPage className='' handleRegister={handleRegister} />
+				<div>
+					{/* <h1 className='text-2xl  pb-2'>Đăng Ký</h1> */}
+					<RegisterPage
+						className='w-full z-10'
+						handleRegister={handleRegister}
+					/>
+				</div>
 
 				<motion.div
 					initial={{ opacity: 0, x: 50 }}
@@ -84,8 +91,6 @@ const Register = () => {
 					/>
 				</motion.div>
 			</div>
-
-			<FlorageBackground />
 		</main>
 	)
 }
