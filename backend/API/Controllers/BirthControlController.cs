@@ -28,19 +28,21 @@ public class BirthControlController(IBirthControlService birthControlService) : 
             return Ok(created);
         }
     }
-
-    [HttpDelete("{accountId}")]
-    public async Task<IActionResult> RemoveBirthControl(Guid accountId)
+    
+    
+    [HttpDelete("{Id}")]
+    public async Task<IActionResult> RemoveBirthControl(Guid Id)
     {
-        var removed = await birthControlService.RemoveBirthControlAsync(accountId);
+        var removed = await birthControlService.RemoveBirthControlAsync(Id);
 
         if (removed)
             return NoContent();
         else
             return NotFound();
     }
-
-    [HttpPatch]
+    
+    
+    [HttpPut]
     public async Task<IActionResult> UpdateBirthControl([FromBody] UpdateBirthControlRequest request)
     {
         var updated = await birthControlService.UpdateBirthControlAsync(request);

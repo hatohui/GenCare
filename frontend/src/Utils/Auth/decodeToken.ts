@@ -1,6 +1,6 @@
-import { getDecodedToken } from './getDecodedToken'
 import { DecodedTokenData } from '@/Interfaces/Auth/Schema/token'
 import { parseTokenClaims } from './parseTokenClaims'
+import { getDecodedToken } from './getDecodedToken'
 
 export const decodeToken = (token: string): DecodedTokenData | null => {
 	try {

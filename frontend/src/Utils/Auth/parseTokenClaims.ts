@@ -3,6 +3,7 @@ import {
 	RawClaims,
 	TokenizedAccount,
 } from '@/Interfaces/Auth/Schema/token'
+import { Role } from '../Permissions/isAllowedRole'
 
 export function parseTokenClaims(raw: RawClaims): DecodedTokenData {
 	if (!raw || typeof raw !== 'object') {
@@ -19,7 +20,9 @@ export function parseTokenClaims(raw: RawClaims): DecodedTokenData {
 	const account: TokenizedAccount = {
 		id: raw.sub,
 		role: {
-			name: raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+			name: raw[
+				'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+			] as Role,
 			description:
 				raw['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
 		},

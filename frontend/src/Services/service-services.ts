@@ -9,7 +9,7 @@ import {
 	GetServiceByPageAdminResponse,
 } from '@/Interfaces/Service/Schemas/service'
 import { Service } from '@/Interfaces/Service/Types/Service'
-import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
+import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 

@@ -3,12 +3,17 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import {
-	SIDE_NAV_OPTIONS as links,
-	SideNavButtonProp,
-} from '@/Constants/SideNav'
+import { SideNavButtonProp } from '@/Constants/SideNav'
+import { getNavOptionsFromRole } from '@/Utils/Permissions/getNavOptionsFromRole'
+import { useAccountStore } from '@/Hooks/useAccount'
 export default function NavLinks() {
+	const { data } = useAccountStore()
 	const pathname = usePathname()
+
+	if (!data) return <div>Loading...</div>
+
+	const links = getNavOptionsFromRole(data?.role.name, pathname.split('/')[1])
+
 	return (
 		<>
 			{links.map((link: SideNavButtonProp) => {

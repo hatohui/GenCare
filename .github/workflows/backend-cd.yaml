@@ -20,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -74,7 +73,11 @@ jobs:
             SHA=${{ github.sha }}
 
             echo "🔄 Fetching secrets from Doppler..."
-            DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format env --project gencare --config prd > /tmp/env_vars || { echo "❌ Failed to fetch Doppler secrets"; exit 1; }
+            DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format json --project gencare --config prd > /tmp/secrets.json || { echo "❌ Failed to fetch Doppler secrets"; exit 1; }
+
+            echo "🧹 Converting JSON secrets to unquoted env file..."
+            jq -r 'to_entries | .[] | "\(.key)=\(.value)"' /tmp/secrets.json > /tmp/env_vars || { echo "❌ Failed to convert secrets to env file"; exit 1; }
+            rm -f /tmp/secrets.json
 
             echo "🔄 Pulling latest image..."
             sudo docker pull $IMAGE:$SHA || { echo "❌ Failed to pull image $IMAGE:$SHA"; exit 1; }
@@ -105,7 +108,9 @@ jobs:
                 echo "🔄 Pulling previous image..."
                 sudo docker pull $IMAGE:previous || { echo "❌ Failed to pull previous image"; exit 1; }
                 echo "🚀 Starting previous container with Doppler secrets..."
-                DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format env --project gencare --config prd > /tmp/env_vars || { echo "❌ Failed to fetch Doppler secrets for rollback"; exit 1; }
+                DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format json --project gencare --config prd > /tmp/secrets.json || { echo "❌ Failed to fetch Doppler secrets for rollback"; exit 1; }
+                jq -r 'to_entries | .[] | "\(.key)=\(.value)"' /tmp/secrets.json > /tmp/env_vars || { echo "❌ Failed to convert secrets to env file for rollback"; exit 1; }
+                rm -f /tmp/secrets.json
                 sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:previous || { echo "❌ Failed to start previous container"; exit 1; }
                 rm -f /tmp/env_vars
                 exit 1
@@ -113,7 +118,7 @@ jobs:
             done
 
             echo "🧹 Pruning unused Docker images..."
-            sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}} {{.ID}}" \
+            sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}}" \
               | grep -v -E "(:${SHA}|:previous)" \
               | awk '{print $2}' \
               | xargs -r sudo docker rmi -f || true

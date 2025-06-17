@@ -6,7 +6,7 @@ import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import axiosInstance from '@/Utils/axios'
-import { useAccessTokenHeader } from '@/Utils/getAccessTokenHeader'
+import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 
