@@ -6,7 +6,6 @@ import {
 import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 
 const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 
