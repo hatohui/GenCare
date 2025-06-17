@@ -42,6 +42,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
             .Include(a => a.Schedules)
             .FirstOrDefaultAsync(a => a.Id == accountId);
     }
+    //test thu
 
     public async Task UpdateAccount(Account user)
     {
