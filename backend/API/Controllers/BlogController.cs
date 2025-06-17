@@ -41,4 +41,16 @@ public class BlogController(IBlogService blogService) : ControllerBase
         await blogService.UpdateBlogAsync(request, accountId.ToString("D"), id);
         return NoContent(); //204
     }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Consultant}")]
+    public async Task<IActionResult> DeleteBlog([FromRoute] string id)
+    {
+        //get access token from header
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id from token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        await blogService.DeleteBlogAsync(id, accountId.ToString("D"));
+        return NoContent(); //204
+    }
 }

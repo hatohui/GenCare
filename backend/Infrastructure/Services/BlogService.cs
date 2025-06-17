@@ -83,6 +83,19 @@ public class BlogService(IBlogRepository blogRepository,
         await blogRepository.Add(blog);
     }
 
+    public async Task DeleteBlogAsync(string blogId, string accountId)
+    {
+        //find blog
+        var blog = await blogRepository.GetById(blogId);
+        if (blog == null)
+            throw new AppException(404, "Blog is not found");
+        //set deleted info
+        blog.IsDeleted = true;
+        blog.DeletedBy = Guid.Parse(accountId);
+        blog.DeletedAt = DateTime.Now;
+        await blogRepository.Update(blog);
+    }
+
     public async Task<List<AllBlogViewResponse>> GetAllBlogsAsync()
     {
         var list = await blogRepository.GetAll();
@@ -126,4 +139,6 @@ public class BlogService(IBlogRepository blogRepository,
         //save to db
         await blogRepository.Update(blog);
     }
+
+    
 }
