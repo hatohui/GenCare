@@ -68,7 +68,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}
 
 		setIsLoading(false)
-	}, [isClient, isSuccess, data, accountStore, tokenStore])
+	}, [isClient, isSuccess, data])
 
 	if (!isClient || isLoading) {
 		return (
