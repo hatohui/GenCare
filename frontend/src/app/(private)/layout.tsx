@@ -65,7 +65,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 		if (!MANAGEMENT_TEAM.includes(data.role.name)) {
 			forbidden()
-			return
 		}
 
 		setIsLoading(false)
