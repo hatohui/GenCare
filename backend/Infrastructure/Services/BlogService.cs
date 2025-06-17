@@ -9,24 +9,24 @@ using Domain.Entities;
 
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository,
-       IAccountRepository accountRepository,
-       IBlogTagRepository blogTagRepository,
-       IMediaRepository mediaRepository) : IBlogService
+       ITagRepository tagRepository) : IBlogService
 {
     public async Task AddBlogAsync(BlogCreateRequest request, string accountId)
     {
-        //process blog tag
-        List<BlogTag> blogTags = new();
+        //process tag
+        List<Tag> tags = new();
+        //get tag list from tag id list in request
         if (request.TagId != null && request.TagId.Count > 0)
         {
             foreach (var tagId in request.TagId)
             {
-                List<BlogTag> rs = await blogTagRepository.GetByTagId(tagId);
-                blogTags.AddRange(rs);
+                var tmp = await tagRepository.GetById(tagId);
+                if(tmp != null) tags.Add(tmp);
             }
         }
         //process media
         List<Media> medias = new();
+        //create media list from media url list in request
         if (request.MediaUrl != null && request.MediaUrl.Count > 0)
         {
             foreach (var mediaUrl in request.MediaUrl)
@@ -37,9 +37,28 @@ public class BlogService(IBlogRepository blogRepository,
                     CreatedBy = Guid.Parse(accountId),
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
+                    //Blog = blog
                 });
             }
         }
+        //create blog tag list from tag list and blog
+        List<BlogTag> blogTags = new();
+
+        if (tags != null && tags.Count > 0)
+        {
+            foreach (var tag in tags)
+            {
+                blogTags.Add(new BlogTag()
+                {
+                    //Blog = blog,
+                    Tag = tag,
+                    CreatedBy = Guid.Parse(accountId),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                });
+            }
+        }
+
         //process blog
         var blog = new Blog()
         {
@@ -52,12 +71,14 @@ public class BlogService(IBlogRepository blogRepository,
             BlogTags = blogTags,
             Media = medias
         };
-        //add blog to media list
-        foreach (var media in medias)
-        {
-            media.Blog = blog;
-        }
-        await mediaRepository.AddListOfMediaAsync(medias);
+        ////add blog to media list
+        //foreach (var media in medias)
+        //{
+        //    media.Blog = blog;
+        //}
+
+        //await blogTagRepository.AddRange(blogTags);
+        //await mediaRepository.AddListOfMediaAsync(medias);
         await blogRepository.Add(blog);
     }
 
