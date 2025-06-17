@@ -161,6 +161,13 @@ builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IBlogTagRepository, BlogTagRepository>();
+builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IBlogService, BlogService>();
+
+
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 //===========Redis Configuration===========
