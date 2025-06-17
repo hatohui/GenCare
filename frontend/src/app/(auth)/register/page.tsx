@@ -12,7 +12,12 @@ import LoadingPage from '@/Components/Loading'
 import { AxiosError } from 'axios'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import useToken from '@/Hooks/useToken'
-import { REDIRECT_AFTER_LOGIN } from '@/Constants/Auth'
+import {
+	REDIRECT_MEMBER_AFTER_LOGIN_PATH,
+	REDIRECT_STAFF_AFTER_LOGIN_PATH,
+} from '@/Constants/Auth'
+import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
+import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
 
 const Register = () => {
 	const router = useRouter()
@@ -34,7 +39,11 @@ const Register = () => {
 		registerMutation.mutate(apiData, {
 			onSuccess: data => {
 				tokenStore.setAccessToken(data.accessToken)
-				router.push(REDIRECT_AFTER_LOGIN)
+				const role = getRoleFromToken(data.accessToken)
+
+				if (PermissionLevel[role] >= PermissionLevel.consultant)
+					router.push(REDIRECT_MEMBER_AFTER_LOGIN_PATH)
+				else router.push(REDIRECT_STAFF_AFTER_LOGIN_PATH)
 			},
 
 			onError: error => {

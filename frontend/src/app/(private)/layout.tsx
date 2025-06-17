@@ -3,10 +3,13 @@ import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
 import useToken from '@/Hooks/useToken'
 import { forbidden, useRouter } from 'next/navigation'
-import { MANAGEMENT_TEAM } from '@/Constants/Management'
 import { useAccountStore } from '@/Hooks/useAccount'
-import { isTokenValid } from '@/Utils/isTokenValid'
 import { useGetMe } from '@/Services/account-service'
+import {
+	isAllowedRole,
+	PermissionLevel,
+} from '@/Utils/Permissions/isAllowedRole'
+import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)
@@ -56,19 +59,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	}, [token, isClient, router])
 
 	useEffect(() => {
-		// Only run after isSuccess
 		if (!isClient || !isSuccess || !data) return
-
-		console.log('Data:', data)
 
 		accountStore.setAccount(data)
 
-		if (!MANAGEMENT_TEAM.includes(data.role.name)) {
+		if (!isAllowedRole(data.role.name, PermissionLevel.staff)) {
 			forbidden()
 		}
 
 		setIsLoading(false)
-	}, [isClient, isSuccess, data])
+	}, [isClient, isSuccess, data, accountStore, tokenStore])
 
 	if (!isClient || isLoading) {
 		return (
