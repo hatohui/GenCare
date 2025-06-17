@@ -31,6 +31,12 @@ public class DepartmentRepository(IApplicationDbContext dbContext) : IDepartment
             .AnyAsync(d => d.Name.ToLower() == name.ToLower());
     }
 
+    public async Task<bool> UpdateAsync(Department department)
+    {
+        dbContext.Departments.Update(department);
+        return await dbContext.SaveChangesAsync() > 0;
+    }
+   
     public async Task<Department?> GetDepartmentByIdAsync(Guid id)
     {
         return await dbContext.Departments

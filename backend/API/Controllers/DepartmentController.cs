@@ -39,4 +39,18 @@ public class DepartmentController(IDepartmentService departmentService) : Contro
         
         return BadRequest(response.Message);
     }
+    [HttpPut]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> UpdateDepartmentAsync([FromBody] UpdateDepartmentRequest request)
+    {
+        
+
+        var response = await departmentService.UpdateDepartment(request);
+        if (response.Success)
+        {
+            return Ok(response);
+        }
+        
+        return BadRequest(response.Message);
+    }
 }

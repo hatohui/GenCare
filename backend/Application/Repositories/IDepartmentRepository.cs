@@ -23,4 +23,6 @@ public interface IDepartmentRepository
     Task<bool> AddAsync(string name, string description);
 
     Task<bool> CheckNameDepartmentExists(string name);
+    
+    Task<bool> UpdateAsync(Department department);
 }

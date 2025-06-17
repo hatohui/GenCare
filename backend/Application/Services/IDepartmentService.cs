@@ -15,7 +15,8 @@ namespace Application.Services
         /// A task that represents the asynchronous operation. The task result contains a list of <see cref="DepartmentGetResponse"/> objects.
         /// </returns>
         Task<List<DepartmentGetResponse>> GetAllDepartment();
-        
-        Task<CreateDepartmentResponse> CreateDepartment(CreateDepartmentRequest department);
+
+        Task<CreateDepartmentResponse> CreateDepartment(CreateDepartmentRequest request);
+        Task<UpdateDepartmentResponse> UpdateDepartment(UpdateDepartmentRequest request);
     }
 }
