@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		setIsClient(true)
 	}, [])
 	useEffect(() => {
-		if (!isClient) return
+		if (!isClient) return //
 
 		const validation = isTokenValid(token)
 
