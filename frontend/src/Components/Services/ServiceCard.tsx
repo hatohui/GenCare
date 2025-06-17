@@ -1,6 +1,10 @@
+'use client'
+
 import { motion } from 'motion/react'
 import MotionLink from '../MotionLink'
 import Image from 'next/image'
+import { useAccountStore } from '@/Hooks/useAccount'
+import { useBookingCart } from '@/Hooks/useBookingCart'
 
 export type ServiceCardProps = {
 	id: string
@@ -17,6 +21,30 @@ export const ServiceCard = ({
 	id,
 	imageUrl,
 }: ServiceCardProps) => {
+	const { data } = useAccountStore()
+	const { addService } = useBookingCart()
+
+	const handleAddToCart = () => {
+		// Logic to add the service to the cart
+		if (!id || !name || !price) {
+			console.error('Invalid service data')
+			return
+		}
+		console.log(data)
+
+		if (!data) {
+			console.error('User not logged in')
+			return
+		}
+
+		console.log('adding to card')
+		addService({
+			id,
+			name,
+			price,
+		})
+	}
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -20, y: -10 }}
@@ -62,7 +90,10 @@ export const ServiceCard = ({
 				>
 					Detail
 				</MotionLink>
-				<button className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'>
+				<button
+					onClick={handleAddToCart}
+					className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'
+				>
 					Add to Cart
 				</button>
 			</div>

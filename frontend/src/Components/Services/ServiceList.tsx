@@ -19,10 +19,6 @@ const ServiceList = () => {
 		? Math.ceil(data.totalCount / itemsPerPage)
 		: 5
 
-	// const handleDelete = () => {
-	// 	alert('Account is getting deleted')
-	// }
-
 	return (
 		<>
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
