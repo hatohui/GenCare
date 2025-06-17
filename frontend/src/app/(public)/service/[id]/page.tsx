@@ -5,10 +5,14 @@ import { useServiceById } from '@/Services/service-services'
 import { use } from 'react'
 import { samplePayload } from '@/Services/service-services'
 import { useRouter } from 'next/navigation'
+
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
 	const router = useRouter()
+
 	const { id } = use(params)
+
 	const { data: service, isLoading, error } = useServiceById(id)
+
 	if (isLoading) {
 		return <div>Loading...</div>
 	}

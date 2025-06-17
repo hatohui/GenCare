@@ -1,6 +1,12 @@
+import {
+	REDIRECT_MEMBER_AFTER_LOGIN_PATH,
+	REDIRECT_STAFF_AFTER_LOGIN_PATH,
+} from '@/Constants/Auth'
 import useToken from '@/Hooks/useToken'
 import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 import { useOauthAccount } from '@/Services/auth-service'
+import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
+import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -22,7 +28,11 @@ export default function GoogleLoginButton({
 			{
 				onSuccess: data => {
 					tokenStore.setAccessToken(data.accessToken)
-					router.push('/dashboard')
+					const role = getRoleFromToken(data.accessToken)
+
+					if (PermissionLevel[role] >= PermissionLevel.consultant)
+						router.push(REDIRECT_MEMBER_AFTER_LOGIN_PATH)
+					else router.push(REDIRECT_STAFF_AFTER_LOGIN_PATH)
 				},
 				onError: error => {
 					console.error('OAuth error:', error)
@@ -46,7 +56,7 @@ export default function GoogleLoginButton({
 			document.getElementById('google-signin-button'),
 			{ theme: 'outline', size: 'large', text }
 		)
-	}, [])
+	}, [handleCredentialResponse, text])
 
 	return (
 		<div className={clsx('w-full', className)}>

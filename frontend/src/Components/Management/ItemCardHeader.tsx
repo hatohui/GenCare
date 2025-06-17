@@ -1,6 +1,6 @@
 import React from 'react'
 
-export type AccountListHeaderProps = {
+export type ItemCardHeaderProps = {
 	label: string
 	secondaryLabel: string
 	thirdLabel?: string
@@ -8,13 +8,13 @@ export type AccountListHeaderProps = {
 	fifthLabel?: string
 }
 
-const AccountListHeader = ({
+const ItemCardHeader = ({
 	label,
 	secondaryLabel,
 	thirdLabel,
 	fourthLabel,
 	fifthLabel,
-}: AccountListHeaderProps) => {
+}: ItemCardHeaderProps) => {
 	return (
 		<div
 			className='mx-2 bg-gradient-to-r from-white to-general overflow-hidden text-slate font-semibold px-4 py-2 flex justify-between drop-shadow-sm transition-colors duration-300 items-center relative round'
@@ -45,4 +45,4 @@ const AccountListHeader = ({
 	)
 }
 
-export default AccountListHeader
+export default ItemCardHeader

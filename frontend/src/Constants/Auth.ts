@@ -1,3 +1,4 @@
 export const ACCESS_TOKEN_COOKIE_STRING = 'accessToken'
 export const TOKEN_STORE_STRING = 'token-store'
-export const REDIRECT_AFTER_LOGIN = '/app'
+export const REDIRECT_MEMBER_AFTER_LOGIN_PATH = '/app'
+export const REDIRECT_STAFF_AFTER_LOGIN_PATH = '/dashboard'
