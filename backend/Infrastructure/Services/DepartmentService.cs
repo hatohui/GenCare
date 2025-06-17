@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Department.Response;
+﻿using Application.DTOs.Department.Request;
+using Application.DTOs.Department.Response;
 using Application.Repositories;
 using Application.Services;
 
@@ -15,5 +16,28 @@ public class DepartmentService(IDepartmentRepository departmentRepository) : IDe
             Name = d.Name,
             Description = d.Description,
         }).ToList();
+    }
+
+    public async Task<CreateDepartmentResponse> CreateDepartment(CreateDepartmentRequest department)
+    {
+        // Check if the department name already exists
+        var exists = await departmentRepository.CheckNameDepartmentExists(department.Name);
+        if (exists)
+        {
+            return new CreateDepartmentResponse
+            {
+                Success = false,
+                Message = "Department name already exists."
+            };
+        }
+
+        // Add the new department
+        var result = await departmentRepository.AddAsync(department.Name, department.Description ?? string.Empty);
+        return new CreateDepartmentResponse
+        {
+            Success = result,
+            Message = result ? "Department created successfully." : "Failed to create department."
+        };
+        
     }
 }
