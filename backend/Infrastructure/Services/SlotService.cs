@@ -123,7 +123,8 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
         var slots = await slotRepository.ViewAllSlot(); // retrieves all slots with schedules and accounts
 
         var result = new ViewAllSlotResponse
-        {Slots = slots.Select(slot => new ViewSlotForManager
+        {
+            Slots = slots.Select(slot => new ViewSlotForManager
             {
                 Id = slot.Id,
                 No = slot.No,

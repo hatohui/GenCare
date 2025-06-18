@@ -124,8 +124,8 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     /// <exception cref="AppException">Thrown if the cycle cannot be found or dates are invalid.</exception>
     public async Task<UpdateBirthControlResponse> UpdateBirthControlAsync(UpdateBirthControlRequest request)
     {
-        var accountId = Guid.Empty;
-        if (!Guid.TryParse(request.AccountId, out accountId))
+        
+        if (!Guid.TryParse(request.AccountId, out Guid accountId))
             throw new AppException(400, "Invalid AccountId format.");
         var birthControl = await birthControlRepository.GetBirthControlAsync(accountId) ??
             throw new AppException(404, "Birth control not found.");
