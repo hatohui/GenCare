@@ -16,6 +16,12 @@ public class BlogTagRepository(IApplicationDbContext dbContext) : IBlogTagReposi
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task AddRange(List<BlogTag> blogTags)
+    {
+        await dbContext.BlogTags.AddRangeAsync(blogTags);
+        await dbContext.SaveChangesAsync();
+    }
+
     public async Task Delete(BlogTag blogTag)
     {
         dbContext.BlogTags.Remove(blogTag);
@@ -47,4 +53,6 @@ public class BlogTagRepository(IApplicationDbContext dbContext) : IBlogTagReposi
         dbContext.BlogTags.Update(blogTag);
         await dbContext.SaveChangesAsync();
     }
+
+    
 }
