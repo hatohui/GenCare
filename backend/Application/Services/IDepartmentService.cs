@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Department.Response;
+﻿using Application.DTOs.Department.Request;
+using Application.DTOs.Department.Response;
 
 namespace Application.Services
 {
@@ -14,5 +15,8 @@ namespace Application.Services
         /// A task that represents the asynchronous operation. The task result contains a list of <see cref="DepartmentGetResponse"/> objects.
         /// </returns>
         Task<List<DepartmentGetResponse>> GetAllDepartment();
+
+        Task<CreateDepartmentResponse> CreateDepartment(CreateDepartmentRequest request);
+        Task<UpdateDepartmentResponse> UpdateDepartment(UpdateDepartmentRequest request);
     }
 }
