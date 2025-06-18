@@ -25,6 +25,7 @@ public class CommentController(ICommentService commentService) : ControllerBase
         await commentService.CreateCommentAsync(request, accountId.ToString("D"));
         return Created();
     }
+
     [HttpGet]
     public async Task<IActionResult> GetComments([FromQuery] string blogId)
     {
@@ -36,5 +37,22 @@ public class CommentController(ICommentService commentService) : ControllerBase
         //get comments
         var comments = await commentService.GetCommentAsync(blogId);
         return Ok(comments);
+    }
+
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateComment([FromBody] CommentUpdateRequest request, [FromRoute] string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return BadRequest("CommentId is required.");
+        }
+        //get access token
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id from access token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+
+        await commentService.UpdateComment(request, id, accountId.ToString("D"));
+        return NoContent();
     }
 }

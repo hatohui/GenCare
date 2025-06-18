@@ -6,4 +6,5 @@ public interface ICommentService
 {
     Task CreateCommentAsync(CommentCreateRequest request, string accountId);
     Task<List<CommentViewResponse>> GetCommentAsync(string blogId);
+    Task UpdateComment(CommentUpdateRequest request, string commentId, string accountId);
 }
