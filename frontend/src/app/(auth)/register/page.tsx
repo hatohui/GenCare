@@ -16,6 +16,8 @@ import { REDIRECT_AFTER_LOGIN } from '@/Constants/Auth'
 import Image from 'next/image'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import { motion } from 'motion/react'
+import Logo from '@/Components/Logo'
+import FooterSection from '@/Components/Landing/Footer'
 
 const Register = () => {
 	const router = useRouter()
@@ -57,29 +59,15 @@ const Register = () => {
 	if (registerMutation.isPending) return <LoadingPage />
 
 	return (
-		<main className='relative max-h-screen center-all bg-gradient-to-b from-general to-main p-4 flex-col items-center justify-center'>
-			<div className='absolute top-0 left-0 full-screen florageBackground -z-10' />
-			<div className='flex items-center gap-2 mb-5'>
-				<Image
-					src={'/images/gencarelogo.png'}
-					alt='logo'
-					width={50}
-					height={50}
+		<main className='relative p-4 flex-col bg-gradient-to-b from-main to-secondary justify-center'>
+			<Logo withLabel className='z-10 py-4 text-white' />
+
+			<div className='w-7xl mb-5 mx-auto h-[700px] relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center bg-general rounded-[30px] px-7'>
+				<div className='asfaltBackground absolute inset-0 z-[-1] opacity-50 rounded-3xl' />
+				<RegisterPage
+					className='w-full z-10 '
+					handleRegister={handleRegister}
 				/>
-				<span className='text-xl font-semibold'>
-					<span className='text-accent'>G</span>ENCARE
-				</span>
-			</div>
-
-			<div className='w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center'>
-				<div>
-					{/* <h1 className='text-2xl  pb-2'>Đăng Ký</h1> */}
-					<RegisterPage
-						className='w-full z-10'
-						handleRegister={handleRegister}
-					/>
-				</div>
-
 				<motion.div
 					initial={{ opacity: 0, x: 50 }}
 					animate={{ opacity: 1, x: 0 }}
@@ -91,6 +79,8 @@ const Register = () => {
 					/>
 				</motion.div>
 			</div>
+			<FooterSection />
+			<div className='absolute top-0 left-0 full-screen florageBackground' />
 		</main>
 	)
 }

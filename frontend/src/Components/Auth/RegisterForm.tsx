@@ -130,30 +130,32 @@ const RegisterForm = ({
 	}
 
 	return (
-		<form
-			className={clsx('p-7  min-w-sm rounded-3xl bg-general', className)}
-			onSubmit={handleSubmit}
+		<div
+			className={clsx(
+				'relative p-5 min-w-sm rounded-3xl h-full flex flex-col justify-between',
+				className
+			)}
 		>
-			<div className='text-md pb-5 flex justify-around'>
-				<p
-					className={clsx(
-						'border-b-4 border-gray-300 pb-2',
-						step === 1 && 'text-accent border-main'
-					)}
-				>
-					Bước 1: Thông tin tài khoản
-				</p>
-				<p
-					className={clsx(
-						'border-b-4 border-gray-300 pb-2',
-						step === 2 && 'text-accent border-main'
-					)}
-				>
-					Bước 2: Thông tin cơ bản
-				</p>
-			</div>
+			<form onSubmit={handleSubmit}>
+				<div className='text-md pb-5 flex justify-around'>
+					<p
+						className={clsx(
+							'border-b-4 border-gray-300 pb-2',
+							step === 1 && 'text-accent border-main'
+						)}
+					>
+						Bước 1: Thông tin tài khoản
+					</p>
+					<p
+						className={clsx(
+							'border-b-4 border-gray-300 pb-2',
+							step === 2 && 'text-accent border-main'
+						)}
+					>
+						Bước 2: Thông tin cơ bản
+					</p>
+				</div>
 
-			<AnimatePresence>
 				{step === 1 && (
 					<motion.div
 						key={step}
@@ -161,6 +163,24 @@ const RegisterForm = ({
 						animate={{ opacity: 1, x: 0 }}
 						transition={{ duration: 0.3 }}
 					>
+						<div className='flex gap-4'>
+							<FloatingLabel
+								label='Họ'
+								id='lastName'
+								name='lastName'
+								value={form.lastName}
+								onChange={handleChange}
+								error={errors.lastName}
+							/>
+							<FloatingLabel
+								label='Tên'
+								id='firstName'
+								name='firstName'
+								value={form.firstName}
+								onChange={handleChange}
+								error={errors.firstName}
+							/>
+						</div>
 						<FloatingLabel
 							label='Email'
 							id='email'
@@ -189,16 +209,6 @@ const RegisterForm = ({
 							onChange={handleChange}
 							error={errors.confirmPassword}
 						/>
-
-						<div className='flex justify-end'>
-							<button
-								type='button'
-								onClick={handleNext}
-								className='w-1/2 p-2 rounded-full bg-main text-white'
-							>
-								Chuyển sang bước 2
-							</button>
-						</div>
 					</motion.div>
 				)}
 
@@ -210,24 +220,6 @@ const RegisterForm = ({
 						animate={{ opacity: 1, x: 0 }}
 						transition={{ duration: 0.3 }}
 					>
-						<div className='flex gap-4'>
-							<FloatingLabel
-								label='Họ'
-								id='lastName'
-								name='lastName'
-								value={form.lastName}
-								onChange={handleChange}
-								error={errors.lastName}
-							/>
-							<FloatingLabel
-								label='Tên'
-								id='firstName'
-								name='firstName'
-								value={form.firstName}
-								onChange={handleChange}
-								error={errors.firstName}
-							/>
-						</div>
 						<FloatingLabel
 							label='Số điện thoại'
 							id='phoneNumber'
@@ -309,35 +301,49 @@ const RegisterForm = ({
 								</p>
 							)}
 						</div>
-						<div className='flex justify-between gap-4 '>
-							<button
-								type='button'
-								onClick={handleBack}
-								className='w-full p-2 rounded-[30px] bg-gray-500 text-white'
-							>
-								Quay lại bước 1
-							</button>
-							<SubmitButton
-								label='Đăng kí'
-								buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent'
-							/>
-						</div>
 					</motion.div>
 				)}
-			</AnimatePresence>
-
+			</form>
 			{/* Footer: Google Login & Redirect */}
-			<div className='text-center text-gray-500 mt-4'>
-				Đã có tài khoản?{' '}
-				<a href='/login' className='text-accent hover:underline'>
-					Đăng nhập
-				</a>
-			</div>
+			<div className='mb-30'>
+				{step === 1 && (
+					<div className='flex justify-end py-10'>
+						<button
+							type='button'
+							onClick={handleNext}
+							className='w-1/2 p-2 text-main hover:text-accent duration-300 hover:scale-110 '
+						>
+							Tiếp &gt;
+						</button>
+					</div>
+				)}
+				{step === 2 && (
+					<div className='flex justify-between gap-4 py-10'>
+						<button
+							type='button'
+							onClick={handleBack}
+							className='w-1/2 p-2 text-main hover:text-accent duration-300 hover:scale-110'
+						>
+							&lt; Quay lại
+						</button>
+						<SubmitButton
+							label='Đăng kí'
+							buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent'
+						/>
+					</div>
+				)}
+				<div className='text-center text-gray-500'>
+					Đã có tài khoản?{' '}
+					<a href='/login' className='text-accent hover:underline'>
+						Đăng nhập
+					</a>
+				</div>
 
-			<div className='text-center text-gray-500'>
-				<GoogleLoginButton text='signup_with' className='mt-4 h-10 mx-auto' />
+				<div className='text-center text-gray-500'>
+					<GoogleLoginButton text='signup_with' className='mt-4 h-10 mx-auto' />
+				</div>
 			</div>
-		</form>
+		</div>
 	)
 }
 
