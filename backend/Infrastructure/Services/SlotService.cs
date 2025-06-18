@@ -33,8 +33,8 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
         var slot = new Slot()
         {
             No = request.No,
-            StartAt = request.StartTime,
-            EndAt = request.EndTime,
+            StartAt = ToUnspecified(request.StartTime),
+            EndAt = ToUnspecified(request.EndTime),
             IsDeleted = request.IsDeleted
         };
         await slotRepository.Add(slot);
