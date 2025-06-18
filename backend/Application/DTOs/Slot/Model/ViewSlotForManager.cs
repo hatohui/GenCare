@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.Slot;
+﻿namespace Application.DTOs.Slot.Model;
 
 public class ViewSlotForManager
 {
@@ -7,5 +7,5 @@ public class ViewSlotForManager
     public DateTime StartAt { get; set; }
     public DateTime EndAt { get; set; }
     public bool IsDeleted { get; set; }
-    public List<Domain.Entities.Account> Accounts { get; set; }
+    public List<AccountInforView> Accounts { get; set; }
 }

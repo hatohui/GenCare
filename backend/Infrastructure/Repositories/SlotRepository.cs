@@ -35,11 +35,11 @@ public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
     
 
     //check time slot exists in the database, prevent overlapping
-    public async Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt)
-        => await dbContext.Slots.AnyAsync(x => !x.IsDeleted &&
-                                               x.StartAt < endAt &&
-                                               x.EndAt > startAt);
-
+    public async Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt, Guid? excludeSlotId = null)
+        => await dbContext.Slots.AnyAsync(x => !x.IsDeleted
+                                               && x.StartAt < endAt
+                                               && x.EndAt > startAt
+                                               && (!excludeSlotId.HasValue || x.Id != excludeSlotId.Value));
     //get all slots with schedules and accounts
     public async Task<List<Slot>> ViewAllSlot()
     {

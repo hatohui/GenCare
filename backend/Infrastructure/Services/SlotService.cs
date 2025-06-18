@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Slot;
+using Application.DTOs.Slot.Model;
 using Application.DTOs.Slot.Request;
 using Application.DTOs.Slot.Response;
 using Application.Repositories;
@@ -25,7 +26,7 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
         if(request.StartTime <= DateTime.Now)
             throw new AppException(404, "Start time must be now or future time.");
         //if in db has same time
-        if(await slotRepository.CheckTimeExist(request.StartTime, request.EndTime))
+        if(await slotRepository.CheckTimeExist(ToUnspecified(request.StartTime), ToUnspecified(request.EndTime)))
             throw new AppException(405, "Slot time already exists.");
         var isNoExist = await slotRepository.CheckNoExist(request.No);
         if(isNoExist)
@@ -77,7 +78,8 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
         }
     
         // check db if the time slot exists preventing overlapping
-        bool isExist = await slotRepository.CheckTimeExist(newStartTime, newEndTime);
+        bool isExist = await slotRepository.CheckTimeExist(ToUnspecified(newStartTime), ToUnspecified(newEndTime),
+            slot.Id);
         if(isExist)
             throw new AppException(405, "Slot time already exists.");
 
@@ -121,8 +123,7 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
         var slots = await slotRepository.ViewAllSlot(); // retrieves all slots with schedules and accounts
 
         var result = new ViewAllSlotResponse
-        {
-            Slots = slots.Select(slot => new ViewSlotForManager()
+        {Slots = slots.Select(slot => new ViewSlotForManager
             {
                 Id = slot.Id,
                 No = slot.No,
@@ -130,10 +131,25 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
                 EndAt = slot.EndAt,
                 IsDeleted = slot.IsDeleted,
                 Accounts = slot.Schedules
-                    .Where(sc => sc.Account?.IsDeleted == false)
-                    .Select(sc => sc.Account)
-                    .Distinct()
-                    .ToList()
+                    .Where(sc => sc.Account != null && !sc.Account.IsDeleted)
+                    .GroupBy(sc => sc.Account)
+                    .Select(g => new AccountInforView
+                    {
+                        Id = g.Key.Id,
+                        RoleId = g.Key.RoleId,
+                        Email = g.Key.Email,
+                        FirstName = g.Key.FirstName,
+                        LastName = g.Key.LastName,
+                        Phone = g.Key.Phone,
+                        DateOfBirth = g.Key.DateOfBirth,
+                        Gender = g.Key.Gender,
+                        AvatarUrl = g.Key.AvatarUrl,
+                        Schedules = g.Select(sc => new ScheduleStaff()
+                        {
+                            Id = sc.Id,
+                            SlotId = sc.SlotId,
+                        }).ToList()
+                    }).ToList()
             }).ToList()
         };
 

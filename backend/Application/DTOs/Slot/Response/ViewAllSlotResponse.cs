@@ -1,4 +1,6 @@
-﻿namespace Application.DTOs.Slot.Response;
+﻿using Application.DTOs.Slot.Model;
+
+namespace Application.DTOs.Slot.Response;
 
 public class ViewAllSlotResponse
 {

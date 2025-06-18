@@ -46,7 +46,7 @@ public interface ISlotRepository
     Task<bool> DeleteById(Guid id);
     Task<bool> CheckNoExist(int no);
     
-    Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt);
+    Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt,Guid? excludeSlotId = null);
     
     Task<List<Slot>> ViewAllSlot();
 }
