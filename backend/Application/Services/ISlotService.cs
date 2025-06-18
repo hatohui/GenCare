@@ -7,6 +7,11 @@ namespace Application.Services;
 public interface ISlotService
 {
     Task<CreateSlotResponse> CreateSlot(CreateSlotRequest request);
+    Task<UpdateSlotResponse> UpdateSlot(UpdateSlotRequest request);
+    
+    Task<DeleteSlotResponse> DeleteSlot(DeleteSlotRequest request);
+    
+    Task<ViewAllSlotResponse> ViewAllSlot();
     
     
 }

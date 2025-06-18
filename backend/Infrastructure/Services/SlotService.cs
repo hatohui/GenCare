@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Slot.Request;
+﻿using Application.DTOs.Slot;
+using Application.DTOs.Slot.Request;
 using Application.DTOs.Slot.Response;
 using Application.Repositories;
 using Application.Services;
@@ -9,6 +10,10 @@ namespace Infrastructure.Services;
 
 public class SlotService(ISlotRepository slotRepository) : ISlotService
 {
+    private static DateTime ToUnspecified(DateTime dt)
+    {
+        return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+    }
     public async Task<CreateSlotResponse> CreateSlot(CreateSlotRequest request)
     {
         //check no if it is greater than zero
@@ -19,9 +24,12 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
             throw new AppException(403, "Start time must be before end time.");
         if(request.StartTime <= DateTime.Now)
             throw new AppException(404, "Start time must be now or future time.");
-        bool isExistTime = await slotRepository.CheckTimeExist(request.StartTime, request.EndTime);
-        if(isExistTime)
+        //if in db has same time
+        if(await slotRepository.CheckTimeExist(request.StartTime, request.EndTime))
             throw new AppException(405, "Slot time already exists.");
+        var isNoExist = await slotRepository.CheckNoExist(request.No);
+        if(isNoExist)
+            throw new AppException(406, "Slot no number is exist.");
         var slot = new Slot()
         {
             No = request.No,
@@ -35,5 +43,100 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
             Success = true,
             Message = "Slot created successfully."
         };
+    }
+
+    public async Task<UpdateSlotResponse> UpdateSlot(UpdateSlotRequest request)
+    {
+        //check if slot id is valid
+        var slot = await slotRepository.GetById(request.SlotId);
+        if(slot == null)
+            throw new AppException(404, "Slot not found.");
+
+        // if user set No, StartTime, EndTime, use them, otherwise use current slot's values
+        var newNo = request.No ?? slot.No;
+        var newStartTime = request.StartTime ?? slot.StartAt;
+        var newEndTime = request.EndTime ?? slot.EndAt;
+        var newIsDeleted = request.IsDeleted ?? slot.IsDeleted;
+
+        // Check slot number, if user input negative or zero
+        if(newNo <= 0)
+            throw new AppException(402, "Slot number must be greater than zero.");
+
+        // Check times
+        if(newStartTime >= newEndTime)
+            throw new AppException(403, "Start time must be before end time.");
+        if(newStartTime <= DateTime.Now)
+            throw new AppException(404, "Start time must be now or future time.");
+
+        //if user set not null for No, check if it exists in the database
+        if(newNo != slot.No)
+        {
+            var isNoExist = await slotRepository.CheckNoExist(newNo);
+            if(isNoExist)
+                throw new AppException(406, "Slot no number is exist.");
+        }
+    
+        // check db if the time slot exists preventing overlapping
+        bool isExist = await slotRepository.CheckTimeExist(newStartTime, newEndTime);
+        if(isExist)
+            throw new AppException(405, "Slot time already exists.");
+
+        // update slot
+        slot.No = newNo;
+        slot.StartAt = ToUnspecified(newStartTime);
+        slot.EndAt = ToUnspecified(newEndTime);
+        slot.IsDeleted = newIsDeleted;
+
+        await slotRepository.Update(slot);
+
+        return new UpdateSlotResponse
+        {
+            Success = true,
+            Message = "Slot updated successfully."
+        };
+    }
+
+    public async Task<DeleteSlotResponse> DeleteSlot(DeleteSlotRequest request)
+    {
+        //check in db if slot exists
+        var slot = await slotRepository.GetById(request.SlotId);
+        if (slot == null)
+            throw new AppException(404, "Slot not found.");
+
+        // if slot is already deleted, return success
+        slot.IsDeleted = true;
+        await slotRepository.Update(slot);
+
+        return new DeleteSlotResponse
+        {
+            Success = true,
+            Message = "Slot deleted successfully (soft delete)."
+        };
+
+
+    }
+
+    public async Task<ViewAllSlotResponse> ViewAllSlot()
+    {
+        var slots = await slotRepository.ViewAllSlot(); // retrieves all slots with schedules and accounts
+
+        var result = new ViewAllSlotResponse
+        {
+            Slots = slots.Select(slot => new ViewSlotForManager()
+            {
+                Id = slot.Id,
+                No = slot.No,
+                StartAt = slot.StartAt,
+                EndAt = slot.EndAt,
+                IsDeleted = slot.IsDeleted,
+                Accounts = slot.Schedules
+                    .Where(sc => sc.Account?.IsDeleted == false)
+                    .Select(sc => sc.Account)
+                    .Distinct()
+                    .ToList()
+            }).ToList()
+        };
+
+        return result;
     }
 }

@@ -30,11 +30,27 @@ public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
     }
 
     public async Task<bool> Exist(Guid id) => await dbContext.Slots.AnyAsync(x => x.Id == id && !x.IsDeleted);
-
-    public async Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt) =>await dbContext.Slots.AnyAsync(x => !x.IsDeleted &&
-                                                                                                                    x.StartAt < endAt &&
-                                                                                                                         x.EndAt > startAt);
+    //check if the time slot exists aleast 15 minutes in the database
+    public async Task<bool> CheckNoExist(int no) => await dbContext.Slots.AnyAsync(s => s.No == no);
     
+
+    //check time slot exists in the database, prevent overlapping
+    public async Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt)
+        => await dbContext.Slots.AnyAsync(x => !x.IsDeleted &&
+                                               x.StartAt < endAt &&
+                                               x.EndAt > startAt);
+
+    //get all slots with schedules and accounts
+    public async Task<List<Slot>> ViewAllSlot()
+    {
+        var slots = await dbContext.Slots
+            .Include(s => s.Schedules)
+            .ThenInclude(sc => sc.Account)
+            .Where(s => !s.IsDeleted) 
+            .ToListAsync();
+
+        return slots;    }
+
     public async Task<bool> DeleteById(Guid id)
     {
         var slot = await dbContext.Slots.FirstOrDefaultAsync(x => x.Id == id);
