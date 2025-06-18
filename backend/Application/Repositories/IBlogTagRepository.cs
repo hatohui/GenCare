@@ -50,4 +50,6 @@ public interface IBlogTagRepository
     /// <param name="blogTag">The blog tag entity to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task Delete(BlogTag blogTag);
+
+    Task AddRange(List<BlogTag> blogTags);
 }

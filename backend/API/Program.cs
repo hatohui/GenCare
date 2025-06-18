@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.Helpers;
@@ -153,7 +153,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
-builder.Services.AddScoped<IMessageService, MessageService>(); 
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
@@ -168,6 +168,7 @@ builder.Services.AddScoped<IBlogTagRepository, BlogTagRepository>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -179,7 +180,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
                    ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
 
-   
+
 });
 
 //===========Database Configuration===========

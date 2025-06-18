@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@layer utilities {
+	.inactive-area {
+		@apply w-full p-2 bg-gray-100 rounded-md border-none read-only:text-gray-700 read-only:bg-gray-300 cursor-not-allowed pointer-events-none;
+	}
+}
