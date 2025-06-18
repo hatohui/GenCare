@@ -12,6 +12,7 @@ import { Service } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import clsx from 'clsx'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
@@ -56,10 +57,12 @@ export const samplePayload: Omit<
 ]
 
 const serviceApi = {
-	getByPage: (page: number, count: number) =>
+	getByPage: (page: number, count: number, order: boolean, search: string) =>
 		axios
 			.get<GetServiceByPageResponse>(
-				`${SERVICE_URL}?Page=${page}&Count=${count}`
+				`${SERVICE_URL}?Page=${page}&Count=${count}` +
+					(order ? '&sortByPrice=true' : '') +
+					(search ? `&search=${search}` : '')
 			)
 			.then(res => {
 				console.log('getByPage', res.data)
@@ -107,10 +110,15 @@ const serviceApi = {
 			.then(res => res.data),
 }
 
-export const useServiceByPage = (page: number, count: number) => {
+export const useServiceByPage = (
+	page: number,
+	count: number,
+	order: boolean,
+	search: string = ''
+) => {
 	return useQuery({
-		queryKey: ['services', page, count],
-		queryFn: () => serviceApi.getByPage(page, count),
+		queryKey: ['services', page, count, order, search],
+		queryFn: () => serviceApi.getByPage(page, count, order || false, search),
 		placeholderData: keepPreviousData,
 	})
 }

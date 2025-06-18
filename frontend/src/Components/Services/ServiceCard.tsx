@@ -3,8 +3,9 @@
 import { motion } from 'motion/react'
 import MotionLink from '../MotionLink'
 import Image from 'next/image'
-import { useAccountStore } from '@/Hooks/useAccount'
 import { useBookingCart } from '@/Hooks/useBookingCart'
+import useToken from '@/Hooks/useToken'
+import { useRouter } from 'next/navigation'
 
 export type ServiceCardProps = {
 	id: string
@@ -21,8 +22,9 @@ export const ServiceCard = ({
 	id,
 	imageUrl,
 }: ServiceCardProps) => {
-	const { data } = useAccountStore()
+	const { accessToken } = useToken()
 	const { addService } = useBookingCart()
+	const router = useRouter()
 
 	const handleAddToCart = () => {
 		// Logic to add the service to the cart
@@ -30,10 +32,9 @@ export const ServiceCard = ({
 			console.error('Invalid service data')
 			return
 		}
-		console.log(data)
-
-		if (!data) {
+		if (!accessToken) {
 			console.error('User not logged in')
+			router.push('/login')
 			return
 		}
 
