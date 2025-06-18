@@ -62,7 +62,7 @@ public class CommentService(IBlogRepository blogRepository,
         return rs;
     }
 
-    public async Task UpdateComment(CommentUpdateRequest request, string commentId, string accountId)
+    public async Task UpdateCommentAsync(CommentUpdateRequest request, string commentId, string accountId)
     {
         //get comment by id
         var comment = await commentRepository.GetById(commentId);
@@ -78,6 +78,25 @@ public class CommentService(IBlogRepository blogRepository,
         comment.Content = request.Content;
         comment.UpdatedAt = DateTime.Now;
         comment.UpdatedBy = Guid.Parse(accountId);
+        await commentRepository.Update(comment);
+    }
+
+    public async Task DeleteCommentAsync(string commentId, string accountId)
+    {
+        //get comment by id
+        var comment = await commentRepository.GetById(commentId);
+        if (comment is null)
+        {
+            throw new AppException(404, "Comment not found");
+        }
+        if (comment.AccountId.ToString("D") != accountId)
+        {
+            throw new AppException(403, "You are not allowed to delete this comment");
+        }
+        //delete comment
+        comment.DeletedAt = DateTime.Now;
+        comment.DeletedBy = Guid.Parse(accountId);
+        comment.IsDeleted = true;
         await commentRepository.Update(comment);
     }
 }
