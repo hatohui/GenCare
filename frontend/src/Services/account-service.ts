@@ -11,6 +11,8 @@ const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 
 const accountApi = {
 	getMe: (header: string) => {
+		console.log('queried')
+
 		const queryUrl = `${ACCOUNT_URL}/me`
 		return axiosInstance
 			.get<GetAccountByIdResponse>(queryUrl, {
@@ -54,7 +56,6 @@ export const useGetMe = () => {
 		queryKey: ['me'],
 		queryFn: () => accountApi.getMe(header),
 		enabled: !!header,
-		staleTime: 0, // data is always considered stale
 		refetchOnMount: true,
 		refetchOnWindowFocus: true,
 	})
