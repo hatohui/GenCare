@@ -3,7 +3,6 @@
 import ServiceDetail from '@/Components/Services/ServiceDetail'
 import { useServiceById } from '@/Services/service-services'
 import { use } from 'react'
-import { samplePayload } from '@/Services/service-services'
 import { useRouter } from 'next/navigation'
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -22,13 +21,12 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 		return <div>loading error</div>
 	}
 
-	const serviceData = service ||
-		samplePayload.find(item => item.id === id) || {
-			id: '',
-			name: '',
-			description: '',
-			price: 0,
-		}
+	const serviceData = service || {
+		id: '',
+		name: '',
+		description: '',
+		price: 0,
+	}
 
 	return (
 		<main className='max-h-screen bg-[#F7F7F7] text-gray-900'>
