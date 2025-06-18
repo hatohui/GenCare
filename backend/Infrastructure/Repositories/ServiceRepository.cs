@@ -12,7 +12,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
 
         if (!string.IsNullOrEmpty(name))
         {
-            query = query.Where(s => s.Name.Contains(name) || s.Name.Contains(name));
+            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
         }
 
         if (includeDeleted.HasValue)

@@ -29,6 +29,21 @@ public class SlotRepository(IApplicationDbContext dbContext) : ISlotRepository
         return await dbContext.Slots.FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
     }
 
+    public async Task<bool> Exist(Guid id) => await dbContext.Slots.AnyAsync(x => x.Id == id && !x.IsDeleted);
+
+    public async Task<bool> CheckTimeExist(DateTime startAt, DateTime endAt) =>await dbContext.Slots.AnyAsync(x => !x.IsDeleted &&
+                                                                                                                    x.StartAt < endAt &&
+                                                                                                                         x.EndAt > startAt);
+    
+    public async Task<bool> DeleteById(Guid id)
+    {
+        var slot = await dbContext.Slots.FirstOrDefaultAsync(x => x.Id == id);
+        if (slot is not { }) return false;
+        slot.IsDeleted = true;
+        await dbContext.SaveChangesAsync();
+        return true;
+    }
+
     public async Task Update(Slot s)
     {
         dbContext.Slots.Update(s);
