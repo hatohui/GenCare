@@ -1,9 +1,5 @@
 'use client'
-import {
-	useDeleteService,
-	useServiceById,
-	useUpdateService,
-} from '@/Services/service-services'
+import { useServiceById, useUpdateService } from '@/Services/service-services'
 import './style.css'
 import { useEditableField } from '@/Hooks/Form/useEditable'
 import { useQueryUIState } from '@/Hooks/UI/useQueryUIState'
@@ -16,7 +12,6 @@ const ServiceDetailPage = () => {
 	const serviceId = typeof params.id === 'string' ? params.id : undefined
 
 	const updateServiceMutation = useUpdateService(serviceId ?? '')
-	const deleteService = useDeleteService(serviceId ?? '')
 
 	const query = useServiceById(serviceId ?? '')
 
