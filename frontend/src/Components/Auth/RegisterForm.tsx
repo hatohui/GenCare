@@ -10,17 +10,20 @@ import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
 import SubmitButton from './SubmitButton'
 import clsx from 'clsx'
+import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 
 type RegisterFormProps = keyof RegisterFormData
 
 export type RegisterComponentProps = {
 	handleRegister: (data: RegisterFormData) => void
 	className?: string
+	handleLogin: (response: OauthResponse) => void
 }
 
 const RegisterForm = ({
 	handleRegister,
 	className,
+	handleLogin,
 }: RegisterComponentProps) => {
 	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
@@ -319,7 +322,11 @@ const RegisterForm = ({
 			</div>
 
 			<div className='text-center text-gray-500'>
-				<GoogleLoginButton text='signup_with' className='mt-4 h-10 mx-auto' />
+				<GoogleLoginButton
+					text='signup_with'
+					className='mt-4 h-10 mx-auto'
+					handleLogin={handleLogin}
+				/>
 			</div>
 		</form>
 	)

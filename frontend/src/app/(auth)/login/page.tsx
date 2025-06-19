@@ -9,7 +9,9 @@ import {
 import useToken from '@/Hooks/useToken'
 import { ApiErrorResponse } from '@/Interfaces/Auth/ApiErrorResponse'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
-import { useLoginAccount } from '@/Services/auth-service'
+import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
+import { TokenData } from '@/Interfaces/Auth/Schema/token'
+import { useLoginAccount, useOauthAccount } from '@/Services/auth-service'
 import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
 import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
@@ -19,10 +21,20 @@ import { useEffect, useState } from 'react'
 
 export default function Login() {
 	const loginMutation = useLoginAccount()
+	const handleOauth = useOauthAccount()
+
 	const [formError, setFormError] = useState<string>('')
+	const [isLoggingIn, setIsLoggingIn] = useState(false)
 	const router = useRouter()
 	const tokenStore = useToken()
+
 	const token = tokenStore.accessToken
+
+	const loginSuccess = (data: TokenData) => {
+		tokenStore.setAccessToken(data.accessToken)
+		setFormError('')
+		postLoginRedirect(data.accessToken)
+	}
 
 	const postLoginRedirect = (token: string) => {
 		const role = getRoleFromToken(token)
@@ -36,29 +48,42 @@ export default function Login() {
 		if (token && isTokenValid(token).valid) postLoginRedirect(token)
 	}, [router, token])
 
-	const handleLogin = (formData: LoginApi) => {
-		loginMutation.mutate(formData, {
-			onSuccess: data => {
-				tokenStore.setAccessToken(data.accessToken)
-				setFormError('')
-				postLoginRedirect(data.accessToken)
-			},
-			onError: error => {
-				const err = error as AxiosError<ApiErrorResponse>
+	const handleLogin = (formData: LoginApi | OauthResponse) => {
+		setIsLoggingIn(true)
 
-				if (err.response?.status) {
-					const validationErrors = err.response.data
-					console.error('Validation errors:', validationErrors)
-					setFormError('login or password is incorrect')
+		if ('email' in formData && 'password' in formData) {
+			loginMutation.mutate(formData, {
+				onSuccess: data => loginSuccess(data),
+				onError: error => {
+					const err = error as AxiosError<ApiErrorResponse>
+
+					if (err.response?.status) {
+						const validationErrors = err.response.data
+						console.error('Validation errors:', validationErrors)
+						setIsLoggingIn(false)
+						setFormError('login or password is incorrect')
+					}
+				},
+			})
+		} else {
+			handleOauth.mutate(
+				{ credential: formData.credential },
+				{
+					onSuccess: data => loginSuccess(data),
+					onError: error => {
+						console.error('OAuth error:', error)
+						setIsLoggingIn(false)
+					},
 				}
-			},
-		})
+			)
+		}
 	}
 
 	if (loginMutation.isPending || loginMutation.isSuccess) return <LoadingPage />
 
 	return (
 		<>
+			{isLoggingIn && <LoadingPage />}
 			<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4'>
 				<div className='absolute top-0 left-0 full-screen florageBackground' />
 				<LoginForm handleLogin={handleLogin} formError={formError} />

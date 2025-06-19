@@ -51,12 +51,15 @@ const serviceApi = {
 			})
 			.then(res => res.data),
 
-	update: (header: string, id: string, data: UpdateServiceApiRequest) =>
-		axios
+	update: (header: string, id: string, data: UpdateServiceApiRequest) => {
+		console.log(`${SERVICE_URL}/${id}`)
+
+		return axios
 			.put<UpdateServiceApiResponse>(`${SERVICE_URL}/${id}`, data, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data),
+			.then(res => res.data)
+	},
 
 	delete: (header: string, id: string) =>
 		axios
@@ -104,11 +107,12 @@ export const useCreateService = () => {
 	})
 }
 
-export const useUpdateService = (id: string, data: UpdateServiceApiRequest) => {
+export const useUpdateService = (id: string) => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: () => serviceApi.update(header, id, data),
+		mutationFn: (data: UpdateServiceApiRequest) =>
+			serviceApi.update(header, id, data),
 	})
 }
 
