@@ -6,8 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 [ApiController]
 [Route("api/messages")]
+
+
 public class MessageController(IMessageService messageService): ControllerBase
 {
+    
+   
+    /// <summary>
+    /// Controller for handling message-related API endpoints.
+    /// </summary>
     [HttpPost]
     [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Staff}")]
     public async Task<IActionResult> Create([FromBody] MessageCreateRequest request)
@@ -17,7 +24,11 @@ public class MessageController(IMessageService messageService): ControllerBase
         var result = await messageService.CreateMessageAsync(request,accessToken);
         return Ok(result);
     }
-
+    /// <summary>
+    /// Retrieves all messages for a specific conversation.
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <returns>A list of messages in the specified conversation.</returns>
     [HttpGet("conversation/{conversationId}")]
     public async Task<IActionResult> GetMessagesByConversation(Guid conversationId)
     {
