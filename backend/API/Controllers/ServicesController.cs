@@ -119,7 +119,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// </summary>
     /// <param name="request">Service update info (including Id)</param>
     /// <returns>Update result</returns>
-    [HttpPut("update")]
+    [HttpPut]
     [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

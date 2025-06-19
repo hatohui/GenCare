@@ -94,6 +94,23 @@ builder
             ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
         };
+        // Configure the OnMessageReceived event to extract the JWT token from the query string,
+        // which is necessary for WebSocket connections (e.g., SignalR) that cannot send Authorization headers.
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                // Allow JWT token to be sent via query string for SignalR connections
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/chat"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     })
     .AddCookie()
     .AddGoogle(options =>
