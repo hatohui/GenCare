@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@layer utilities {
+	.inactive-area {
+		@apply w-full p-2 bg-gray-100 rounded-md border-none read-only:text-gray-700 read-only:bg-gray-300 cursor-not-allowed pointer-events-none;
+	}
+
+	.table-data {
+		@apply p-2 relative grow flex-3/4;
+	}
+
+	.table-label {
+		@apply p-2 font-semibold flex-1/4;
+	}
+
+	.table-row {
+		@apply inline md:flex;
+	}
+}

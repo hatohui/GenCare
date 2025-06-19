@@ -8,53 +8,12 @@ import {
 	UpdateServiceApiRequest,
 	GetServiceByPageAdminResponse,
 } from '@/Interfaces/Service/Schemas/service'
-import { Service } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import clsx from 'clsx'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
-
-export const samplePayload: Omit<
-	Service,
-	'createdAt' | 'updatedAt' | 'isDeleted'
->[] = [
-	{
-		id: '1',
-		name: 'Basic Health Checkup',
-		description:
-			'A standard package for routine health screening. lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-		price: 499000,
-		imageUrl: 'https://example.com/images/health-basic.jpg',
-	},
-	{
-		id: '2',
-		name: 'MRI Brain Scan',
-		description: 'High-resolution MRI scan for brain diagnostics.',
-		price: 1850000,
-		imageUrl: 'https://example.com/images/mri-brain.jpg',
-	},
-	{
-		id: '3',
-		name: 'Pediatric Consultation',
-		description: 'Consultation with a pediatric specialist for children.',
-		price: 250000,
-	},
-	{
-		id: '4',
-		name: 'Vaccination Package',
-		description: 'Includes all essential vaccines for children under 5.',
-		price: 799000,
-		imageUrl: 'https://example.com/images/vaccine.jpg',
-	},
-	{
-		id: '5',
-		name: 'Dental Cleaning',
-		description: 'Professional cleaning and plaque removal service.',
-		price: 350000,
-	},
-]
 
 const serviceApi = {
 	getByPage: (page: number, count: number, order: boolean, search: string) =>
@@ -95,12 +54,15 @@ const serviceApi = {
 			})
 			.then(res => res.data),
 
-	update: (header: string, id: string, data: UpdateServiceApiRequest) =>
-		axios
+	update: (header: string, id: string, data: UpdateServiceApiRequest) => {
+		console.log(`${SERVICE_URL}/${id}`)
+
+		return axios
 			.put<UpdateServiceApiResponse>(`${SERVICE_URL}/${id}`, data, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data),
+			.then(res => res.data)
+	},
 
 	delete: (header: string, id: string) =>
 		axios
@@ -137,6 +99,11 @@ export const useServiceById = (id: string) => {
 	return useQuery({
 		queryKey: ['service', id],
 		queryFn: () => serviceApi.getById(id),
+		staleTime: 5 * 60 * 1000,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		enabled: !!id,
 	})
 }
 
@@ -148,11 +115,12 @@ export const useCreateService = () => {
 	})
 }
 
-export const useUpdateService = (id: string, data: UpdateServiceApiRequest) => {
+export const useUpdateService = (id: string) => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: () => serviceApi.update(header, id, data),
+		mutationFn: (data: UpdateServiceApiRequest) =>
+			serviceApi.update(header, id, data),
 	})
 }
 
