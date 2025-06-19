@@ -1,26 +1,29 @@
 'use client'
-import StatusLight from '@/Components/StatusLight'
-import { useServiceById } from '@/Services/service-services'
+import { useServiceById, useUpdateService } from '@/Services/service-services'
 import './style.css'
-import { useEditable } from '@/Hooks/Form/useEditable'
+import { useEditableField } from '@/Hooks/Form/useEditable'
 import { useQueryUIState } from '@/Hooks/UI/useQueryUIState'
 import { useParams } from 'next/navigation'
+import EditableField from '@/Components/Management/EditableField'
+import { TrashCanSVG } from '@/Components/SVGs'
 
 const ServiceDetailPage = () => {
 	const params = useParams()
 	const serviceId = typeof params.id === 'string' ? params.id : undefined
 
+	const updateServiceMutation = useUpdateService(serviceId ?? '')
+
 	const query = useServiceById(serviceId ?? '')
 
 	const {
-		data: service,
 		localData: serviceData,
-		isEditing,
+		editingField,
 		handleChange,
-		toggleEdit,
-		handleSave,
-	} = useEditable({
+		toggleFieldEdit,
+		handleFieldSave,
+	} = useEditableField({
 		query: query,
+		onSave: updatedData => updateServiceMutation.mutate(updatedData),
 	})
 
 	const queryUI = useQueryUIState({
@@ -30,133 +33,70 @@ const ServiceDetailPage = () => {
 	return queryUI ? (
 		queryUI
 	) : (
-		<div className='center-all h-full w-full'>
-			<div className='flex flex-col min-w-2xl gap-4 p-4'>
+		<div className='flex justify-center p-6 m-auto h-[90%] bg-general shadow-2xl border-2 border-gray-500 rounded w-[80%]'>
+			<div className='flex flex-col gap-4 w-[80%]'>
+				<div className='flex justify-between border-b-2 '>
+					<button
+						id={`delete_${serviceId}`}
+						className='flex items-center gap-1 px-2 py-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 shadow-md'
+						onClick={() => console.log('clicked')}
+					>
+						<label className='text-sm font-semibold'>Delete</label>
+						<TrashCanSVG className='w-5 h-5' />
+					</button>
+				</div>
+
 				<div className='text-4xl font-semibold'>Service Details</div>
-				<table className='w-full'>
-					<tbody>
-						<tr>
-							<td className='p-2 font-semibold'>Name:</td>
-							<td className='p-2'>
-								<input
-									name='name'
-									type='text'
-									value={serviceData?.name ?? ''}
-									onChange={handleChange}
-									readOnly={!isEditing}
-									className='w-full p-2 bg-gray-100 rounded-md border-none read-only:bg-gray-300'
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td className='p-2 font-semibold'>Description:</td>
-							<td className='p-2'>
-								<textarea
-									name='description'
-									value={serviceData?.description ?? ''}
-									onChange={handleChange}
-									readOnly={!isEditing}
-									className='w-full p-2 bg-gray-100 rounded-md border-none resize-none read-only:bg-gray-300'
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td className='p-2 font-semibold'>Price:</td>
-							<td className='p-2'>
-								<input
-									name='price'
-									type='text'
-									value={
-										serviceData?.price?.toLocaleString('en-US', {
-											style: 'currency',
-											currency: 'VND',
-										}) ?? ''
-									}
-									onChange={handleChange}
-									readOnly={!isEditing}
-									className='w-full p-2 bg-gray-100 rounded-md border-none read-only:bg-gray-300'
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td className='p-2 font-semibold'>Created At:</td>
-							<td className='p-2'>
-								<input
-									type='text'
-									value={service?.createdAt?.toLocaleString() ?? ''}
-									readOnly
-									className='inactive-area'
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td className='p-2 font-semibold'>Updated At:</td>
-							<td className='p-2'>
-								<input
-									type='text'
-									value={service?.updatedAt?.toLocaleString() ?? 'N/A'}
-									readOnly
-									className='inactive-area'
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td className='p-2 font-semibold'>Status:</td>
-							<td className='p-2 center-all gap-3'>
-								<StatusLight
-									status={service?.isDeleted ? 'INACTIVE' : 'ACTIVE'}
-								/>
-								<p>{service?.isDeleted ? 'Inactive' : 'Active'}</p>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				{serviceData?.imageUrl && (
-					<div className='mt-4'>
-						<img
-							src={serviceData?.imageUrl}
-							alt=''
-							className='rounded-lg shadow-lg'
-						/>
+				<div>
+					<div className='table-row'>
+						<label className='table-label'>Name:</label>
+						<div className='table-data'>
+							<EditableField
+								name='name'
+								value={serviceData?.name ?? ''}
+								onChange={handleChange}
+								editingField={editingField}
+								handleFieldSave={handleFieldSave}
+								toggleFieldEdit={toggleFieldEdit}
+							/>
+						</div>
 					</div>
-				)}
-				{isEditing ? (
-					<div className='flex gap-4'>
-						<button
-							className='bg-gray-500 px-4 py-2 rounded-md shadow-md hover:bg-gray-600'
-							onClick={toggleEdit}
-						>
-							Return
-						</button>
-						<button
-							className='bg-green-500 px-4 py-2 rounded-md shadow-md hover:bg-green-600'
-							onClick={handleSave}
-						>
-							Save
-						</button>
+					<div className='table-row'>
+						<label className='table-label'>Price:</label>
+						<div className='table-data'>
+							<EditableField
+								name='price'
+								value={
+									editingField === 'price'
+										? serviceData?.price?.toString() ?? ''
+										: new Intl.NumberFormat('vi-VN', {
+												style: 'currency',
+												currency: 'VND',
+										  }).format(serviceData?.price ?? 0)
+								}
+								onChange={handleChange}
+								editingField={editingField}
+								handleFieldSave={handleFieldSave}
+								toggleFieldEdit={toggleFieldEdit}
+							/>
+						</div>
 					</div>
-				) : (
-					<div className='flex gap-4'>
-						<button
-							className='bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600'
-							onClick={toggleEdit}
-						>
-							Edit
-						</button>
-						<button
-							className='bg-red-500 px-4 py-2 rounded-md shadow-md hover:bg-red-600'
-							onClick={() => console.log('Delete button clicked')}
-						>
-							Delete
-						</button>
-						<button
-							className='bg-green-500 px-4 py-2 rounded-md shadow-md hover:bg-green-600'
-							onClick={() => console.log('Restore button clicked')}
-						>
-							Restore
-						</button>
+					<div className='table-row'>
+						<label className='table-label align-top'>Description:</label>
+						<div className='table-data'>
+							<EditableField
+								name='description'
+								className=''
+								type='textarea'
+								value={serviceData?.description ?? ''}
+								onChange={handleChange}
+								editingField={editingField}
+								handleFieldSave={handleFieldSave}
+								toggleFieldEdit={toggleFieldEdit}
+							/>
+						</div>
 					</div>
-				)}
+				</div>
 			</div>
 		</div>
 	)

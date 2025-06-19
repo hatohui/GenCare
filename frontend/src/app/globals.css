@@ -84,13 +84,12 @@
 }
 
 .scroll-bar::-webkit-scrollbar {
-	width: 6px; /* Ensure it's not too small */
+	width: 5px; /* Ensure it's not too small */
 	display: block;
 }
 
 .scroll-bar::-webkit-scrollbar-track {
-	background: var(--color-accent); /* Remove quotes */
-	border-radius: 3px;
+	border-radius: 1px;
 }
 
 .scroll-bar::-webkit-scrollbar-thumb {

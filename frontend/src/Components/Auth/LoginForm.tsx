@@ -11,9 +11,12 @@ import { NoSeeSVG, SeeSVG } from '../SVGs'
 import SubmitButton from './SubmitButton'
 import Logo from '../Logo'
 import Link from 'next/link'
+import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 
 export type LoginComponentProps = {
-	handleLogin: (data: { email: string; password: string }) => void
+	handleLogin: (
+		data: { email: string; password: string } | OauthResponse
+	) => void
 	formError: string | null
 }
 
@@ -128,7 +131,11 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 			</div>
 
 			<div className='text-center'>
-				<GoogleLoginButton text='signin_with' className='mt-2 mx-auto' />
+				<GoogleLoginButton
+					text='signin_with'
+					className='mt-2 mx-auto'
+					handleLogin={handleLogin}
+				/>
 			</div>
 		</motion.div>
 	)
