@@ -168,7 +168,7 @@ public class ServicesService(
         };
     }
 
-    public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken)
+    public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken,Guid serviceId)
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
@@ -176,10 +176,10 @@ public class ServicesService(
         if (role != RoleNames.Admin && role != RoleNames.Manager)
             throw new AppException(403, "UNAUTHORIZED");
 
-        if (request.Id == Guid.Empty)
+        if (serviceId == Guid.Empty)
             throw new AppException(400, "Guid cannot be empty.");
 
-        var service = await serviceRepository.SearchServiceByIdForStaffAsync(request.Id);
+        var service = await serviceRepository.SearchServiceByIdForStaffAsync(serviceId);
         if (service == null)
             throw new AppException(404, "Service not found");
         service.UpdatedBy = accountId;
