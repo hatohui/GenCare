@@ -89,13 +89,13 @@ export const ServiceCard = ({
 					className='bg-general text-black px-4 py-2 rounded-full font-medium text-sm'
 					href={`/service/${id}`}
 				>
-					Detail
+					Chi tiết
 				</MotionLink>
 				<button
 					onClick={handleAddToCart}
 					className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'
 				>
-					Add to Cart
+					Đặt ngay
 				</button>
 			</div>
 		</motion.div>

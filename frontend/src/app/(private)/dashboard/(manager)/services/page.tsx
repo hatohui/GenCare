@@ -4,6 +4,7 @@ import ItemCardHeader from '@/Components/Management/ItemCardHeader'
 import Pagination from '@/Components/Management/Pagination'
 import SearchBar from '@/Components/Management/SearchBar'
 import ServiceList from '@/Components/Management/ServiceList'
+import { SearchSVG } from '@/Components/SVGs'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import { useServiceByPageAdmin } from '@/Services/service-services'
 import clsx from 'clsx'
@@ -36,6 +37,7 @@ const ServicesPage = () => {
 				<div className='w-full'>
 					<div className='flex items-center px-5 gap-3 grow shadow-sm bg-general py-1 pt-2 round overflow-scroll'>
 						<SearchBar className='mx-2' waitTime={1000} />
+
 						<AddNewButton />
 					</div>
 				</div>

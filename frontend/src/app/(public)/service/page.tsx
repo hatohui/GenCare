@@ -1,13 +1,13 @@
 'use client'
 
-import { CartButton } from '@/Components/Services/ServiceCart'
-import { Suspense, useEffect } from 'react'
-import { LoadingSkeleton } from '@/Components/Skeletons'
+import { BookingButton } from '@/Components/Services/ServiceCart'
+import { useEffect } from 'react'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import ServiceList from '@/Components/Services/ServiceList'
 import SearchBar from '@/Components/Management/SearchBar'
 import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
+import { SearchSVG } from '@/Components/SVGs'
 
 export default function Page() {
 	const searchParams = useSearchParams()
@@ -23,9 +23,12 @@ export default function Page() {
 		<section className='relative min-h-screen  text-gray-900'>
 			<div className='relative bg-general shadow-md overflow-hidden'>
 				<div className='mx-auto px-6 py-4 flex items-center justify-around pt-20 '>
-					<SearchBar className='border-none backdrop-blur-2xl' />
+					<div className='relative w-full'>
+						<SearchSVG className='absolute top-1/2 left-2 -translate-y-1/2 text-main z-10 size-7' />
+						<SearchBar className='border-none backdrop-blur-2xl ml-15' />
+					</div>
 					<div className='mx-auto px-6 py-4 flex items-center justify-end flex-1/2'>
-						<CartButton />
+						<BookingButton />
 					</div>
 				</div>
 			</div>
@@ -55,9 +58,7 @@ export default function Page() {
 			<div className=' max-w-7xl mx-auto px-6 py-8'>
 				<h2 className='text-2xl font-bold text-main mb-6'>Dịch Vụ Nổi Bật</h2>
 
-				<Suspense fallback={<LoadingSkeleton />}>
-					<ServiceList />
-				</Suspense>
+				<ServiceList />
 
 				<FlorageBackground />
 			</div>
