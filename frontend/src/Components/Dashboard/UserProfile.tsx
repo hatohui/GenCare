@@ -8,7 +8,7 @@ const UserProfile = () => {
 	const [showPopUp, setShowPopUp] = useState(false)
 
 	return (
-		<div className=' flex justify-start items-center gap-2 border rounded-sm px-2 py-1'>
+		<div className='hidden md:flex justify-start items-center gap-2 border rounded-sm px-2 py-1'>
 			{showPopUp && <Popup />}
 			<Image
 				className='rounded-full bg-amber-50 object-cover'
