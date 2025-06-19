@@ -119,13 +119,15 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// </summary>
     /// <param name="request">Service update info (including Id)</param>
     /// <returns>Update result</returns>
-    [HttpPut]
+    [HttpPut("{id}")]
     [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Update([FromBody] UpdateServiceRequest request)
+    public async Task<IActionResult> Update([FromBody] UpdateServiceRequest request, [FromRoute] Guid id)
+    
+       
     {
         var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
         var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
@@ -134,7 +136,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
 
         try
         {
-            var result = await servicesService.UpdateServiceByIdAsync(request, accessToken);
+            var result = await servicesService.UpdateServiceByIdAsync(request, accessToken, id);
             return Ok(result);
         }
         catch (UnauthorizedAccessException)
