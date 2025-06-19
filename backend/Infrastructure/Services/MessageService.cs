@@ -4,7 +4,6 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Domain.Exceptions;
 using Infrastructure.HUbs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -38,14 +37,13 @@ public class MessageService(IMessageRepository messageRepository,
     {
         //get account id from access token
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
-        if (!Guid.TryParse(request.ConversationId, out var conversationId))
-            throw new AppException(400, "Invalid id format.");
+
         //create message
         var newMessage = new Message()
         {
             Id = Guid.NewGuid(),
             Content = request.Content,
-            ConversationId = conversationId,
+            ConversationId = request.ConversationId,
             CreatedAt = ToUnspecified(DateTime.Now),
             CreatedBy = accountId,
             UpdatedBy = accountId,

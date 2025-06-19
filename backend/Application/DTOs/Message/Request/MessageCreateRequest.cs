@@ -2,7 +2,7 @@
 
 public class MessageCreateRequest
 {
-    public string ConversationId { get; set; }
+    public Guid ConversationId { get; set; }
     
     public string Content { get; set; } = null!;
     
