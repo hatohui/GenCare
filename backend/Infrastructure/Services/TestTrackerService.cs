@@ -2,6 +2,7 @@
 using Application.DTOs.TestTracker.Response;
 using Application.Repositories;
 using Application.Services;
+using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
@@ -46,7 +47,9 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
     /// <returns>Update result (success/failure, message).</returns>
     public async Task<UpdateTestResultResponse> UpdateTestResultAsync(UpdateTestResultRequest request)
     {
-        var testResult = await testTrackerRepository.ViewTestTrackerAsync(request.OrderDetailId)
+        if (!Guid.TryParse(request.OrderDetailId, out Guid orderDetailId))
+            throw new AppException(400, "Invalid AccountId format.");
+        var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId)
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
