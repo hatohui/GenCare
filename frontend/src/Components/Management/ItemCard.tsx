@@ -36,7 +36,7 @@ const ItemCard = ({
 
 	const handleEditFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
-		router.push(`${path}/edit/${id}`)
+		router.push(`${path}/${id}`)
 	}
 
 	const handleDeleteFunc = (event: React.MouseEvent<HTMLDivElement>) => {
