@@ -8,35 +8,42 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
 {
     public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice)
     {
-        var query = dbContext.Services.AsQueryable();
+        //choose all services that are not deleted
+        var query = dbContext.Services.Where(s => s.IsDeleted != true);
 
+        // validate name and choose services that contain the name
         if (!string.IsNullOrEmpty(name))
         {
-            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()) || s.IsDeleted == true);
+            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
         }
 
-      
-
+        //sort by price if orderByPrice is true
         if (orderByPrice.HasValue)
         {
+            // Sắp xếp theo giá tăng dần hoặc giảm dần
             query = orderByPrice.Value
                 ? query.OrderBy(s => s.Price)
                 : query.OrderByDescending(s => s.Price);
         }
-
+        else
+        {
+            //query to sort by name if orderByPrice is not provided
+            query = query.OrderBy(s => s.Name); 
+        }
+        // Apply pagination
         query = query.Skip((page - 1) * count).Take(count);
 
         return await query.ToListAsync();
     }
 
-    public async Task<List<Service>> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
+    public async Task<List<Service>?> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
     {
         var query = dbContext.Services.AsQueryable();
 
         // Filter by name if provided
         if (!string.IsNullOrWhiteSpace(name))
         {
-            query = query.Where(s => s.Name.Contains(name));
+            query = query.Where(s => s.Name.Contains(name.ToLower()));
         }
 
         // Filter by deleted status
@@ -67,7 +74,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         else
         {
             // Default sorting by CreatedAt
-            query = query.OrderByDescending(s => s.CreatedAt);
+            query = query.OrderByDescending(s => s.Price);
         }
 
         // Apply pagination
