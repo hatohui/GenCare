@@ -38,12 +38,7 @@ export const ServiceCard = ({
 			return
 		}
 
-		console.log('adding to card')
-		addService({
-			id,
-			name,
-			price,
-		})
+		router.push(`/booking/${id}`)
 	}
 
 	return (
