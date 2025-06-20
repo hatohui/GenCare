@@ -4,6 +4,7 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
+using Domain.Exceptions;
 using Infrastructure.HUbs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -14,7 +15,8 @@ namespace Infrastructure.Services;
 /// </summary>
 public class MessageService(IMessageRepository messageRepository, 
                             IMediaRepository mediaRepository,  
-                            IHubContext<ChatHub> chatHub) : IMessageService
+                            IHubContext<ChatHub> chatHub
+                            ,IConversationRepository conversationRepository) : IMessageService
 {
     /// <summary>
     /// Converts the specified <see cref="DateTime"/> to have an unspecified kind.
@@ -37,11 +39,13 @@ public class MessageService(IMessageRepository messageRepository,
     {
         //get account id from access token
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
-
+        //if menberID or staffID is not in coversation, prevent another user to create message in this conversation
+        var conversation = await conversationRepository.GetByIdAsync(request.ConversationId);
+        if(conversation == null ||(conversation.MemberId !=accountId && conversation.StaffId!= accountId))
+            throw new AppException(403, "You are not allowed to create message in this conversation.");
         //create message
         var newMessage = new Message()
         {
-            Id = Guid.NewGuid(),
             Content = request.Content,
             ConversationId = request.ConversationId,
             CreatedAt = ToUnspecified(DateTime.Now),
@@ -58,7 +62,6 @@ public class MessageService(IMessageRepository messageRepository,
                 // add media to the list
                 mediaList.Add(new Media
                 {
-                    Id = Guid.NewGuid(),
                     Url = url,
                     Type = "Image",
                     MessageId = newMessage.Id,
@@ -115,6 +118,37 @@ public class MessageService(IMessageRepository messageRepository,
             MediaUrls = m.Media?.Select(x => x.Url).ToList() ?? new()
         }).ToList();    
     }
-   
 
+    public async Task<DeleteMessageResponse> DeleteMessageAsync(Guid messageId, string accessToken)
+    {
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+        var message = await messageRepository.GetByIdAsync(messageId);
+        // Check if the message exists
+        if (message == null)
+            throw new AppException(404, "Message not found.");
+
+        // Alow deletion only if the message was created by the user or if the user is part of the conversation
+        var conversation = await conversationRepository.GetByIdAsync(message.ConversationId);
+        if (conversation == null || (conversation.MemberId != accountId && conversation.StaffId != accountId))
+            throw new AppException(403, "You are not allowed to delete this message.");
+        // Chỉ cho người tạo tin nhắn được xóa
+        if (message.CreatedBy != accountId)
+            throw new AppException(403, "Not authorized to delete this message");
+
+        message.IsDeleted = true;
+        message.UpdatedBy = accountId;
+        message.UpdatedAt = DateTime.Now;
+
+        await messageRepository.UpdateAsync(message);
+
+        // Gửi thông báo SignalR để xóa real-time bên client
+        await chatHub.Clients.Group(message.ConversationId.ToString())
+            .SendAsync("DeleteMessage", new { messageId = message.Id });
+
+        return new DeleteMessageResponse
+        {
+            Success = true,
+            Message = "Message deleted successfully."
+        };
+    }
 }

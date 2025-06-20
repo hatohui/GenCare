@@ -117,7 +117,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <summary>
     /// Update a service. Only admin or staff can update.
     /// </summary>
-    /// <param name="request">Service update info (including Id)</param>
+    /// <param name="request">Service update info </param>
     /// <returns>Update result</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
