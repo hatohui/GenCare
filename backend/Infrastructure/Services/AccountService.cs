@@ -211,7 +211,7 @@ public class AccountService
     public async Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
     {
         var user = await accountRepo.GetByEmailAsync(payload.Email);
-        if (user == null)
+        if (user is null)
         {
             var role = await roleRepo.GetRoleByNameAsync("Member")
                        ?? throw new Exception("Role 'Member' not found");
@@ -231,10 +231,9 @@ public class AccountService
 
             await accountRepo.AddAsync(user);
         }
-
+        if (user.IsDeleted) throw new AppException(401, "Account is deleted");
         var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-
         RefreshToken rf = new()
         {
             AccountId = user.Id,
