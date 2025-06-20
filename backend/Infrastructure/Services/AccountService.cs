@@ -277,9 +277,28 @@ public class AccountService
         };
     }
 
-    public async Task<Account?> GetAccountByIdAsync(Guid accountId)
+    public async Task<AccountViewModel?> GetAccountByIdAsync(Guid accountId)
     {
-        return await accountRepo.GetAccountByIdAsync(accountId);
+        var account = await accountRepo.GetAccountByIdAsync(accountId);
+        if (account == null)
+            throw new AppException(404, "Account not found");
+        AccountViewModel rs = new()
+        {
+            Id = account.Id,
+            Email = account.Email,
+            FirstName = account.FirstName ?? string.Empty,
+            LastName = account.LastName ?? string.Empty,
+            Gender = account.Gender,
+            DateOfBirth = account.DateOfBirth,
+            AvatarUrl = account.AvatarUrl,
+            IsDeleted = account.IsDeleted,
+            Role = new RoleViewModel
+            {
+                Name = account.Role.Name,
+                Description = account.Role.Description
+            }
+        };
+        return rs;
     }
 
     public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)

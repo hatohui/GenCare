@@ -155,7 +155,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Authorize]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
     public async Task<IActionResult> GetAccountById([FromRoute] string id)
     {
         if (string.IsNullOrEmpty(id))
