@@ -3,7 +3,6 @@ using Application.DTOs.Account.Requests;
 using Application.DTOs.Account.Responses;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Auth.Responses;
-using Domain.Entities;
 using Google.Apis.Auth;
 
 namespace Application.Services;
@@ -52,7 +51,7 @@ public interface IAccountService
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request);
 
-    Task<Account> GetAccountByIdAsync(Guid accountId);
+    Task<AccountViewModel?> GetAccountByIdAsync(Guid accountId);
 
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
 
