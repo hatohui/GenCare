@@ -12,10 +12,6 @@ export type CreateServiceApiRequest = Omit<
 export type DeleteServiceApiRequest = {
 	id: string
 }
-export type UpdateServiceApiRequest = Omit<
-	Service,
-	'id' | 'createdAt' | 'updatedAt'
->
 
 //! RESPONSES
 export type GetServiceWithIdResponse = Service
@@ -27,7 +23,7 @@ export type GetServiceByPageResponse = {
 	totalCount: number
 	services: Pick<
 		Service,
-		'id' | 'name' | 'description' | 'price' | 'imageUrl'
+		'id' | 'name' | 'description' | 'price' | 'imageUrls'
 	>[]
 }
 
@@ -35,6 +31,6 @@ export type GetServiceByPageAdminResponse = {
 	totalCount: number
 	services: Pick<
 		Service,
-		'id' | 'name' | 'description' | 'price' | 'imageUrl' | 'isDeleted'
+		'id' | 'name' | 'description' | 'price' | 'imageUrls' | 'isDeleted'
 	>[]
 }
