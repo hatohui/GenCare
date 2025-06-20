@@ -6,21 +6,16 @@ namespace Infrastructure.Repositories;
 
 public class ServiceRepository(IApplicationDbContext dbContext) : IServiceRepository
 {
-    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice, bool? includeDeleted)
+    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice)
     {
         var query = dbContext.Services.AsQueryable();
 
         if (!string.IsNullOrEmpty(name))
         {
-            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
+            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()) || s.IsDeleted == true);
         }
 
-        if (includeDeleted.HasValue)
-        {
-            if (!includeDeleted.Value)
-                query = query.Where(s => !s.IsDeleted);
-            // if true, include all
-        }
+      
 
         if (orderByPrice.HasValue)
         {
@@ -34,10 +29,49 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         return await query.ToListAsync();
     }
 
-    public async Task<List<Service>>? SearchServiceIncludeDeletedAsync(int page, int count)
+    public async Task<List<Service>> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
     {
-        return await dbContext.Services
-            .OrderByDescending(s => s.CreatedAt)
+        var query = dbContext.Services.AsQueryable();
+
+        // Filter by name if provided
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            query = query.Where(s => s.Name.Contains(name));
+        }
+
+        // Filter by deleted status
+        if (includeDeleted.HasValue)
+        {
+            if (includeDeleted.Value)
+            {
+                // Include only deleted services
+                query = query.Where(s => s.IsDeleted == true);
+            }
+            else
+            {
+                // Include only non-deleted services  
+                query = query.Where(s => s.IsDeleted == false || s.IsDeleted == null);
+            }
+        }
+        // If includeDeleted is null, include both deleted and non-deleted services
+
+        // Apply sorting
+        if (sortByUpdateAt.HasValue && sortByUpdateAt.Value)
+        {
+            query = query.OrderByDescending(s => s.UpdatedAt);
+        }
+        else if (orderByPrice.HasValue && orderByPrice.Value)
+        {
+            query = query.OrderBy(s => s.Price);
+        }
+        else
+        {
+            // Default sorting by CreatedAt
+            query = query.OrderByDescending(s => s.CreatedAt);
+        }
+
+        // Apply pagination
+        return await query
             .Skip((page - 1) * count)
             .Take(count)
             .ToListAsync();

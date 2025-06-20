@@ -44,13 +44,9 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
     //seacrh/ filter by deleted services & not deleted services, 0 co deleted service -> sort by updatedAt 
-    public async Task<IActionResult> GetAllServices([FromQuery] int page, [FromQuery] int count)
+    public async Task<IActionResult> GetAllServices([FromQuery] ViewServiceForStaffRequest request)
     {
-        var request = new ViewServicesByPageRequest
-        {
-            Page = page,
-            Count = count
-        };
+      
 
         var services = await servicesService.SearchServiceIncludeDeletedAsync(request);
         return Ok(services);
