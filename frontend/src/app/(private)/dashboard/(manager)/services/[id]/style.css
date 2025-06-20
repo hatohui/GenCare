@@ -10,7 +10,7 @@
 	}
 
 	.table-label {
-		@apply p-2 font-semibold flex-1/4;
+		@apply p-2 font-semibold flex-1/4 min-w-28;
 	}
 
 	.table-row {
