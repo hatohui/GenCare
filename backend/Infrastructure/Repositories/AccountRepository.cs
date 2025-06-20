@@ -56,7 +56,10 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         {
             return null;
         }
-
+        account.UpdatedAt = DateTime.Now;
+        account.DeletedAt = DateTime.Now;
+        account.UpdatedBy = userId;
+        account.DeletedBy = userId;
         account.IsDeleted = true;
 
         dbContext.Accounts.Update(account);
