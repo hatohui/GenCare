@@ -34,20 +34,26 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         var notifyUrl = momoConfig.Value.NotifyUrl;
         //var amount = request.Amount;
         //var orderId = request.OrderId;
-        //var requestId = Guid.NewGuid().ToString();
+        var requestId = Guid.NewGuid().ToString();
         var extraData = string.Empty;
 
         var rawSignature =
-            $"partnerCode={momoConfig.Value.PartnerCode}" +
-            $"&accessKey={momoConfig.Value.AccessKey}" +
-            $"&requestId={purchaseId}" +
+            $"accessKey={momoConfig.Value.AccessKey}" +
             $"&amount={amount.ToString("F0")}" +
+            $"&extraData={extraData}" +
+            $"&ipnUrl={notifyUrl}" +
             $"&orderId={purchaseId}" +
             $"&orderInfo={orderInfo}" +
-            $"&returnUrl={returnUrl}" +
-            $"&notifyUrl={notifyUrl}" +
-            $"&extraData={extraData}";
+            $"&partnerCode={momoConfig.Value.PartnerCode}" +
+            $"&redirectUrl={returnUrl}" +
+            $"&requestId={requestId}" +
+            $"&requestType={momoConfig.Value.RequestType}";
 
+
+        ////accessKey=$accessKey&amount=$amount&extraData=$extraData
+        //&ipnUrl =$ipnUrl & orderId =$orderId & orderInfo =$orderInfo
+        //& partnerCode =$partnerCode & redirectUrl =$redirectUrl
+        //& requestId =$requestId & requestType =$requestType
 
         //var rawSignature =
         //    $"accessKey={momoConfig.Value.AccessKey}" +
@@ -66,20 +72,20 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         var requestData = new
         {
             partnerCode = momoConfig.Value.PartnerCode,
-            accessKey = momoConfig.Value.AccessKey,
-            requestId = purchaseId,
-            amount = amount.ToString("F0"), // Convert to string with no decimal places
+            requestId = requestId!,
+            amount = long.Parse(amount.ToString("F0")), // Convert to string with no decimal places
             orderId = purchaseId,
-            orderInfo = orderInfo,
-            returnUrl = returnUrl,
-            notifyUrl = notifyUrl,
-            extraData = extraData,
+            orderInfo = orderInfo!,
+            redirectUrl = returnUrl!,
+            ipnUrl = notifyUrl!,
             requestType = momoConfig.Value.RequestType,
-            signature = signature,
-            lang = "vi"
+            extraData = extraData!,
+            lang = "vi",
+            signature = signature!
         };
 
         var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
 
         var response = await httpClient.PostAsync(momoConfig.Value.Endpoint, content);
 
