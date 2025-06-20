@@ -5,7 +5,7 @@ import { motion } from 'motion/react'
 import { LoadingSkeleton } from '../Skeletons'
 
 export default function ServicesSection() {
-	const { data, isLoading } = useServiceByPage(1, 6)
+	const { data, isLoading } = useServiceByPage(1, 6, true, '')
 
 	if (isLoading) return <LoadingSkeleton />
 

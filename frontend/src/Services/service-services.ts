@@ -11,7 +11,6 @@ import {
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import clsx from 'clsx'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 

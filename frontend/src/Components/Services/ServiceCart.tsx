@@ -1,14 +1,19 @@
 'use client'
 import { motion } from 'motion/react'
 import { BookingListVSG } from '../SVGs'
+import { useRouter } from 'next/navigation'
 
 export const BookingButton = () => {
+	const router = useRouter()
 	return (
 		<motion.button
 			initial='rest'
 			whileHover='hover'
 			animate='rest'
 			className='flex items-center justify-center bg-accent text-white px-4 py-2 rounded-full overflow-hidden hover:cursor-pointer'
+			onClick={() => {
+				router.push('/booking')
+			}}
 		>
 			<motion.span
 				variants={{
