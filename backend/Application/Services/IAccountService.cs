@@ -52,7 +52,7 @@ public interface IAccountService
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request);
 
-    Task<Account> GetAccountByIdAsync(Guid accountId);
+    Task<Account?> GetAccountByIdAsync(Guid accountId);
 
     Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
 

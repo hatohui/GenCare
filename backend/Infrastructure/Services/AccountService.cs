@@ -277,7 +277,7 @@ public class AccountService
         };
     }
 
-    public async Task<Account> GetAccountByIdAsync(Guid accountId)
+    public async Task<Account?> GetAccountByIdAsync(Guid accountId)
     {
         return await accountRepo.GetAccountByIdAsync(accountId);
     }
