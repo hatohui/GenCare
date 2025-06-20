@@ -9,7 +9,7 @@ public interface IServicesService
 
     Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken);
 
-    Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken);
+    Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken,Guid serviceId);
 
     Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken);
 
