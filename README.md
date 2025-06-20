@@ -1,5 +1,6 @@
 # [GenCare](https://www.gencare.site/)
-[![backend-cd](https://github.com/hatohui/GenCare/actions/workflows/backend-cd.yaml/badge.svg)](https://github.com/hatohui/GenCare/actions/workflows/backend-cd.yaml)     [![frontend-cd](https://github.com/hatohui/GenCare/actions/workflows/frontend-cd.yaml/badge.svg)](https://github.com/hatohui/GenCare/actions/workflows/frontend-cd.yaml)
+
+[![backend-cd](https://github.com/hatohui/GenCare/actions/workflows/backend-cd.yaml/badge.svg)](https://github.com/hatohui/GenCare/actions/workflows/backend-cd.yaml) [![frontend-cd](https://github.com/hatohui/GenCare/actions/workflows/frontend-cd.yaml/badge.svg)](https://github.com/hatohui/GenCare/actions/workflows/frontend-cd.yaml)
 
 ## [Documentations](https://docs.google.com/document/d/1XjSV5tjIUnbtGK0gRnviHctuyyV1d5tSxzv_fKDsAdA/edit?tab=t.0#heading=h.c2t5i58dg7of)
 
@@ -7,7 +8,55 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 
 ## Project Information
 
-### Technical Overview
+### 💻 Tech Stack
+
+#### 🖥️ Frontend
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-EF4444?style=for-the-badge)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-EF0075?style=for-the-badge&logo=framer&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-8E44AD?style=for-the-badge)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
+![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)
+
+#### 🧠 Backend
+
+![.NET 8](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Entity Framework Core](https://img.shields.io/badge/EF_Core-6DB33F?style=for-the-badge)
+![FluentValidation](https://img.shields.io/badge/FluentValidation-009688?style=for-the-badge)
+![Hangfire](https://img.shields.io/badge/Hangfire-DD3A0A?style=for-the-badge)
+![SignalR](https://img.shields.io/badge/SignalR-5C2D91?style=for-the-badge)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![Google Auth](https://img.shields.io/badge/Google_Auth-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+
+#### 🛢️ Database & Cache
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+
+#### 🚀 DevOps
+
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-1488C6?style=for-the-badge&logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![Loki](https://img.shields.io/badge/Loki-FFEB3B?style=for-the-badge&logo=grafana&logoColor=black)
+
+#### ⚙️ Dev Tools
+
+![Visual Studio](https://img.shields.io/badge/Visual_Studio-5C2D91?style=for-the-badge&logo=visualstudio&logoColor=white)
+![VS Code](https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+![JetBrains Rider](https://img.shields.io/badge/Rider-000000?style=for-the-badge&logo=rider&logoColor=white)
+![WebStorm](https://img.shields.io/badge/WebStorm-000000?style=for-the-badge&logo=webstorm&logoColor=white)
+![GitHub Desktop](https://img.shields.io/badge/GitHub_Desktop-FFFFFF?style=for-the-badge&logo=github&logoColor=blue)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+![Jira](https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white)
 
 #### System Architecture
 

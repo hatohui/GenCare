@@ -1,6 +1,11 @@
+'use client'
+
 import { motion } from 'motion/react'
 import MotionLink from '../MotionLink'
 import Image from 'next/image'
+import { useBookingCart } from '@/Hooks/useBookingCart'
+import useToken from '@/Hooks/useToken'
+import { useRouter } from 'next/navigation'
 
 export type ServiceCardProps = {
 	id: string
@@ -17,6 +22,30 @@ export const ServiceCard = ({
 	id,
 	imageUrl,
 }: ServiceCardProps) => {
+	const { accessToken } = useToken()
+	const { addService } = useBookingCart()
+	const router = useRouter()
+
+	const handleAddToCart = () => {
+		// Logic to add the service to the cart
+		if (!id || !name || !price) {
+			console.error('Invalid service data')
+			return
+		}
+		if (!accessToken) {
+			console.error('User not logged in')
+			router.push('/login')
+			return
+		}
+
+		console.log('adding to card')
+		addService({
+			id,
+			name,
+			price,
+		})
+	}
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -20, y: -10 }}
@@ -60,10 +89,13 @@ export const ServiceCard = ({
 					className='bg-general text-black px-4 py-2 rounded-full font-medium text-sm'
 					href={`/service/${id}`}
 				>
-					Detail
+					Chi tiết
 				</MotionLink>
-				<button className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'>
-					Add to Cart
+				<button
+					onClick={handleAddToCart}
+					className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'
+				>
+					Đặt ngay
 				</button>
 			</div>
 		</motion.div>

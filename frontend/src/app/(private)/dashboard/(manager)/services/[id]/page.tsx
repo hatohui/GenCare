@@ -5,14 +5,17 @@ import { useEditableField } from '@/Hooks/Form/useEditable'
 import { useQueryUIState } from '@/Hooks/UI/useQueryUIState'
 import { useParams } from 'next/navigation'
 import EditableField from '@/Components/Management/EditableField'
-import { TrashCanSVG } from '@/Components/SVGs'
+import ReturnButton from '@/Components/ReturnButton'
+import {
+	Service,
+	UpdateServiceApiRequest,
+	updateServiceSchema,
+} from '@/Interfaces/Service/Types/Service'
 
 const ServiceDetailPage = () => {
 	const params = useParams()
 	const serviceId = typeof params.id === 'string' ? params.id : undefined
-
 	const updateServiceMutation = useUpdateService(serviceId ?? '')
-
 	const query = useServiceById(serviceId ?? '')
 
 	const {
@@ -23,7 +26,25 @@ const ServiceDetailPage = () => {
 		handleFieldSave,
 	} = useEditableField({
 		query: query,
-		onSave: updatedData => updateServiceMutation.mutate(updatedData),
+		onSave: updatedData => {
+			const updatedServiceDTO: UpdateServiceApiRequest = {
+				name: updatedData.name,
+				description: updatedData.description,
+				price: updatedData.price,
+				isDeleted: updatedData.isDeleted,
+				imageUrls: updatedData.imageUrls,
+			}
+
+			const result = updateServiceSchema.safeParse(updatedServiceDTO)
+
+			if (!result.success) {
+			} else {
+				updateServiceMutation.mutate(result.data, {
+					onSuccess: () => {},
+					onError: () => {},
+				})
+			}
+		},
 	})
 
 	const queryUI = useQueryUIState({
@@ -33,25 +54,18 @@ const ServiceDetailPage = () => {
 	return queryUI ? (
 		queryUI
 	) : (
-		<div className='flex justify-center p-6 m-auto h-[90%] bg-general shadow-2xl border-2 border-gray-500 rounded w-[80%]'>
-			<div className='flex flex-col gap-4 w-[80%]'>
-				<div className='flex justify-between border-b-2 '>
-					<button
-						id={`delete_${serviceId}`}
-						className='flex items-center gap-1 px-2 py-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 shadow-md'
-						onClick={() => console.log('clicked')}
-					>
-						<label className='text-sm font-semibold'>Delete</label>
-						<TrashCanSVG className='w-5 h-5' />
-					</button>
-				</div>
+		<div className='flex justify-center relative h-full bg-general shadow-2xl border-2 border-gray-500 rounded'>
+			<ReturnButton />
+
+			<div className='flex items-center h-full flex-col gap-4'>
+				<div className='flex justify-between border-b-2' />
 
 				<div className='text-4xl font-semibold'>Service Details</div>
 				<div>
 					<div className='table-row'>
 						<label className='table-label'>Name:</label>
 						<div className='table-data'>
-							<EditableField
+							<EditableField<Service>
 								name='name'
 								value={serviceData?.name ?? ''}
 								onChange={handleChange}
@@ -66,6 +80,7 @@ const ServiceDetailPage = () => {
 						<div className='table-data'>
 							<EditableField
 								name='price'
+								type='number'
 								value={
 									editingField === 'price'
 										? serviceData?.price?.toString() ?? ''
