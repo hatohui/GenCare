@@ -5,27 +5,11 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useServiceById } from '@/Services/service-services'
-
-// Zod schema
-const personSchema = z.object({
-	firstName: z.string().min(1, 'Required'),
-	lastName: z.string().min(1, 'Required'),
-	phoneNumber: z.string().min(10, 'Invalid phone'),
-	dateOfBirth: z.string().refine(val => !isNaN(Date.parse(val)), {
-		message: 'Invalid date',
-	}),
-	gender: z.boolean(),
-})
-
-const formSchema = z.object({
-	people: z.array(personSchema).min(1, 'At least one booking is required'),
-})
-
-type FormSchema = z.infer<typeof formSchema>
-
-interface BookServiceFormProps {
-	serviceId: string
-}
+import {
+	BookServiceFormProps,
+	formSchema,
+	FormSchema,
+} from '@/Interfaces/Payment/schema/BookService'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
@@ -45,6 +29,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					phoneNumber: '',
 					dateOfBirth: '',
 					gender: false,
+					serviceId: serviceId,
 				},
 			],
 		},
@@ -90,6 +75,17 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							type='text'
 							value={data.name}
 							readOnly
+							className='mt-1 w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-gray-600'
+						/>
+					</div>
+
+					<div className='col-span-2'>
+						<label className='block text-sm font-medium'>Service ID</label>
+						<input
+							type='text'
+							value={serviceId}
+							readOnly
+							{...register(`people.${index}.serviceId`)}
 							className='mt-1 w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-gray-600'
 						/>
 					</div>
@@ -144,10 +140,16 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 
 					<div className='flex items-center gap-4 mt-6'>
 						<label className='block text-sm font-medium'>Gender</label>
-						<select {...register(`people.${index}.gender`)} className='input'>
+						<select
+							{...register(`people.${index}.gender`, {
+								setValueAs: (v: string): boolean => v === 'true',
+							})}
+							className='input'
+						>
 							<option value='true'>Nam</option>
 							<option value='false'>Nữ</option>
 						</select>
+
 						<p className='text-red-500 text-sm'>
 							{errors.people?.[index]?.gender?.message}
 						</p>
@@ -164,6 +166,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						phoneNumber: '',
 						dateOfBirth: '',
 						gender: false,
+						serviceId: serviceId,
 					})
 				}
 				className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded'
