@@ -2,8 +2,7 @@ import { StaffAccount } from '@/Interfaces/Account/Types/StaffAccount'
 import React, { useState } from 'react'
 import { CldImage } from 'next-cloudinary'
 import ProfileForm from './profileForm'
-import { useGetMe, useUpdateAccount } from '@/Services/account-service'
-import { useRouter } from 'next/navigation'
+import { useUpdateAccount } from '@/Services/account-service'
 
 const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 	const [localData, setLocalData] = useState<StaffAccount | undefined>(data)
