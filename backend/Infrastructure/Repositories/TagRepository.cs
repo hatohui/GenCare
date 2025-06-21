@@ -23,6 +23,18 @@ public class TagRepository(IApplicationDbContext dbContext) : ITagRepository
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<bool> CheckNameTagExists(string title)
+    {
+        return await dbContext.Tags.AnyAsync(t => t.Title == title);
+    }
+
+    public async Task<Tag?> GetById(Guid id)
+    {
+        return await dbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
+           
+           
+    }
+
     public async Task<List<Tag>> GetAll()
     {
         return await dbContext.Tags

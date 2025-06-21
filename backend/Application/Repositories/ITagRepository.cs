@@ -46,4 +46,8 @@ public interface ITagRepository
     /// <param name="tag">The tag entity to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task Delete(Tag tag);
+
+    Task<bool>CheckNameTagExists(string title);
+    
+    Task<Tag?>GetById(Guid id);
 }
