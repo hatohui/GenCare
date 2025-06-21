@@ -32,4 +32,16 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         var response = await purchaseService.AddPurchaseAsync(request, accessToken);
         return Created();
     }
+
+    [HttpGet]
+    [Authorize(Roles = $"{RoleNames.Member}")]
+    public async Task<IActionResult> GetBookedServiceAsync()
+    {   
+        //get access token
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+        //extract account id from access token
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+        var response = await purchaseService.GetBookedService(accountId.ToString("D"));
+        return Ok(response);
+    }
 }
