@@ -6,6 +6,6 @@ namespace Application.Services;
 public interface ITagService
 {
     Task<CreateTagResponse> CreateTagAsync(CreateTagRequest request);
-    Task<UpdateTagResponse> UpdateTagAsync(UpdateTagRequest request);
+    Task<UpdateTagResponse> UpdateTagAsync(UpdateTagRequest request,Guid tagId);
     Task<ViewAllTagResponse> ViewAllTagAsync();
 }

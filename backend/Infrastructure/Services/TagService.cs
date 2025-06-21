@@ -36,10 +36,10 @@ public class TagService(ITagRepository tagRepository) : ITagService
         };
     }
 
-    public async Task<UpdateTagResponse> UpdateTagAsync(UpdateTagRequest request)
+    public async Task<UpdateTagResponse> UpdateTagAsync(UpdateTagRequest request,Guid tagId)
     {
         //check tag is exist
-        var tag = await tagRepository.GetById(request.TagId);
+        var tag = await tagRepository.GetById(tagId);
         //check if tag name exist 
         await tagRepository.CheckNameTagExists(request.Title!);
         if (tag == null)
