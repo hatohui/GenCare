@@ -35,6 +35,11 @@ public class TagRepository(IApplicationDbContext dbContext) : ITagRepository
            
     }
 
+    public async Task<int> GetTagCount()
+    {
+        return await dbContext.Tags.CountAsync();
+    }
+
     public async Task<List<Tag>> GetAll()
     {
         return await dbContext.Tags

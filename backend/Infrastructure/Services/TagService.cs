@@ -72,4 +72,27 @@ public class TagService(ITagRepository tagRepository) : ITagService
             Message = "Tag updated successfully."
         };
     }
+
+    public async Task<ViewAllTagResponse> ViewAllTagAsync()
+    {
+        var tags =await tagRepository.GetAll();
+        if(tags == null )
+        {
+            return new ViewAllTagResponse
+            {
+                Count = 0,
+                TagPayLoads = new List<TagPayLoad>()
+            };
+        }
+        var tagPayLoads = tags.Select(t => new TagPayLoad
+        {
+            Id = t.Id,
+            Title = t.Title,
+        }).ToList();
+        return new ViewAllTagResponse
+        {
+            Count = tagPayLoads.Count,
+            TagPayLoads = tagPayLoads
+        };
+    }
 }
