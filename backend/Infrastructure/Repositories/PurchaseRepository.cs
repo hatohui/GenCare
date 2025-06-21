@@ -22,8 +22,8 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
     public async Task<List<Purchase>> GetByAccountId(Guid accountId)
     {
         return await dbContext.Purchases
-            .Where(p => Guid.Equals(p.AccountId, accountId))
             .Include(p => p.OrderDetails)
+            .Where(p => Guid.Equals(p.AccountId, accountId))
             .ToListAsync();
     }
 

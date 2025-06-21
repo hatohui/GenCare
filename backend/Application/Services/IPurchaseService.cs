@@ -17,5 +17,6 @@ namespace Application.Services
         /// A task that represents the asynchronous operation. The task result contains a <see cref="BookingServiceResponse"/> with purchase information.
         /// </returns>
         Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest, string accessToken);
+        Task<List<BookedService>> GetBookedService(string accountId);
     }
 }
