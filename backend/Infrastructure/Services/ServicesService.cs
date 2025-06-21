@@ -23,20 +23,10 @@ public class ServicesService(
             request.Page,
             request.Count,
             request.Search,
-            request.SortByPrice,
-            request.IncludeDeleted
+            request.SortByPrice
+          
         );
-        int totalCount;
-        if (request.IncludeDeleted == true)
-        {
-            //count all services including deleted
-            totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
-        }
-        else
-        {
-            // count only active services
-            totalCount = await serviceRepository.CountServicesAsync();
-        }
+        int totalCount = await serviceRepository.CountServicesAsync();
         var response = new ViewServiceForUserResponse()
         {
             Total = totalCount,
@@ -57,12 +47,13 @@ public class ServicesService(
         return response;
     }
 
-    public async Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServicesByPageRequest request)
+    public async Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServiceForStaffRequest request)
     {
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
 
-        var services = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count);
+        var services = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count,
+            request.Search, request.SortByPrice, request.IncludeDeleted, request.SortByUpdatedAt);
         var totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
         var response = new ViewServiceByPageResponse
         {
