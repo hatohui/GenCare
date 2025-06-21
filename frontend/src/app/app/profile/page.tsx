@@ -13,9 +13,10 @@ const Page = () => {
 	if (!data) {
 		return <div>No account data found.</div>
 	}
+	console.log(data)
 
 	return (
-		<div className='flex center-all'>
+		<div className='w-6xl mx-auto'>
 			<Profile data={data} />
 		</div>
 	)
