@@ -11,4 +11,32 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
         await dbContext.Purchases.AddAsync(purchase);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task Delete(Purchase purchase)
+    {
+        dbContext.Purchases.Remove(purchase);
+        await dbContext.SaveChangesAsync();
+    }
+
+
+    public async Task<List<Purchase>> GetByAccountId(Guid accountId)
+    {
+        return await dbContext.Purchases
+            .Where(p => Guid.Equals(p.AccountId, accountId))
+            .Include(p => p.OrderDetails)
+            .ToListAsync();
+    }
+
+    public async Task<Purchase?> GetById(Guid id)
+    {
+        return await dbContext.Purchases
+            .Include(p => p.OrderDetails)
+            .FirstOrDefaultAsync(p => Guid.Equals(p.Id, id));
+    }
+
+    public async Task Update(Purchase purchase)
+    {
+        dbContext.Purchases.Update(purchase);
+        await dbContext.SaveChangesAsync();
+    }
 }

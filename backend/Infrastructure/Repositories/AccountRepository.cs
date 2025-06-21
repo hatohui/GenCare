@@ -56,7 +56,10 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         {
             return null;
         }
-
+        account.UpdatedAt = DateTime.Now;
+        account.DeletedAt = DateTime.Now;
+        account.UpdatedBy = userId;
+        account.DeletedBy = userId;
         account.IsDeleted = true;
 
         dbContext.Accounts.Update(account);
@@ -64,51 +67,56 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
         return account;
     }
-
     public async Task<List<Account>> GetAccountsByPageAsync(int skip, int pageSize, string? search, string? role, bool? active)
     {
-        var query = dbContext.Accounts.Include(a => a.Role).AsQueryable().AsNoTracking();
-
-        if (!string.IsNullOrEmpty(search))
+        var query = dbContext.Accounts
+            .Include(a => a.Role)
+            .AsNoTracking()
+            .AsQueryable();
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(a => a.Email.Contains(search) || a.FirstName.Contains(search) || a.LastName.Contains(search));
+            var loweredSearch = search.ToLower();
+            query = query.Where(a =>
+                a.Email.ToLower().Contains(loweredSearch) ||
+                a.FirstName.ToLower().Contains(loweredSearch) ||
+                a.LastName.ToLower().Contains(loweredSearch));
         }
-
-        if (!string.IsNullOrEmpty(role))
+        if (!string.IsNullOrWhiteSpace(role))
         {
-            query = query.Where(a => a.Role.Name.Contains(role));
+            var loweredRole = role.ToLower();
+            query = query.Where(a => a.Role.Name.ToLower().Contains(loweredRole));
         }
-
         if (active.HasValue)
         {
             query = query.Where(a => a.IsDeleted != active.Value);
         }
-
-        return await query.OrderBy(a => a.FirstName)
-                          .Skip(skip)
-                          .Take(pageSize)
-                          .ToListAsync();
+        return await query
+            .OrderByDescending(a => a.UpdatedAt)
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync();
     }
 
     public async Task<int> GetTotalAccountCountAsync(string? search, string? role, bool? active)
     {
         var query = dbContext.Accounts.AsQueryable();
-
-        if (!string.IsNullOrEmpty(search))
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(a => a.Email.Contains(search) || a.FirstName.Contains(search) || a.LastName.Contains(search));
+            var loweredSearch = search.ToLower();
+            query = query.Where(a =>
+                a.Email.ToLower().Contains(loweredSearch) ||
+                a.FirstName.ToLower().Contains(loweredSearch) ||
+                a.LastName.ToLower().Contains(loweredSearch));
         }
-
-        if (!string.IsNullOrEmpty(role))
+        if (!string.IsNullOrWhiteSpace(role))
         {
-            query = query.Where(a => a.Role.Name.Contains(role));
+            var loweredRole = role.ToLower();
+            query = query.Where(a => a.Role.Name.ToLower().Contains(loweredRole));
         }
-
         if (active.HasValue)
         {
             query = query.Where(a => a.IsDeleted != active.Value);
         }
-
         return await query.CountAsync();
     }
 }
