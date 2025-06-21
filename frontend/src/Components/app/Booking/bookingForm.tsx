@@ -10,9 +10,11 @@ import {
 	formSchema,
 	FormSchema,
 } from '@/Interfaces/Payment/schema/BookService'
+import { useBookServices } from '@/Services/book-service'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
+	const updateBooking = useBookServices()
 
 	const {
 		register,
@@ -41,7 +43,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	})
 
 	const onSubmit = (data: FormSchema) => {
-		console.log('Submitted:', data)
+		console.log('Submitted:', data.people)
+		updateBooking.mutate(data.people)
 	}
 
 	if (isLoading || !data) {

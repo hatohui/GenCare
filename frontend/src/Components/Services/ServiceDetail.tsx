@@ -26,7 +26,7 @@ export default function ServiceDetail({
 			return
 		}
 
-		router.push(`/booking/${id}`)
+		router.push(`/app/booking/${id}`)
 	}
 
 	return (

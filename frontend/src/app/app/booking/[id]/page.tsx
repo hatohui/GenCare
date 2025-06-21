@@ -1,6 +1,6 @@
 'use client'
 
-import BookServiceForm from '@/Components/Booking/bookingForm'
+import BookServiceForm from '@/Components/app/Booking/bookingForm'
 import React, { use } from 'react'
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {

@@ -38,7 +38,7 @@ export const ServiceCard = ({
 			return
 		}
 
-		router.push(`/booking/${id}`)
+		router.push(`/app/booking/${id}`)
 	}
 
 	return (
