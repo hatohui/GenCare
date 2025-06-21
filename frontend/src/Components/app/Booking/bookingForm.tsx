@@ -11,6 +11,7 @@ import {
 	FormSchema,
 } from '@/Interfaces/Payment/schema/BookService'
 import { useBookServices } from '@/Services/book-service'
+import { TrashCanSVG } from '@/Components/SVGs'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
@@ -61,14 +62,14 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 			{fields.map((field, index) => (
 				<div
 					key={field.id}
-					className='grid grid-cols-2 gap-4 border p-4 rounded-lg bg-gray-50 relative'
+					className='grid grid-cols-2 gap-4 p-7 rounded-[30px] bg-gray-50 relative'
 				>
 					<button
 						type='button'
 						onClick={() => remove(index)}
-						className='absolute top-2 right-2 text-red-500 text-sm hover:underline'
+						className='absolute top-2 right-7 text-red-500 text-sm hover:bg-red-100 rounded-full transition-colors duration-300 p-2 '
 					>
-						Remove
+						<TrashCanSVG />
 					</button>
 
 					{/* Display Service Name */}
@@ -83,11 +84,11 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					</div>
 
 					<div className='col-span-2'>
-						<label className='block text-sm font-medium'>Service ID</label>
+						<label className='block text-sm font-medium'></label>
 						<input
 							type='text'
 							value={serviceId}
-							readOnly
+							hidden
 							{...register(`people.${index}.serviceId`)}
 							className='mt-1 w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-gray-600'
 						/>
@@ -99,6 +100,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							type='text'
 							{...register(`people.${index}.phoneNumber`)}
 							className='mt-1 input w-full'
+							placeholder='0912323..'
 						/>
 						<p className='text-red-500 text-sm'>
 							{errors.people?.[index]?.phoneNumber?.message}
@@ -111,6 +113,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							type='text'
 							{...register(`people.${index}.firstName`)}
 							className='mt-1 input w-full'
+							placeholder='Nguyen'
 						/>
 						<p className='text-red-500 text-sm'>
 							{errors.people?.[index]?.firstName?.message}
@@ -123,6 +126,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							type='text'
 							{...register(`people.${index}.lastName`)}
 							className='mt-1 input w-full'
+							placeholder='Thanh'
 						/>
 						<p className='text-red-500 text-sm'>
 							{errors.people?.[index]?.lastName?.message}
@@ -168,11 +172,11 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						lastName: '',
 						phoneNumber: '',
 						dateOfBirth: '',
-						gender: false,
+						gender: true,
 						serviceId: serviceId,
 					})
 				}
-				className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded'
+				className='bg-main hover:bg-blue-600 text-white px-4 py-2 rounded'
 			>
 				Add Person
 			</button>
