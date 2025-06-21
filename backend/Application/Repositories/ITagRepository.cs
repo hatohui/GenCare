@@ -15,7 +15,7 @@ public interface ITagRepository
     /// Retrieves all <see cref="Tag"/> entities from the data store.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of tags.</returns>
-    Task<List<Tag>> GetAll();
+    Task<List<Tag>?> GetAll();
 
     /// <summary>
     /// Retrieves a <see cref="Tag"/> entity by its unique identifier.
@@ -46,4 +46,10 @@ public interface ITagRepository
     /// <param name="tag">The tag entity to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task Delete(Tag tag);
+
+    Task<bool>CheckNameTagExists(string title);
+    
+    Task<Tag?>GetById(Guid id);
+    
+    
 }
