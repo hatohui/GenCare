@@ -37,15 +37,32 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Upstash](https://img.shields.io/badge/Upstash-1ABC9C?style=for-the-badge&logo=upstash&logoColor=white)
 
-#### 🚀 DevOps
+#### ☁️ Infrastructure & Cloud Services
+
+![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
+![AWS RDS](https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Mailgun](https://img.shields.io/badge/Mailgun-EA4335?style=for-the-badge&logo=mailgun&logoColor=white)
+![Gemini AI API](https://img.shields.io/badge/Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Momo Gateway](https://img.shields.io/badge/MoMo_Payment-DD0A73?style=for-the-badge)
+![VNPay](https://img.shields.io/badge/VNPay-0A4DAD?style=for-the-badge)
+
+#### 🚀 DevOps / Monitoring / CI-CD
 
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Docker Compose](https://img.shields.io/badge/Docker_Compose-1488C6?style=for-the-badge&logo=docker&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![CodeQL](https://img.shields.io/badge/CodeQL-00B4AB?style=for-the-badge&logo=github&logoColor=white)
+![GitGuardian](https://img.shields.io/badge/GitGuardian-171717?style=for-the-badge)
+![Naming Convention Checker](https://img.shields.io/badge/Naming_Convention-444444?style=for-the-badge)
+![CodeRabbit](https://img.shields.io/badge/CodeRabbit-FF5C5C?style=for-the-badge)
+![Doppler](https://img.shields.io/badge/Doppler-9B59B6?style=for-the-badge&logo=doppler&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 ![Loki](https://img.shields.io/badge/Loki-FFEB3B?style=for-the-badge&logo=grafana&logoColor=black)
+![DockerHub](https://img.shields.io/badge/DockerHub-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 #### ⚙️ Dev Tools
 

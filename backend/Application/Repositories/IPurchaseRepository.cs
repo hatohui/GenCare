@@ -13,4 +13,8 @@ public interface IPurchaseRepository
     /// <param name="purchase">The purchase entity to add.</param>
     /// <returns>A task that represents the asynchronous add operation.</returns>
     Task AddAsync(Purchase purchase);
+    Task<List<Purchase>> GetByAccountId(Guid accountId);
+    Task<Purchase?> GetById(Guid id);
+    Task Update(Purchase purchase);
+    Task Delete(Purchase purchase);
 }

@@ -155,10 +155,12 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Authorize]
-    public async Task<IActionResult> GetAccountById(Guid id)
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetAccountById([FromRoute] string id)
     {
-        var result = await accountService.GetAccountByIdAsync(id);
+        if (string.IsNullOrEmpty(id))
+            return BadRequest("Account ID is required.");
+        var result = await accountService.GetAccountByIdAsync(Guid.Parse(id));
 
         if (result == null)
             return NotFound();
