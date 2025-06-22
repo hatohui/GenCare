@@ -86,7 +86,8 @@ public class AppointmentService(IAccountRepository accountRepository,
                 StaffName = $"{appointment.Staff.FirstName} {appointment.Staff.LastName}",
                 ScheduleAt = appointment.ScheduleAt,
                 JoinUrl = appointment.JoinUrl,
-                IsDeleted = appointment.IsDeleted
+                IsDeleted = appointment.IsDeleted,
+                Status = appointment.Status
             });
         }
 

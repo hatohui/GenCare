@@ -8,6 +8,7 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
+using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -22,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -206,6 +208,8 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IMomoService, MomoService>();
+builder.Services.AddScoped<IPaymentHistoryRepository, PaymentHistoryRepository>();
+builder.Services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 
@@ -233,10 +237,14 @@ var connectionString =
         "Missing connection string for the current environment."
     );
 ;
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<AppointmentStatus>("appointment_status");
+var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    options.UseNpgsql(connectionString);
+    //options.UseNpgsql(connectionString);
+    options.UseNpgsql(dataSource);
 });
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(opt =>

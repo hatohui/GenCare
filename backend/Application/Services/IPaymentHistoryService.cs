@@ -10,4 +10,5 @@ namespace Application.Services;
 public interface IPaymentHistoryService
 {
     Task CreatePaymentHistoryAsync(PaymentHistoryModel paymentHistory);
+    Task<List<PaymentHistory>> GetAllPaymentHistoriesAsync();
 }

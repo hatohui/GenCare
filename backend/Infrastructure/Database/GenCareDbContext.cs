@@ -1,4 +1,5 @@
 ﻿using Domain.Abstractions;
+using Domain.Common.Enums;
 using Domain.Entities;
 
 namespace Infrastructure.Database;
@@ -65,9 +66,13 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
     {
         modelBuilder
             .HasPostgresExtension("pgcrypto")
-            .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])
+            .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])            
             .HasPostgresEnum("payment_history_status", ["pending", "paid", "expired"])
             .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"]);
+
+        modelBuilder.HasPostgresEnum<AppointmentStatus>("appointment_status");
+        modelBuilder.HasPostgresEnum<PaymentHistoryStatus>("payment_history_status");
+        modelBuilder.HasPostgresEnum<PaymentMethodStatus>("payment_method_status");
 
         modelBuilder.Entity<Account>(entity =>
         {
@@ -171,6 +176,10 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasForeignKey(d => d.StaffId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_appointment_staff_id");
+
+            entity.Property(e => e.Status)
+                .HasColumnName("status")
+                .HasConversion<string>();
         });
 
         modelBuilder.Entity<BirthControl>(entity =>
@@ -527,6 +536,12 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("expired_at");
             entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
+            entity.Property(e => e.Status)
+                .HasColumnName("status")
+                .HasConversion<string>();
+            entity.Property(e => e.PaymentMethod)
+                .HasColumnName("payment_method")
+                .HasConversion<string>();
 
             entity.HasOne(d => d.Purchase).WithOne(p => p.PaymentHistory)
                 .HasForeignKey<PaymentHistory>(d => d.PurchaseId)
