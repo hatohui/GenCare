@@ -2,26 +2,33 @@
 
 import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ServiceCard } from './ServiceCard'
 import Pagination from '../Management/Pagination'
+import { useSearchParams } from 'next/navigation'
 
 const ServiceList = () => {
+	const searchParams = useSearchParams()
 	const [page, setPage] = useState<number>(1)
+	const [orderByPrice, setOrderByPrice] = useState<boolean>(false)
+	const [search, setSearch] = useState<string>('')
 	const itemsPerPage = 6
+
+	useEffect(() => {
+		setOrderByPrice(Boolean(searchParams.get('orderByPrice')))
+		setSearch(searchParams.get('search') || '')
+	}, [searchParams])
 
 	const { isError, isFetching, data } = useServiceByPage(
 		page ? page : 0,
-		itemsPerPage
+		itemsPerPage,
+		orderByPrice,
+		search
 	)
 
 	const pageCount = data?.totalCount
 		? Math.ceil(data.totalCount / itemsPerPage)
 		: 5
-
-	// const handleDelete = () => {
-	// 	alert('Account is getting deleted')
-	// }
 
 	return (
 		<>
