@@ -6,30 +6,37 @@ namespace Infrastructure.Repositories;
 
 public class ServiceRepository(IApplicationDbContext dbContext) : IServiceRepository
 {
-    public async Task<(List<Service>, int totalCount)> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice)
+    public async Task<(List<Service> services, int totalCount)> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice,bool? sortByAlphabetical)
     {
-        //choose all services that are not deleted
+        // Choose all services that are not deleted
         var query = dbContext.Services.Where(s => s.IsDeleted != true);
 
-        // validate name and choose services that contain the name
+        // Validate name and choose services that contain the name
         if (!string.IsNullOrEmpty(name))
         {
             query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
         }
 
-        //sort by price if orderByPrice is true
-        if (orderByPrice.HasValue)
+        // Apply sorting 
+        if (sortByAlphabetical.HasValue && sortByAlphabetical.Value)
         {
-            //query to sort by price if orderByPrice is provided
+            // Sort by alphabetical order if sortByAlphabetical is true
+            query = query.OrderBy(s => s.Name);
+        }
+        else if (orderByPrice.HasValue)
+        {
+            // Sort by price if orderByPrice is provided
             query = orderByPrice.Value
                 ? query.OrderBy(s => s.Price)
                 : query.OrderByDescending(s => s.Price);
         }
         else
         {
-            //query to sort by name if orderByPrice is not provided
-            query = query.OrderBy(s => s.Name); 
+            // Default sorting by new service if no other sorting is specified
+            query = query.OrderByDescending(s => s.Id);
         }
+       
+
         // Apply pagination
         var totalCount = await query.CountAsync();
         var services = await query.Skip((page - 1) * count)
@@ -39,7 +46,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         return (services, totalCount);
     }
 
-    public async Task<(List<Service>? services, int totalCount)> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
+    public async Task<(List<Service>? services, int totalCount)> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt,bool? sortByAlphabetical)
     {
         var query = dbContext.Services.AsQueryable();
 
@@ -74,10 +81,14 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         {
             query = query.OrderBy(s => s.Price);
         }
+        else if (sortByAlphabetical.HasValue && sortByAlphabetical.Value)
+        {
+            query = query.OrderBy(s => s.Name);
+        }
         else
         {
             // Default sorting by CreatedAt
-            query = query.OrderByDescending(s => s.Price);
+            query = query.OrderByDescending(s => s.Id); 
         }
         //total count of services match search criteria
         var totalCount = await query.CountAsync();

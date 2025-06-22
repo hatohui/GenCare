@@ -8,4 +8,5 @@ public class ViewServiceForStaffRequest
     public bool? SortByPrice { get; set; }
     public bool? IncludeDeleted { get; set; }
     public bool? SortByUpdatedAt { get; set; }
+    public bool? SortByAlphabetical { get; set; }
 }
