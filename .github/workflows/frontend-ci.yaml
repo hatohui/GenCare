@@ -15,6 +15,9 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.body, '#skip') }}
+    env:
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+    
     steps:
       - uses: actions/checkout@v4
 
