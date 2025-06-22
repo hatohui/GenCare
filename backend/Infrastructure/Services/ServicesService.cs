@@ -19,14 +19,14 @@ public class ServicesService(
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
 
-        var services = await serviceRepository.SearchServiceAsync(
+        var (services,totalCount) = await serviceRepository.SearchServiceAsync(
             request.Page,
             request.Count,
             request.Search,
             request.SortByPrice
           
         );
-        int totalCount = await serviceRepository.CountServicesAsync();
+        
         var response = new ViewServiceForUserResponse()
         {
             Total = totalCount,
@@ -52,15 +52,16 @@ public class ServicesService(
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
 
-        var services = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count,
+        var (services,totalCount) = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count,
             request.Search, request.SortByPrice, request.IncludeDeleted, request.SortByUpdatedAt);
-        var totalCount = await serviceRepository.CountServicesIncludeDeletedAsync();
         var response = new ViewServiceByPageResponse
         {
             TotalCount = totalCount,
             Services = new List<ServicePayLoadForStaff>()
         };
-
+        if (services == null)
+            throw new AppException(402, "Not found.");
+        
         foreach (var s in services)
         {
             var image = await mediaRepository.GetAllMediaByServiceIdAsync(s.Id);
