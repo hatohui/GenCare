@@ -43,7 +43,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         // Filter by name if provided
         if (!string.IsNullOrWhiteSpace(name))
         {
-            query = query.Where(s => s.Name.Contains(name.ToLower()));
+            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
         }
 
         // Filter by deleted status
