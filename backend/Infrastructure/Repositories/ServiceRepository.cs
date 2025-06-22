@@ -77,14 +77,15 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         {
             query = query.OrderByDescending(s => s.UpdatedAt);
         }
-        else if (orderByPrice.HasValue && orderByPrice.Value)
-        {
-            query = query.OrderBy(s => s.Price);
-        }
         else if (sortByAlphabetical.HasValue && sortByAlphabetical.Value)
         {
             query = query.OrderBy(s => s.Name);
         }
+        else if (orderByPrice.HasValue && orderByPrice.Value)
+        {
+            query = query.OrderBy(s => s.Price);
+        }
+        
         else
         {
             // Default sorting by CreatedAt
