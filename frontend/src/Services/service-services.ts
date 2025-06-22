@@ -5,9 +5,9 @@ import {
 	UpdateServiceApiResponse,
 	GetServiceByPageResponse,
 	GetServiceWithIdResponse,
-	UpdateServiceApiRequest,
 	GetServiceByPageAdminResponse,
 } from '@/Interfaces/Service/Schemas/service'
+import { UpdateServiceApiRequest } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
@@ -15,14 +15,14 @@ import axios from 'axios'
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
 const serviceApi = {
-	getByPage: (page: number, count: number) =>
+	getByPage: (page: number, count: number, order: boolean, search: string) =>
 		axios
 			.get<GetServiceByPageResponse>(
-				`${SERVICE_URL}?Page=${page}&Count=${count}`
+				`${SERVICE_URL}?Page=${page}&Count=${count}` +
+					(order ? '&sortByPrice=true' : '') +
+					(search ? `&search=${search}` : '')
 			)
 			.then(res => {
-				console.log('getByPage', res.data)
-
 				return res.data
 			}),
 	getByPageAdmin: (header: string, page: number, count: number) =>
@@ -35,7 +35,6 @@ const serviceApi = {
 			)
 			.then(res => {
 				console.log(res.data)
-
 				return res.data
 			}),
 
@@ -69,10 +68,15 @@ const serviceApi = {
 			.then(res => res.data),
 }
 
-export const useServiceByPage = (page: number, count: number) => {
+export const useServiceByPage = (
+	page: number,
+	count: number,
+	order: boolean,
+	search: string = ''
+) => {
 	return useQuery({
-		queryKey: ['services', page, count],
-		queryFn: () => serviceApi.getByPage(page, count),
+		queryKey: ['services', page, count, order, search],
+		queryFn: () => serviceApi.getByPage(page, count, order || false, search),
 		placeholderData: keepPreviousData,
 	})
 }
