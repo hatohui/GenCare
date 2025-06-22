@@ -35,4 +35,17 @@ public class MessageController(IMessageService messageService): ControllerBase
         var result = await messageService.GetMessagesByConversationIdAsync(conversationId);
         return Ok(result);
     }
+    
+    [HttpDelete("{messageId}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Staff}")]
+    public async Task<IActionResult> DeleteMessage(Guid messageId)
+    {
+        var accessToken = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+        await messageService.DeleteMessageAsync(messageId, accessToken);
+        return Ok(new
+        {
+            success = true,
+            message = "Message deleted successfully."
+        });
+    }
 }

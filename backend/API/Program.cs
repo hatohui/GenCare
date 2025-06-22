@@ -153,7 +153,7 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder =>
         {
             corsPolicyBuilder
-                .WithOrigins("http://localhost:3000", "https://www.gencare.site")
+                .WithOrigins("http://localhost:3000", "https://www.gencare.site","http://127.0.0.1:5500")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -198,6 +198,7 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddSignalR();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();

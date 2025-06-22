@@ -6,41 +6,89 @@ namespace Infrastructure.Repositories;
 
 public class ServiceRepository(IApplicationDbContext dbContext) : IServiceRepository
 {
-    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice, bool? includeDeleted)
+    public async Task<(List<Service>, int totalCount)> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice)
     {
-        var query = dbContext.Services.AsQueryable();
+        //choose all services that are not deleted
+        var query = dbContext.Services.Where(s => s.IsDeleted != true);
 
+        // validate name and choose services that contain the name
         if (!string.IsNullOrEmpty(name))
         {
             query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
         }
 
-        if (includeDeleted.HasValue)
-        {
-            if (!includeDeleted.Value)
-                query = query.Where(s => !s.IsDeleted);
-            // if true, include all
-        }
-
+        //sort by price if orderByPrice is true
         if (orderByPrice.HasValue)
         {
+            //query to sort by price if orderByPrice is provided
             query = orderByPrice.Value
                 ? query.OrderBy(s => s.Price)
                 : query.OrderByDescending(s => s.Price);
         }
+        else
+        {
+            //query to sort by name if orderByPrice is not provided
+            query = query.OrderBy(s => s.Name); 
+        }
+        // Apply pagination
+        var totalCount = await query.CountAsync();
+        var services = await query.Skip((page - 1) * count)
+            .Take(count)
+            .ToListAsync();
 
-        query = query.Skip((page - 1) * count).Take(count);
-
-        return await query.ToListAsync();
+        return (services, totalCount);
     }
 
-    public async Task<List<Service>>? SearchServiceIncludeDeletedAsync(int page, int count)
+    public async Task<(List<Service>? services, int totalCount)> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
     {
-        return await dbContext.Services
-            .OrderByDescending(s => s.CreatedAt)
+        var query = dbContext.Services.AsQueryable();
+
+        // Filter by name if provided
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
+        }
+
+        // Filter by deleted status
+        if (includeDeleted.HasValue)
+        {
+            if (includeDeleted.Value)
+            {
+                // Include only deleted services
+                query = query.Where(s => s.IsDeleted == true);
+            }
+            else
+            {
+                // Include only non-deleted services  
+                query = query.Where(s => s.IsDeleted == false || s.IsDeleted == null);
+            }
+        }
+        // If includeDeleted is null, include both deleted and non-deleted services
+
+        // Apply sorting
+        if (sortByUpdateAt.HasValue && sortByUpdateAt.Value)
+        {
+            query = query.OrderByDescending(s => s.UpdatedAt);
+        }
+        else if (orderByPrice.HasValue && orderByPrice.Value)
+        {
+            query = query.OrderBy(s => s.Price);
+        }
+        else
+        {
+            // Default sorting by CreatedAt
+            query = query.OrderByDescending(s => s.Price);
+        }
+        //total count of services match search criteria
+        var totalCount = await query.CountAsync();
+
+
+        // Apply pagination
+        var services = await query
             .Skip((page - 1) * count)
             .Take(count)
             .ToListAsync();
+        return (services, totalCount);
     }
 
     public async Task<int> CountServicesAsync()

@@ -15,5 +15,5 @@ public interface IServicesService
 
     Task<ViewServiceForUserResponse> SearchServiceAsync(ViewServicesByPageRequest request);
 
-    Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServicesByPageRequest request);
+    Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServiceForStaffRequest request);
 }

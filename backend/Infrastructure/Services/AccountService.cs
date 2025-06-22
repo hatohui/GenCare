@@ -154,7 +154,7 @@ public class AccountService
         var user = await accountRepo
                        .GetAccountByEmailPasswordAsync(req.Email, req.Password)
                    ?? throw new InvalidCredentialsException();
-
+        if(user.IsDeleted) throw  new AppException(401, "Account is deleted");
         var (accessToken, _) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, _) = JwtHelper.GenerateRefreshToken(user.Id);
 
@@ -211,7 +211,7 @@ public class AccountService
     public async Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
     {
         var user = await accountRepo.GetByEmailAsync(payload.Email);
-        if (user == null)
+        if (user is null)
         {
             var role = await roleRepo.GetRoleByNameAsync("Member")
                        ?? throw new Exception("Role 'Member' not found");
@@ -231,10 +231,9 @@ public class AccountService
 
             await accountRepo.AddAsync(user);
         }
-
+        if (user.IsDeleted) throw new AppException(401, "Account is deleted");
         var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
-
         RefreshToken rf = new()
         {
             AccountId = user.Id,
@@ -425,100 +424,55 @@ public class AccountService
 
     public async Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string paramId)
     {
-        var role = JwtHelper.GetRoleFromAccessToken(accessToken) ?? throw new AppException(400, "Role is not found in access token");
-        var accessId = JwtHelper.GetAccountIdFromToken(accessToken); //account id from access token
-        if (Guid.Equals(accessId, Guid.Parse(paramId))) //update themselves
-        {
-            //get account by param Id
-            Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
-            //update account
-            a.FirstName = request.Account.FirstName ?? a.FirstName;
-            a.LastName = request.Account.LastName ?? a.LastName;
-            a.Phone = request.Account.PhoneNumber ?? a.Phone;
-            a.Gender = request.Account.Gender ?? a.Gender;
-            a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
-            a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
-            //check if updated account is member or staff,..
-            //will not have staff info if it is a member
-            //have staff info if it is staff,...
-            if (role.ToLower() != RoleNames.Member.ToLower() && request.StaffInfo != null && a.StaffInfo != null)
-            {
-                //account now is staff, consultant, manager or admin
-                if (request.StaffInfo.DepartmentId != null)
-                    a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
-                a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
-                a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
-                a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
-            }
+        var role = JwtHelper.GetRoleFromAccessToken(accessToken)
+            ?? throw new AppException(400, "Role is not found in access token");
+        var accessId = JwtHelper.GetAccountIdFromToken(accessToken);
+        var targetId = Guid.Parse(paramId);
 
-            //now update account in database
-            await accountRepo.UpdateAccount(a);
+        var account = await accountRepo.GetAccountByIdAsync(targetId)
+            ?? throw new AppException(404, "Account not found");
+
+        var isSelfUpdate = accessId == targetId;
+        var isAdmin = string.Equals(role, RoleNames.Admin, StringComparison.OrdinalIgnoreCase);
+        var isManager = string.Equals(role, RoleNames.Manager, StringComparison.OrdinalIgnoreCase);
+
+        var canManagerUpdateTarget = isManager &&
+            (account.Role.Name.Equals(RoleNames.Staff, StringComparison.OrdinalIgnoreCase) ||
+             account.Role.Name.Equals(RoleNames.Consultant, StringComparison.OrdinalIgnoreCase));
+
+        if (isSelfUpdate || isAdmin || canManagerUpdateTarget)
+        {
+            UpdateAccountFields(account, request);
+            account.UpdatedAt = DateTime.Now;
+            account.UpdatedBy = accessId;
+            await accountRepo.UpdateAccount(account);
         }
         else
         {
-            //admin can update all without other admin
-            if (role.ToLower() == RoleNames.Admin.ToLower())
-            {
-                //get account by param Id
-                Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
-                //update account
-                a.FirstName = request.Account.FirstName ?? a.FirstName;
-                a.LastName = request.Account.LastName ?? a.LastName;
-                a.Phone = request.Account.PhoneNumber ?? a.Phone;
-                a.Gender = request.Account.Gender ?? a.Gender;
-                a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
-                a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
-                //check if updated account is member or staff,..
-                //will not have staff info if it is a member
-                //have staff info if it is staff,...
-                if (request.StaffInfo != null && a.StaffInfo != null)
-                {
-                    //account now is staff, consultant, manager or admin
-                    if (request.StaffInfo.DepartmentId != null)
-                        a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
-                    a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
-                    a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
-                    a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
-                }
-                //now update account in database
-                await accountRepo.UpdateAccount(a);
-            }
-            else if (role.ToLower() == RoleNames.Manager.ToLower())
-            {
-                //manager can update consultants, staffs
-
-                //get account by param Id
-                Account? a = await accountRepo.GetAccountByIdAsync(Guid.Parse(paramId)) ?? throw new AppException(404, "Account not found");
-
-                //check if account is consultants or staffs
-                if (a.Role.Name.ToLower() == RoleNames.Staff.ToLower() ||
-                    a.Role.Name.ToLower() == RoleNames.Consultant.ToLower())
-                {
-                    //update account
-                    a.FirstName = request.Account.FirstName ?? a.FirstName;
-                    a.LastName = request.Account.LastName ?? a.LastName;
-                    a.Phone = request.Account.PhoneNumber ?? a.Phone;
-                    a.Gender = request.Account.Gender ?? a.Gender;
-                    a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
-                    a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
-                    //check if updated account is member or staff,..
-                    //will not have staff info if it is a member
-                    //have staff info if it is staff,...
-                    if (request.StaffInfo != null && a.StaffInfo != null)
-                    {
-                        //account now is staff, consultant, manager or admin
-                        if (request.StaffInfo.DepartmentId != null)
-                            a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
-                        a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
-                        a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
-                        a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
-                    }
-                    //now update account in database
-                    await accountRepo.UpdateAccount(a);
-                }
-            }
+            throw new AppException(403, "You do not have permission to update this account.");
         }
     }
+
+private void UpdateAccountFields(Account a, UpdateAccountRequest request)
+{
+    a.FirstName = request.Account.FirstName ?? a.FirstName;
+    a.LastName = request.Account.LastName ?? a.LastName;
+    a.Phone = request.Account.PhoneNumber ?? a.Phone;
+    a.Gender = request.Account.Gender ?? a.Gender;
+    a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
+    a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
+
+    if (request.StaffInfo != null && a.StaffInfo != null)
+    {
+        if (!string.IsNullOrEmpty(request.StaffInfo.DepartmentId))
+        {
+            a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+        }
+        a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
+        a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
+        a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
+    }
+}
 
     public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
     {

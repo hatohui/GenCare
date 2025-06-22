@@ -43,13 +43,10 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     [Route("/api/services/all")]
     [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> GetAllServices([FromQuery] int page, [FromQuery] int count)
+    //seacrh/ filter by deleted services & not deleted services, 0 co deleted service -> sort by updatedAt 
+    public async Task<IActionResult> GetAllServices([FromQuery] ViewServiceForStaffRequest request)
     {
-        var request = new ViewServicesByPageRequest
-        {
-            Page = page,
-            Count = count
-        };
+      
 
         var services = await servicesService.SearchServiceIncludeDeletedAsync(request);
         return Ok(services);
@@ -117,7 +114,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <summary>
     /// Update a service. Only admin or staff can update.
     /// </summary>
-    /// <param name="request">Service update info (including Id)</param>
+    /// <param name="request">Service update info </param>
     /// <returns>Update result</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
