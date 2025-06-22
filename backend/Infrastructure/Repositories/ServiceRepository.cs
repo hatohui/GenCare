@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories;
 
 public class ServiceRepository(IApplicationDbContext dbContext) : IServiceRepository
 {
-    public async Task<List<Service>> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice)
+    public async Task<(List<Service>, int totalCount)> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice)
     {
         //choose all services that are not deleted
         var query = dbContext.Services.Where(s => s.IsDeleted != true);
@@ -20,7 +20,7 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         //sort by price if orderByPrice is true
         if (orderByPrice.HasValue)
         {
-            // Sắp xếp theo giá tăng dần hoặc giảm dần
+            //query to sort by price if orderByPrice is provided
             query = orderByPrice.Value
                 ? query.OrderBy(s => s.Price)
                 : query.OrderByDescending(s => s.Price);
@@ -31,19 +31,22 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
             query = query.OrderBy(s => s.Name); 
         }
         // Apply pagination
-        query = query.Skip((page - 1) * count).Take(count);
+        var totalCount = await query.CountAsync();
+        var services = await query.Skip((page - 1) * count)
+            .Take(count)
+            .ToListAsync();
 
-        return await query.ToListAsync();
+        return (services, totalCount);
     }
 
-    public async Task<List<Service>?> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
+    public async Task<(List<Service>? services, int totalCount)> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt)
     {
         var query = dbContext.Services.AsQueryable();
 
         // Filter by name if provided
         if (!string.IsNullOrWhiteSpace(name))
         {
-            query = query.Where(s => s.Name.Contains(name.ToLower()));
+            query = query.Where(s => s.Name.ToLower().Contains(name.ToLower()));
         }
 
         // Filter by deleted status
@@ -76,12 +79,16 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
             // Default sorting by CreatedAt
             query = query.OrderByDescending(s => s.Price);
         }
+        //total count of services match search criteria
+        var totalCount = await query.CountAsync();
+
 
         // Apply pagination
-        return await query
+        var services = await query
             .Skip((page - 1) * count)
             .Take(count)
             .ToListAsync();
+        return (services, totalCount);
     }
 
     public async Task<int> CountServicesAsync()
