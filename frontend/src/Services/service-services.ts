@@ -6,6 +6,7 @@ import {
 	GetServiceByPageResponse,
 	GetServiceWithIdResponse,
 	GetServiceByPageAdminResponse,
+	CreateServiceApiRequest,
 } from '@/Interfaces/Service/Schemas/service'
 import { UpdateServiceApiRequest } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
@@ -25,10 +26,19 @@ const serviceApi = {
 			.then(res => {
 				return res.data
 			}),
-	getByPageAdmin: (header: string, page: number, count: number) =>
-		axios
+	getByPageAdmin: (
+		header: string,
+		page: number,
+		count: number,
+		search?: string
+	) => {
+		console.log(
+			`${SERVICE_URL}/all?Page=${page}&Count=${count}&search=${search}`
+		)
+
+		return axios
 			.get<GetServiceByPageAdminResponse>(
-				`${SERVICE_URL}?Page=${page}&Count=${count}`,
+				`${SERVICE_URL}/all?Page=${page}&Count=${count}&search=${search}`,
 				{
 					headers: { Authorization: header },
 				}
@@ -36,7 +46,8 @@ const serviceApi = {
 			.then(res => {
 				console.log(res.data)
 				return res.data
-			}),
+			})
+	},
 
 	getById: (id: string) =>
 		axios
@@ -81,13 +92,20 @@ export const useServiceByPage = (
 	})
 }
 
-export const useServiceByPageAdmin = (page: number, count: number) => {
+export const useServiceByPageAdmin = (
+	page: number,
+	count: number,
+	search: string | null
+) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['services', page, count],
-		queryFn: () => serviceApi.getByPageAdmin(header, page, count),
+		queryKey: ['services', page, count, search],
+		queryFn: async () => {
+			return serviceApi.getByPageAdmin(header, page, count, search ?? '')
+		},
 		placeholderData: keepPreviousData,
+		enabled: !!header,
 	})
 }
 
@@ -107,7 +125,8 @@ export const useCreateService = () => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: (data: any) => serviceApi.create(header, data),
+		mutationFn: (data: CreateServiceApiRequest) =>
+			serviceApi.create(header, data),
 	})
 }
 
@@ -120,10 +139,10 @@ export const useUpdateService = (id: string) => {
 	})
 }
 
-export const useDeleteService = (id: string) => {
+export const useDeleteService = () => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: () => serviceApi.delete(header, id),
+		mutationFn: (id: string) => serviceApi.delete(header, id),
 	})
 }

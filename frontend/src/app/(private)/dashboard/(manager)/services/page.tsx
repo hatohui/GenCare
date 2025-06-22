@@ -5,23 +5,50 @@ import Pagination from '@/Components/Management/Pagination'
 import SearchBar from '@/Components/Management/SearchBar'
 import ServiceList from '@/Components/Management/ServiceList'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
-import { useServiceByPageAdmin } from '@/Services/service-services'
+import { CreateServiceApiRequest } from '@/Interfaces/Service/Schemas/service'
+import {
+	useCreateService,
+	useDeleteService,
+	useServiceByPageAdmin,
+} from '@/Services/service-services'
 import clsx from 'clsx'
+import { useSearchParams } from 'next/navigation'
 import React, { useState } from 'react'
 
 const ServicesPage = () => {
 	const [currentPage, setCurrentPage] = useState(1)
+	const deleteMutation = useDeleteService()
+	const createMutation = useCreateService()
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
 	const totalPages = 5
+	const searchParams = useSearchParams()
+	const search = searchParams.get('search')
+	const query = useServiceByPageAdmin(currentPage, itemsPerPage, search)
+	const { isError, isFetching, data, isLoading } = query
 
-	const { isError, isFetching, data, isLoading } = useServiceByPageAdmin(
-		currentPage,
-		itemsPerPage
-	)
+	const handleDelete = (id: string) => {
+		if (window.confirm('Do you want to delete this?'))
+			deleteMutation.mutate(id, {
+				onSuccess: () => {
+					query.refetch()
+				},
+				onError: () => {},
+			})
+	}
 
-	//delete
-	const handleDelete = () => {
-		alert('Account is getting deleted')
+	const handleAddNew = () => {
+		const newService: CreateServiceApiRequest = {
+			name: 'Test service',
+			description: 'Pro vip service',
+			price: 9999999,
+		}
+
+		createMutation.mutate(newService, {
+			onSuccess: () => {
+				query.refetch()
+			},
+			onError: () => {},
+		})
 	}
 
 	if (isError)
@@ -36,8 +63,12 @@ const ServicesPage = () => {
 				<div className='w-full'>
 					<div className='flex items-center px-5 gap-3 grow shadow-sm bg-general py-1 pt-2 round overflow-scroll'>
 						<SearchBar className='mx-2' waitTime={1000} />
+<<<<<<< Updated upstream
 
 						<AddNewButton />
+=======
+						<AddNewButton handleAddNew={handleAddNew} />
+>>>>>>> Stashed changes
 					</div>
 				</div>
 			</div>

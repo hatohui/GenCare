@@ -54,16 +54,16 @@ const ServiceDetailPage = () => {
 	return queryUI ? (
 		queryUI
 	) : (
-		<div className='flex justify-center relative h-full bg-general shadow-2xl border-2 border-gray-500 rounded'>
+		<div className='flex justify-center relative h-full w-full bg-general shadow-2xl border-2 border-gray-500 rounded'>
 			<ReturnButton />
 
-			<div className='flex items-center h-full flex-col gap-4'>
+			<div className='flex items-center h-full flex-col w-full gap-4'>
 				<div className='flex justify-between border-b-2' />
 
 				<div className='text-4xl font-semibold'>Service Details</div>
 				<div>
 					<div className='table-row'>
-						<label className='table-label'>Name:</label>
+						<p className='table-label'>Name:</p>
 						<div className='table-data'>
 							<EditableField<Service>
 								name='name'
@@ -76,14 +76,14 @@ const ServiceDetailPage = () => {
 						</div>
 					</div>
 					<div className='table-row'>
-						<label className='table-label'>Price:</label>
+						<p className='table-label'>Price:</p>
 						<div className='table-data'>
 							<EditableField
 								name='price'
 								type='number'
 								value={
 									editingField === 'price'
-										? serviceData?.price?.toString() ?? ''
+										? serviceData?.price?.toString() ?? 'Not found'
 										: new Intl.NumberFormat('vi-VN', {
 												style: 'currency',
 												currency: 'VND',

@@ -17,10 +17,10 @@ export const CloudinaryButton = ({
 	uploadPreset = 'gencare',
 	onUploaded,
 }: {
-	className: string
+	className?: string
 	text: string
 	uploadPreset?: string
-	onUploaded?: (url: string, publicId: string) => void
+	onUploaded: (url: string, publicId: string) => void
 }) => (
 	<CldUploadWidget
 		options={{ sources: ['local', 'google_drive'] }}
