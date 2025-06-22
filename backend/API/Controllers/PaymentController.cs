@@ -2,7 +2,7 @@
 using Application.Services;
 
 namespace API.Controllers;
-[Route("api/payment")]
+[Route("api/payments")]
 [ApiController]
 public class PaymentController(IMomoService momoService) : ControllerBase
 {
