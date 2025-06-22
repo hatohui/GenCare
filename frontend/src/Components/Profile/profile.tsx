@@ -17,6 +17,7 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 			{
 				onSuccess: () => {
 					setLocalData({ ...data, ...formData })
+					setIsModalOpen(false)
 					console.log('Profile updated successfully')
 				},
 				onError: error => {
@@ -24,7 +25,6 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				},
 			}
 		)
-		setIsModalOpen(false)
 	}
 
 	if (!localData) {
