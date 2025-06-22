@@ -59,10 +59,10 @@ public class ServicesService(
             TotalCount = totalCount,
             Services = new List<ServicePayLoadForStaff>()
         };
-        if (services == null || !services.Any())
-            throw new AppException(402, "No services found.");
+        if (services == null)
+            throw new AppException(402, "Not found.");
         
-        foreach (var s in services!)
+        foreach (var s in services)
         {
             var image = await mediaRepository.GetAllMediaByServiceIdAsync(s.Id);
             response.Services.Add(new ServicePayLoadForStaff()
