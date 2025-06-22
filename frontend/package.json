@@ -9,11 +9,8 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
-<<<<<<< Updated upstream
 		"@hookform/resolvers": "^5.1.1",
 		"@radix-ui/react-checkbox": "^1.3.2",
-=======
->>>>>>> Stashed changes
 		"@tanstack/react-query": "^5.76.1",
 		"axios": "^1.9.0",
 		"cloudinary": "^2.7.0",

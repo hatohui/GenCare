@@ -57,7 +57,6 @@ const accountApi = {
 			})
 			.then(res => res.data)
 	},
-<<<<<<< Updated upstream
 	updateAccount: (header: string, id: string, data: any) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
@@ -69,7 +68,8 @@ const accountApi = {
 
 				return res.data
 			})
-=======
+  },
+  
 	delete: (header: string, id: string) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
@@ -77,7 +77,6 @@ const accountApi = {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
->>>>>>> Stashed changes
 	},
 }
 
@@ -117,19 +116,19 @@ export const useGetAccountById = (id: string) => {
 	})
 }
 
-<<<<<<< Updated upstream
 export const useUpdateAccount = (id: string) => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
 		mutationFn: (data: PutAccountRequest) =>
 			accountApi.updateAccount(header, id, data),
-=======
+  })
+}
+
 export const useDeleteAccount = () => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
 		mutationFn: (id: string) => accountApi.delete(header, id),
->>>>>>> Stashed changes
 	})
 }

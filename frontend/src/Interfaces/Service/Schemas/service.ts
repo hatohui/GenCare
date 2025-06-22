@@ -1,4 +1,5 @@
 import { Service } from '../Types/Service'
+import { z } from 'zod'
 
 //!Requests
 export type GetServiceWithIdRequest = {
@@ -34,3 +35,11 @@ export type GetServiceByPageAdminResponse = {
 		'id' | 'name' | 'description' | 'price' | 'imageUrls' | 'isDeleted'
 	>[]
 }
+
+export const serviceSchema = z.object({
+	name: z.string().min(1, 'Name is required'),
+	description: z.string().min(1, 'Description is required'),
+	price: z.coerce.number().positive('Price must be greater than 0'),
+})
+
+export type ServiceFormSchema = z.infer<typeof serviceSchema>

@@ -16,11 +16,10 @@ const AccountList = () => {
 	const searchParams = useSearchParams()
 	const search = searchParams.get('search')
 	const accountDeleteMutate = useDeleteAccount()
+	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 	const query = useGetAccountsByPage(itemsPerPage, page ? page : 1, search)
 
 	const { isLoading, isError, isFetching, data } = query
-
-	console.log(data)
 
 	const pageCount = data?.totalCount
 		? Math.ceil(data.totalCount / itemsPerPage)
