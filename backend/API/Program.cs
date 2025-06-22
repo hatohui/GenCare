@@ -3,6 +3,7 @@ using Api.Middlewares;
 using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
+using Application.DTOs.Payment.Momo;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
@@ -24,6 +25,27 @@ using Microsoft.OpenApi.Models;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
+
+//=============connect momo api=====================
+builder.Services.Configure<MomoConfig>(options =>
+{
+    options.PartnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE")
+        ?? throw new InvalidOperationException("Missing Momo Partner Code");
+    options.AccessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY")
+        ?? throw new InvalidOperationException("Missing Momo Access Key");
+    options.SecretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY")
+        ?? throw new InvalidOperationException("Missing Momo Secret Key");
+    options.Endpoint = Environment.GetEnvironmentVariable("MOMO_ENDPOINT")
+        ?? throw new InvalidOperationException("Missing Momo Endpoint");
+    options.ReturnUrl = Environment.GetEnvironmentVariable("MOMO_RETURN_URL")
+        ?? throw new InvalidOperationException("Missing Momo Return URL");
+    options.NotifyUrl = Environment.GetEnvironmentVariable("MOMO_NOTIFY_URL")
+        ?? throw new InvalidOperationException("Missing Momo Notify URL");
+    options.RequestType = Environment.GetEnvironmentVariable("MOMO_REQUEST_TYPE")
+     ?? throw new InvalidOperationException("Missing Momo Request Type");
+});
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IMomoService, MomoService>();
 
 // Add services
 builder.Services.AddControllers();
@@ -174,10 +196,8 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddSignalR();
-
-
-
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
@@ -186,9 +206,10 @@ builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
-
-
+builder.Services.AddScoped<IMomoService, MomoService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -224,6 +245,7 @@ builder.Services.AddHangfire(config =>
         opt.UseNpgsqlConnection(connectionString);
     })
 );
+
 
 // ====== App Pipeline ======
 var app = builder.Build();
