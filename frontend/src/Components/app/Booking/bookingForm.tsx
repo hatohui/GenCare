@@ -12,6 +12,7 @@ import {
 import { useBookServices } from '@/Services/book-service'
 import { TrashCanSVG } from '@/Components/SVGs'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
@@ -61,16 +62,22 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	}
 
 	return (
-		<form
+		<motion.form
 			onSubmit={handleSubmit(onSubmit)}
 			className='space-y-6 max-w-3xl mx-auto'
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ type: 'spring', stiffness: 50 }}
 		>
 			<h2 className='text-2xl font-bold text-center text-main'>Book Service</h2>
 
 			{fields.map((field, index) => (
-				<div
+				<motion.div
 					key={field.id}
 					className='grid grid-cols-2 gap-4 p-7 rounded-[30px] bg-gray-50 relative'
+					initial={{ y: -10 }}
+					animate={{ y: 0 }}
+					transition={{ type: 'spring', stiffness: 100 }}
 				>
 					<button
 						type='button'
@@ -80,7 +87,6 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						<TrashCanSVG />
 					</button>
 
-					{/* Display Service Name */}
 					<div className='col-span-2'>
 						<label className='block text-sm font-medium'>Service</label>
 						<input
@@ -169,7 +175,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							{errors.people?.[index]?.gender?.message}
 						</p>
 					</div>
-				</div>
+				</motion.div>
 			))}
 
 			<button
@@ -184,18 +190,18 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						serviceId: serviceId,
 					})
 				}
-				className='bg-main hover:bg-blue-600 text-white px-4 py-2 rounded'
+				className='bg-main hover:bg-blue-600 text-white px-4 py-2 rounded-[30px]'
 			>
 				Add Person
 			</button>
 
 			<button
 				type='submit'
-				className='block mx-auto bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded text-lg'
+				className='block mx-auto bg-secondary hover:bg-green-700 text-white px-6 py-2 rounded-[30px] text-lg'
 			>
 				Submit Booking
 			</button>
-		</form>
+		</motion.form>
 	)
 }
 

@@ -35,13 +35,13 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 	}
 
 	return (
-		<div className='p-6 bg-white shadow-lg rounded-lg grid grid-cols-4 gap-6 shadow-secondary/10'>
-			<h1 className='text-2xl font-bold col-span-4 text-center text-main'>
+		<div className='p-6 bg-white shadow-lg rounded-[30px] grid grid-cols-3 lg:grid-cols-4 gap-6 shadow-secondary/10 '>
+			<h1 className='text-2xl font-bold col-span-1 md:col-span-4 text-center text-main'>
 				Account Profile
 			</h1>
 
 			<div className='col-span-1'>
-				<div className='relative group w-24 h-24 mx-auto'>
+				<div className='relative w-45 h-45 mx-auto'>
 					{account?.avatarUrl ? (
 						<CldImage
 							src={account?.avatarUrl}

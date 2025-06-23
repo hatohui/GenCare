@@ -10,6 +10,10 @@ const Page = () => {
 		return <div>Loading...</div>
 	}
 
+	if (!data) {
+		return <div>No data found. start Booking!</div>
+	}
+
 	return (
 		<div>
 			<BookingList data={data} />

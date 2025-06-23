@@ -2,90 +2,120 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import {
+	useCreateBirthControl,
+	useUpdateBirthControl,
+} from '@/Services/birthControl-service'
 
-// Define the Zod schema for form validation
 const birthControlSchema = z.object({
 	accountID: z.string().min(1, 'Account ID is required'),
-	startDate: z.date().refine(val => !isNaN(val.getTime()), {
-		message: 'Start Date is required and should be a valid date',
-	}),
-	endDate: z.date().nullable().optional(), // Make endDate nullable and optional
+	dateRange: z
+		.tuple([
+			z.date().refine(val => !isNaN(val.getTime()), {
+				message: 'Invalid start date',
+			}),
+			z.union([z.date(), z.null()]), // <-- Allow endDate to be null
+		])
+		.refine(([start, end]) => !end || start <= end, {
+			message: 'Start date must be before end date',
+			path: ['dateRange'],
+		}),
 })
 
 type BirthControlFormData = z.infer<typeof birthControlSchema>
 
 interface BirthControlFormProps {
-	accountID: string // Receiving accountID as a prop
+	accountID: string
 }
 
 const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
+	const CreateBirthControl = useCreateBirthControl()
+	const updateBirthControl = useUpdateBirthControl()
+
 	const {
 		register,
 		handleSubmit,
+		setValue,
+		watch,
+		control,
 		formState: { errors },
 	} = useForm<BirthControlFormData>({
 		resolver: zodResolver(birthControlSchema),
 		defaultValues: {
 			accountID,
-			endDate: null, // Set endDate to null by default
+			dateRange: [undefined as any, undefined as any],
 		},
 	})
 
 	const onSubmit = (data: BirthControlFormData) => {
-		// Handle the form submission
+		const [startDate, endDate] = data.dateRange
+
+		CreateBirthControl.mutate(
+			{
+				accountId: accountID,
+				startDate: startDate.toISOString(),
+				endDate: endDate?.toISOString(),
+			},
+			{
+				onSuccess: () => {},
+				onError: () => {
+					updateBirthControl.mutate({
+						accountId: accountID,
+						startDate: startDate.toISOString(),
+						endDate: endDate?.toISOString(),
+					})
+				},
+			}
+		)
+
 		console.log('Form submitted:', data)
 	}
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+			<input type='hidden' {...register('accountID')} />
+
 			<div>
-				<label htmlFor='accountID' className='block'>
-					Account ID
+				<label htmlFor='dateRange' className='block mb-2'>
+					Birth Control Date
 				</label>
-				<input
-					{...register('accountID')}
-					id='accountID'
-					type='text'
-					className='border p-2 w-full'
-					disabled // Make the field read-only if it's coming from props
+				<DatePicker
+					selectsRange
+					startDate={watch('dateRange')?.[0]}
+					endDate={watch('dateRange')?.[1]}
+					onChange={dates => setValue('dateRange', dates as [Date, Date])}
+					dateFormat='yyyy-MM-dd'
+					placeholderText='Select date range'
+					isClearable
+					className='w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+					calendarClassName='rounded-xl shadow-lg bg-white p-4 border border-gray-200'
+					popperClassName='z-50'
+					dayClassName={date => {
+						const today = new Date()
+						const isToday =
+							date.getDate() === today.getDate() &&
+							date.getMonth() === today.getMonth() &&
+							date.getFullYear() === today.getFullYear()
+
+						return `rounded-full w-10 h-10 flex items-center justify-center transition-all
+      ${
+				isToday
+					? 'border border-blue-500 text-blue-600 font-semibold'
+					: 'hover:bg-blue-100'
+			}`
+					}}
 				/>
-				{errors.accountID && (
-					<p className='text-red-500'>{errors.accountID.message}</p>
+				{errors.dateRange && (
+					<p className='text-red-500'>{errors.dateRange.message as string}</p>
 				)}
 			</div>
 
-			<div>
-				<label htmlFor='startDate' className='block'>
-					Start Date
-				</label>
-				<input
-					{...register('startDate', { valueAsDate: true })}
-					id='startDate'
-					type='date'
-					className='border p-2 w-full'
-				/>
-				{errors.startDate && (
-					<p className='text-red-500'>{errors.startDate.message}</p>
-				)}
-			</div>
-
-			<div>
-				<label htmlFor='endDate' className='block'>
-					End Date (Optional)
-				</label>
-				<input
-					{...register('endDate', { valueAsDate: true })}
-					id='endDate'
-					type='date'
-					className='border p-2 w-full'
-					placeholder='Optional'
-				/>
-				{errors.endDate && (
-					<p className='text-red-500'>{errors.endDate.message}</p>
-				)}
-			</div>
-
-			<button type='submit' className='bg-accent text-white p-2 rounded-full'>
+			<button
+				type='submit'
+				className='bg-accent text-white p-2 rounded-full hover:bg-rose-500 duration-300'
+			>
 				Submit
 			</button>
 		</form>
