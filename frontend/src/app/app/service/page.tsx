@@ -2,13 +2,10 @@
 
 import { BookingButton } from '@/Components/Services/ServiceCart'
 import { useEffect } from 'react'
-import FlorageBackground from '@/Components/Landing/FlorageBackground'
-
 import SearchBar from '@/Components/Management/SearchBar'
 import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { SearchSVG } from '@/Components/SVGs'
-import ItemCardHeader from '@/Components/Management/ItemCardHeader'
 import ServiceList from '@/Components/app/services/ServiceList'
 
 export default function Page() {
