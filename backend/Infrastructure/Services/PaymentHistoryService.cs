@@ -24,8 +24,8 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
             CreatedAt = DateTime.Now,
             Amount = model.Amount,
             ExpiredAt = null, // Assuming no expiration for the payment history
-            Status = PaymentHistoryStatus.Paid,
-            PaymentMethod = PaymentMethodStatus.Momo
+            Status = "Paid",
+            PaymentMethod = "Momo"
         };
         await paymentHistoryRepository.Add(payment);
     }

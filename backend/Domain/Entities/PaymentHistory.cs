@@ -9,7 +9,7 @@ public class PaymentHistory
     public DateTime CreatedAt { get; set; }
     public decimal Amount { get; set; }
     public DateTime? ExpiredAt { get; set; }
-    public PaymentHistoryStatus Status { get; set; }
-    public PaymentMethodStatus PaymentMethod { get; set; }
+    public string Status { get; set; } = null!;
+    public string PaymentMethod { get; set; } = null!;
     public Purchase Purchase { get; set; } = null!;
 }

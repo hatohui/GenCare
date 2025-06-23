@@ -52,17 +52,17 @@ public class PurchaseService
             //add order detail to corresponding purchase
             purchase.OrderDetails.Add(ordDetail);
         }
-        //create paymentHistory for purchase
-        var paymentHistory = new PaymentHistory
-        {
-            Purchase = purchase,
-            TransactionId = Guid.NewGuid(),
-            Amount = totalPrice,
-            CreatedAt = DateTime.Now,
-            PaymentMethod = PaymentMethodStatus.Bank,
-            Status = PaymentHistoryStatus.Pending
-        };
-        purchase.PaymentHistory = paymentHistory;
+        ////create paymentHistory for purchase
+        //var paymentHistory = new PaymentHistory
+        //{
+        //    Purchase = purchase,
+        //    TransactionId = Guid.NewGuid(),
+        //    Amount = totalPrice,
+        //    CreatedAt = DateTime.Now,
+        //    PaymentMethod = ,
+        //    Status = PaymentHistoryStatus.Pending
+        //};
+        //purchase.PaymentHistory = paymentHistory;
         await purchaseRepository.AddAsync(purchase);
 
         return new BookingServiceResponse

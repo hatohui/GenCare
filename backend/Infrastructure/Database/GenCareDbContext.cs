@@ -67,10 +67,6 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
         modelBuilder
             .HasPostgresExtension("pgcrypto");
 
-        modelBuilder.HasPostgresEnum<AppointmentStatus>("appointment_status");
-        modelBuilder.HasPostgresEnum<PaymentHistoryStatus>("payment_history_status");
-        modelBuilder.HasPostgresEnum<PaymentMethodStatus>("payment_method_status");
-
         modelBuilder.Entity<Account>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("account_pkey");
@@ -175,8 +171,8 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasConstraintName("fk_appointment_staff_id");
 
             entity.Property(e => e.Status)
-                .HasColumnName("status")
-                .HasConversion<string>();
+                .HasMaxLength(10)
+                .HasColumnName("status");
         });
 
         modelBuilder.Entity<BirthControl>(entity =>
@@ -534,11 +530,11 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("expired_at");
             entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
             entity.Property(e => e.Status)
+                .HasMaxLength(10)
                 .HasColumnName("status");
-                //.HasConversion<string>();
             entity.Property(e => e.PaymentMethod)
+                .HasMaxLength(10)
                 .HasColumnName("payment_method");
-                //.HasConversion<string>();
 
             entity.HasOne(d => d.Purchase).WithOne(p => p.PaymentHistory)
                 .HasForeignKey<PaymentHistory>(d => d.PurchaseId)

@@ -4,10 +4,7 @@ namespace Domain.Common.Enums;
 
 public enum PaymentHistoryStatus
 {
-    [PgName("pending")]
-    Pending,
-    [PgName("paid")]
-    Paid,
-    [PgName("expired")]
-    Expired
+    [PgName("pending")] Pending,
+    [PgName("paid")] Paid,
+    [PgName("expired")] Expired
 }

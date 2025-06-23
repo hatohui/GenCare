@@ -12,5 +12,5 @@ public class AllAppointmentViewResponse
     public DateTime ScheduleAt { get; set; }
     public String? JoinUrl { get; set; }
     public bool IsDeleted { get; set; }
-    public AppointmentStatus Status { get; set; }
+    public string Status { get; set; } = null!;
 }

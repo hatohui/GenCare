@@ -239,16 +239,13 @@ var connectionString =
         "Missing connection string for the current environment."
     );
 ;
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-dataSourceBuilder.MapEnum<AppointmentStatus>("appointment_status");
-dataSourceBuilder.MapEnum<PaymentHistoryStatus>("payment_history_status");
-dataSourceBuilder.MapEnum<PaymentMethodStatus>("payment_method_status");
-var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    options.UseNpgsql(dataSource);
+    options.UseNpgsql(connectionString);
 });
+
+
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(opt =>
     {

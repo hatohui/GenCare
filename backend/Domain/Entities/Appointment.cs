@@ -28,7 +28,7 @@ public class Appointment
 
     public bool IsDeleted { get; set; }
 
-    public AppointmentStatus Status { get; set; }
+    public string Status { get; set; } = null!;
 
     public Account Member { get; set; } = null!;
 
