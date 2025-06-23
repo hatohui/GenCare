@@ -3,18 +3,15 @@
 import BirthControlForm from '@/Components/app/BirthControl/BirthControlForm'
 import Calendar from '@/Components/app/BirthControl/Calender'
 import { useAccountStore } from '@/Hooks/useAccount'
-import {
-	useCreateBirthControl,
-	useGetBirthControl,
-} from '@/Services/birthControl-service'
+import { useGetBirthControl } from '@/Services/birthControl-service'
 import React, { useState } from 'react'
 
 const Page = () => {
 	const { data } = useAccountStore()
-	const { data: birthControlData, error } = useGetBirthControl(data?.id || '')
+	const { data: birthControlData } = useGetBirthControl(data?.id || '')
 
 	const [month, setMonth] = useState(new Date().getMonth())
-	const [year, setYear] = useState(new Date().getFullYear())
+	const [year] = useState(new Date().getFullYear())
 
 	console.log(birthControlData)
 

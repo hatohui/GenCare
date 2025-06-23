@@ -29,8 +29,6 @@ export default function Calendar({
 	if (isLoading) return <div>Loading...</div>
 
 	const {
-		startDate,
-		endDate,
 		menstrualStartDate,
 		menstrualEndDate,
 		startUnsafeDate,

@@ -39,7 +39,6 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 		handleSubmit,
 		setValue,
 		watch,
-		control,
 		formState: { errors },
 	} = useForm<BirthControlFormData>({
 		resolver: zodResolver(birthControlSchema),
