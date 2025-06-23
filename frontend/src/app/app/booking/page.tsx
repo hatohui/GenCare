@@ -4,14 +4,22 @@ import BookingList from '@/Components/app/Booking/BookingList'
 import { useGetOrder } from '@/Services/book-service'
 
 const Page = () => {
-	const { data, isLoading } = useGetOrder()
+	const { data, isLoading, error } = useGetOrder()
 
 	if (isLoading) {
-		return <div>Loading...</div>
+		return (
+			<div className='flex justify-center items-center p-8'>
+				<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-accent'></div>
+			</div>
+		)
 	}
 
-	if (!data) {
-		return <div>No data found. start Booking!</div>
+	if (error) {
+		return (
+			<div className='text-red-500 text-center p-8'>
+				Failed to load bookings. Please try again.
+			</div>
+		)
 	}
 
 	return (

@@ -7,9 +7,12 @@ import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { SearchSVG } from '@/Components/SVGs'
 import ServiceList from '@/Components/app/services/ServiceList'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function Page() {
 	const searchParams = useSearchParams()
+	const router = useRouter()
+	const pathname = usePathname()
 
 	useEffect(() => {
 		const sort = searchParams.get('orderByPrice') || ''
@@ -48,7 +51,8 @@ export default function Page() {
 						} else {
 							params.set('orderByPrice', 'true')
 						}
-						window.location.search = params.toString()
+
+						router.push(`${pathname}?${params.toString()}`)
 					}}
 				>
 					Sắp xếp theo giá

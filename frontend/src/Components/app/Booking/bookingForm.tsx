@@ -53,6 +53,10 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 				onSuccess: () => {
 					router.push('/app/booking')
 				},
+				onError: error => {
+					console.error('Booking failed:', error)
+					// Consider showing a toast notification or error message to the user
+				},
 			}
 		)
 	}
@@ -82,7 +86,10 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					<button
 						type='button'
 						onClick={() => remove(index)}
-						className='absolute top-2 right-7 text-red-500 text-sm hover:bg-red-100 rounded-full transition-colors duration-300 p-2 '
+						className={`absolute top-2 right-7 text-red-500 text-sm hover:bg-red-100 rounded-full transition-colors duration-300 p-2 ${
+							fields.length === 1 ? 'opacity-50 cursor-not-allowed' : ''
+						}`}
+						disabled={fields.length === 1}
 					>
 						<TrashCanSVG />
 					</button>
@@ -197,9 +204,14 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 
 			<button
 				type='submit'
-				className='block mx-auto bg-secondary hover:bg-green-700 text-white px-6 py-2 rounded-[30px] text-lg'
+				disabled={updateBooking.isPending}
+				className={`block mx-auto px-6 py-2 rounded text-lg text-white ${
+					updateBooking.isPending
+						? 'bg-gray-400 cursor-not-allowed'
+						: 'bg-green-600 hover:bg-green-700'
+				}`}
 			>
-				Submit Booking
+				{updateBooking.isPending ? 'Submitting...' : 'Submit Booking'}
 			</button>
 		</motion.form>
 	)

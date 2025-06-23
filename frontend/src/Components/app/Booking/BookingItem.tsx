@@ -11,7 +11,10 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 			<div className='flex justify-between'>
 				<h3 className='font-bold text-2xl text-main'>{item.serviceName}</h3>
 				<span className='text-sm text-gray-600'>
-					{item.createdAt.toLocaleString()}
+					Booked on:{' '}
+					{item.createdAt instanceof Date
+						? item.createdAt.toLocaleString()
+						: new Date(item.createdAt).toLocaleString()}
 				</span>
 			</div>
 			<ul className='mt-4 space-y-2'>
@@ -25,11 +28,21 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 				</li>
 				<li className='flex items-center'>
 					<span className='font-bold w-45'>Gender:</span>
-					<span className='ml-2'>{item.gender ? 'Male' : 'Female'}</span>
+					<span className='ml-2'>
+						{item.gender === true
+							? 'Male'
+							: item.gender === false
+							? 'Female'
+							: 'Not specified'}
+					</span>
 				</li>
 				<li className='flex items-center'>
 					<span className='font-bold w-45'>Date of Birth:</span>
-					<span className='ml-2'>{item.dateOfBirth.toLocaleString()}</span>
+					<span className='ml-2'>
+						{item.dateOfBirth instanceof Date
+							? item.dateOfBirth.toLocaleDateString()
+							: new Date(item.dateOfBirth).toLocaleDateString()}
+					</span>
 				</li>
 				<li className='flex items-center'>
 					<span className='font-bold w-45'>Payment Status:</span>

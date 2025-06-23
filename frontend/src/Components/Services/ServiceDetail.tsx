@@ -15,13 +15,7 @@ export default function ServiceDetail({
 
 	const router = useRouter()
 	const handleAddToCart = () => {
-		// Logic to add the service to the cart
-		if (!id || !name || !price) {
-			console.error('Invalid service data')
-			return
-		}
 		if (!accessToken) {
-			console.error('User not logged in')
 			router.push('/login')
 			return
 		}

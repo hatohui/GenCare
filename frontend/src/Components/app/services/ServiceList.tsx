@@ -33,6 +33,11 @@ const ServiceList = () => {
 
 	return (
 		<>
+			{isFetching && !data && (
+				<div className='flex justify-center items-center h-64'>
+					<div>Loading services...</div>
+				</div>
+			)}
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
 				{data?.services.map((item, index) => (
 					<motion.div
