@@ -67,15 +67,12 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     public async Task<CreateBirthControlResponse?> AddBirthControlAsync(CreateBirthControlRequest request)
     {
         if (await birthControlRepository.CheckBirthControlExistsAsync(request.AccountId))
-            throw new ArgumentException("Birth control already exists for this account.");
+            throw new AppException(404,"Birth control already exists for this account.");
         if (request.StartDate > request.EndDate)
         {
-            throw new ArgumentException("Start date cannot be after end date.");
+            throw new AppException(402,"Start date cannot be after end date.");
         }
-        if (request.StartDate < DateTime.Now)
-        {
-            throw new ArgumentException("Start date cannot be in the past.");
-        }
+    
 
         var startDate = ToUnspecified(request.StartDate.Date);
         var endDate = ToUnspecified(request.EndDate?.Date ?? request.StartDate.Date.AddDays(27)); // 1 cycle is 28 days
@@ -134,10 +131,7 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         {
             throw new AppException(403, "Start date cannot be after end date.");
         }
-        if (request.StartDate < DateTime.Now)
-        {
-            throw new AppException(403, "Start date cannot be in the past.");
-        }
+      
         var startDate = ToUnspecified(request.StartDate!.Value.Date);
         var endDate = ToUnspecified(request.EndDate?.Date ?? startDate.AddDays(27));
 

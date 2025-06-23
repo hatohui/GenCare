@@ -6,7 +6,7 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : ITestTrackerService
+public class TestTrackerService(ITestTrackerRepository testTrackerRepository, IPurchaseRepository purchaseRepository) : ITestTrackerService
 {
     /// <summary>
     /// Converts a DateTime to Unspecified kind (removes timezone information).
@@ -25,6 +25,9 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository) : 
     /// <returns>Test result information or throws if not found.</returns>
     public async Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId)
     {
+        // //find purchase by orderDetailId
+        // var purchase = await purchaseRepository.GetById(orderDetailId);
+        // var status = purchase?.Status;
         var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
 
