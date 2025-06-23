@@ -63,6 +63,7 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 ![Loki](https://img.shields.io/badge/Loki-FFEB3B?style=for-the-badge&logo=grafana&logoColor=black)
 ![DockerHub](https://img.shields.io/badge/DockerHub-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![CloudFlare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
 
 #### ⚙️ Dev Tools
 
