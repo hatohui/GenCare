@@ -16,4 +16,5 @@ public class ProfileViewModel
     public string? Degree { get; set; }
     public int? YearOfExperience { get; set; }
     public string? Biography { get; set; }
+    public string? PhoneNumber { get; set; }
 }
