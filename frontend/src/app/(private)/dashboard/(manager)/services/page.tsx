@@ -20,7 +20,17 @@ const ServicesPage = () => {
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
 	const searchParams = useSearchParams()
 	const search = searchParams.get('search')
-	const query = useServiceByPageAdmin(currentPage, itemsPerPage, search)
+	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
+	const [includeDeleted, setIncludeDeleted] = useState<boolean | null>(null)
+
+	const query = useServiceByPageAdmin(
+		currentPage,
+		itemsPerPage,
+		search,
+		includeDeleted,
+		orderByPrice
+	)
+
 	const { isError, isFetching, data, isLoading } = query
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 
@@ -54,7 +64,9 @@ const ServicesPage = () => {
 			)}
 
 			<section
-				className={clsx('flex w-full h-full flex-col gap-4 md:gap-5')}
+				className={clsx(
+					'flex w-full h-full flex-col gap-4 select-none md:gap-5'
+				)}
 				aria-label='Account Management'
 			>
 				<div className='w-full flex gap-3 px-1'>
@@ -66,6 +78,64 @@ const ServicesPage = () => {
 							/>
 						</div>
 					</div>
+				</div>
+
+				<div className='flex flex-wrap gap-3 px-1'>
+					{/* IncludeDeleted filter */}
+					<button
+						onClick={() => setIncludeDeleted(null)}
+						className={clsx(
+							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
+							includeDeleted === null
+								? 'bg-blue-600 text-white'
+								: 'bg-gray-100 text-black'
+						)}
+					>
+						Tất cả
+					</button>
+					<button
+						onClick={() => setIncludeDeleted(false)}
+						className={clsx(
+							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
+							includeDeleted === false
+								? 'bg-blue-600 text-white'
+								: 'bg-gray-100 text-black'
+						)}
+					>
+						Đang hoạt động
+					</button>
+					<button
+						onClick={() => setIncludeDeleted(true)}
+						className={clsx(
+							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
+							includeDeleted === true
+								? 'bg-blue-600 text-white'
+								: 'bg-gray-100 text-black'
+						)}
+					>
+						Ngừng hoạt động
+					</button>
+
+					{/* Price sorting toggle */}
+					<button
+						onClick={() => {
+							if (orderByPrice === null) setOrderByPrice(true)
+							else if (orderByPrice === true) setOrderByPrice(false)
+							else setOrderByPrice(null)
+						}}
+						className={clsx(
+							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
+							orderByPrice !== null
+								? 'bg-blue-600 text-white'
+								: 'bg-gray-100 text-black'
+						)}
+					>
+						{orderByPrice === null
+							? 'Sắp xếp giá (Tắt)'
+							: orderByPrice
+							? 'Giá tăng dần ↑'
+							: 'Giá giảm dần ↓'}
+					</button>
 				</div>
 
 				<ItemCardHeader

@@ -16,6 +16,7 @@ import axios from 'axios'
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
 const serviceApi = {
+	//false = sort giam dan true = sort tang dan
 	getByPage: (page: number, count: number, order: boolean, search: string) =>
 		axios
 			.get<GetServiceByPageResponse>(
@@ -30,16 +31,17 @@ const serviceApi = {
 		header: string,
 		page: number,
 		count: number,
-		orderByPrice: boolean,
-		includeDeleted: boolean,
+		orderByPrice: boolean | null,
+		includeDeleted: boolean | null,
 		search?: string
 	) => {
 		const query = `${SERVICE_URL}/all?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
-		}
-      ${orderByPrice ? `&orderByPrice=${orderByPrice}` : ''}${
-			includeDeleted ? `&includeDeleted=${includeDeleted}` : ''
+		}${orderByPrice !== null ? `&sortByPrice=${orderByPrice}` : ''}${
+			includeDeleted !== null ? `&includeDeleted=${includeDeleted}` : ''
 		}`
+
+		console.log(query)
 
 		return axios
 			.get<GetServiceByPageAdminResponse>(query, {
@@ -126,8 +128,8 @@ export const useServiceByPageAdmin = (
 	page: number,
 	count: number,
 	search: string | null,
-	orderByPrice: boolean,
-	includeDeleted: boolean
+	includeDeleted: boolean | null,
+	orderByPrice: boolean | null
 ) => {
 	const header = useAccessTokenHeader()
 

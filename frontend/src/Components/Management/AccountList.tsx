@@ -18,6 +18,8 @@ const AccountList = () => {
 	const accountDeleteMutate = useDeleteAccount()
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 	const query = useGetAccountsByPage(itemsPerPage, page ? page : 1, search)
+	const [orderByPrice, setOrderByPrice] = useState<boolean>(false)
+	const [] = useState<boolean>(false)
 
 	const { isLoading, isError, isFetching, data } = query
 
