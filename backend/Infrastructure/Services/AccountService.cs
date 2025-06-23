@@ -511,7 +511,8 @@ private void UpdateAccountFields(Account a, UpdateAccountRequest request)
             },
             Degree = staffInfo?.Degree,
             YearOfExperience = staffInfo?.YearOfExperience,
-            Biography = staffInfo?.Biography
+            Biography = staffInfo?.Biography,
+            PhoneNumber = account.Phone
         };
 
         return profile;
