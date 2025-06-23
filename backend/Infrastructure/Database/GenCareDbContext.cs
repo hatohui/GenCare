@@ -65,10 +65,7 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .HasPostgresExtension("pgcrypto")
-            .HasPostgresEnum("appointment_status", ["booked", "cancelled", "completed"])            
-            .HasPostgresEnum("payment_history_status", ["pending", "paid", "expired"])
-            .HasPostgresEnum("payment_method_status", ["card", "momo", "bank"]);
+            .HasPostgresExtension("pgcrypto");
 
         modelBuilder.HasPostgresEnum<AppointmentStatus>("appointment_status");
         modelBuilder.HasPostgresEnum<PaymentHistoryStatus>("payment_history_status");
@@ -537,11 +534,11 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
                 .HasColumnName("expired_at");
             entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
             entity.Property(e => e.Status)
-                .HasColumnName("status")
-                .HasConversion<string>();
+                .HasColumnName("status");
+                //.HasConversion<string>();
             entity.Property(e => e.PaymentMethod)
-                .HasColumnName("payment_method")
-                .HasConversion<string>();
+                .HasColumnName("payment_method");
+                //.HasConversion<string>();
 
             entity.HasOne(d => d.Purchase).WithOne(p => p.PaymentHistory)
                 .HasForeignKey<PaymentHistory>(d => d.PurchaseId)

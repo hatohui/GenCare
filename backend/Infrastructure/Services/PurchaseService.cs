@@ -3,6 +3,7 @@ using Application.DTOs.Purchase.Response;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Enums;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -28,10 +29,15 @@ public class PurchaseService
             Account = account,
             CreatedBy = accountId
         };
-
+        decimal totalPrice = 0;
         //for each order detail in booking service request
         foreach (var o in bookingServiceRequest.OrderDetails!)
         {
+            var ser = await serviceRepository.SearchServiceByIdAsync(o.ServiceId);
+            if (ser == null)
+                throw new AppException(404, $"Service with ID {o.ServiceId} not found");
+            //calculate total price
+            totalPrice += ser.Price;
             //create new order detail
             OrderDetail ordDetail = new()
             {
@@ -46,6 +52,17 @@ public class PurchaseService
             //add order detail to corresponding purchase
             purchase.OrderDetails.Add(ordDetail);
         }
+        //create paymentHistory for purchase
+        var paymentHistory = new PaymentHistory
+        {
+            Purchase = purchase,
+            TransactionId = Guid.NewGuid(),
+            Amount = totalPrice,
+            CreatedAt = DateTime.Now,
+            PaymentMethod = PaymentMethodStatus.Bank,
+            Status = PaymentHistoryStatus.Pending
+        };
+        purchase.PaymentHistory = paymentHistory;
         await purchaseRepository.AddAsync(purchase);
 
         return new BookingServiceResponse

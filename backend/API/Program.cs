@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Data;
+using System.Text;
 using Api.Middlewares;
 using API.ActionFilters;
 using API.Middlewares;
@@ -240,11 +241,12 @@ var connectionString =
 ;
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 dataSourceBuilder.MapEnum<AppointmentStatus>("appointment_status");
+dataSourceBuilder.MapEnum<PaymentHistoryStatus>("payment_history_status");
+dataSourceBuilder.MapEnum<PaymentMethodStatus>("payment_method_status");
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
-    //options.UseNpgsql(connectionString);
     options.UseNpgsql(dataSource);
 });
 builder.Services.AddHangfire(config =>
