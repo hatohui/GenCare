@@ -1,9 +1,9 @@
-﻿using Application.DTOs.Purchase.Request;
+﻿using System.Security.AccessControl;
+using Application.DTOs.Purchase.Request;
 using Application.DTOs.Purchase.Response;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
-using Domain.Common.Enums;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -13,7 +13,8 @@ public class PurchaseService
 (
     IPurchaseRepository purchaseRepository,
     IAccountRepository accountRepository,
-    IServiceRepository serviceRepository
+    IServiceRepository serviceRepository,
+    IPaymentHistoryRepository paymentHistoryRepository
 ) : IPurchaseService
 {
     //add new purchase
@@ -86,6 +87,12 @@ public class PurchaseService
         List<BookedService> rs = new();
         foreach(var purchase in purchases)
         {
+            //check if payment history of this purchase exists
+            var paid = true;
+            var paymentHistory = await paymentHistoryRepository.GetById(purchase.Id);
+            if (paymentHistory == null)
+                paid = false;
+            //get order details of this purchase
             var orderDetails = purchase.OrderDetails;
             if (orderDetails == null || orderDetails.Count == 0)
                 throw new AppException(404, "No order details found for this account");
@@ -103,7 +110,8 @@ public class PurchaseService
                     PhoneNumber = orderDetail.Phone,                    
                     DateOfBirth = orderDetail.DateOfBirth,
                     Gender = orderDetail.Gender,
-                    CreatedAt = purchase.CreatedAt
+                    CreatedAt = purchase.CreatedAt,
+                    Status = paid
                 });
             }
         }

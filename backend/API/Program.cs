@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Text;
+﻿using System.Text;
 using Api.Middlewares;
 using API.ActionFilters;
 using API.Middlewares;
@@ -9,7 +8,6 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Abstractions;
-using Domain.Common.Enums;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -24,7 +22,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);

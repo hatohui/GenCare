@@ -1,5 +1,4 @@
-﻿using Domain.Common.Enums;
-
+﻿
 namespace Application.DTOs.Appointment.Response;
 
 public class AllAppointmentViewResponse

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Application.DTOs.Payment;
 using Application.Repositories;
 using Application.Services;
-using Domain.Common.Enums;
+using Domain.Common.Constants;
 using Domain.Entities;
 
 namespace Infrastructure.Services;
@@ -24,8 +24,8 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
             CreatedAt = DateTime.Now,
             Amount = model.Amount,
             ExpiredAt = null, // Assuming no expiration for the payment history
-            Status = "Paid",
-            PaymentMethod = "Momo"
+            Status = PaymentStatus.Paid,
+            PaymentMethod = PaymentMethod.Momo
         };
         await paymentHistoryRepository.Add(payment);
     }

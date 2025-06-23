@@ -1,5 +1,4 @@
-﻿using Domain.Common.Enums;
-
+﻿
 namespace Domain.Entities;
 
 public class PaymentHistory

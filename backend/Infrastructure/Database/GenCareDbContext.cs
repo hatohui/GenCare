@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions;
-using Domain.Common.Enums;
 using Domain.Entities;
 
 namespace Infrastructure.Database;

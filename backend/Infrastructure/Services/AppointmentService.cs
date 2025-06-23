@@ -2,6 +2,7 @@
 using Application.DTOs.Appointment.Response;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -23,7 +24,7 @@ public class AppointmentService(IAccountRepository accountRepository,
             Staff = staff ?? throw new AppException(404, "staff id is invalid"),
             ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
             CreatedBy = Guid.Parse(accessId),
-            Status = "Booked"
+            Status = AppointmentStatus.Booked,
         };
         //save appointment
         await appointmentRepository.Add(appointment);
