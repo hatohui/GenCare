@@ -65,7 +65,7 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.member,
 	},
 	{
-		label: 'Services',
+		label: 'User Services',
 		to: '/app/service',
 		svg: <ServiceSVG />,
 		level: PermissionLevel.member,

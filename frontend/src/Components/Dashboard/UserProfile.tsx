@@ -22,24 +22,28 @@ const UserProfile = () => {
 		>
 			<motion.div
 				variants={variants}
-				initial={{ opacity: 0, x: -10 }}
+				initial='hidden'
 				animate={showPopUp ? 'visible' : 'hidden'}
 				transition={{ duration: 0.3, ease: 'easeInOut' }}
-				className='absolute top-0 left-0 translate-x-1/3 w-full h-full '
+				className='absolute top-0 left-0 translate-x-1/3 w-full h-full z-10 '
+				style={{ display: showPopUp ? '' : 'none' }}
 			>
 				<Popup />
 			</motion.div>
 
-			<CldImage
-				className='rounded-full bg-amber-50 object-cover'
-				src={
-					data?.avatarUrl ||
-					'https://res.cloudinary.com/dz1qj3x8h/image/upload/v1735681234/avatar-placeholder.png'
-				}
-				alt='avatar'
-				width={30}
-				height={30}
-			/>
+			{data?.avatarUrl ? (
+				<CldImage
+					className='rounded-full bg-amber-50 object-cover'
+					src={data?.avatarUrl}
+					alt='avatar'
+					width={30}
+					height={30}
+				/>
+			) : (
+				<div className='w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center text-sm font-bold text-gray-900'>
+					{data?.firstName?.charAt(0)}
+				</div>
+			)}
 
 			<div className='flex flex-col items-start'>
 				<div className='text-sm text-general'>{data?.firstName}</div>

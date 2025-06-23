@@ -9,7 +9,7 @@ const birthControlSchema = z.object({
 	startDate: z.date().refine(val => !isNaN(val.getTime()), {
 		message: 'Start Date is required and should be a valid date',
 	}),
-	endDate: z.date().optional(),
+	endDate: z.date().nullable().optional(), // Make endDate nullable and optional
 })
 
 type BirthControlFormData = z.infer<typeof birthControlSchema>
@@ -27,7 +27,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 		resolver: zodResolver(birthControlSchema),
 		defaultValues: {
 			accountID,
-			endDate: undefined, // Set endDate to undefined by default
+			endDate: null, // Set endDate to null by default
 		},
 	})
 

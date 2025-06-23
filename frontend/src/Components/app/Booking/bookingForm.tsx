@@ -12,10 +12,12 @@ import {
 } from '@/Interfaces/Payment/schema/BookService'
 import { useBookServices } from '@/Services/book-service'
 import { TrashCanSVG } from '@/Components/SVGs'
+import { useRouter } from 'next/navigation'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
 	const updateBooking = useBookServices()
+	const router = useRouter()
 
 	const {
 		register,
@@ -44,8 +46,15 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	})
 
 	const onSubmit = (data: FormSchema) => {
-		console.log('Submitted:', data.people)
-		updateBooking.mutate(data.people)
+		console.log('Submitted:', { OrderDetails: data.people })
+		updateBooking.mutate(
+			{ OrderDetails: data.people },
+			{
+				onSuccess: () => {
+					router.push('/app/booking')
+				},
+			}
+		)
 	}
 
 	if (isLoading || !data) {
