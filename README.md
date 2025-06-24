@@ -37,7 +37,6 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-![Upstash](https://img.shields.io/badge/Upstash-1ABC9C?style=for-the-badge&logo=upstash&logoColor=white)
 
 #### ☁️ Infrastructure & Cloud Services
 
@@ -48,6 +47,8 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 ![Gemini AI API](https://img.shields.io/badge/Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![Momo Gateway](https://img.shields.io/badge/MoMo_Payment-DD0A73?style=for-the-badge)
 ![VNPay](https://img.shields.io/badge/VNPay-0A4DAD?style=for-the-badge)
+![Upstash](https://img.shields.io/badge/Upstash-1ABC9C?style=for-the-badge&logo=upstash&logoColor=white)
+![CloudFlare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
 
 #### 🚀 DevOps / Monitoring / CI-CD
 
@@ -63,6 +64,7 @@ GenCare is a comprehensive web-based management system designed for healthcare f
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 ![Loki](https://img.shields.io/badge/Loki-FFEB3B?style=for-the-badge&logo=grafana&logoColor=black)
 ![DockerHub](https://img.shields.io/badge/DockerHub-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
 
 #### ⚙️ Dev Tools
 

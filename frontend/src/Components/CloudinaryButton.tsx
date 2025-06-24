@@ -17,13 +17,18 @@ export const CloudinaryButton = ({
 	uploadPreset = 'gencare',
 	onUploaded,
 }: {
-	className: string
+	className?: string
 	text: string
 	uploadPreset?: string
-	onUploaded?: (url: string, publicId: string) => void
+	onUploaded: (url: string, publicId: string) => void
 }) => (
 	<CldUploadWidget
-		options={{ sources: ['local', 'google_drive'] }}
+		options={{
+			sources: ['local', 'google_drive'],
+			multiple: false,
+			maxFiles: 1,
+			clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif'],
+		}}
 		signatureEndpoint='/api/sign-image'
 		uploadPreset={uploadPreset}
 		onSuccess={(result: CloudinaryUploadWidgetResults) => {
@@ -34,7 +39,7 @@ export const CloudinaryButton = ({
 
 			console.log('CloudinaryButton Uploaded successfully:', info.secure_url)
 
-			onUploaded?.(info.secure_url, info.public_id)
+			onUploaded(info.secure_url, info.public_id)
 		}}
 	>
 		{({ open }) => (

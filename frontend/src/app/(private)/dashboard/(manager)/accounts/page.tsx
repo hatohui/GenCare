@@ -1,3 +1,4 @@
+'use client'
 import AccountList from '@/Components/Management/AccountList'
 import AddNewButton from '@/Components/Management/AddNewButton'
 import SearchBar from '@/Components/Management/SearchBar'
@@ -6,6 +7,8 @@ import React from 'react'
 import AccountListHeader from '@/Components/Management/ItemCardHeader'
 
 const AccountPage = () => {
+	const handleAddNew = () => {}
+
 	return (
 		<section
 			className={clsx('flex h-full flex-col gap-4 md:gap-5')}
@@ -15,7 +18,7 @@ const AccountPage = () => {
 				<div className='w-full'>
 					<div className='flex items-center px-5 gap-3 grow shadow-sm bg-general py-1 pt-2 round overflow-scroll'>
 						<SearchBar className='mx-2' waitTime={1000} />
-						<AddNewButton />
+						<AddNewButton handleAddNew={handleAddNew} />
 					</div>
 				</div>
 			</div>

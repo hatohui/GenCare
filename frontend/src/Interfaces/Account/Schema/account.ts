@@ -84,7 +84,7 @@ export type DeleteAccountResponse = Required<
  * @return {StaffAccount} updated account
  */
 export type PutAccountRequest = {
-	account: Partial<Omit<Account, 'deletedAt' | 'isDeleted' | 'deletedBy'>>
+	account: Partial<Omit<Account, 'deletedAt' | 'deletedBy'>>
 	staffInfo?: Partial<Omit<StaffInfo, 'accountId' | 'departmentId'>>
 	department?: string
 }

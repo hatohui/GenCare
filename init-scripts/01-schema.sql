@@ -118,20 +118,13 @@ CREATE TABLE IF NOT EXISTS "message" (
     CONSTRAINT "fk_message_conversation" FOREIGN KEY ("conversation_id") REFERENCES "conversation"("id") ON DELETE CASCADE
 );
 
--- Tạo ENUM: appointment_status
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'appointment_status') THEN
-        CREATE TYPE appointment_status AS ENUM ('booked', 'cancelled', 'completed');
-    END IF;
-END$$;
 
 CREATE TABLE IF NOT EXISTS "appointment" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "member_id" UUID NOT NULL,
     "staff_id" UUID NOT NULL,
     "schedule_at" TIMESTAMP NOT NULL,
-    "status" appointment_status NOT NULL DEFAULT 'booked',
+    "status" CHAR(10) NOT NULL DEFAULT 'booked',
     "join_url" TEXT,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "created_by" UUID,
@@ -159,29 +152,15 @@ CREATE TABLE IF NOT EXISTS "purchase" (
 );
 
 ----------------------------------------------------------------------
--- Tạo ENUM: payment_history_status
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_history_status') THEN
-        CREATE TYPE payment_history_status AS ENUM ('pending', 'paid', 'expired');
-    END IF;
-END$$;
 
--- Tạo ENUM: payment_method_status
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_method_status') THEN
-        CREATE TYPE payment_method_status AS ENUM ('card', 'momo', 'bank');
-    END IF;
-END$$;
 CREATE TABLE IF NOT EXISTS "payment_history" (
     "purchase_id" UUID PRIMARY KEY,
     "transaction_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "amount" DECIMAL(18,2) NOT NULL,
-    "status" payment_history_status NOT NULL DEFAULT 'pending',
+    "status" CHAR(10) NOT NULL DEFAULT 'pending',
     "expired_at" TIMESTAMP,
-    "payment_method" payment_method_status NOT NULL DEFAULT 'bank',
+    "payment_method" CHAR(10) NOT NULL DEFAULT 'bank',
     CONSTRAINT "fk_payment_history_purchase" FOREIGN KEY ("purchase_id") REFERENCES "purchase"("id") ON DELETE RESTRICT
 );
 

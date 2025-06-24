@@ -17,7 +17,7 @@ const ItemCardHeader = ({
 }: ItemCardHeaderProps) => {
 	return (
 		<div
-			className='mx-2 bg-gradient-to-r from-white to-general overflow-hidden text-slate font-semibold px-4 py-2 flex justify-between drop-shadow-sm transition-colors duration-300 items-center relative round'
+			className='mx-2 bg-gradient-to-r from-white h-fit to-general overflow-hidden text-slate font-semibold px-4 py-2 flex justify-between drop-shadow-sm transition-colors duration-300 items-center relative round'
 			aria-label={`Table's Category`}
 		>
 			<div className='absolute inset-0 opacity-30 asfaltBackground pointer-events-none' />

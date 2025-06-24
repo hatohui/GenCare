@@ -42,7 +42,7 @@ const SearchBar = ({
 
 	return (
 		<FloatingLabelInput
-			label='search'
+			label='Tìm Kiếm'
 			type='text'
 			id='search'
 			value={searchParam ?? ''}

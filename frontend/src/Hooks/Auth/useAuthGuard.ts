@@ -20,6 +20,8 @@ export function useAuthGuard(
 	const { data: user, isLoading: isUserLoading } = useGetMe()
 
 	useEffect(() => {
+		if (!isDehydrated) return
+
 		const validation = isTokenValid(token)
 
 		if (!validation.valid) {
