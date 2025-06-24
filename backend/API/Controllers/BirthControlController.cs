@@ -47,9 +47,6 @@ public class BirthControlController(IBirthControlService birthControlService) : 
     {
         var updated = await birthControlService.UpdateBirthControlAsync(request);
 
-        if (updated.Success)
-            return NoContent();
-        else
-            return BadRequest();
+        return Ok(updated);
     }
 }
