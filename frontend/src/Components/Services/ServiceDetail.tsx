@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { ServiceCardProps } from './ServiceCard'
 import { useRouter } from 'next/navigation'
+import useToken from '@/Hooks/useToken'
 
 export default function ServiceDetail({
 	id,
@@ -9,9 +10,18 @@ export default function ServiceDetail({
 	description,
 	imageUrl = '',
 }: ServiceCardProps) {
+	const { accessToken } = useToken()
 	console.log(id)
 
 	const router = useRouter()
+	const handleAddToCart = () => {
+		if (!accessToken) {
+			router.push('/login')
+			return
+		}
+
+		router.push(`/app/booking/${id}`)
+	}
 
 	return (
 		<main className='bg-[#F7F7F7] text-gray-900 px-6 py-12'>
@@ -27,9 +37,7 @@ export default function ServiceDetail({
 					</p>
 					<button
 						className='bg-gradient-to-r from-accent to-pink-600/50 text-white px-6 py-3 rounded-full text-lg font-medium transition duration-300 hover:from-pink-600 hover:to-rose-500'
-						onClick={() => {
-							router.push(`/booking/${id}`)
-						}}
+						onClick={handleAddToCart}
 					>
 						Đặt ngay
 					</button>

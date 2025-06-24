@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities;
+﻿
+
+namespace Domain.Entities;
 
 public class Appointment
 {
@@ -25,6 +27,8 @@ public class Appointment
     public Guid? DeletedBy { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public string Status { get; set; } = null!;
 
     public Account Member { get; set; } = null!;
 

@@ -154,7 +154,7 @@ public class AccountService
         var user = await accountRepo
                        .GetAccountByEmailPasswordAsync(req.Email, req.Password)
                    ?? throw new InvalidCredentialsException();
-        if(user.IsDeleted) throw  new AppException(401, "Account is deleted");
+        if (user.IsDeleted) throw new AppException(401, "Account is deleted");
         var (accessToken, _) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, _) = JwtHelper.GenerateRefreshToken(user.Id);
 
@@ -453,26 +453,27 @@ public class AccountService
         }
     }
 
-private void UpdateAccountFields(Account a, UpdateAccountRequest request)
-{
-    a.FirstName = request.Account.FirstName ?? a.FirstName;
-    a.LastName = request.Account.LastName ?? a.LastName;
-    a.Phone = request.Account.PhoneNumber ?? a.Phone;
-    a.Gender = request.Account.Gender ?? a.Gender;
-    a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
-    a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
-
-    if (request.StaffInfo != null && a.StaffInfo != null)
+    private void UpdateAccountFields(Account a, UpdateAccountRequest request)
     {
-        if (!string.IsNullOrEmpty(request.StaffInfo.DepartmentId))
+        a.FirstName = request.Account.FirstName ?? a.FirstName;
+        a.LastName = request.Account.LastName ?? a.LastName;
+        a.Phone = request.Account.PhoneNumber ?? a.Phone;
+        a.Gender = request.Account.Gender ?? a.Gender;
+        a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
+        a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
+        a.IsDeleted = request.Account.IsDeleted ?? a.IsDeleted;
+
+        if (request.StaffInfo != null && a.StaffInfo != null)
         {
-            a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+            if (!string.IsNullOrEmpty(request.StaffInfo.DepartmentId))
+            {
+                a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+            }
+            a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
+            a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
+            a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
         }
-        a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
-        a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
-        a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
     }
-}
 
     public async Task<ProfileViewModel> GetProfileAsync(Guid accountId)
     {
@@ -511,7 +512,8 @@ private void UpdateAccountFields(Account a, UpdateAccountRequest request)
             },
             Degree = staffInfo?.Degree,
             YearOfExperience = staffInfo?.YearOfExperience,
-            Biography = staffInfo?.Biography
+            Biography = staffInfo?.Biography,
+            PhoneNumber = account.Phone
         };
 
         return profile;
