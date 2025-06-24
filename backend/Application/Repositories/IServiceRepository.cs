@@ -4,7 +4,7 @@ namespace Application.Repositories;
 
 public interface IServiceRepository
 {
-    Task<(List<Service>, int totalCount)> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice);
+    Task<(List<Service> services, int totalCount)> SearchServiceAsync(int page, int count, string? name, bool? orderByPrice, bool? sortByAlphabetical);
 
     Task<Service?> SearchServiceByIdAsync(Guid idService);
 
@@ -20,7 +20,7 @@ public interface IServiceRepository
 
     Task<bool> DeleteServiceByIdAsync(Guid idService);
 
-    Task<(List<Service>? services, int totalCount)> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt);
+    Task<(List<Service>? services, int totalCount)> SearchServiceIncludeDeletedAsync(int page, int count, string? name, bool? orderByPrice ,bool? includeDeleted ,bool? sortByUpdateAt, bool? sortByAlphabetical);
 
     Task<int> CountServicesIncludeDeletedAsync();
 
