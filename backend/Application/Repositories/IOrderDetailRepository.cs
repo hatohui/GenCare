@@ -13,4 +13,7 @@ public interface IOrderDetailRepository
     /// <param name="orderDetail">The order detail entity to add.</param>
     /// <returns>A task that represents the asynchronous add operation.</returns>
     Task AddAsync(OrderDetail orderDetail);
+    
+    
+    Task<OrderDetail?> GetByIdAsync(Guid orderDetailId);
 }

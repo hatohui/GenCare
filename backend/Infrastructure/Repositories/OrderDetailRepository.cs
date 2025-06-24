@@ -11,4 +11,9 @@ public class OrderDetailRepository(IApplicationDbContext dbContext) : IOrderDeta
         await dbContext.OrderDetails.AddAsync(orderDetail);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<OrderDetail?> GetByIdAsync(Guid orderDetailId) 
+        => await dbContext.OrderDetails.Include(od => od.Purchase).FirstOrDefaultAsync(od => od.Id == orderDetailId);
+        
+    
 }

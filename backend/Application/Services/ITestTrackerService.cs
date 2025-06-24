@@ -5,7 +5,7 @@ namespace Application.Services;
 
 public interface ITestTrackerService
 {
-    Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId);
+    Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId,string accessToken);
 
     Task<UpdateTestResultResponse> UpdateTestResultAsync(UpdateTestResultRequest request);
 
