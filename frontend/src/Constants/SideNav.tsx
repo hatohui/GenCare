@@ -1,6 +1,8 @@
 import {
 	AccountSVG,
+	BookingListVSG,
 	CustomerSVG,
+	HeartSVG,
 	HomeSVG,
 	MoneySVG,
 	ServiceSVG,
@@ -55,5 +57,23 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		to: '/app/schedule',
 		svg: <ServiceSVG />,
 		level: PermissionLevel.consultant,
+	},
+	{
+		label: 'Booking',
+		to: '/app/booking',
+		svg: <BookingListVSG />,
+		level: PermissionLevel.member,
+	},
+	{
+		label: 'User Services',
+		to: '/app/service',
+		svg: <ServiceSVG />,
+		level: PermissionLevel.member,
+	},
+	{
+		label: 'Tracking',
+		to: '/app/birthcontrol',
+		svg: <HeartSVG />,
+		level: PermissionLevel.member,
 	},
 ]
