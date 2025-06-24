@@ -13,4 +13,6 @@ public interface IPaymentHistoryRepository
     Task<PaymentHistory?> GetById(Guid id);
     Task Update(PaymentHistory paymentHistory);
     Task Delete(PaymentHistory paymentHistory);
+    
+    Task<PaymentHistory?> ConfirmPayment(PaymentHistory paymentHistory);
 }
