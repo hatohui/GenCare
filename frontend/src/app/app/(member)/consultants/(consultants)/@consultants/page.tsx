@@ -1,7 +1,23 @@
 'use client'
+import Button from '@/Components/Button'
+import Pagination from '@/Components/Management/Pagination'
+import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
+import { usePagination } from '@/Hooks/List/usePagination'
+import { useGetAccountsByPage } from '@/Services/account-service'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const ConsultantList = () => {
+	const { page, setPage } = usePagination(undefined, ITEMS_PER_PAGE_COUNT)
+	const router = useRouter()
+
+	const consultantQuery = useGetAccountsByPage(
+		ITEMS_PER_PAGE_COUNT,
+		page,
+		null,
+		'consultant'
+	)
+
 	const staffs = [
 		{
 			accountId: '1',
@@ -33,7 +49,7 @@ const ConsultantList = () => {
 			{staffs.map(staff => (
 				<div
 					key={staff.accountId}
-					className='bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300'
+					className='bg-white border transition relative border-blue-100 rounded-2xl shadow-sm hover:shadow-md duration-300'
 				>
 					<div className='p-6 h-full w-full'>
 						<div className='flex flex-col items-center text-center'>
@@ -59,10 +75,13 @@ const ConsultantList = () => {
 							<span className='text-sm text-yellow-500 font-medium'>
 								⭐ {staff.rating.toFixed(1)} / 5
 							</span>
-							<button className='bg-accent text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition'>
-								<span className='hidden xl:block'>Book Consultation</span>
-								<span className='block xl:hidden'>Book</span>
-							</button>
+							<Button
+								label='Book Consultant'
+								labelMobile='Book'
+								onClick={() =>
+									router.push(`/app/consultants/${staff.accountId}`)
+								}
+							/>
 						</div>
 					</div>
 				</div>
@@ -77,9 +96,17 @@ const ConsultantList = () => {
 					New Consultant Coming Soon
 				</h2>
 				<p className='text-sm text-gray-500 mt-2'>
-					We’re expanding our team of healthcare professionals. Stay tuned!
+					We’re expanding our team of healthcare professionals. Stay tuned for
+					our new consultant!
 				</p>
 			</div>
+
+			<Pagination
+				currentPage={page}
+				isFetching={false}
+				setCurrentPage={setPage}
+				totalPages={1}
+			/>
 		</div>
 	)
 }

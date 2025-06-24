@@ -48,6 +48,7 @@ const DateGrid = ({
 	const isStart = (date: Date) => rangeStart && isSameDay(date, rangeStart)
 	const isEnd = (date: Date) => rangeEnd && isSameDay(date, rangeEnd)
 	const isStartOrEnd = (date: Date) => isStart(date) || isEnd(date)
+	const isSingleDay = rangeStart && rangeEnd && isSameDay(rangeStart, rangeEnd)
 
 	return (
 		<section id='calendar-cell'>
@@ -78,14 +79,17 @@ const DateGrid = ({
 									'start-cell',
 								isInRangeThisMonth(date) &&
 									isLastDayOfMonth(date) &&
+									!isSingleDay &&
 									'end-cell',
 								isStart(date) &&
 									rangeEnd &&
 									isSameMonth(date, currentDate) &&
+									!isSingleDay &&
 									'start-cell',
 								isEnd(date) &&
 									rangeStart &&
 									isSameMonth(date, currentDate) &&
+									!isSingleDay &&
 									'end-cell',
 								isInRangeThisMonth(date) &&
 									!isStartOrEnd(date) &&

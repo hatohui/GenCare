@@ -9,6 +9,7 @@ import {
 import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
+import { Role } from '@/Utils/Permissions/isAllowedRole'
 
 const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 
@@ -36,11 +37,12 @@ const accountApi = {
 		header: string,
 		count: number,
 		page: number,
-		search: string | null
+		search: string | null,
+		role: Role | null
 	) => {
 		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
-		}`
+		}${role ? `&role=${role}` : ''}`
 
 		return axiosInstance
 			.get<GetAccountByPageResponse>(queryUrl, {
@@ -95,13 +97,14 @@ export const useGetMe = () => {
 export const useGetAccountsByPage = (
 	count: number,
 	page: number,
-	search: string | null
+	search: string | null,
+	role: Role | null
 ) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
 		queryKey: ['accounts', page, count, search],
-		queryFn: () => accountApi.getByPage(header, count, page, search),
+		queryFn: () => accountApi.getByPage(header, count, page, search, role),
 		placeholderData: keepPreviousData,
 		enabled: !!header,
 	})
