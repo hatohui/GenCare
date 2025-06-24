@@ -6,7 +6,7 @@ import clsx from 'clsx'
 export type EditableFieldProps<T extends Record<string, any>> = {
 	name: keyof T
 	type?: 'text' | 'textarea' | 'number'
-	value: string
+	value: string | number
 	onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 	editingField: keyof T | null
 	handleFieldSave: (field: keyof T) => Promise<void>
@@ -44,7 +44,7 @@ const EditableField = <T extends Record<string, any>>({
 				{type === 'textarea' ? (
 					<textarea
 						name={String(name)}
-						value={value}
+						value={value as string}
 						onChange={onChange}
 						readOnly={!isEditing}
 						className={clsx(
@@ -57,7 +57,7 @@ const EditableField = <T extends Record<string, any>>({
 					<input
 						type={type}
 						name={String(name)}
-						value={value}
+						value={String(value)} // ✅ ensures value is string
 						onChange={onChange}
 						readOnly={!isEditing}
 						className={clsx(baseClass, 'bg-gray-100')}

@@ -59,7 +59,8 @@ export default function Login() {
 
 					if (err.response?.status) {
 						const validationErrors = err.response.data
-						console.error('Validation errors:', validationErrors)
+						console.log(validationErrors)
+
 						setIsLoggingIn(false)
 						setFormError('login or password is incorrect')
 					}
@@ -71,8 +72,8 @@ export default function Login() {
 				{
 					onSuccess: data => loginSuccess(data),
 					onError: error => {
-						console.error('OAuth error:', error)
 						setIsLoggingIn(false)
+						console.log(error)
 					},
 				}
 			)

@@ -5,6 +5,7 @@ import Popup from './Popup'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { CldImage } from 'next-cloudinary'
 import { motion } from 'motion/react'
+import Image from 'next/image'
 
 const UserProfile = () => {
 	const [showPopUp, setShowPopUp] = useState(false)
@@ -30,7 +31,6 @@ const UserProfile = () => {
 			>
 				<Popup />
 			</motion.div>
-
 			{data?.avatarUrl ? (
 				<CldImage
 					className='rounded-full bg-amber-50 object-cover'
@@ -40,16 +40,17 @@ const UserProfile = () => {
 					height={30}
 				/>
 			) : (
-				<div className='w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center text-sm font-bold text-gray-900'>
-					{data?.firstName?.charAt(0)}
-				</div>
+				<Image
+					src='/images/default_avatar.png'
+					alt='avatar'
+					width={30}
+					height={30}
+				/>
 			)}
-
 			<div className='flex flex-col items-start'>
 				<div className='text-sm text-general'>{data?.firstName}</div>
 				<div className='text-xs text-slate-300'>{data?.email}</div>
 			</div>
-
 			<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
 		</div>
 	)

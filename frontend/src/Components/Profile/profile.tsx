@@ -7,14 +7,12 @@ import { useAccountStore } from '@/Hooks/useAccount'
 
 const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const updateAccount = useUpdateAccount(data?.id || '')
+	const updateAccount = useUpdateAccount()
 	const { data: account, setAccount } = useAccountStore()
 
 	const onSubmit = (formData: any) => {
-		// Handle form submission logic here
-		console.log('Form submitted:', formData)
 		updateAccount.mutate(
-			{ account: formData, staffInfo: formData },
+			{ id: data?.id ?? '', data: { account: formData, staffInfo: formData } },
 			{
 				onSuccess: () => {
 					setAccount({ ...account, ...formData })

@@ -17,10 +17,10 @@ export const CloudinaryButton = ({
 	uploadPreset = 'gencare',
 	onUploaded,
 }: {
-	className: string
+	className?: string
 	text: string
 	uploadPreset?: string
-	onUploaded?: (url: string, publicId: string) => void
+	onUploaded: (url: string, publicId: string) => void
 }) => (
 	<CldUploadWidget
 		options={{
@@ -39,7 +39,7 @@ export const CloudinaryButton = ({
 
 			console.log('CloudinaryButton Uploaded successfully:', info.secure_url)
 
-			onUploaded?.(info.secure_url, info.public_id)
+			onUploaded(info.secure_url, info.public_id)
 		}}
 	>
 		{({ open }) => (
