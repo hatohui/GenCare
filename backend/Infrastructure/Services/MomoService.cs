@@ -69,21 +69,6 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             signature = signature!
         };
 
-        //var requestData = new MomoPaymentRequest
-        //{
-        //    PartnerCode = momoConfig.Value.PartnerCode,
-        //    RequestId = requestId,
-        //    Amount = Convert.ToInt64(amount), //lose decimal places
-        //    OrderId = purchaseId,
-        //    OrderInfo = orderInfo,
-        //    RedirectUrl = returnUrl,
-        //    IpnUrl = notifyUrl,
-        //    RequestType = momoConfig.Value.RequestType,
-        //    ExtraData = extraData,
-        //    Lang = "vi",
-        //    Signature = signature
-        //};
-
         var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
 
 
