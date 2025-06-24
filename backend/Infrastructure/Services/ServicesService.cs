@@ -23,7 +23,8 @@ public class ServicesService(
             request.Page,
             request.Count,
             request.Search,
-            request.SortByPrice
+            request.SortByPrice,
+            request.SortByAlphabetical
           
         );
         
@@ -53,7 +54,7 @@ public class ServicesService(
             throw new AppException(400, "Page and Count must be greater than zero.");
 
         var (services,totalCount) = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count,
-            request.Search, request.SortByPrice, request.IncludeDeleted, request.SortByUpdatedAt);
+            request.Search, request.SortByPrice, request.IncludeDeleted, request.SortByUpdatedAt, request.SortByAlphabetical);
         var response = new ViewServiceByPageResponse
         {
             TotalCount = totalCount,
