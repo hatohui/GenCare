@@ -34,7 +34,7 @@ export const CloudinaryButton = ({
 
 			console.log('CloudinaryButton Uploaded successfully:', info.secure_url)
 
-			onUploaded?.(info.secure_url, info.public_id)
+			onUploaded(info.secure_url, info.public_id)
 		}}
 	>
 		{({ open }) => (

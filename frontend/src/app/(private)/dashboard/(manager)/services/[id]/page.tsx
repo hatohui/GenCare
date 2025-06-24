@@ -60,13 +60,13 @@ const ServiceDetailPage = () => {
 		<div className='flex justify-center relative h-full w-full bg-general shadow-2xl border-2 border-gray-500 rounded'>
 			<ReturnButton />
 
-			<div className='flex items-center h-full flex-col w-full gap-4'>
+			<form className='flex items-center h-full flex-col w-full gap-4'>
 				<div className='flex justify-between border-b-2' />
 
 				<div className='text-4xl font-semibold'>Service Details</div>
 				<div>
 					<div className='table-row'>
-						<p className='table-label'>Name:</p>
+						<label className='table-label'>Name:</label>
 						<div className='table-data'>
 							<EditableField<Service>
 								name='name'
@@ -115,7 +115,7 @@ const ServiceDetailPage = () => {
 						</div>
 					</div>
 				</div>
-			</div>
+			</form>
 		</div>
 	)
 }

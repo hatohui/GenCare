@@ -36,13 +36,19 @@ const serviceApi = {
 		sortByAlphabetical: boolean,
 		search?: string
 	) => {
-		const query = `${SERVICE_URL}/all?page=${page}&count=${count}${
-			search ? `&search=${search}` : ''
-		}${orderByPrice !== null ? `&sortByPrice=${orderByPrice}` : ''}${
-			includeDeleted !== null ? `&includeDeleted=${includeDeleted}` : ''
-		}${sortByAlphabetical ? '&sortByAlphabetical=true' : ''}`
+		const params = new URLSearchParams({
+			page: page.toString(),
+			count: count.toString(),
+		})
 
-		console.log(query)
+		if (search) params.append('search', search)
+		if (orderByPrice !== null)
+			params.append('sortByPrice', orderByPrice.toString())
+		if (includeDeleted !== null)
+			params.append('includeDeleted', includeDeleted.toString())
+		if (sortByAlphabetical) params.append('sortByAlphabetical', 'true')
+
+		const query = `${SERVICE_URL}/all?${params.toString()}`
 
 		return axios
 			.get<GetServiceByPageAdminResponse>(query, {

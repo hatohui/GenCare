@@ -44,7 +44,7 @@ const ServicesPage = () => {
 		: 5
 
 	const handleDelete = (id: string) => {
-		if (window.confirm('Do you want to delete this?'))
+		if (window.confirm('Bạn có muốn xóa mục này không?'))
 			deleteMutation.mutate(id, {
 				onSuccess: () => {
 					query.refetch()
@@ -54,7 +54,7 @@ const ServicesPage = () => {
 	}
 
 	const handleRestore = (id: string, data: ServiceDTO) => {
-		if (window.confirm('Do you want to restore this?'))
+		if (window.confirm('Bạn có muốn khôi phục mục này không?'))
 			updateMutation.mutate(
 				{ id, data: { ...data, isDeleted: false } },
 				{
