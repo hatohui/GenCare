@@ -27,7 +27,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository, IP
     {
         // //find purchase by orderDetailId
         // var purchase = await purchaseRepository.GetById(orderDetailId);
-        // var status = purchase?.Status;
+        // var paymentHistory = await paymentHistoryRepository.GetById(orderDetailId);
         var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
 
