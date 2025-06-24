@@ -16,4 +16,9 @@ public interface IOrderDetailRepository
     
     
     Task<OrderDetail?> GetByIdAsync(Guid orderDetailId);
+    
+    Task<List<OrderDetail>> GetByPurchaseIdAsync(Guid purchaseId);
+    
+    Task<List<Guid>> GetDistinctServiceIdsByPurchaseIdAsync(Guid purchaseId);
+
 }

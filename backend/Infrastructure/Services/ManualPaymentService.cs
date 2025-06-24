@@ -2,6 +2,7 @@
 using Application.DTOs.Payment.ManualPayment.Response;
 using Application.Repositories;
 using Domain.Common.Constants;
+using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
@@ -12,33 +13,56 @@ public class ManualPaymentService(
     IServiceRepository serviceRepository,
     IPaymentHistoryRepository paymentHistoryRepository) : IManualPaymentService
 {
+    private static DateTime ToUnspecified(DateTime dt)
+    {
+        return DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
+    }
+
     public async Task<ConfirmPaymentByStaffResponse> ConfirmAsync(ConfirmPaymentByStaffRequest request)
     {
         var purchase = await purchaseRepository.GetById(request.PurchaseId) ??
                        throw new InvalidOperationException("Purchase not found.");
         var existingPayment = await paymentHistoryRepository.GetById(request.PurchaseId);
-        
-        // Check if payment already paid
-        
-        if(existingPayment is not null && existingPayment.Status == PaymentStatus.Paid)
-            throw new AppException(400,"Payment already paid.");
-        
-        //get order detail by purchase id
-        var orderDetails = await orderDetailRepository.GetByIdAsync(request.PurchaseId);
-        if(orderDetails is null)
-            throw new AppException(404, "Order detail not found.");
-        
-        //get service by order detail
-        return ConfirmPaymentByStaffResponse
-        {
-            // PurchaseId = purchase.Id,
-            // TransactionId = Guid.NewGuid(),
-            // Amount = orderDetails.Price,
-            // PaymentMethod = request.PaymentMethod,
-            // Status = PaymentStatus.Paid,
-            // CreatedAt = DateTime.UtcNow,
-            // ExpiredAt = null // Manual payment does not expire
-        };
 
+        // Check if payment already paid
+
+        if (existingPayment is not null && existingPayment.Status == PaymentStatus.Paid)
+            throw new AppException(400, "Payment already paid.");
+
+        //get order detail by purchase id
+        var orderDetails = await orderDetailRepository.GetByPurchaseIdAsync(request.PurchaseId);
+        if (orderDetails is null)
+            throw new AppException(404, "Order detail not found.");
+
+        //Get all different service IDs from the order details of this purchase
+        var serviceIds = await orderDetailRepository.GetDistinctServiceIdsByPurchaseIdAsync(purchase.Id);
+
+        var services = await serviceRepository.GetByIdsAsync(serviceIds);
+
+        //calculate total amount
+        var totalAmount = services.Sum(s => s.Price);
+
+        var payment = new PaymentHistory()
+        {
+            PurchaseId = purchase.Id,
+            CreatedAt = ToUnspecified(DateTime.Now),
+            Amount = totalAmount,
+            Status = PaymentStatus.Paid,
+            PaymentMethod = request.PaymentMethod,
+            ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
+            
+        };
+        var confirmPayment =await paymentHistoryRepository.ConfirmPayment(payment);
+        
+        return new ConfirmPaymentByStaffResponse()
+        {
+            PurchaseId = confirmPayment!.PurchaseId,
+            TransactionId = confirmPayment.TransactionId,
+            Amount = confirmPayment.Amount,
+            PaymentMethod = confirmPayment.PaymentMethod,
+            Status = confirmPayment.Status,
+            CreatedAt = confirmPayment.CreatedAt,
+            ExpiredAt = confirmPayment.ExpiredAt,
+        };
     }
 }
