@@ -1,13 +1,18 @@
 import React from 'react'
 import ItemCard from './ItemCard'
-import { GetServiceByPageAdminResponse } from '@/Interfaces/Service/Schemas/service'
+import {
+	GetServiceByPageAdminResponse,
+	ServiceDTO,
+} from '@/Interfaces/Service/Schemas/service'
 
 const ServiceList = ({
 	data,
 	handleDelete,
+	handleRestore,
 }: {
 	data: GetServiceByPageAdminResponse
 	handleDelete: (id: string) => void
+	handleRestore: (id: string, data: ServiceDTO) => void
 }) => {
 	return (
 		<>
@@ -17,9 +22,10 @@ const ServiceList = ({
 						<div className='w-full h-full center-all'>No data found</div>
 					) : (
 						data?.services.map((service, key) => (
-							<ItemCard
+							<ItemCard<ServiceDTO>
 								id={service.id}
 								delay={key}
+								data={service}
 								key={service.id}
 								label={service.name}
 								secondaryLabel={service.description}
@@ -27,6 +33,8 @@ const ServiceList = ({
 								thirdLabel={service.price.toString()}
 								path='/dashboard/services/'
 								handleDelete={handleDelete}
+								isActive={service.isDeleted}
+								handleRestore={handleRestore}
 							/>
 						))
 					)}

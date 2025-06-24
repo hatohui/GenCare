@@ -1,33 +1,39 @@
 'use client'
 import React from 'react'
-import { PencilSVG, TrashCanSVG } from '../SVGs'
+import { PencilSVG, RestoreSVG, TrashCanSVG } from '../SVGs'
 import { useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
 import StatusLight, { Status } from '../StatusLight'
 
-export type ItemCardProps = {
+export type ItemCardProps<T extends object> = {
 	id: string
 	label: string
 	status?: Status
 	thirdLabel?: string | Date
 	fourthLabel?: string
 	path: string
+	data: T
 	delay: number
 	secondaryLabel: string
 	handleDelete: (id: string) => void
+	isActive: boolean
+	handleRestore: (id: string, data: T) => void
 }
 
-const ItemCard = ({
+const ItemCard = <T extends object>({
 	id,
 	label = 'Your name',
 	status,
+	data,
 	delay,
 	path = '/',
 	thirdLabel = '00/00/0000',
 	fourthLabel = '',
 	secondaryLabel = 'aaa',
 	handleDelete,
-}: ItemCardProps) => {
+	isActive,
+	handleRestore,
+}: ItemCardProps<T>) => {
 	const router = useRouter()
 
 	if (thirdLabel instanceof Date) {
@@ -42,6 +48,11 @@ const ItemCard = ({
 	const handleDeleteFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
 		handleDelete(id)
+	}
+
+	const handleRestoreFunc = (event: React.MouseEvent<HTMLDivElement>) => {
+		event.stopPropagation()
+		handleRestore(id, data)
 	}
 
 	return (
@@ -88,13 +99,23 @@ const ItemCard = ({
 				>
 					<PencilSVG className='size-5 text-violet-950' />
 				</div>
-				<div
-					className='itemCardButton bg-gradient-to-r from-red-400 to-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
-					onClick={handleDeleteFunc}
-					tabIndex={1}
-				>
-					<TrashCanSVG className='size-5 text-white' />
-				</div>
+				{isActive ? (
+					<div
+						className='itemCardButton bg-gradient-to-r from-green-400 to-green-500 hover:shadow-[0_0_15px_rgba(34,197,94,0.7)]'
+						onClick={handleRestoreFunc}
+						tabIndex={1}
+					>
+						<RestoreSVG />
+					</div>
+				) : (
+					<div
+						className='itemCardButton bg-gradient-to-r from-red-400 to-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
+						onClick={handleDeleteFunc}
+						tabIndex={1}
+					>
+						<TrashCanSVG className='size-5 text-white' />
+					</div>
+				)}
 			</div>
 		</motion.button>
 	)

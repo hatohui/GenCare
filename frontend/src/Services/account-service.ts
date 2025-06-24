@@ -1,5 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import {
+	DeleteAccountResponse,
 	GetAccountByIdResponse,
 	GetAccountByPageResponse,
 	PutAccountRequest,
@@ -31,8 +32,15 @@ const accountApi = {
 	 * @param page The page index
 	 * @returns A promise that resolves with a paginated list of user accounts
 	 */
-	getByPage: (header: string, count: number, page: number) => {
-		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}`
+	getByPage: (
+		header: string,
+		count: number,
+		page: number,
+		search: string | null
+	) => {
+		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}${
+			search ? `&search=${search}` : ''
+		}`
 
 		return axiosInstance
 			.get<GetAccountByPageResponse>(queryUrl, {
@@ -61,6 +69,15 @@ const accountApi = {
 				return res.data
 			})
 	},
+
+	delete: (header: string, id: string) => {
+		const queryUrl = `${ACCOUNT_URL}/${id}`
+		return axiosInstance
+			.delete<DeleteAccountResponse>(queryUrl, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
 }
 
 export const useGetMe = () => {
@@ -75,13 +92,18 @@ export const useGetMe = () => {
 	})
 }
 
-export const useGetAccountsByPage = (count: number, page: number) => {
+export const useGetAccountsByPage = (
+	count: number,
+	page: number,
+	search: string | null
+) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['accounts', page, count],
-		queryFn: () => accountApi.getByPage(header, count, page),
+		queryKey: ['accounts', page, count, search],
+		queryFn: () => accountApi.getByPage(header, count, page, search),
 		placeholderData: keepPreviousData,
+		enabled: !!header,
 	})
 }
 
@@ -94,11 +116,19 @@ export const useGetAccountById = (id: string) => {
 	})
 }
 
-export const useUpdateAccount = (id: string) => {
+export const useUpdateAccount = () => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: (data: PutAccountRequest) =>
+		mutationFn: ({ id, data }: { id: string; data: PutAccountRequest }) =>
 			accountApi.updateAccount(header, id, data),
+	})
+}
+
+export const useDeleteAccount = () => {
+	const header = useAccessTokenHeader()
+
+	return useMutation({
+		mutationFn: (id: string) => accountApi.delete(header, id),
 	})
 }
