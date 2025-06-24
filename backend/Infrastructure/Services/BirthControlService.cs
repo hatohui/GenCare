@@ -171,9 +171,10 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             
             
             SecondSafeStart = secondSafeStart,
-            SecondSafeEnd = secondSafeEnd
+            SecondSafeEnd = secondSafeEnd,
             
-            
+            StartUnsafeDate = birthControl.StartUnsafeDate,
+            EndUnsafeDate = birthControl.EndUnsafeDate,
         };
     }
 }
