@@ -1,7 +1,8 @@
-﻿using Application.Services;
+﻿using System.Threading.Tasks;
+using Application.Services;
 
 namespace API.Controllers;
-[Route("api/payment")]
+[Route("api/payments")]
 [ApiController]
 public class PaymentController(IMomoService momoService) : ControllerBase
 {
@@ -12,11 +13,12 @@ public class PaymentController(IMomoService momoService) : ControllerBase
         var result = await momoService.CreatePaymentAsync(purchaseId);
         return Ok(new { payUrl = result.PayUrl, result });
     }
-    //[HttpPost("momo-callback")]
-    //public IActionResult MomoNotify()
-    //{
-    //    var response = momoService.ProcessPaymentCallback(Request.Query);
-    //    // Xử lý thông báo từ MoMo, cập nhật trạng thái đơn hàng trong database
-    //    return Ok(new { RspCode = "00", Message = "Success" });
-    //}
+
+    [HttpPost("momo-callback")]
+    public async Task<IActionResult> MomoNotify()
+    {
+        var response = await momoService.ProcessPaymentCallback(Request.Query);
+        // Xử lý thông báo từ MoMo, cập nhật trạng thái đơn hàng trong database
+        return Ok(new { RspCode = "00", Message = "Success" });
+    }
 }

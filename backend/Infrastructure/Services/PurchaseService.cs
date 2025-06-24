@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Purchase.Request;
+﻿using System.Security.AccessControl;
+using Application.DTOs.Purchase.Request;
 using Application.DTOs.Purchase.Response;
 using Application.Helpers;
 using Application.Repositories;
@@ -12,7 +13,8 @@ public class PurchaseService
 (
     IPurchaseRepository purchaseRepository,
     IAccountRepository accountRepository,
-    IServiceRepository serviceRepository
+    IServiceRepository serviceRepository,
+    IPaymentHistoryRepository paymentHistoryRepository
 ) : IPurchaseService
 {
     //add new purchase
@@ -28,10 +30,15 @@ public class PurchaseService
             Account = account,
             CreatedBy = accountId
         };
-
+        decimal totalPrice = 0;
         //for each order detail in booking service request
         foreach (var o in bookingServiceRequest.OrderDetails!)
         {
+            var ser = await serviceRepository.SearchServiceByIdAsync(o.ServiceId);
+            if (ser == null)
+                throw new AppException(404, $"Service with ID {o.ServiceId} not found");
+            //calculate total price
+            totalPrice += ser.Price;
             //create new order detail
             OrderDetail ordDetail = new()
             {
@@ -46,6 +53,17 @@ public class PurchaseService
             //add order detail to corresponding purchase
             purchase.OrderDetails.Add(ordDetail);
         }
+        ////create paymentHistory for purchase
+        //var paymentHistory = new PaymentHistory
+        //{
+        //    Purchase = purchase,
+        //    TransactionId = Guid.NewGuid(),
+        //    Amount = totalPrice,
+        //    CreatedAt = DateTime.Now,
+        //    PaymentMethod = ,
+        //    Status = PaymentHistoryStatus.Pending
+        //};
+        //purchase.PaymentHistory = paymentHistory;
         await purchaseRepository.AddAsync(purchase);
 
         return new BookingServiceResponse
@@ -69,6 +87,12 @@ public class PurchaseService
         List<BookedService> rs = new();
         foreach(var purchase in purchases)
         {
+            //check if payment history of this purchase exists
+            var paid = true;
+            var paymentHistory = await paymentHistoryRepository.GetById(purchase.Id);
+            if (paymentHistory == null)
+                paid = false;
+            //get order details of this purchase
             var orderDetails = purchase.OrderDetails;
             if (orderDetails == null || orderDetails.Count == 0)
                 throw new AppException(404, "No order details found for this account");
@@ -86,7 +110,8 @@ public class PurchaseService
                     PhoneNumber = orderDetail.Phone,                    
                     DateOfBirth = orderDetail.DateOfBirth,
                     Gender = orderDetail.Gender,
-                    CreatedAt = purchase.CreatedAt
+                    CreatedAt = purchase.CreatedAt,
+                    Status = paid
                 });
             }
         }
