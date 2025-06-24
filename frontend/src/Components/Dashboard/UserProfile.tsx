@@ -23,10 +23,11 @@ const UserProfile = () => {
 		>
 			<motion.div
 				variants={variants}
-				initial={{ opacity: 0, x: -10 }}
+				initial='hidden'
 				animate={showPopUp ? 'visible' : 'hidden'}
 				transition={{ duration: 0.3, ease: 'easeInOut' }}
-				className='absolute top-0 left-0 translate-x-1/3 w-full h-full '
+				className='absolute top-0 left-0 translate-x-1/3 w-full h-full z-10 '
+				style={{ display: showPopUp ? '' : 'none' }}
 			>
 				<Popup />
 			</motion.div>

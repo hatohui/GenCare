@@ -23,7 +23,12 @@ export const CloudinaryButton = ({
 	onUploaded: (url: string, publicId: string) => void
 }) => (
 	<CldUploadWidget
-		options={{ sources: ['local', 'google_drive'] }}
+		options={{
+			sources: ['local', 'google_drive'],
+			multiple: false,
+			maxFiles: 1,
+			clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif'],
+		}}
 		signatureEndpoint='/api/sign-image'
 		uploadPreset={uploadPreset}
 		onSuccess={(result: CloudinaryUploadWidgetResults) => {

@@ -38,7 +38,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 		defaultValues: {
 			firstName: initialData.firstName,
 			lastName: initialData.lastName,
-
 			phoneNumber: initialData.phoneNumber ?? '',
 			dateOfBirth: initialData.dateOfBirth ?? '',
 			gender: initialData.gender,

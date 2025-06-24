@@ -74,7 +74,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			<div className='w-full flex-none md:w-64'>
 				<Sidenav />
 			</div>
-			<main className='flex-1 p-7 h-full scroll-smooth'>{children}</main>
+			<main className='flex-1 p-7 h-full scroll-smooth overflow-scroll'>
+				{children}
+			</main>
 		</div>
 	)
 }

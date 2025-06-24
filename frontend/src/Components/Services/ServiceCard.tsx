@@ -3,7 +3,6 @@
 import { motion } from 'motion/react'
 import MotionLink from '../MotionLink'
 import Image from 'next/image'
-import { useBookingCart } from '@/Hooks/useBookingCart'
 import useToken from '@/Hooks/useToken'
 import { useRouter } from 'next/navigation'
 
@@ -23,7 +22,6 @@ export const ServiceCard = ({
 	imageUrl,
 }: ServiceCardProps) => {
 	const { accessToken } = useToken()
-	const { addService } = useBookingCart()
 	const router = useRouter()
 
 	const handleAddToCart = () => {
@@ -38,12 +36,7 @@ export const ServiceCard = ({
 			return
 		}
 
-		console.log('adding to card')
-		addService({
-			id,
-			name,
-			price,
-		})
+		router.push(`/app/booking/${id}`)
 	}
 
 	return (
