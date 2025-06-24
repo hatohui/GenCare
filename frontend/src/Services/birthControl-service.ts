@@ -28,10 +28,13 @@ const birthControlApi = {
 		data: BirthControlRequest
 	}) =>
 		axios
-			.put(`${BOOKING_URL}`, data, {
+			.put<BirthControlDates>(`${BOOKING_URL}`, data, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data),
+			.then(res => {
+				console.log(res.data)
+				return res.data
+			}),
 	create: async ({
 		header,
 		data,
@@ -40,10 +43,13 @@ const birthControlApi = {
 		data: BirthControlRequest
 	}) =>
 		axios
-			.post(`${BOOKING_URL}`, data, {
+			.post<BirthControlDates>(`${BOOKING_URL}`, data, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data),
+			.then(res => {
+				console.log(res.data)
+				return res.data
+			}),
 }
 
 export const useGetBirthControl = (id: string) => {
@@ -52,6 +58,7 @@ export const useGetBirthControl = (id: string) => {
 	return useQuery({
 		queryKey: ['getBirthControl', id],
 		queryFn: () => birthControlApi.get({ header, id }),
+		staleTime: 0,
 	})
 }
 

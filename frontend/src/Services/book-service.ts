@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 const BOOKING_URL = `${DEFAULT_API_URL}/purchases`
+const PAY_URL = `${DEFAULT_API_URL}/payments`
 
 const bookingApi = {
 	GetOrder: (header: string) => {
@@ -23,6 +24,13 @@ const bookingApi = {
 				throw error
 			})
 	},
+	MomoPay: (header: string, purchaseId: string) => {
+		return axios
+			.post(`${PAY_URL}/momo/?purchaseId=${purchaseId}`, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
 }
 
 export const useBookServices = () => {
@@ -39,5 +47,13 @@ export const useGetOrder = () => {
 	return useQuery({
 		queryKey: ['getOrder'],
 		queryFn: () => bookingApi.GetOrder(header),
+	})
+}
+
+export const useMomoPay = (purchaseId: string) => {
+	const header = useAccessTokenHeader()
+
+	return useMutation({
+		mutationFn: () => bookingApi.MomoPay(header, purchaseId),
 	})
 }

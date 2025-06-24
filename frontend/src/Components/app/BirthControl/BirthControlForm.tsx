@@ -1,24 +1,22 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import {
 	useCreateBirthControl,
 	useUpdateBirthControl,
 } from '@/Services/birthControl-service'
+import { useBirthControl } from '@/Hooks/useBirthControl'
+import RangeCalendar from '@/Components/Scheduling/Calendar/RangeCalendar'
 
 const birthControlSchema = z.object({
 	accountID: z.string().min(1, 'Account ID is required'),
 	dateRange: z
 		.tuple([
-			z.date().refine(val => !isNaN(val.getTime()), {
-				message: 'Invalid start date',
-			}),
-			z.union([z.date(), z.null()]), // <-- Allow endDate to be null
+			z.union([z.date(), z.null()]), // <-- Allow null here too
+			z.union([z.date(), z.null()]),
 		])
-		.refine(([start, end]) => !end || start <= end, {
+		.refine(([start, end]) => start !== null && (!end || start <= end), {
 			message: 'Start date must be before end date',
 			path: ['dateRange'],
 		}),
@@ -31,25 +29,35 @@ interface BirthControlFormProps {
 }
 
 const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
+	const { setBirthControl } = useBirthControl()
 	const CreateBirthControl = useCreateBirthControl()
 	const updateBirthControl = useUpdateBirthControl()
+
+	const [startDate, setStartDate] = useState<Date | null>(null)
+	const [endDate, setEndDate] = useState<Date | null>(null)
 
 	const {
 		register,
 		handleSubmit,
 		setValue,
-		watch,
 		formState: { errors },
 	} = useForm<BirthControlFormData>({
 		resolver: zodResolver(birthControlSchema),
 		defaultValues: {
 			accountID,
-			dateRange: [undefined as any, undefined as any],
+			dateRange: [null, null] as any,
 		},
 	})
 
+	// Sync selected dates with form state
+	useEffect(() => {
+		setValue('dateRange', [startDate, endDate])
+	}, [startDate, endDate])
+
 	const onSubmit = (data: BirthControlFormData) => {
 		const [startDate, endDate] = data.dateRange
+
+		if (!startDate) return
 
 		CreateBirthControl.mutate(
 			{
@@ -58,65 +66,41 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 				endDate: endDate?.toISOString(),
 			},
 			{
-				onSuccess: () => {},
+				onSuccess: data => setBirthControl(data),
 				onError: () => {
-					updateBirthControl.mutate({
-						accountId: accountID,
-						startDate: startDate.toISOString(),
-						endDate: endDate?.toISOString(),
-					})
+					updateBirthControl.mutate(
+						{
+							accountId: accountID,
+							startDate: startDate.toISOString(),
+							endDate: endDate?.toISOString(),
+						},
+						{ onSuccess: data => setBirthControl(data) }
+					)
 				},
 			}
 		)
-
-		console.log('Form submitted:', data)
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+		<form onSubmit={handleSubmit(onSubmit)} className=''>
 			<input type='hidden' {...register('accountID')} />
 
-			<div>
-				<label htmlFor='dateRange' className='block mb-2'>
-					Birth Control Date
+			<div className='items-center justify-center flex flex-col py-4'>
+				<label className='block mb-2 text-main font-extrabold text-3xl text-center '>
+					Chọn ngày hành kinh
 				</label>
-				<DatePicker
-					selectsRange
-					startDate={watch('dateRange')?.[0]}
-					endDate={watch('dateRange')?.[1]}
-					onChange={dates => setValue('dateRange', dates as [Date, Date])}
-					dateFormat='yyyy-MM-dd'
-					placeholderText='Select date range'
-					isClearable
-					className='w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-					calendarClassName='rounded-xl shadow-lg bg-white p-4 border border-gray-200'
-					popperClassName='z-50'
-					dayClassName={date => {
-						const today = new Date()
-						const isToday =
-							date.getDate() === today.getDate() &&
-							date.getMonth() === today.getMonth() &&
-							date.getFullYear() === today.getFullYear()
-
-						return `rounded-full w-10 h-10 flex items-center justify-center transition-all
-      ${
-				isToday
-					? 'border border-blue-500 text-blue-600 font-semibold'
-					: 'hover:bg-blue-100'
-			}`
-					}}
+				<RangeCalendar
+					startDate={startDate}
+					endDate={endDate}
+					setStartDate={setStartDate}
+					setEndDate={setEndDate}
 				/>
 				{errors.dateRange && (
-					<p className='text-red-500'>{errors.dateRange.message as string}</p>
+					<p className='text-red-500 text-sm mt-2'>
+						{errors.dateRange.message as string}
+					</p>
 				)}
 			</div>
-
-			<button
-				type='submit'
-				className='bg-accent text-white p-2 rounded-full hover:bg-rose-500 duration-300'
-			>
-				Submit
-			</button>
 		</form>
 	)
 }

@@ -1,8 +1,18 @@
 import React from 'react'
 import { motion } from 'motion/react'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
+import clsx from 'clsx'
+import { useMomoPay } from '@/Services/book-service'
 
 const BookingItem = ({ item }: { item: OrderDetail }) => {
+	const momoPayment = useMomoPay(item.purchaseId)
+
+	const handlePayment = () => {
+		momoPayment.mutate(undefined, {
+			onSuccess: data => console.log('Payment success'),
+		})
+	}
+
 	return (
 		<motion.div
 			className='bg-general p-6 flex flex-col rounded-[30px] mb-6 max-w-5xl mx-auto shadow-lg hover:shadow-xl transition ease-in-out duration-300'
@@ -46,13 +56,26 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 				</li>
 				<li className='flex items-center'>
 					<span className='font-bold w-45'>Payment Status:</span>
-					<span className='ml-2'>{item.purchaseId}</span>
+					<span
+						className={clsx(item.status ? 'text-green-500' : 'text-red-500')}
+					>
+						{item.status ? 'Đã thanh toán' : 'Chưa Thanh toán'}
+					</span>
 				</li>
 			</ul>
 			<div className='mt-4 flex justify-end'>
-				<button className='px-4 py-2 bg-accent text-white font-bold rounded-full hover:bg-rose-500  transition'>
-					View Test Result
-				</button>
+				{item.status ? (
+					<button className='px-4 py-2 bg-accent text-white font-bold rounded-full hover:bg-rose-500  transition'>
+						View Test Result
+					</button>
+				) : (
+					<button
+						onClick={handlePayment}
+						className='px-4 py-2 bg-accent text-white font-bold rounded-full hover:bg-rose-500  transition'
+					>
+						Pay now!
+					</button>
+				)}
 			</div>
 		</motion.div>
 	)

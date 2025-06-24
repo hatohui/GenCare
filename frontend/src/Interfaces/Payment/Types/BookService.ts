@@ -8,6 +8,7 @@ export type OrderDetail = {
 	dateOfBirth: Date
 	gender: boolean
 	createdAt: Date
+	status: boolean
 }
 
 export type OrderDetails = OrderDetail[]
