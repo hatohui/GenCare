@@ -1,29 +1,31 @@
 import { SIDE_NAV_OPTIONS, SideNavButtonProp } from '@/Constants/SideNav'
-import { PermissionLevel, Role } from './isAllowedRole'
+import { isAllowedRole, Role } from './isAllowedRole'
 
 export const getNavOptionsFromRole = (
 	role: Role,
-	path: string
+	currentPath: string
 ): SideNavButtonProp[] => {
-	switch (role) {
-		case 'admin':
-			return SIDE_NAV_OPTIONS
-		case 'manager':
-			return SIDE_NAV_OPTIONS.filter(
-				each => each.level >= PermissionLevel.manager && each.to.includes(path)
-			)
-		case 'staff':
-			return SIDE_NAV_OPTIONS.filter(
-				each => each.level >= PermissionLevel.staff && each.to.includes(path)
-			)
-		case 'consultant':
-			return SIDE_NAV_OPTIONS.filter(
-				each =>
-					each.level >= PermissionLevel.consultant && each.to.includes(path)
-			)
-		case 'member':
-			return SIDE_NAV_OPTIONS.filter(
-				each => each.level >= PermissionLevel.member && each.to.includes(path)
-			)
-	}
+	const seen = new Set<string>()
+
+	const filtered = SIDE_NAV_OPTIONS.filter(option => {
+		if (seen.has(option.label)) return false
+
+		const allowed = isAllowedRole(role, option.level)
+		const pathMatch = currentPath === '/' || option.to.includes(currentPath)
+
+		if (allowed && pathMatch) {
+			seen.add(option.label)
+			return true
+		}
+
+		return false
+	})
+
+	return filtered.sort((a, b) => {
+		if (a.label === b.label) {
+			if (a.to === '/dashboard') return -1
+			if (b.to === '/dashboard') return 1
+		}
+		return 0
+	})
 }

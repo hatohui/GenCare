@@ -7,13 +7,11 @@ import { useUpdateAccount } from '@/Services/account-service'
 const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 	const [localData, setLocalData] = useState<StaffAccount | undefined>(data)
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const updateAccount = useUpdateAccount(data?.id || '')
+	const updateAccount = useUpdateAccount()
 
 	const onSubmit = (formData: any) => {
-		// Handle form submission logic here
-		console.log('Form submitted:', formData)
 		updateAccount.mutate(
-			{ account: formData, staffInfo: formData },
+			{ id: data?.id ?? '', data: { account: formData, staffInfo: formData } },
 			{
 				onSuccess: () => {
 					setLocalData({ ...data, ...formData })

@@ -10,7 +10,8 @@ export default function NavLinks() {
 	const { data } = useAccountStore()
 	const pathname = usePathname()
 
-	if (!data) return <div>Loading...</div>
+	if (!data)
+		return <div className='w-full text-center animate-pulse'>Loading...</div>
 
 	const links = getNavOptionsFromRole(data?.role.name, pathname.split('/')[1])
 

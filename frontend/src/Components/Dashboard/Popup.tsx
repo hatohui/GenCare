@@ -12,10 +12,12 @@ const Popup = () => {
 			>
 				Account Settings
 			</button>
-			<button className='flex items-center p-2 mb-2 text-sm font-medium text-gray-700 transition duration-150 ease-in-out bg-green-100 rounded hover:bg-green-200'>
+			<button className='flex items-center w-full p-2 mb-2 text-sm font-medium text-gray-700 transition duration-150 ease-in-out bg-green-100 rounded hover:bg-green-200'>
 				Get Help
 			</button>
-			<LogoutButton />
+			<div className='center-all'>
+				<LogoutButton />
+			</div>
 		</div>
 	)
 }
