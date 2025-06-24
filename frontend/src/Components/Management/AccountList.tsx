@@ -6,9 +6,11 @@ import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import {
 	useDeleteAccount,
 	useGetAccountsByPage,
+	useUpdateAccount,
 } from '@/Services/account-service'
 import Pagination from './Pagination'
 import { useSearchParams } from 'next/navigation'
+import { Account } from '@/Interfaces/Auth/Types/Account'
 
 const AccountList = () => {
 	const [page, setPage] = useState<number>(1)
@@ -18,8 +20,7 @@ const AccountList = () => {
 	const accountDeleteMutate = useDeleteAccount()
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 	const query = useGetAccountsByPage(itemsPerPage, page ? page : 1, search)
-	const [orderByPrice, setOrderByPrice] = useState<boolean>(false)
-	const [] = useState<boolean>(false)
+	const updateAccountMutation = useUpdateAccount()
 
 	const { isLoading, isError, isFetching, data } = query
 
@@ -38,6 +39,20 @@ const AccountList = () => {
 		}
 	}
 
+	const handleRestore = (id: string, data: Account) => {
+		if (window.confirm('Are you sure you want to restore this account?')) {
+			updateAccountMutation.mutate(
+				{ id, data: { account: { ...data, isDeleted: false } } },
+				{
+					onSuccess: () => {
+						query.refetch()
+					},
+					onError: () => {},
+				}
+			)
+		}
+	}
+
 	return (
 		<>
 			<div className='flex-1 overflow-y-scroll scroll-bar'>
@@ -49,8 +64,9 @@ const AccountList = () => {
 						<div className='w-full h-full center-all'>No data found.</div>
 					) : (
 						data?.accounts.map((account, key) => (
-							<ItemCard
+							<ItemCard<Account>
 								id={account.id}
+								data={account}
 								delay={key}
 								key={account.id}
 								label={`${account.firstName} ${account.lastName}`}
@@ -60,6 +76,8 @@ const AccountList = () => {
 								fourthLabel={account.role.name}
 								path='/dashboard/accounts/'
 								handleDelete={handleDelete}
+								handleRestore={handleRestore}
+								isActive={account.isDeleted}
 							/>
 						))
 					)}

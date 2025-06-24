@@ -28,12 +28,14 @@ export type GetServiceByPageResponse = {
 	>[]
 }
 
+export type ServiceDTO = Pick<
+	Service,
+	'id' | 'name' | 'description' | 'price' | 'imageUrls' | 'isDeleted'
+>
+
 export type GetServiceByPageAdminResponse = {
 	totalCount: number
-	services: Pick<
-		Service,
-		'id' | 'name' | 'description' | 'price' | 'imageUrls' | 'isDeleted'
-	>[]
+	services: ServiceDTO[]
 }
 
 export const serviceSchema = z.object({

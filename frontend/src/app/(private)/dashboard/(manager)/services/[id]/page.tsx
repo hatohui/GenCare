@@ -15,7 +15,7 @@ import {
 const ServiceDetailPage = () => {
 	const params = useParams()
 	const serviceId = typeof params.id === 'string' ? params.id : undefined
-	const updateServiceMutation = useUpdateService(serviceId ?? '')
+	const updateServiceMutation = useUpdateService()
 	const query = useServiceById(serviceId ?? '')
 
 	const {
@@ -39,10 +39,13 @@ const ServiceDetailPage = () => {
 
 			if (!result.success) {
 			} else {
-				updateServiceMutation.mutate(result.data, {
-					onSuccess: () => {},
-					onError: () => {},
-				})
+				updateServiceMutation.mutate(
+					{ id: serviceId ?? '', data: result.data },
+					{
+						onSuccess: () => {},
+						onError: () => {},
+					}
+				)
 			}
 		},
 	})

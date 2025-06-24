@@ -68,8 +68,8 @@ const accountApi = {
 
 				return res.data
 			})
-  },
-  
+	},
+
 	delete: (header: string, id: string) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
@@ -116,13 +116,13 @@ export const useGetAccountById = (id: string) => {
 	})
 }
 
-export const useUpdateAccount = (id: string) => {
+export const useUpdateAccount = () => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: (data: PutAccountRequest) =>
+		mutationFn: ({ id, data }: { id: string; data: PutAccountRequest }) =>
 			accountApi.updateAccount(header, id, data),
-  })
+	})
 }
 
 export const useDeleteAccount = () => {

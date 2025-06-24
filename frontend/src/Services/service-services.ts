@@ -33,13 +33,14 @@ const serviceApi = {
 		count: number,
 		orderByPrice: boolean | null,
 		includeDeleted: boolean | null,
+		sortByAlphabetical: boolean,
 		search?: string
 	) => {
 		const query = `${SERVICE_URL}/all?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
 		}${orderByPrice !== null ? `&sortByPrice=${orderByPrice}` : ''}${
 			includeDeleted !== null ? `&includeDeleted=${includeDeleted}` : ''
-		}`
+		}${sortByAlphabetical ? '&sortByAlphabetical=true' : ''}`
 
 		console.log(query)
 
@@ -129,12 +130,21 @@ export const useServiceByPageAdmin = (
 	count: number,
 	search: string | null,
 	includeDeleted: boolean | null,
-	orderByPrice: boolean | null
+	orderByPrice: boolean | null,
+	sortByAlphabetical: boolean
 ) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['services', page, count, search, orderByPrice, includeDeleted],
+		queryKey: [
+			'services',
+			page,
+			count,
+			search,
+			orderByPrice,
+			includeDeleted,
+			sortByAlphabetical,
+		],
 		queryFn: async () => {
 			return serviceApi.getByPageAdmin(
 				header,
@@ -142,6 +152,7 @@ export const useServiceByPageAdmin = (
 				count,
 				orderByPrice,
 				includeDeleted,
+				sortByAlphabetical,
 				search ?? ''
 			)
 		},
@@ -206,11 +217,11 @@ export const useCreateService = () => {
  * @returns The updated service.
  */
 
-export const useUpdateService = (id: string) => {
+export const useUpdateService = () => {
 	const header = useAccessTokenHeader()
 
 	return useMutation({
-		mutationFn: (data: UpdateServiceApiRequest) =>
+		mutationFn: ({ id, data }: { id: string; data: UpdateServiceApiRequest }) =>
 			serviceApi.update(header, id, data),
 	})
 }

@@ -6,9 +6,11 @@ import Pagination from '@/Components/Management/Pagination'
 import SearchBar from '@/Components/Management/SearchBar'
 import ServiceList from '@/Components/Management/ServiceList'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
+import { ServiceDTO } from '@/Interfaces/Service/Schemas/service'
 import {
 	useDeleteService,
 	useServiceByPageAdmin,
+	useUpdateService,
 } from '@/Services/service-services'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
@@ -22,13 +24,16 @@ const ServicesPage = () => {
 	const search = searchParams.get('search')
 	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
 	const [includeDeleted, setIncludeDeleted] = useState<boolean | null>(null)
+	const [sortByAlphabetical, setSortByAlphabetical] = useState<boolean>(false)
+	const updateMutation = useUpdateService()
 
 	const query = useServiceByPageAdmin(
 		currentPage,
 		itemsPerPage,
 		search,
 		includeDeleted,
-		orderByPrice
+		orderByPrice,
+		sortByAlphabetical
 	)
 
 	const { isError, isFetching, data, isLoading } = query
@@ -46,6 +51,19 @@ const ServicesPage = () => {
 				},
 				onError: () => {},
 			})
+	}
+
+	const handleRestore = (id: string, data: ServiceDTO) => {
+		if (window.confirm('Do you want to restore this?'))
+			updateMutation.mutate(
+				{ id, data: { ...data, isDeleted: false } },
+				{
+					onSuccess: () => {
+						query.refetch()
+					},
+					onError: () => {},
+				}
+			)
 	}
 
 	if (isError)
@@ -119,9 +137,15 @@ const ServicesPage = () => {
 					{/* Price sorting toggle */}
 					<button
 						onClick={() => {
-							if (orderByPrice === null) setOrderByPrice(true)
-							else if (orderByPrice === true) setOrderByPrice(false)
-							else setOrderByPrice(null)
+							if (orderByPrice === null) {
+								setOrderByPrice(true)
+								setSortByAlphabetical(false)
+							} else if (orderByPrice === true) {
+								setOrderByPrice(false)
+								setSortByAlphabetical(false)
+							} else {
+								setOrderByPrice(null)
+							}
 						}}
 						className={clsx(
 							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
@@ -135,6 +159,25 @@ const ServicesPage = () => {
 							: orderByPrice
 							? 'Giá tăng dần ↑'
 							: 'Giá giảm dần ↓'}
+					</button>
+
+					{/* Alphabetical sorting toggle */}
+					<button
+						onClick={() => {
+							setSortByAlphabetical(prev => {
+								const newState = !prev
+								if (newState) setOrderByPrice(null)
+								return newState
+							})
+						}}
+						className={clsx(
+							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
+							sortByAlphabetical
+								? 'bg-blue-600 text-white'
+								: 'bg-gray-100 text-black'
+						)}
+					>
+						{sortByAlphabetical ? 'A → Z' : 'Sắp xếp ABC'}
 					</button>
 				</div>
 
@@ -150,7 +193,11 @@ const ServicesPage = () => {
 						Fetching data...
 					</div>
 				) : (
-					<ServiceList data={data} handleDelete={handleDelete} />
+					<ServiceList
+						data={data}
+						handleDelete={handleDelete}
+						handleRestore={handleRestore}
+					/>
 				)}
 
 				<div className='center-all'>
