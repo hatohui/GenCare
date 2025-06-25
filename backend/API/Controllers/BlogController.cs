@@ -30,7 +30,7 @@ public class BlogController(IBlogService blogService) : ControllerBase
     /// <param name="request">The blog creation request data.</param>
     /// <returns>A response indicating the result of the creation operation.</returns>
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Consultant},{RoleNames.Staff}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
     public async Task<IActionResult> AddBlog([FromBody] BlogCreateRequest request)
     {
         //get access token from header
