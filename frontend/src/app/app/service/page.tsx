@@ -46,16 +46,22 @@ export default function Page() {
 					)}
 					onClick={() => {
 						const params = new URLSearchParams(searchParams)
-						if (params.has('orderByPrice')) {
-							params.delete('orderByPrice')
-						} else {
+						if (!params.has('orderByPrice')) {
 							params.set('orderByPrice', 'true')
+						} else if (params.get('orderByPrice') === 'true') {
+							params.set('orderByPrice', 'false')
+						} else {
+							params.delete('orderByPrice')
 						}
 
 						router.push(`${pathname}?${params.toString()}`)
 					}}
 				>
-					Sắp xếp theo giá
+					{searchParams.get('orderByPrice') === 'true'
+						? 'Giá tăng dần ↑'
+						: searchParams.get('orderByPrice') === 'false'
+						? 'Giá giảm dần ↓'
+						: 'Sắp xếp giá'}
 				</button>
 			</div>
 

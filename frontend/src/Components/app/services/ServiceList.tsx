@@ -11,12 +11,18 @@ import { ServiceCard } from '@/Components/Services/ServiceCard'
 const ServiceList = () => {
 	const searchParams = useSearchParams()
 	const [page, setPage] = useState<number>(1)
-	const [orderByPrice, setOrderByPrice] = useState<boolean>(false)
+	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
 	const [search, setSearch] = useState<string>('')
 	const itemsPerPage = 6
 
 	useEffect(() => {
-		setOrderByPrice(Boolean(searchParams.get('orderByPrice')))
+		setOrderByPrice(
+			searchParams.get('orderByPrice') === 'true'
+				? true
+				: searchParams.get('orderByPrice') === 'false'
+				? false
+				: null
+		)
 		setSearch(searchParams.get('search') || '')
 	}, [searchParams])
 

@@ -26,10 +26,14 @@ const bookingApi = {
 	},
 	MomoPay: (header: string, purchaseId: string) => {
 		return axios
-			.post(`${PAY_URL}/momo/?purchaseId=${purchaseId}`, {
+			.post(`${PAY_URL}/momo&purchaseId=${purchaseId}`, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data)
+			.then(res => {
+				console.log(res.data)
+
+				return res.data
+			})
 	},
 }
 
