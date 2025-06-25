@@ -38,7 +38,7 @@ const accountApi = {
 		count: number,
 		page: number,
 		search: string | null,
-		role: Role | null
+		role?: Role | null
 	) => {
 		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
@@ -98,7 +98,7 @@ export const useGetAccountsByPage = (
 	count: number,
 	page: number,
 	search: string | null,
-	role: Role | null
+	role?: Role | null
 ) => {
 	const header = useAccessTokenHeader()
 

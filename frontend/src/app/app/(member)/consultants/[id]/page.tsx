@@ -54,9 +54,9 @@ const BookConsultantPage = () => {
 	}
 
 	return (
-		<div className='grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto p-6'>
+		<div className='grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto p-6 overflow-auto'>
 			{/* Booking Form */}
-			<div className='bg-white border border-blue-100 rounded-2xl p-6 shadow-sm space-y-6'>
+			<div className='bg-white border border-blue-100 rounded-2xl p-6 shadow-sm space-y-2'>
 				<button
 					onClick={() => router.back()}
 					className='text-sm text-blue-600 hover:underline'
@@ -69,16 +69,12 @@ const BookConsultantPage = () => {
 				</h2>
 
 				{/* Calendar Range */}
-				<div>
-					<label className='text-sm font-medium text-gray-700 mb-1 block'>
-						Choose Date
-					</label>
-					<div className='center-all'>
-						<Calendar
-							selectedDate={selectedDate}
-							setSelectedDate={setSelectedDate}
-						/>
-					</div>
+				<div className='center-all'>
+					<Calendar
+						className='bg-none shadow-none'
+						selectedDate={selectedDate}
+						setSelectedDate={setSelectedDate}
+					/>
 				</div>
 
 				{/* Time Slot */}

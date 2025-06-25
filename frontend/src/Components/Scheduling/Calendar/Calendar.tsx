@@ -5,13 +5,16 @@ import MonthPicker from './MonthPicker'
 import DateGrid from './DateGrid'
 import './style.css'
 import { format, isSameDay } from 'date-fns'
+import clsx from 'clsx'
 
 export type SingleDateCalendarProps = {
 	selectedDate: Date | null
 	setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>
+	className?: string
 }
 
 const SingleDateCalendar = ({
+	className,
 	selectedDate,
 	setSelectedDate,
 }: SingleDateCalendarProps) => {
@@ -29,7 +32,10 @@ const SingleDateCalendar = ({
 		<div
 			id='calendar'
 			aria-label='calendar'
-			className='flex flex-col gap-3 w-full max-w-sm px-6 py-4 bg-white rounded-[30px] shadow'
+			className={clsx(
+				className,
+				'flex flex-col gap-3 w-full max-w-sm px-6 py-4 bg-white rounded-[30px] shadow'
+			)}
 		>
 			<MonthPicker
 				className='px-3'
