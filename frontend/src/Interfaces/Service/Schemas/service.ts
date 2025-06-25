@@ -42,6 +42,9 @@ export const serviceSchema = z.object({
 	name: z.string().min(1, 'Name is required'),
 	description: z.string().min(1, 'Description is required'),
 	price: z.coerce.number().positive('Price must be greater than 0'),
+	imageUrls: z
+		.array(z.string().url('Each image must be a valid URL'))
+		.optional(),
 })
 
 export type ServiceFormSchema = z.infer<typeof serviceSchema>

@@ -5,6 +5,7 @@ import { useCreateService } from '@/Services/service-services'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
+import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary'
 import {
 	ServiceFormSchema,
 	serviceSchema,
@@ -18,6 +19,7 @@ interface Props {
 
 const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 	const [loading, setLoading] = useState(false)
+	const [imageUrls, setImageUrls] = useState<string[]>([])
 	const createMutation = useCreateService()
 
 	const {
@@ -25,20 +27,29 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 		handleSubmit,
 		formState: { errors },
 		reset,
+		setValue,
 	} = useForm<ServiceFormSchema>({
 		resolver: zodResolver(serviceSchema),
 		defaultValues: {
 			name: '',
 			description: '',
 			price: 0,
+			imageUrls: [],
 		},
 	})
+
+	const handleImageUpload = (url: string, publicId: string) => {
+		const newImageUrls = [...imageUrls, url]
+		setImageUrls(newImageUrls)
+		setValue('imageUrls', newImageUrls)
+	}
 
 	const onSubmit = (data: ServiceFormSchema) => {
 		setLoading(true)
 		createMutation.mutate(data, {
 			onSuccess: () => {
 				reset()
+				setImageUrls([])
 				onSuccess?.()
 				onClose?.()
 			},
@@ -136,6 +147,55 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 							{errors.price && (
 								<p className='text-sm text-red-500 mt-1'>
 									{errors.price.message}
+								</p>
+							)}
+						</div>
+
+						{/* Image Upload */}
+						<div>
+							<label className='block text-sm font-medium text-gray-700 mb-1'>
+								Service Image
+							</label>
+							<CldUploadWidget
+								options={{
+									sources: ['local', 'google_drive'],
+									multiple: false,
+									maxFiles: 1,
+									clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif'],
+								}}
+								signatureEndpoint='/api/sign-image'
+								uploadPreset='gencare'
+								onSuccess={(result: CloudinaryUploadWidgetResults) => {
+									const info = result.info as {
+										secure_url: string
+										public_id: string
+									}
+									handleImageUpload(info.secure_url, info.public_id)
+								}}
+							>
+								{({ open }) => (
+									<button
+										type='button'
+										onClick={() => open()}
+										className='w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md transition'
+									>
+										Upload Image
+									</button>
+								)}
+							</CldUploadWidget>
+							{imageUrls.length > 0 && (
+								<div className='mt-2'>
+									<p className='text-sm text-gray-600'>Uploaded Image:</p>
+									<img
+										src={imageUrls[0]}
+										alt='Uploaded service'
+										className='mt-1 h-24 w-24 object-cover rounded-md'
+									/>
+								</div>
+							)}
+							{errors.imageUrls && (
+								<p className='text-sm text-red-500 mt-1'>
+									{errors.imageUrls.message}
 								</p>
 							)}
 						</div>
