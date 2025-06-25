@@ -22,12 +22,12 @@ const useToken = create<TokenStore>()(
 			storage: createJSONStorage(() => sessionStorage),
 			partialize: state => ({ accessToken: state.accessToken }),
 			onRehydrateStorage: () => {
-				return (_state, error) => {
+				return (state, error) => {
 					if (error) {
 						console.error('Rehydration error:', error)
 						return
 					}
-					useToken.setState({ isDehydrated: true })
+					if (state) state.isDehydrated = true
 				}
 			},
 		}

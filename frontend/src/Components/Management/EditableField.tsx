@@ -44,7 +44,7 @@ const EditableField = <T extends Record<string, any>>({
 				{type === 'textarea' ? (
 					<textarea
 						name={String(name)}
-						value={value as string}
+						value={value}
 						onChange={onChange}
 						readOnly={!isEditing}
 						className={clsx(
@@ -53,11 +53,28 @@ const EditableField = <T extends Record<string, any>>({
 						)}
 						aria-label={String(name)}
 					/>
-				) : (
+				) : typeof value === 'number' && isEditing ? (
 					<input
 						type={type}
 						name={String(name)}
-						value={String(value)} // ✅ ensures value is string
+						value={value}
+						onChange={onChange}
+						readOnly={!isEditing}
+						className={clsx(baseClass, 'bg-gray-100')}
+						aria-label={String(name)}
+					/>
+				) : (
+					<input
+						type='text'
+						name={String(name)}
+						value={
+							typeof value === 'number'
+								? Intl.NumberFormat('vi-VN', {
+										style: 'currency',
+										currency: 'VND',
+								  }).format(value)
+								: value
+						}
 						onChange={onChange}
 						readOnly={!isEditing}
 						className={clsx(baseClass, 'bg-gray-100')}

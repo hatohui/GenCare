@@ -9,77 +9,89 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class ServicesService(
-    IServiceRepository serviceRepository,
-    IMediaRepository mediaRepository
-) : IServicesService
+public class ServicesService(IServiceRepository serviceRepository, IMediaRepository mediaRepository)
+    : IServicesService
 {
-    public async Task<ViewServiceForUserResponse> SearchServiceAsync(ViewServicesByPageRequest request)
+    public async Task<ViewServiceForUserResponse> SearchServiceAsync(
+        ViewServicesByPageRequest request
+    )
     {
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
 
-        var (services,totalCount) = await serviceRepository.SearchServiceAsync(
+        var (services, totalCount) = await serviceRepository.SearchServiceAsync(
             request.Page,
             request.Count,
             request.Search,
             request.SortByPrice,
             request.SortByAlphabetical
-          
         );
-        
+
         var response = new ViewServiceForUserResponse()
         {
             Total = totalCount,
-            Services = new List<ServicePayLoad>()
+            Services = new List<ServicePayLoad>(),
         };
         foreach (var s in services)
         {
             await mediaRepository.GetNewestByServiceIdAsync(s.Id);
-            response.Services.Add(new ServicePayLoad()
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Description = s.Description ?? "",
-                Price = s.Price,
-            });
+            response.Services.Add(
+                new ServicePayLoad()
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = s.Description ?? "",
+                    Price = s.Price,
+                }
+            );
         }
 
         return response;
     }
 
-    public async Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(ViewServiceForStaffRequest request)
+    public async Task<ViewServiceByPageResponse> SearchServiceIncludeDeletedAsync(
+        ViewServiceForStaffRequest request
+    )
     {
         if (request.Page <= 0 || request.Count <= 0)
             throw new AppException(400, "Page and Count must be greater than zero.");
 
-        var (services,totalCount) = await serviceRepository.SearchServiceIncludeDeletedAsync(request.Page, request.Count,
-            request.Search, request.SortByPrice, request.IncludeDeleted, request.SortByUpdatedAt, request.SortByAlphabetical);
+        var (services, totalCount) = await serviceRepository.SearchServiceIncludeDeletedAsync(
+            request.Page,
+            request.Count,
+            request.Search,
+            request.SortByPrice,
+            request.IncludeDeleted,
+            request.SortByUpdatedAt,
+            request.SortByAlphabetical
+        );
         var response = new ViewServiceByPageResponse
         {
             TotalCount = totalCount,
-            Services = new List<ServicePayLoadForStaff>()
+            Services = new List<ServicePayLoadForStaff>(),
         };
         if (services == null)
             throw new AppException(402, "Not found.");
-        
+
         foreach (var s in services)
         {
             var image = await mediaRepository.GetAllMediaByServiceIdAsync(s.Id);
-            response.Services.Add(new ServicePayLoadForStaff()
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Description = s.Description ?? "",
-                Price = s.Price,
-                ImageUrls = image?.Select(m => m.Url).ToList() ?? new List<string>(),
-                IsDeleted = s.IsDeleted,
-                CreatedAt = s.CreatedAt,
-                UpdatedAt = s.UpdatedAt,
-                CreatedById = s.CreatedBy.ToString(),
-                DeletedById = s.CreatedBy.ToString(),
-                UpdatedById = s.UpdatedBy.ToString()
-            });
+            response.Services.Add(
+                new ServicePayLoadForStaff()
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = s.Description ?? "",
+                    Price = s.Price,
+                    ImageUrls = image?.Select(m => m.Url).ToList() ?? new List<string>(),
+                    IsDeleted = s.IsDeleted,
+                    CreatedAt = s.CreatedAt,
+                    UpdatedAt = s.UpdatedAt,
+                    CreatedById = s.CreatedBy.ToString(),
+                    DeletedById = s.CreatedBy.ToString(),
+                    UpdatedById = s.UpdatedBy.ToString(),
+                }
+            );
         }
 
         return response;
@@ -111,7 +123,10 @@ public class ServicesService(
         };
     }
 
-    public async Task<CreateServiceResponse> CreateServiceAsync(CreateServiceRequest request, string accessToken)
+    public async Task<CreateServiceResponse> CreateServiceAsync(
+        CreateServiceRequest request,
+        string accessToken
+    )
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
@@ -135,7 +150,7 @@ public class ServicesService(
             {
                 Url = request.UrlImage,
                 CreatedBy = accountId,
-                UpdatedBy = accountId
+                UpdatedBy = accountId,
             };
         }
 
@@ -145,7 +160,7 @@ public class ServicesService(
             Description = request.Description,
             Price = request.Price,
             CreatedBy = accountId,
-            Media = media is not null ? new List<Media> { media } : new List<Media>()
+            Media = media is not null ? new List<Media> { media } : new List<Media>(),
         };
         await serviceRepository.AddServiceAsync(service);
         return new CreateServiceResponse()
@@ -161,7 +176,11 @@ public class ServicesService(
         };
     }
 
-    public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken,Guid serviceId)
+    public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(
+        UpdateServiceRequest request,
+        string accessToken,
+        Guid serviceId
+    )
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
@@ -175,6 +194,7 @@ public class ServicesService(
         var service = await serviceRepository.SearchServiceByIdForStaffAsync(serviceId);
         if (service == null)
             throw new AppException(404, "Service not found");
+
         service.UpdatedBy = accountId;
         if (!string.IsNullOrWhiteSpace(request.Name))
             service.Name = request.Name;
@@ -188,15 +208,17 @@ public class ServicesService(
             service.IsDeleted = request.IsDeleted;
 
         var newMedias = new List<Media?>();
-        foreach (var media in from url in request.ImageUrls
-                              where service.Media.Any(m => m.Url == url)
-                              select new Media
-                              {
-                                  Url = url,
-                                  ServiceId = service.Id,
-                                  Type = "Image of service",
-                                  CreatedBy = accountId,
-                              })
+        foreach (
+            var media in from url in request.ImageUrls
+            where service.Media.Any(m => m.Url == url)
+            select new Media
+            {
+                Url = url,
+                ServiceId = service.Id,
+                Type = "Image of service",
+                CreatedBy = accountId,
+            }
+        )
         {
             service.Media.Add(media);
             newMedias.Add(media);
@@ -219,7 +241,10 @@ public class ServicesService(
         };
     }
 
-    public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(DeleteServiceRequest request, string accessToken)
+    public async Task<DeleteServiceResponse> DeleteServiceByIdAsync(
+        DeleteServiceRequest request,
+        string accessToken
+    )
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
 
@@ -246,9 +271,7 @@ public class ServicesService(
         return new DeleteServiceResponse
         {
             Success = success,
-            Message = success
-                ? "Xóa dịch vụ và ảnh thành công"
-                : "Xóa dịch vụ thất bại"
+            Message = success ? "Xóa dịch vụ và ảnh thành công" : "Xóa dịch vụ thất bại",
         };
     }
 }

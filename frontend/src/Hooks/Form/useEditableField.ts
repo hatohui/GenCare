@@ -3,7 +3,7 @@ import type { UseQueryResult } from '@tanstack/react-query'
 
 interface UseEditableFieldOptions<T> {
 	query: UseQueryResult<T>
-	onSave?: (updatedData: T) => void | T | Promise<void> | Promise<T>
+	onSave: (updatedData: T) => void | T | Promise<void> | Promise<T>
 }
 
 export function useEditableField<T extends Record<string, any>>({
@@ -64,5 +64,7 @@ export function useEditableField<T extends Record<string, any>>({
 		handleChange,
 		toggleFieldEdit,
 		handleFieldSave,
+		setLocalData,
+		onSave,
 	}
 }
