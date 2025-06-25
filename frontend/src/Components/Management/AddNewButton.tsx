@@ -7,7 +7,7 @@ import { PlusSVG } from '../SVGs'
 const AddNewButton = ({ handleAddNew }: { handleAddNew: () => void }) => {
 	return (
 		<motion.button
-			className='round z-50 max-h-16 py-2 drop-shadow-smt cursor-pointer flex center-all gap-2 border px-3'
+			className='round max-h-16 py-2 drop-shadow-smt cursor-pointer flex center-all gap-2 border px-3'
 			tabIndex={0}
 			whileHover={{
 				backgroundColor: 'var(--color-accent)',

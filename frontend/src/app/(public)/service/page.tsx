@@ -17,7 +17,7 @@ export default function Page() {
 		const search = searchParams.get('search') || ''
 
 		console.log(sort, search)
-	}, [searchParams]) // triggers when the URL params change
+	}, [searchParams])
 
 	return (
 		<section className='relative min-h-screen  text-gray-900'>
