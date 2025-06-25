@@ -1,5 +1,4 @@
-'use client'
-import React, { useState } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { OptionSVG } from '../SVGs'
 import Popup from './Popup'
 import { useAccountStore } from '@/Hooks/useAccount'
@@ -7,31 +6,43 @@ import { CldImage } from 'next-cloudinary'
 import { motion } from 'motion/react'
 import Image from 'next/image'
 
-const UserProfile = ({ collapsed = false }) => {
+const UserProfile = ({ collapsed = false }: { collapsed: boolean }) => {
 	const [showPopUp, setShowPopUp] = useState(false)
 	const { data } = useAccountStore()
+	const containerRef = useRef<HTMLDivElement>(null)
 
-	const variants = {
-		hidden: { opacity: 0, x: -10 },
-		visible: { opacity: 1, x: 0 },
-	}
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				showPopUp &&
+				containerRef.current &&
+				!containerRef.current.contains(event.target as Node)
+			) {
+				setShowPopUp(false)
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside)
+		return () => document.removeEventListener('mousedown', handleClickOutside)
+	}, [showPopUp])
 
 	return (
 		<div
+			ref={containerRef}
 			onClick={() => setShowPopUp(prev => !prev)}
 			className='relative hidden md:flex justify-start items-center gap-2 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-slate-700/50 cursor-pointer'
 		>
-			{/* Popup */}
-			<motion.div
-				variants={variants}
-				initial='hidden'
-				animate={showPopUp ? 'visible' : 'hidden'}
-				transition={{ duration: 0.3, ease: 'easeInOut' }}
-				className='absolute top-0 left-0 translate-x-1/3 w-full h-full z-10'
-				style={{ display: showPopUp ? '' : 'none' }}
-			>
-				<Popup />
-			</motion.div>
+			{showPopUp && (
+				<motion.div
+					initial={{ opacity: 0, x: -10 }}
+					animate={{ opacity: 1, x: 0 }}
+					exit={{ opacity: 0, x: -10 }}
+					transition={{ duration: 0.3, ease: 'easeInOut' }}
+					className='absolute top-full mt-2 right-0 z-50'
+				>
+					<Popup />
+				</motion.div>
+			)}
 
 			{/* Avatar */}
 			{data?.avatarUrl ? (
@@ -51,6 +62,7 @@ const UserProfile = ({ collapsed = false }) => {
 				/>
 			)}
 
+			{/* Info */}
 			{!collapsed && (
 				<div className='flex flex-col items-start'>
 					<div className='text-sm text-general'>{data?.firstName}</div>
@@ -58,7 +70,7 @@ const UserProfile = ({ collapsed = false }) => {
 				</div>
 			)}
 
-			{/* Nút tuỳ chọn */}
+			{/* Option icon */}
 			{!collapsed && (
 				<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
 			)}
