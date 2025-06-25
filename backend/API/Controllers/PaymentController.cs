@@ -12,7 +12,7 @@ public class PaymentController(IMomoService momoService) : ControllerBase
     public async Task<IActionResult> CreateMomoPayment([FromQuery] string purchaseId)
     {
         var result = await momoService.CreatePaymentAsync(purchaseId);
-        return Ok(new { payUrl = result.PayUrl, result });
+        return Ok(result);
     }
 
     [HttpPost("momo-callback")]
