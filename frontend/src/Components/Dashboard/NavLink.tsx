@@ -8,7 +8,11 @@ import { getNavOptionsFromRole } from '@/Utils/Permissions/getNavOptionsFromRole
 import { useAccountStore } from '@/Hooks/useAccount'
 import { useState, useTransition } from 'react'
 
-export default function NavLinks() {
+export default function NavLinks({
+	collapsed = false,
+}: {
+	collapsed?: boolean
+}) {
 	const { data } = useAccountStore()
 	const pathname = usePathname()
 	const router = useRouter()
@@ -65,7 +69,7 @@ export default function NavLinks() {
 								link.svg
 							)}
 						</span>
-						<span className='show-pc-only'>{link.label}</span>
+						{!collapsed && <span className='show-pc-only'>{link.label}</span>}
 					</Link>
 				)
 			})}

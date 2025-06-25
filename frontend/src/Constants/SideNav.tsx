@@ -35,7 +35,7 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.consultant,
 	},
 	{
-		label: 'Quản lý tài khoản',
+		label: 'Account Management',
 		to: '/dashboard/accounts',
 		svg: <AccountSVG />,
 		level: PermissionLevel.manager,
