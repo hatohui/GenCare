@@ -119,4 +119,12 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         }
         return await query.CountAsync();
     }
+
+    public async Task<List<Account>> GetAll()
+    {
+        return await dbContext.Accounts
+            .Include(a => a.Role)
+            .Include(a => a.StaffInfo)
+            .ToListAsync();
+    }
 }
