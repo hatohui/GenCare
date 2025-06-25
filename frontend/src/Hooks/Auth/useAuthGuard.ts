@@ -15,12 +15,12 @@ export function useAuthGuard(
 ) {
 	const tokenStore = useToken()
 	const accountStore = useAccountStore()
-	const { accessToken: token, isDehydrated } = tokenStore
+	const { accessToken: token, isHydrated } = tokenStore
 	const router = useRouter()
 	const { data: user, isLoading: isUserLoading } = useGetMe()
 
 	useEffect(() => {
-		if (!isDehydrated) return
+		if (!isHydrated) return
 
 		const validation = isTokenValid(token)
 
@@ -35,7 +35,7 @@ export function useAuthGuard(
 
 			router.push(`/login?error=${errorParam}`)
 		}
-	}, [token, isDehydrated])
+	}, [token, isHydrated])
 
 	useEffect(() => {
 		if (token && user) {
@@ -45,7 +45,7 @@ export function useAuthGuard(
 				router.push('/403')
 			}
 		}
-	}, [user, token, isDehydrated])
+	}, [user, token, isHydrated])
 
 	return {
 		user,
