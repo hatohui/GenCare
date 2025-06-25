@@ -20,7 +20,7 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
         PaymentHistory payment = new()
         {
             Purchase = purchase!,
-            TransactionId = Guid.Parse(model.TransactionId),
+            TransactionId = model.TransactionId,
             CreatedAt = DateTime.Now,
             Amount = model.Amount,
             ExpiredAt = null, // Assuming no expiration for the payment history
