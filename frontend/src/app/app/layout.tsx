@@ -71,9 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 	return (
 		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground'>
-			<div className='flex flex-col md:flex-row h-screen florageBackground'>
-				<Sidenav />
-			</div>
+			<Sidenav />
 			<main className='flex-1 p-7 h-full scroll-smooth'>{children}</main>
 		</div>
 	)

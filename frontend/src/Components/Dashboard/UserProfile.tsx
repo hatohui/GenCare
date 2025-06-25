@@ -3,10 +3,10 @@ import { OptionSVG } from '../SVGs'
 import Popup from './Popup'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { CldImage } from 'next-cloudinary'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import Image from 'next/image'
 
-const UserProfile = ({ collapsed = false }: { collapsed: boolean }) => {
+const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 	const [showPopUp, setShowPopUp] = useState(false)
 	const { data } = useAccountStore()
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -32,19 +32,20 @@ const UserProfile = ({ collapsed = false }: { collapsed: boolean }) => {
 			onClick={() => setShowPopUp(prev => !prev)}
 			className='relative hidden md:flex justify-start items-center gap-2 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-slate-700/50 cursor-pointer'
 		>
-			{showPopUp && (
-				<motion.div
-					initial={{ opacity: 0, x: -10 }}
-					animate={{ opacity: 1, x: 0 }}
-					exit={{ opacity: 0, x: -10 }}
-					transition={{ duration: 0.3, ease: 'easeInOut' }}
-					className='absolute top-full mt-2 right-0 z-50'
-				>
-					<Popup />
-				</motion.div>
-			)}
+			<AnimatePresence>
+				{showPopUp && (
+					<motion.div
+						initial={{ opacity: 0, x: -10 }}
+						animate={{ opacity: 1, x: 0 }}
+						exit={{ opacity: 0, x: -10 }}
+						transition={{ duration: 0.3, ease: 'easeInOut' }}
+						className='absolute top-full mt-2 right-0 z-50'
+					>
+						<Popup />
+					</motion.div>
+				)}
+			</AnimatePresence>
 
-			{/* Avatar */}
 			{data?.avatarUrl ? (
 				<CldImage
 					className='rounded-full bg-amber-50 object-cover'
@@ -62,7 +63,6 @@ const UserProfile = ({ collapsed = false }: { collapsed: boolean }) => {
 				/>
 			)}
 
-			{/* Info */}
 			{!collapsed && (
 				<div className='flex flex-col items-start'>
 					<div className='text-sm text-general'>{data?.firstName}</div>
@@ -70,7 +70,6 @@ const UserProfile = ({ collapsed = false }: { collapsed: boolean }) => {
 				</div>
 			)}
 
-			{/* Option icon */}
 			{!collapsed && (
 				<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
 			)}

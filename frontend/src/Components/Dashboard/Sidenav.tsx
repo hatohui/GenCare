@@ -7,13 +7,15 @@ export default function SideNav() {
 	const [collapsed, setCollapsed] = useState(false)
 	const [isHovering, setIsHovering] = useState(false)
 
-	// 👉 Force expanded on mobile
-	const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+	const [isMobile, setIsMobile] = useState(false)
 	const isExpanded = !collapsed || isHovering || isMobile
 
 	useEffect(() => {
+		setIsMobile(window.innerWidth < 768)
 		const handleResize = () => {
-			if (window.innerWidth < 768) {
+			const isMobile = window.innerWidth < 768
+			setIsMobile(isMobile)
+			if (isMobile) {
 				setCollapsed(false)
 			}
 		}
@@ -23,7 +25,6 @@ export default function SideNav() {
 
 	return (
 		<div className='relative overflow-visible'>
-			{/* ✅ Only show collapse toggle on md+ */}
 			<button
 				aria-label='side-bar-toggle'
 				className='absolute top-1/2 -translate-y-1/2 right-[-16px] z-20 rounded-full bg-accent text-white w-8 h-8 flex items-center justify-center shadow-lg hover:scale-105 transition hidden md:flex'
