@@ -8,21 +8,27 @@ import ProcessSteps from '@/Components/Landing/StepByStepSection'
 import TestimonialsSection from '@/Components/Landing/TestomonialSection'
 import TrustedBySection from '@/Components/Landing/TrustedBySection'
 import WhyChooseUsSection from '@/Components/Landing/WhyChooseUs'
+import { motion } from 'motion/react'
 
 const Page = () => {
 	return (
-		<>
+		<main className='relative'>
 			<LandingPart />
 			<TrustedBySection />
 			<WhyChooseUsSection />
 			<ServicesSection />
-			<BlogSection />
+			{/* <BlogSection /> */}
 			<TestimonialsSection />
-			<div className='abosolute w-full top-1'>
+			<div className='abosolute -translate-y-[750px] z-10  '>
+				<motion.div
+					initial={{ filter: 'blur(0px)' }}
+					whileInView={{ filter: 'blur(2px)' }}
+					className=''
+				></motion.div>
 				<ProcessSteps />
 			</div>
 			<FooterSection />
-		</>
+		</main>
 	)
 }
 
