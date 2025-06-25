@@ -14,7 +14,7 @@ import {
 } from '@/Services/service-services'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const ServicesPage = () => {
 	const [currentPage, setCurrentPage] = useState(1)
@@ -26,6 +26,10 @@ const ServicesPage = () => {
 	const [includeDeleted, setIncludeDeleted] = useState<boolean | null>(null)
 	const [sortByAlphabetical, setSortByAlphabetical] = useState<boolean>(false)
 	const updateMutation = useUpdateService()
+
+	useEffect(() => {
+		setCurrentPage(1)
+	}, [search])
 
 	const query = useServiceByPageAdmin(
 		currentPage,

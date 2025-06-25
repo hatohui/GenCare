@@ -67,4 +67,6 @@ public interface IAccountRepository
     /// <param name="active">The active status for filtering accounts.</param>
     /// <returns>The total count of accounts matching the criteria.</returns>
     Task<int> GetTotalAccountCountAsync(string? search, string? role, bool? active);
+
+    Task<List<Account>> GetAll();
 }
