@@ -111,10 +111,11 @@ export default function TestimonialsSection() {
 								/>
 							</motion.div>
 
-							<p className='text-general text-lg z-10 absolute bottom-0 p-6'>
-								&quot; {item.content} &quot;
-							</p>
-							<div className='font-bold'>Khách hàng {i + 1}</div>
+							<div className='absolute h-[100px]  bottom-9'>
+								<p className='text-general text-lg z-10 bottom-0 p-6'>
+									&quot; {item.content} &quot;
+								</p>
+							</div>
 						</motion.div>
 					))}
 				</motion.div>

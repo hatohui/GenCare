@@ -12,7 +12,7 @@ import { motion } from 'motion/react'
 
 const Page = () => {
 	return (
-		<main className='relative'>
+		<main className='relative scroll-bar'>
 			<LandingPart />
 			<TrustedBySection />
 			<WhyChooseUsSection />
