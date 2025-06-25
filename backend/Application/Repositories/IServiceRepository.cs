@@ -25,4 +25,6 @@ public interface IServiceRepository
     Task<int> CountServicesIncludeDeletedAsync();
 
     Task<int> CountServicesAsync();
+    
+    Task<List<Service>> GetByIdsAsync(List<Guid> ids);
 }

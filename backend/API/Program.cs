@@ -210,6 +210,7 @@ builder.Services.AddScoped<IMomoService, MomoService>();
 builder.Services.AddScoped<IPaymentHistoryRepository, PaymentHistoryRepository>();
 builder.Services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IManualPaymentService, ManualPaymentService>();
 
 
 

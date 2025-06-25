@@ -11,7 +11,9 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
     [HttpGet("{id}")]
     public async Task<IActionResult> ViewTestTrackerById(Guid id)
     {
-        var result = await testTrackerService.ViewTestResultAsync(id);
+        var accessToken = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+
+        var result = await testTrackerService.ViewTestResultAsync(id, accessToken);
 
         if (result == null)
             return NotFound();
@@ -22,7 +24,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
     [Authorize(Roles = "admin,staff")]
     public async Task<IActionResult> UpdateTestResult([FromRoute] string id,[FromBody] UpdateTestResultRequest request)
     {
-         request.OrderDetailId = id;
+        request.OrderDetailId = id;
         var response = await testTrackerService.UpdateTestResultAsync(request);
 
         if (!response.Success)
