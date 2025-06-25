@@ -7,7 +7,7 @@ import { CldImage } from 'next-cloudinary'
 import { motion } from 'motion/react'
 import Image from 'next/image'
 
-const UserProfile = () => {
+const UserProfile = ({ collapsed = false }) => {
 	const [showPopUp, setShowPopUp] = useState(false)
 	const { data } = useAccountStore()
 
@@ -21,16 +21,19 @@ const UserProfile = () => {
 			onClick={() => setShowPopUp(prev => !prev)}
 			className='relative hidden md:flex justify-start items-center gap-2 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-slate-700/50 cursor-pointer'
 		>
+			{/* Popup */}
 			<motion.div
 				variants={variants}
 				initial='hidden'
 				animate={showPopUp ? 'visible' : 'hidden'}
 				transition={{ duration: 0.3, ease: 'easeInOut' }}
-				className='absolute top-0 left-0 translate-x-1/3 w-full h-full z-10 '
+				className='absolute top-0 left-0 translate-x-1/3 w-full h-full z-10'
 				style={{ display: showPopUp ? '' : 'none' }}
 			>
 				<Popup />
 			</motion.div>
+
+			{/* Avatar */}
 			{data?.avatarUrl ? (
 				<CldImage
 					className='rounded-full bg-amber-50 object-cover'
@@ -47,11 +50,18 @@ const UserProfile = () => {
 					height={30}
 				/>
 			)}
-			<div className='flex flex-col items-start'>
-				<div className='text-sm text-general'>{data?.firstName}</div>
-				<div className='text-xs text-slate-300'>{data?.email}</div>
-			</div>
-			<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
+
+			{!collapsed && (
+				<div className='flex flex-col items-start'>
+					<div className='text-sm text-general'>{data?.firstName}</div>
+					<div className='text-xs text-slate-300'>{data?.email}</div>
+				</div>
+			)}
+
+			{/* Nút tuỳ chọn */}
+			{!collapsed && (
+				<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
+			)}
 		</div>
 	)
 }
