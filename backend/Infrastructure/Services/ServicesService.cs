@@ -187,23 +187,27 @@ public class ServicesService(
         if (request.IsDeleted != service.IsDeleted)
             service.IsDeleted = request.IsDeleted;
 
-        var newMedias = new List<Media?>();
-        foreach (var media in from url in request.ImageUrls
-                              where service.Media.Any(m => m.Url == url)
-                              select new Media
-                              {
-                                  Url = url,
-                                  ServiceId = service.Id,
-                                  Type = "Image of service",
-                                  CreatedBy = accountId,
-                              })
-        {
-            service.Media.Add(media);
-            newMedias.Add(media);
-        }
+        var newMedias = request.ImageUrls
+            .Where(url => !service.Media.Any(m => m.Url == url))
+            .Select(url => new Media
+            {
+                Url = url,
+                ServiceId = service.Id,
+                Type = "Image of service",
+                CreatedBy = accountId,
+            })
+            .ToList();
 
         if (newMedias.Any())
+        {
+            foreach (var media in newMedias)
+            {
+                service.Media.Add(media); // ✅ Add 
+            }
+
             await mediaRepository.AddListOfMediaAsync(newMedias);
+        }
+
         // Update the service in the repository
         await serviceRepository.UpdateServiceByIdAsync(service);
 
