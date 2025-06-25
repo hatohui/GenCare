@@ -19,6 +19,7 @@ const Logo = ({
 				className='object-contain w-8'
 				quality={100}
 				priority
+				draggable={false}
 			/>
 			{withLabel && (
 				<div>
