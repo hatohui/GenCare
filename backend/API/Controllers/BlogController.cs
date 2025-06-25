@@ -9,7 +9,7 @@ namespace API.Controllers;
 /// <summary>
 /// Controller for managing blog operations.
 /// </summary>
-[Route("api/[controller]")]
+[Route("api/blogs")]
 [ApiController]
 public class BlogController(IBlogService blogService) : ControllerBase
 {

@@ -24,11 +24,10 @@ const LogoutButton = () => {
 	return (
 		<button
 			onClick={handleLogout}
-			className='center-all bg-accent p-2 gap-2 text-semibold transition duration-150 font-medium hover:bg-sky-100 hover:text-blue-600'
+			className='center-all bg-accent px-2 py-1 rounded w-full h-fit gap-2 text-semibold transition duration-150 font-medium hover:bg-sky-100 hover:text-blue-600'
 		>
 			<LogoutSVG />
-
-			<div className=' text-center'>Sign Out</div>
+			<div className='text-center'>Sign Out</div>
 		</button>
 	)
 }

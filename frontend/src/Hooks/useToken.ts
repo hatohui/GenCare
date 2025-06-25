@@ -15,15 +15,20 @@ const useToken = create<TokenStore>()(
 			accessToken: null,
 			isDehydrated: false,
 			setAccessToken: (token: string) => set({ accessToken: token }),
-			removeAccessToken: () => {
-				set({ accessToken: null, isDehydrated: false })
-			},
+			removeAccessToken: () => set({ accessToken: null, isDehydrated: false }),
 		}),
 		{
 			name: TOKEN_STORE_STRING,
 			storage: createJSONStorage(() => sessionStorage),
-			onRehydrateStorage: state => {
-				if (state) state.isDehydrated = true
+			partialize: state => ({ accessToken: state.accessToken }),
+			onRehydrateStorage: () => {
+				return (_state, error) => {
+					if (error) {
+						console.error('Rehydration error:', error)
+						return
+					}
+					useToken.setState({ isDehydrated: true })
+				}
 			},
 		}
 	)

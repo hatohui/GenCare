@@ -5,6 +5,7 @@ import Popup from './Popup'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { CldImage } from 'next-cloudinary'
 import { motion } from 'motion/react'
+import Image from 'next/image'
 
 const UserProfile = () => {
 	const [showPopUp, setShowPopUp] = useState(false)
@@ -22,30 +23,34 @@ const UserProfile = () => {
 		>
 			<motion.div
 				variants={variants}
-				initial={{ opacity: 0, x: -10 }}
+				initial='hidden'
 				animate={showPopUp ? 'visible' : 'hidden'}
 				transition={{ duration: 0.3, ease: 'easeInOut' }}
-				className='absolute top-0 left-0 translate-x-1/3 w-full h-full '
+				className='absolute top-0 left-0 translate-x-1/3 w-full h-full z-10 '
+				style={{ display: showPopUp ? '' : 'none' }}
 			>
 				<Popup />
 			</motion.div>
-
-			<CldImage
-				className='rounded-full bg-amber-50 object-cover'
-				src={
-					data?.avatarUrl ||
-					'https://res.cloudinary.com/dz1qj3x8h/image/upload/v1735681234/avatar-placeholder.png'
-				}
-				alt='avatar'
-				width={30}
-				height={30}
-			/>
-
+			{data?.avatarUrl ? (
+				<CldImage
+					className='rounded-full bg-amber-50 object-cover'
+					src={data?.avatarUrl}
+					alt='avatar'
+					width={30}
+					height={30}
+				/>
+			) : (
+				<Image
+					src='/images/default_avatar.png'
+					alt='avatar'
+					width={30}
+					height={30}
+				/>
+			)}
 			<div className='flex flex-col items-start'>
 				<div className='text-sm text-general'>{data?.firstName}</div>
 				<div className='text-xs text-slate-300'>{data?.email}</div>
 			</div>
-
 			<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
 		</div>
 	)

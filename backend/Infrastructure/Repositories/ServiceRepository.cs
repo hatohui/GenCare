@@ -109,6 +109,11 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
             .CountAsync(s => !s.IsDeleted);
     }
 
+    public async Task<List<Service>> GetByIdsAsync(List<Guid> ids)
+      => await dbContext.Services
+            .Where(s => ids.Contains(s.Id) && !s.IsDeleted)
+            .ToListAsync();
+
     public async Task<int> CountServicesIncludeDeletedAsync()
     {
         return await dbContext.Services

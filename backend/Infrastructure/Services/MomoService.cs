@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Application.DTOs.Payment;
 using Application.DTOs.Payment.Momo;
 using Application.Repositories;
 using Application.Services;
@@ -11,7 +12,8 @@ namespace Infrastructure.Services;
 public class MomoService(IOptions<MomoConfig> momoConfig,
     HttpClient httpClient,
     IServiceRepository serviceRepository,
-    IPurchaseRepository purchaseRepository) : IMomoService
+    IPurchaseRepository purchaseRepository,
+    IPaymentHistoryService paymentHistoryService) : IMomoService
 {
 
     public async Task<MomoPaymentResponse> CreatePaymentAsync(string purchaseId)
@@ -50,23 +52,6 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             $"&requestType={momoConfig.Value.RequestType}";
 
 
-        ////accessKey=$accessKey&amount=$amount&extraData=$extraData
-        //&ipnUrl =$ipnUrl & orderId =$orderId & orderInfo =$orderInfo
-        //& partnerCode =$partnerCode & redirectUrl =$redirectUrl
-        //& requestId =$requestId & requestType =$requestType
-
-        //var rawSignature =
-        //    $"accessKey={momoConfig.Value.AccessKey}" +
-        //    $"&amount={amount.ToString("F0")}" +
-        //    $"&extraData={extraData}" +
-        //    $"&ipnUrl={notifyUrl}" +
-        //    $"&orderId={purchaseId}" +
-        //    $"&orderInfo={orderInfo}" +
-        //    $"&partnerCode={momoConfig.Value.PartnerCode}" +
-        //    $"&redirectUrl={returnUrl}" +
-        //    $"&requestId={purchaseId}" +
-        //    $"&requestType={momoConfig.Value.RequestType}";
-
         var signature = ComputeHmacSha256(rawSignature, momoConfig.Value.SecretKey);
 
         var requestData = new
@@ -98,7 +83,7 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         return JsonConvert.DeserializeObject<MomoPaymentResponse>(responseContent) ?? throw new Exception("Momo payment response is null");
     }
 
-    public MomoPaymentResponse ProcessPaymentCallback(IQueryCollection collection)
+    public async Task<MomoPaymentResponse> ProcessPaymentCallback(IQueryCollection collection)
     {
         var response = new MomoPaymentResponse();
 
@@ -133,6 +118,17 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             $"&resultCode={resultCode}" +
             $"&transId={transId}";
 
+        //var rawSignature =
+        //    $"accessKey={momoConfig.Value.AccessKey}" +
+        //    $"&amount={amount}" +
+        //    $"&extraData={extraData}" +
+        //    $"&ipnUrl={notifyUrl}" +
+        //    $"&orderId={purchaseId}" +
+        //    $"&orderInfo={orderInfo}" +
+        //    $"&partnerCode={momoConfig.Value.PartnerCode}" +
+        //    $"&redirectUrl={returnUrl}" +
+        //    $"&requestId={requestId}" +
+        //    $"&requestType={momoConfig.Value.RequestType}";
 
 
         var checkSignature = ComputeHmacSha256(rawSignature, momoConfig.Value.SecretKey);
@@ -146,6 +142,16 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             response.Message = message;
             response.PaymentType = payType;
             response.Amount = Decimal.Parse(amount);
+
+            //xử lý db
+            PaymentHistoryModel model = new() 
+            {
+                PurchaseId = orderId,
+                TransactionId = transId,
+                Amount = Decimal.Parse(amount)
+            };
+
+            await paymentHistoryService.CreatePaymentHistoryAsync(model);
         }
         else
         {
