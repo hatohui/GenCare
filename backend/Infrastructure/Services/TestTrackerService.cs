@@ -1,12 +1,17 @@
 ﻿using Application.DTOs.TestTracker.Request;
 using Application.DTOs.TestTracker.Response;
+using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class TestTrackerService(ITestTrackerRepository testTrackerRepository, IPurchaseRepository purchaseRepository) : ITestTrackerService
+public class TestTrackerService(ITestTrackerRepository testTrackerRepository, 
+                                IPurchaseRepository purchaseRepository, 
+                                IPaymentHistoryRepository paymentHistoryRepository,
+                                IOrderDetailRepository orderDetailRepository) : ITestTrackerService
 {
     /// <summary>
     /// Converts a DateTime to Unspecified kind (removes timezone information).
@@ -22,12 +27,34 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository, IP
     /// Gets test result information by OrderDetailId.
     /// </summary>
     /// <param name="orderDetailId">ID of the test order detail.</param>
+    /// <param name="accessToken"></param>
     /// <returns>Test result information or throws if not found.</returns>
-    public async Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId)
+    public async Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId,string accessToken)
     {
-        // //find purchase by orderDetailId
-        // var purchase = await purchaseRepository.GetById(orderDetailId);
-        // var paymentHistory = await paymentHistoryRepository.GetById(orderDetailId);
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+
+        //get order detail by id
+        var orderDetail = await orderDetailRepository.GetByIdAsync(orderDetailId);
+        if (orderDetail == null)
+            throw new AppException(404,"Order detail not found.");
+        
+        //get purchase by order detail
+        var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
+        if (purchase == null)
+            throw new AppException(404,"Purchase not found.");
+        
+        
+        //check if the account is authorized to view this test result
+        if(purchase.AccountId != accountId)
+            throw new AppException(403, "You are not authorized to view this test result.");
+        //get payment history by purchase,
+        //check if payment is completed
+        var payment = await paymentHistoryRepository.GetById(purchase.Id);
+        if (payment == null)
+            throw new AppException(402, "No payment record found.");
+        if(payment.Status != PaymentStatus.Paid)
+            throw new AppException(402,"Payment is not completed.");
+        
         var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
 

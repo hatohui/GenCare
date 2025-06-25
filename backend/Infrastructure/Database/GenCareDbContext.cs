@@ -527,7 +527,9 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.ExpiredAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("expired_at");
-            entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
+            entity.Property(e => e.TransactionId)
+                .HasMaxLength(255)
+                .HasColumnName("transaction_id");
             entity.Property(e => e.Status)
                 .HasMaxLength(10)
                 .HasColumnName("status");
