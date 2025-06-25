@@ -5,7 +5,6 @@ import { useAccountStore } from '@/Hooks/useAccount'
 import Button from '@/Components/Button'
 import clsx from 'clsx'
 import React from 'react'
-import RangeCalendar from '@/Components/Scheduling/Calendar/RangeCalendar'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
 
 const timeSlots = [
