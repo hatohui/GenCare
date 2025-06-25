@@ -9,7 +9,11 @@ import { useAccountStore } from '@/Hooks/useAccount'
 import { useState, useTransition } from 'react'
 import LoadingIcon from '../LoadingIcon'
 
-export default function NavLinks() {
+export default function NavLinks({
+	collapsed = false,
+}: {
+	collapsed?: boolean
+}) {
 	const { data } = useAccountStore()
 	const pathname = usePathname()
 	const router = useRouter()
@@ -62,7 +66,7 @@ export default function NavLinks() {
 						<span className='size-6'>
 							{isLoading ? <LoadingIcon /> : link.svg}
 						</span>
-						<span className='show-pc-only'>{link.label}</span>
+						{!collapsed && <span className='show-pc-only'>{link.label}</span>}
 					</Link>
 				)
 			})}

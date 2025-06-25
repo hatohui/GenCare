@@ -80,7 +80,7 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         var menstrualEnd = ToUnspecified(startDate.AddDays(4));// Menstrual period lasts 5 days
 
         var startUnsafeDate = ToUnspecified(startDate.AddDays(9));
-        var endUnsafeDate = ToUnspecified(startDate.AddDays(16));// Unsafe period lasts 8 days
+        var endUnsafeDate = ToUnspecified(startDate.AddDays(16));
 
         var startSafeDate = ToUnspecified(menstrualEnd.AddDays(1));
 
@@ -134,7 +134,19 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
       
         var startDate = ToUnspecified(request.StartDate!.Value.Date);
         var endDate = ToUnspecified(request.EndDate?.Date ?? startDate.AddDays(27));
+        
+        //menstrual period lasts 5 days
+        var menstrualStart = birthControl.StartDate;
+        var menstrualEnd = birthControl.StartDate.AddDays(4);
+        
+        var firstSafeStart = birthControl.StartDate;
+        var firstSafeEnd = birthControl.StartUnsafeDate.AddDays(-1);
 
+        
+        var secondSafeStart = birthControl.EndUnsafeDate.AddDays(1);
+        var secondSafeEnd = birthControl.EndDate;
+        
+        
         birthControl.StartDate = startDate;
         birthControl.EndDate = endDate;
         birthControl.StartUnsafeDate = startDate.AddDays(9);
@@ -147,6 +159,22 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         {
             Success = true,
             Message = "Birth control updated successfully.",
+            
+            StartDate = birthControl.StartDate,
+            EndDate = birthControl.EndDate,
+            
+            MenstrualStartDate = menstrualStart,
+            MenstrualEndDate = menstrualEnd,
+            
+            StartSafeDate = firstSafeStart,
+            EndSafeDate = firstSafeEnd,
+            
+            
+            SecondSafeStart = secondSafeStart,
+            SecondSafeEnd = secondSafeEnd,
+            
+            StartUnsafeDate = birthControl.StartUnsafeDate,
+            EndUnsafeDate = birthControl.EndUnsafeDate,
         };
     }
 }

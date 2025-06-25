@@ -5,5 +5,5 @@ namespace Application.Services;
 public interface IMomoService
 {
     Task<MomoPaymentResponse> CreatePaymentAsync(string purchaseId);
-    MomoPaymentResponse ProcessPaymentCallback(IQueryCollection collection);
+    Task<string> ProcessPaymentCallback(MomoIpnRequest request);
 }

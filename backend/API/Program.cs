@@ -207,7 +207,10 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IMomoService, MomoService>();
+builder.Services.AddScoped<IPaymentHistoryRepository, PaymentHistoryRepository>();
+builder.Services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IManualPaymentService, ManualPaymentService>();
 
 
 
@@ -239,6 +242,8 @@ builder.Services.AddDbContext<GenCareDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
+
+
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(opt =>
     {
