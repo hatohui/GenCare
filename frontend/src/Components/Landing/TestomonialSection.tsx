@@ -59,18 +59,18 @@ export default function TestimonialsSection() {
 	const targetRef = useRef<HTMLDivElement | null>(null)
 	const { scrollYProgress } = useScroll({ target: targetRef })
 
-	const x = useTransform(scrollYProgress, [0, 1.2], ['45%', '-95%'])
+	const x = useTransform(scrollYProgress, [0, 1.2], ['50%', '-95%'])
 
 	const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
 
 	return (
 		<section
 			ref={targetRef}
-			className='relative py-20 h-[400vh] flex-col items-center justify-center text-center bg-white '
+			className='relative py-20 h-[400vh] flex-col items-center justify-center text-center bg-white  '
 		>
 			<motion.div
 				style={{ backgroundColor: bgColor }}
-				className='sticky top-1 h-screen overflow-hidden flex flex-col items-center justify-center'
+				className='sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center'
 			>
 				<motion.h2
 					initial={{ opacity: 0, y: 50 }}

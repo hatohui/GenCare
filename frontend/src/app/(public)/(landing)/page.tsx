@@ -18,7 +18,9 @@ const Page = () => {
 			<ServicesSection />
 			<BlogSection />
 			<TestimonialsSection />
-			<ProcessSteps />
+			<div className='abosolute w-full top-1'>
+				<ProcessSteps />
+			</div>
 			<FooterSection />
 		</>
 	)
