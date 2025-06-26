@@ -518,4 +518,42 @@ public class AccountService
 
         return profile;
     }
+
+    public async Task<List<ConsultantInfoGetResponse>> GetAllConsultantProfile()
+    {
+        //get all account
+        var accounts = await accountRepo.GetAll();
+        //filter by isDeleted = false and role is Consultant
+        var consultants = accounts
+            .Where(a => !a.IsDeleted && a.Role.Name.ToLower() == RoleNames.Consultant.ToLower())
+            .ToList();
+        //map to ConsultantInfoGetResponse
+        List<ConsultantInfoGetResponse> rs = new();
+        foreach (var consultant in consultants)
+        {
+            //get department name of consultant
+            if(consultant.StaffInfo == null)
+            {
+                throw new AppException(404, $"Staff Info of {consultant.Id} is not found");
+            }
+            var department = await departmentRepo.GetDepartmentByIdAsync(consultant.StaffInfo.DepartmentId);
+            rs.Add(new ConsultantInfoGetResponse()
+            {
+                Id = consultant.Id.ToString("D"),
+                Role = consultant.Role.Name,
+                Email = consultant.Email,
+                FirstName = consultant.FirstName,
+                LastName = consultant.LastName,
+                Gender = consultant.Gender,
+                PhoneNumber = consultant.Phone,
+                DateOfBirth = consultant.DateOfBirth,
+                AvatarUrl = consultant.AvatarUrl,
+                Degree = consultant.StaffInfo?.Degree ?? string.Empty,
+                YearOfExperience = consultant.StaffInfo?.YearOfExperience ?? 0,
+                Biography = consultant.StaffInfo?.Biography,
+                Department = department?.Name ?? string.Empty
+            });
+        }
+        return rs;
+    }
 }

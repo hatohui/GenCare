@@ -47,4 +47,15 @@ public class MediaRepository(IApplicationDbContext dbContext) : IMediaRepository
             await dbContext.SaveChangesAsync();
         }
     }
+
+    public async Task<Media?> GetByIdAsync(Guid id)
+    {
+        return await dbContext.Media.FindAsync(id);
+    }
+
+    public async Task DeleteAsync(Media media)
+    {
+        dbContext.Media.Remove(media);
+        await dbContext.SaveChangesAsync();
+    }
 }

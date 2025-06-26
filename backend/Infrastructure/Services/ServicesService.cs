@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Service.Requests;
+﻿using Application.DTOs.Service;
+using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
 using Application.Helpers;
 using Application.Repositories;
@@ -72,13 +73,17 @@ public class ServicesService(
                 Name = s.Name,
                 Description = s.Description ?? "",
                 Price = s.Price,
-                ImageUrls = image?.Select(m => m.Url).ToList() ?? new List<string>(),
+                ImageUrls  = image?.Select(m => new MediaServiceModel()
+                {
+                    Id = m.Id,
+                    Url = m.Url
+                }).ToList() ?? new List<MediaServiceModel>(),
                 IsDeleted = s.IsDeleted,
                 CreatedAt = s.CreatedAt,
                 UpdatedAt = s.UpdatedAt,
-                CreatedById = s.CreatedBy.ToString(),
-                DeletedById = s.CreatedBy.ToString(),
-                UpdatedById = s.UpdatedBy.ToString()
+                CreatedBy = s.CreatedBy.ToString(),
+                DeletedBy = s.CreatedBy.ToString(),
+                UpdatedBy = s.UpdatedBy.ToString()
             });
         }
 
@@ -99,14 +104,18 @@ public class ServicesService(
             throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
 
-        var imUrls = mediaService?.Select(m => m.Url).ToList();
+        
         return new ViewServiceResponse()
         {
             Id = service.Id.ToString(),
             Name = service.Name,
             Description = service.Description ?? "",
             Price = service.Price,
-            ImageUrls = imUrls,
+            ImageUrls  = mediaService?.Select(m => new MediaServiceModel()
+            {
+                Id = m.Id,
+                Url = m.Url
+            }).ToList() ?? new List<MediaServiceModel>(),
             CreatedAt = service.CreatedAt,
         };
     }
@@ -116,50 +125,64 @@ public class ServicesService(
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
-        // Validate role
+        // Check if the user has the right role to create a service
         if (role != RoleNames.Admin && role != RoleNames.Manager)
             throw new AppException(403, "UNAUTHORIZED");
-        // Validate not null
+
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new AppException(400, "Service name cannot be empty.");
-        //check exists
+
+        // Check if the service name already exists
         if (await serviceRepository.ExistsByNameAsync(request.Name))
             throw new AppException(400, "Service name already exists.");
-        //price is not negative
+
         if (request.Price < 0)
             throw new AppException(400, "Service price cannot be negative.");
-        Media? media = null;
-        if (!string.IsNullOrWhiteSpace(request.UrlImage))
+
+        var mediaList = new List<Media>();
+
+        if (request.ImageUrls != null && request.ImageUrls.Any())
         {
-            media = new Media()
+            foreach (var url in request.ImageUrls)
             {
-                Url = request.UrlImage,
-                CreatedBy = accountId,
-                UpdatedBy = accountId
-            };
+                var media = new Media
+                {
+                    Url = url,
+                    Type = "Image of service",
+                    CreatedBy = accountId,
+                    UpdatedBy = accountId
+                };
+                mediaList.Add(media);
+            }
         }
 
-        var service = new Service()
+
+        
+        var service = new Service
         {
             Name = request.Name,
             Description = request.Description,
             Price = request.Price,
             CreatedBy = accountId,
-            Media = media is not null ? new List<Media> { media } : new List<Media>()
+            Media = mediaList 
         };
+
+        
         await serviceRepository.AddServiceAsync(service);
-        return new CreateServiceResponse()
+
+        return new CreateServiceResponse
         {
             Id = service.Id.ToString(),
             Name = service.Name,
             Description = service.Description ?? "",
             Price = service.Price,
-            UrlImage = media?.Url ?? "",
+            ImageUrls =  mediaList.Select(m => m.Url).ToList(),
             IsDeleted = service.IsDeleted,
             CreatedAt = service.CreatedAt,
-            UpdatedAt = service.CreatedAt,
+            UpdatedAt = service.UpdatedAt,
         };
     }
+
 
     public async Task<UpdateServiceResponse> UpdateServiceByIdAsync(UpdateServiceRequest request, string accessToken,Guid serviceId)
     {
@@ -187,23 +210,27 @@ public class ServicesService(
         if (request.IsDeleted != service.IsDeleted)
             service.IsDeleted = request.IsDeleted;
 
-        var newMedias = new List<Media?>();
-        foreach (var media in from url in request.ImageUrls
-                              where service.Media.Any(m => m.Url == url)
-                              select new Media
-                              {
-                                  Url = url,
-                                  ServiceId = service.Id,
-                                  Type = "Image of service",
-                                  CreatedBy = accountId,
-                              })
-        {
-            service.Media.Add(media);
-            newMedias.Add(media);
-        }
+        var newMedias = request.ImageUrls
+            .Where(url => !service.Media.Any(m => m.Url == url))
+            .Select(url => new Media
+            {
+                Url = url,
+                ServiceId = service.Id,
+                Type = "Image of service",
+                CreatedBy = accountId,
+            })
+            .ToList();
 
         if (newMedias.Any())
+        {
+            foreach (var media in newMedias)
+            {
+                service.Media.Add(media); // ✅ Add 
+            }
+
             await mediaRepository.AddListOfMediaAsync(newMedias);
+        }
+
         // Update the service in the repository
         await serviceRepository.UpdateServiceByIdAsync(service);
 
@@ -247,8 +274,8 @@ public class ServicesService(
         {
             Success = success,
             Message = success
-                ? "Xóa dịch vụ và ảnh thành công"
-                : "Xóa dịch vụ thất bại"
+                ? "Service and images deleted successfully."
+                : "Failed to delete the service."
         };
     }
 }

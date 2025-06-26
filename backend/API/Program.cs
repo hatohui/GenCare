@@ -179,6 +179,7 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IStaffInfoRepository, StaffInfoRepository>();
 builder.Services.AddSingleton<IGoogleCredentialService, GoogleCredentialService>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
+builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
