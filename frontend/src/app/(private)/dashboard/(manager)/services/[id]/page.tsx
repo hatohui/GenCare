@@ -6,7 +6,6 @@ import { useEditableField } from '@/Hooks/Form/useEditableField'
 import { useQueryUIState } from '@/Hooks/UI/useQueryUIState'
 import { useParams } from 'next/navigation'
 import EditableField from '@/Components/Management/EditableField'
-import ReturnButton from '@/Components/ReturnButton'
 import {
 	Service,
 	UpdateServiceApiRequest,
@@ -14,12 +13,14 @@ import {
 } from '@/Interfaces/Service/Types/Service'
 import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import { CldImage } from 'next-cloudinary'
+import { useRouter } from 'next/navigation'
 
 const ServiceDetailPage = () => {
 	const params = useParams()
 	const serviceId = typeof params.id === 'string' ? params.id : undefined
 	const updateServiceMutation = useUpdateService()
 	const query = useServiceById(serviceId ?? '')
+	const router = useRouter()
 
 	const {
 		localData: serviceData,
@@ -37,7 +38,7 @@ const ServiceDetailPage = () => {
 				description: updatedData.description,
 				price: updatedData.price,
 				isDeleted: updatedData.isDeleted,
-				imageUrls: updatedData.imageUrls,
+				imageUrls: updatedData.imageUrls?.map(image => image.url),
 			}
 
 			const result = updateServiceSchema.safeParse(updatedServiceDTO)
@@ -56,19 +57,33 @@ const ServiceDetailPage = () => {
 	})
 
 	const handleUpload = async (url: string) => {
-		const updatedData = serviceData
-			? {
-					...serviceData,
-					imageUrls: Array.from(
-						new Set([...(serviceData.imageUrls ?? []), url])
-					),
-			  }
-			: null
+		if (!serviceData) return
 
-		if (updatedData) {
-			setLocalData(updatedData)
-			await onSave(updatedData)
+		const updatedData = {
+			...serviceData,
+			imageUrls: [
+				...new Set(
+					(serviceData.imageUrls ?? []).map(image => ({
+						id: image.id,
+						url: image.url,
+					}))
+				),
+				{ id: '', url },
+			],
 		}
+
+		const updateServiceDTO = {
+			...serviceData,
+			imageUrls: [
+				{
+					id: '',
+					url,
+				},
+			],
+		}
+
+		setLocalData(updatedData)
+		await onSave(updateServiceDTO)
 	}
 
 	if (queryUI) return queryUI
@@ -86,95 +101,114 @@ const ServiceDetailPage = () => {
 	console.log(serviceData)
 
 	return (
-		<div className='container mx-auto bg-general min-h-screen'>
-			<div className='flex flex-col md:flex-row gap-8 bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8'>
-				<ReturnButton />
+		<div>
+			<div className='max-w-5xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-200 px-6 sm:px-10 py-8'>
+				{/* Back Button */}
+				<button
+					onClick={() => router.back()}
+					className='mb-3 flex items-center font-medium text-sm'
+				>
+					<span className='text-lg mr-1'>←</span> Back
+				</button>
 
-				{/* Left Form */}
-				<div className='w-full md:w-2/3 space-y-8'>
-					<h1 className='text-3xl sm:text-4xl font-bold text-accent border-b-2 border-gray-200 pb-3'>
-						Service Details
-					</h1>
+				<div className='flex justify-around'>
+					<div>
+						{/* Title */}
+						<h1 className='text-4xl font-bold text-accent border-b pb-4 mb-6'>
+							Service Details
+						</h1>
 
-					<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-						<div className='flex flex-col space-y-2'>
-							<label className='text-main font-medium text-sm sm:text-base'>
-								Name
-							</label>
-							<EditableField<Service>
-								name='name'
-								value={serviceData.name ?? ''}
-								onChange={handleChange}
-								toggleFieldEdit={toggleFieldEdit}
-								handleFieldSave={handleFieldSave}
-								editingField={editingField}
-								className='rounded-lg border-gray-300 focus:border-accent focus:ring focus:ring-accent focus:ring-opacity-50 transition-all'
-							/>
-						</div>
+						<div className='flex flex-col md:flex-row gap-10'>
+							{/* Left Side: Info Form */}
+							<div className='space-y-6'>
+								{/* Name & Price */}
+								<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+									<div className='flex flex-col space-y-1'>
+										<label className='text-sm font-medium text-main'>
+											Name
+										</label>
+										<EditableField<Service>
+											name='name'
+											value={serviceData.name ?? ''}
+											onChange={handleChange}
+											toggleFieldEdit={toggleFieldEdit}
+											handleFieldSave={handleFieldSave}
+											editingField={editingField}
+										/>
+									</div>
 
-						<div className='flex flex-col space-y-2'>
-							<label className='text-main font-medium text-sm sm:text-base'>
-								Price
-							</label>
-							<EditableField
-								name='price'
-								type='number'
-								value={serviceData.price ?? 0}
-								onChange={handleChange}
-								toggleFieldEdit={toggleFieldEdit}
-								handleFieldSave={handleFieldSave}
-								editingField={editingField}
-								className='rounded-lg border-gray-300 focus:border-accent focus:ring focus:ring-accent focus:ring-opacity-50 transition-all'
-							/>
-						</div>
-					</div>
+									<div className='flex flex-col space-y-1'>
+										<label className='text-sm font-medium text-main'>
+											Price
+										</label>
+										<EditableField
+											name='price'
+											type='number'
+											value={serviceData.price ?? 0}
+											onChange={handleChange}
+											toggleFieldEdit={toggleFieldEdit}
+											handleFieldSave={handleFieldSave}
+											editingField={editingField}
+										/>
+									</div>
+								</div>
 
-					<div className='flex flex-col space-y-2'>
-						<label className='text-main font-medium text-sm sm:text-base'>
-							Description
-						</label>
-						<EditableField
-							name='description'
-							type='textarea'
-							value={serviceData.description ?? ''}
-							onChange={handleChange}
-							toggleFieldEdit={toggleFieldEdit}
-							handleFieldSave={handleFieldSave}
-							editingField={editingField}
-							className='rounded-lg border-gray-300 focus:border-accent focus:ring focus:ring-accent focus:ring-opacity-50 transition-all min-h-[120px]'
-						/>
-					</div>
+								{/* Description */}
+								<div className='flex flex-col space-y-1'>
+									<label className='text-sm font-medium text-main'>
+										Description
+									</label>
+									<EditableField
+										name='description'
+										type='textarea'
+										value={serviceData.description ?? ''}
+										onChange={handleChange}
+										toggleFieldEdit={toggleFieldEdit}
+										handleFieldSave={handleFieldSave}
+										editingField={editingField}
+									/>
+								</div>
 
-					<div className='flex flex-col space-y-4'>
-						<p className='text-main font-medium text-sm sm:text-base'>Images</p>
-
-						<CloudinaryButton
-							className='bg-secondary text-white px-5 py-2.5 rounded-lg hover:bg-main transition-all font-medium text-sm sm:text-base'
-							text='Upload Image'
-							onUploaded={handleUpload}
-						/>
-					</div>
-				</div>
-
-				{/* Right Gallery Preview */}
-				<div className='hidden md:block w-full md:w-1/3 max-w-sm space-y-4'>
-					<h2 className='text-xl font-semibold text-main'>Image Preview</h2>
-					<div className='grid grid-cols-2 gap-3'>
-						{serviceData.imageUrls?.map((url, i) => (
-							<div
-								key={i}
-								className='aspect-square overflow-hidden rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow'
-							>
-								<CldImage
-									className='w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-in-out'
-									src={url}
-									width={1000}
-									height={1000}
-									sizes='100vw'
-									alt={`preview-img-${i}`}
-								/>
+								{/* Upload Button */}
+								<div className='flex flex-col space-y-2'>
+									<label className='text-sm font-medium text-main'>
+										Images
+									</label>
+									<CloudinaryButton
+										className='w-fit bg-accent text-white font-medium px-4 py-2 rounded-md hover:brightness-110 transition-all'
+										text='Upload Image'
+										onUploaded={handleUpload}
+									/>
+								</div>
 							</div>
-						))}
+						</div>
+					</div>
+
+					<div className='w-1 main-gradient-bg' />
+					{/* Right Side: Image Gallery */}
+					<div className='space-y-4 px-5'>
+						<h2 className='text-lg font-semibold text-main border-b pb-1'>
+							Image Preview
+						</h2>
+
+						<div className='grid grid-cols-2 gap-3 max-h-[420px] overflow-y-auto pr-1'>
+							{serviceData.imageUrls?.map((url, i) => (
+								<div
+									key={i}
+									className='relative group aspect-square overflow-hidden rounded-xl border border-gray-200 shadow-md transition-shadow hover:shadow-xl'
+								>
+									<CldImage
+										src={url.url}
+										alt={`preview-img-${i}`}
+										width={800}
+										height={800}
+										sizes='100vw'
+										className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+									/>
+									<div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all' />
+								</div>
+							))}
+						</div>
 					</div>
 				</div>
 			</div>
