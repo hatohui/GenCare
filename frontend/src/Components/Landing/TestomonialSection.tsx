@@ -37,12 +37,12 @@ const Testimonials = [
 		content:
 			'Tôi đánh giá cao tính năng theo dõi lịch sử khám bệnh và nhắc nhở dùng thuốc của Health Care.',
 	},
-	// {
-	// 	name: 'Đinh Mai Hương',
-	// 	avatar: '',
-	// 	content:
-	// 		'Health Care giúp tôi đặt lịch tư vấn sản phụ khoa dễ dàng, không cần chờ đợi lâu tại bệnh viện.',
-	// },
+	{
+		name: 'Nicolai Hong',
+		avatar: '/landing/6.jpg',
+		content:
+			'Health Care giúp tôi đặt lịch tư vấn sản phụ khoa dễ dàng, không cần chờ đợi lâu tại bệnh viện.',
+	},
 ]
 
 /**
