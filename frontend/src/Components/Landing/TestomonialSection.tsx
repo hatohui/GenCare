@@ -31,12 +31,12 @@ const Testimonials = [
 		content:
 			'Ứng dụng có giao diện dễ sử dụng, phù hợp với cả người lớn tuổi trong gia đình tôi.',
 	},
-	// {
-	// 	name: 'Hoàng Thanh Tùng',
-	// 	avatar: '',
-	// 	content:
-	// 		'Tôi đánh giá cao tính năng theo dõi lịch sử khám bệnh và nhắc nhở dùng thuốc của Health Care.',
-	// },
+	{
+		name: 'Hoàng Thanh Tùng',
+		avatar: '/landing/5.jpg',
+		content:
+			'Tôi đánh giá cao tính năng theo dõi lịch sử khám bệnh và nhắc nhở dùng thuốc của Health Care.',
+	},
 	// {
 	// 	name: 'Đinh Mai Hương',
 	// 	avatar: '',
