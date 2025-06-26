@@ -52,7 +52,7 @@ public class ManualPaymentService(
             ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
             
         };
-        var confirmPayment =await paymentHistoryRepository.ConfirmPayment(payment);
+        var confirmPayment = await paymentHistoryRepository.ConfirmPayment(payment);
         
         return new ConfirmPaymentByStaffResponse()
         {
