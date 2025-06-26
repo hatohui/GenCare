@@ -1,5 +1,5 @@
-import AccountList from '@/Components/Management/AccountList'
 import SearchBar from '@/Components/Management/SearchBar'
+import AccountList from '@/Components/staff/AccountList'
 import clsx from 'clsx'
 import React from 'react'
 
