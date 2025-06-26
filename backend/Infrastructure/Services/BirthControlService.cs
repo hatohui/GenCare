@@ -136,16 +136,7 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         var endDate = ToUnspecified(request.EndDate?.Date ?? startDate.AddDays(27));
         
         //menstrual period lasts 5 days
-        var menstrualStart = birthControl.StartDate;
-        var menstrualEnd = birthControl.StartDate.AddDays(4);
-        
-        var firstSafeStart = birthControl.StartDate;
-        var firstSafeEnd = birthControl.StartUnsafeDate.AddDays(-1);
-
-        
-        var secondSafeStart = birthControl.EndUnsafeDate.AddDays(1);
-        var secondSafeEnd = birthControl.EndDate;
-        
+      
         
         birthControl.StartDate = startDate;
         birthControl.EndDate = endDate;
@@ -155,6 +146,16 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         birthControl.EndSafeDate = endDate;
 
         await birthControlRepository.UpdateBirthControlAsync(birthControl);
+        
+       
+        var newBirthControl =await birthControlRepository.GetBirthControlAsync(accountId);
+        var menstrualStart = startDate;
+        var menstrualEnd = startDate.AddDays(4);
+        var firstSafeStart = newBirthControl.StartDate;
+        var firstSafeEnd = newBirthControl.StartUnsafeDate.AddDays(-1);
+        var secondSafeStart = newBirthControl.EndUnsafeDate.AddDays(1);
+        var secondSafeEnd = newBirthControl.EndDate;
+
         return new UpdateBirthControlResponse()
         {
             Success = true,
@@ -165,11 +166,11 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             
             MenstrualStartDate = menstrualStart,
             MenstrualEndDate = menstrualEnd,
-            
+            //
             StartSafeDate = firstSafeStart,
             EndSafeDate = firstSafeEnd,
             
-            
+            //
             SecondSafeStart = secondSafeStart,
             SecondSafeEnd = secondSafeEnd,
             
