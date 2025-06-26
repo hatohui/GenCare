@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Blog.Request;
+using Application.DTOs.Blog.Request;
 using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
@@ -28,9 +28,13 @@ public class BlogController(IBlogService blogService) : ControllerBase
     /// Adds a new blog.
     /// </summary>
     /// <param name="request">The blog creation request data.</param>
-    /// <returns>A response indicating the result of the creation operation.</returns>
+    /// <summary>
+    /// Creates a new blog entry using the provided request data.
+    /// </summary>
+    /// <param name="request">The blog creation details submitted in the request body.</param>
+    /// <returns>Returns HTTP 201 Created if the blog is successfully created.</returns>
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Consultant},{RoleNames.Staff}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
     public async Task<IActionResult> AddBlog([FromBody] BlogCreateRequest request)
     {
         //get access token from header

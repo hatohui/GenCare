@@ -30,7 +30,7 @@ export default function SideNav() {
 				className='absolute top-1/2 -translate-y-1/2 right-[-16px] z-20 rounded-full bg-accent text-white w-8 h-8 flex items-center justify-center shadow-lg hover:scale-105 transition hidden md:flex'
 				onClick={() => setCollapsed(!collapsed)}
 			>
-				{collapsed ? '→' : '←'}
+				{collapsed && !isHovering ? '→' : '←'}
 			</button>
 
 			<div

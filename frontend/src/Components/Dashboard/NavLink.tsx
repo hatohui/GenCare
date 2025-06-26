@@ -7,6 +7,7 @@ import { SideNavButtonProp } from '@/Constants/SideNav'
 import { getNavOptionsFromRole } from '@/Utils/Permissions/getNavOptionsFromRole'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { useState, useTransition } from 'react'
+import LoadingIcon from '../LoadingIcon'
 
 export default function NavLinks({
 	collapsed = false,
@@ -63,11 +64,7 @@ export default function NavLinks({
 						)}
 					>
 						<span className='size-6'>
-							{isLoading ? (
-								<div className='h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin' />
-							) : (
-								link.svg
-							)}
+							{isLoading ? <LoadingIcon /> : link.svg}
 						</span>
 						{!collapsed && <span className='show-pc-only'>{link.label}</span>}
 					</Link>
