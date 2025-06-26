@@ -28,6 +28,8 @@ export default function NavLinks({
 	const currentRoot = pathname.split('/')[1]
 	const links = getNavOptionsFromRole(data.role.name, currentRoot)
 
+	console.log(links)
+
 	return (
 		<>
 			{links.map((link: SideNavButtonProp) => {
