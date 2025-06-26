@@ -9,7 +9,6 @@ const BOOKING_URL = `${DEFAULT_API_URL}/birthControl`
 type BirthControlRequest = {
 	accountId: string
 	startDate: string
-	endDate?: string
 }
 
 const birthControlApi = {
@@ -32,6 +31,8 @@ const birthControlApi = {
 				headers: { Authorization: header },
 			})
 			.then(res => {
+				console.log('start date end ate', data)
+
 				console.log(res.data)
 				return res.data
 			}),
@@ -77,5 +78,6 @@ export const useUpdateBirthControl = () => {
 	return useMutation({
 		mutationFn: (data: BirthControlRequest) =>
 			birthControlApi.update({ header, data }),
+		mutationKey: ['updateBirthControl'],
 	})
 }

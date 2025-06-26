@@ -18,7 +18,6 @@ const Page = () => {
 
 	const [month, setMonth] = useState(new Date().getMonth())
 	const [year, setYear] = useState(new Date().getFullYear())
-	const [showCalendar, setShowCalendar] = useState(false)
 
 	return (
 		<div className='space-y-6'>

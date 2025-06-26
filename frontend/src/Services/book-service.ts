@@ -1,5 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { OrderDetailResponse } from '@/Interfaces/Payment/Types/BookService'
+import { MomoServiceResponse } from '@/Interfaces/Payment/Types/MomoService'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
@@ -26,7 +27,7 @@ const bookingApi = {
 	},
 	MomoPay: (header: string, purchaseId: string) => {
 		return axios
-			.post(`${PAY_URL}/momo&purchaseId=${purchaseId}`, {
+			.post<MomoServiceResponse>(`${PAY_URL}/momo?purchaseId=${purchaseId}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => {

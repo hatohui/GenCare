@@ -3,13 +3,15 @@ import { motion } from 'motion/react'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import clsx from 'clsx'
 import { useMomoPay } from '@/Services/book-service'
+import { useRouter } from 'next/navigation'
 
 const BookingItem = ({ item }: { item: OrderDetail }) => {
 	const momoPayment = useMomoPay(item.purchaseId)
+	const router = useRouter()
 
 	const handlePayment = () => {
 		momoPayment.mutate(undefined, {
-			onSuccess: data => console.log('Payment success'),
+			onSuccess: data => router.push(data.payUrl),
 		})
 	}
 
@@ -73,7 +75,7 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 						onClick={handlePayment}
 						className='px-4 py-2 bg-accent text-white font-bold rounded-full hover:bg-rose-500  transition'
 					>
-						Pay now!
+						Thanh Toán bằng momo!
 					</button>
 				)}
 			</div>

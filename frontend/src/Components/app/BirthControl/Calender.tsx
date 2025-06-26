@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
 	startOfMonth,
 	endOfMonth,
@@ -39,17 +39,22 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 	const startDateGrid = startOfWeek(monthStart, { weekStartsOn: 0 })
 	const endDateGrid = endOfWeek(monthEnd, { weekStartsOn: 0 })
 
-	// Tính ngày rụng trứng ước lượng: giữa khoảng không an toàn
-	const ovulationDay = (() => {
+	// Calculate ovulation day as the midpoint between startUnsafeDate and endUnsafeDate
+	const ovulationDay = useMemo(() => {
 		const start = parseISO(startUnsafeDate)
 		const end = parseISO(endUnsafeDate)
 		const diff = differenceInDays(end, start)
 		return addToDate(start, Math.floor(diff / 2))
-	})()
+	}, [startUnsafeDate, endUnsafeDate])
+
+	// Function to check if a day is within the interval
+	const inInterval = (date: Date, start: string, end: string) =>
+		isWithinInterval(date, { start: parseISO(start), end: parseISO(end) })
 
 	const rows: React.ReactNode[] = []
 	let currentDay = startDateGrid
 
+	// Build the grid for the calendar
 	while (currentDay <= endDateGrid) {
 		const week: React.ReactNode[] = []
 
@@ -58,29 +63,25 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 			const isCurrentMonth = day.getMonth() === month
 			const label = format(day, 'd')
 
-			const inInterval = (start: string, end: string) =>
-				isWithinInterval(day, {
-					start: parseISO(start),
-					end: parseISO(end),
-				})
-
+			// Default background and title for the day
 			let bgClass = 'bg-white'
 			let title = ''
 			let ovulationIcon = ''
 
+			// Check for ovulation day
 			if (format(day, 'yyyy-MM-dd') === format(ovulationDay, 'yyyy-MM-dd')) {
 				bgClass = 'bg-yellow-400'
 				title = 'Ngày rụng trứng – Khả năng thụ thai cao nhất 🌸'
 				ovulationIcon = '🌸'
-			} else if (inInterval(menstrualStartDate, menstrualEndDate)) {
+			} else if (inInterval(day, menstrualStartDate, menstrualEndDate)) {
 				bgClass = 'bg-red-200'
 				title = 'Pha hành kinh – Ngày có kinh nguyệt'
-			} else if (inInterval(startUnsafeDate, endUnsafeDate)) {
+			} else if (inInterval(day, startUnsafeDate, endUnsafeDate)) {
 				bgClass = 'bg-yellow-300'
 				title = 'Pha không an toàn – Khả năng thụ thai cao'
 			} else if (
-				inInterval(startSafeDate, endSafeDate) ||
-				inInterval(secondSafeStart, secondSafeEnd)
+				inInterval(day, startSafeDate, endSafeDate) ||
+				inInterval(day, secondSafeStart, secondSafeEnd)
 			) {
 				bgClass = 'bg-blue-200'
 				title = 'Pha an toàn – Khả năng thụ thai thấp'
@@ -102,6 +103,7 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 				</motion.div>
 			)
 
+			// Move to the next day
 			currentDay = addDays(currentDay, 1)
 		}
 
@@ -118,21 +120,22 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 		)
 	}
 
+	// Weekdays for the calendar
 	const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
 
 	return (
 		<div className='space-y-3'>
-			{/* Tên ngày trong tuần */}
+			{/* Weekday headers */}
 			<div className='grid grid-cols-7 text-center font-semibold text-sm text-gray-600'>
 				{weekdays.map(day => (
 					<div key={day}>{day}</div>
 				))}
 			</div>
 
-			{/* Lưới lịch */}
+			{/* Calendar grid */}
 			{rows}
 
-			{/* Chú thích */}
+			{/* Legend */}
 			<div className='grid grid-cols-4 gap-2 text-xs mt-4 text-gray-700'>
 				<div className='flex items-center gap-2'>
 					<div className='w-4 h-4 rounded bg-red-200 border border-gray-300' />
@@ -152,7 +155,7 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 				</div>
 			</div>
 
-			{/* Ghi chú hỗ trợ người dùng mới */}
+			{/* Note for users */}
 			<div className='mt-2 text-xs text-gray-500'>
 				Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸)
 				thường rơi vào giữa khoảng không an toàn.

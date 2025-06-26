@@ -7,15 +7,12 @@ import {
 	useUpdateBirthControl,
 } from '@/Services/birthControl-service'
 import { useBirthControl } from '@/Hooks/useBirthControl'
-import RangeCalendar from '@/Components/Scheduling/Calendar/RangeCalendar'
+import SingleDateCalendar from '@/Components/Scheduling/Calendar/Calendar'
 
 const birthControlSchema = z.object({
 	accountID: z.string().min(1, 'Account ID is required'),
 	dateRange: z
-		.tuple([
-			z.union([z.date(), z.null()]), // <-- Allow null here too
-			z.union([z.date(), z.null()]),
-		])
+		.tuple([z.union([z.date(), z.null()]), z.union([z.date(), z.null()])])
 		.refine(([start, end]) => start !== null && (!end || start <= end), {
 			message: 'Start date must be before end date',
 			path: ['dateRange'],
@@ -63,7 +60,6 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 			{
 				accountId: accountID,
 				startDate: startDate.toISOString(),
-				endDate: endDate?.toISOString(),
 			},
 			{
 				onSuccess: data => setBirthControl(data),
@@ -72,7 +68,6 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 						{
 							accountId: accountID,
 							startDate: startDate.toISOString(),
-							endDate: endDate?.toISOString(),
 						},
 						{ onSuccess: data => setBirthControl(data) }
 					)
@@ -89,11 +84,9 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 				<label className='block mb-2 text-main font-extrabold text-3xl text-center '>
 					Chọn ngày hành kinh
 				</label>
-				<RangeCalendar
-					startDate={startDate}
-					endDate={endDate}
-					setStartDate={setStartDate}
-					setEndDate={setEndDate}
+				<SingleDateCalendar
+					selectedDate={startDate}
+					setSelectedDate={setStartDate}
 				/>
 				{errors.dateRange && (
 					<p className='text-red-500 text-sm mt-2'>
