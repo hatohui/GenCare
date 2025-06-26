@@ -2,16 +2,24 @@ import React from 'react'
 import { motion } from 'motion/react'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import clsx from 'clsx'
-import { useMomoPay } from '@/Services/book-service'
+import { useDeleteOrderDetail, useMomoPay } from '@/Services/book-service'
 import { useRouter } from 'next/navigation'
+import { TrashCanSVG } from '@/Components/SVGs'
 
 const BookingItem = ({ item }: { item: OrderDetail }) => {
 	const momoPayment = useMomoPay(item.purchaseId)
+	const deleteOrder = useDeleteOrderDetail(item.orderDetailId)
 	const router = useRouter()
 
 	const handlePayment = () => {
 		momoPayment.mutate(undefined, {
 			onSuccess: data => router.push(data.payUrl),
+		})
+	}
+
+	const handleDelete = () => {
+		deleteOrder.mutate(undefined, {
+			onSuccess: () => router.push('/app/booking'),
 		})
 	}
 
@@ -22,11 +30,15 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 		>
 			<div className='flex justify-between'>
 				<h3 className='font-bold text-2xl text-main'>{item.serviceName}</h3>
+
 				<span className='text-sm text-gray-600'>
 					Booked on:{' '}
 					{item.createdAt instanceof Date
 						? item.createdAt.toLocaleString()
 						: new Date(item.createdAt).toLocaleString()}
+				</span>
+				<span onClick={handleDelete}>
+					<TrashCanSVG className='size-12 rounded-full hover:bg-accent/20 p-2 transition text-accent' />
 				</span>
 			</div>
 			<ul className='mt-4 space-y-2'>

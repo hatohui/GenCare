@@ -7,6 +7,7 @@ import axios from 'axios'
 
 const BOOKING_URL = `${DEFAULT_API_URL}/purchases`
 const PAY_URL = `${DEFAULT_API_URL}/payments`
+const ORDER_URL = `${DEFAULT_API_URL}/orderDetails`
 
 const bookingApi = {
 	GetOrder: (header: string) => {
@@ -36,6 +37,11 @@ const bookingApi = {
 				return res.data
 			})
 	},
+	DeleteOrderDetail: (header: string, id: string) => {
+		return axios
+			.delete(`${ORDER_URL}/${id}`, { headers: { Authorization: header } })
+			.then(res => res.data)
+	},
 }
 
 export const useBookServices = () => {
@@ -60,5 +66,16 @@ export const useMomoPay = (purchaseId: string) => {
 
 	return useMutation({
 		mutationFn: () => bookingApi.MomoPay(header, purchaseId),
+	})
+}
+export const useDeleteOrderDetail = (id: string) => {
+	const header = useAccessTokenHeader()
+	const { refetch } = useGetOrder()
+
+	return useMutation({
+		mutationFn: () => bookingApi.DeleteOrderDetail(header, id),
+		onSuccess: () => {
+			refetch()
+		},
 	})
 }
