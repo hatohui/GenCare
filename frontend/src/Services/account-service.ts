@@ -10,6 +10,8 @@ import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { Role } from '@/Utils/Permissions/isAllowedRole'
+import { Consultant } from '@/Interfaces/Account/Types/Consultant'
+import { GetConsultantByPageResponse } from '@/Interfaces/Account/Schema/consultant'
 
 const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 
@@ -80,6 +82,14 @@ const accountApi = {
 			})
 			.then(res => res.data)
 	},
+	getConsultants: (header: string) => {
+		const queryUrl = `${ACCOUNT_URL}/consultants`
+		return axiosInstance
+			.get<GetConsultantByPageResponse>(queryUrl, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
 }
 
 export const useGetMe = () => {
@@ -133,5 +143,14 @@ export const useDeleteAccount = () => {
 
 	return useMutation({
 		mutationFn: (id: string) => accountApi.delete(header, id),
+	})
+}
+
+export const useGetConsultants = () => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['consultants'],
+		queryFn: () => accountApi.getConsultants(header),
 	})
 }

@@ -4,75 +4,73 @@ import Pagination from '@/Components/Management/Pagination'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import { usePagination } from '@/Hooks/List/usePagination'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from '@/Utils/axios'
+import { Consultant } from '@/Interfaces/Account/Types/Consultant'
 
 const ConsultantList = () => {
 	const { page, setPage } = usePagination(undefined, ITEMS_PER_PAGE_COUNT)
 	const router = useRouter()
 
-	const staffs = [
-		{
-			accountId: '1',
-			name: 'Dr. Nguyen Van A',
-			specialization: 'General Practitioner',
-			rating: 4.8,
-			biography:
-				'10+ years of experience providing comprehensive primary care.',
-		},
-		{
-			accountId: '2',
-			name: 'Prof. Tran Thi B',
-			specialization: 'Mental Health Specialist',
-			rating: 4.9,
-			biography: 'Focused on mental wellness and emotional health counseling.',
-		},
-		{
-			accountId: '3',
-			name: 'Dr. Le Van C',
-			specialization: 'Dermatologist',
-			rating: 4.7,
-			biography:
-				'Expert in skin care, dermatological treatment, and cosmetic consultation.',
-		},
-	]
+	const [consultants, setConsultants] = useState<Consultant[]>([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		const fetchConsultants = async () => {
+			try {
+				const res = await axios.get<Consultant[]>('/accounts/consultants')
+				setConsultants(res.data)
+			} catch (error) {
+				console.error('Failed to fetch consultants:', error)
+			} finally {
+				setLoading(false)
+			}
+		}
+		fetchConsultants()
+	}, [])
+
+	if (loading) return <div className='p-6'>Loading...</div>
 
 	return (
 		<>
 			<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6 grow'>
-				{staffs.map(staff => (
+				{consultants.map(consultant => (
 					<div
-						key={staff.accountId}
+						key={consultant.id}
 						className='bg-white border transition relative border-blue-100 rounded-2xl shadow-sm hover:shadow-md duration-300'
 					>
 						<div className='p-6 h-full w-full'>
 							<div className='flex flex-col items-center text-center'>
 								<img
-									src={`https://randomuser.me/api/portraits/med/${
-										+staff.accountId % 2 === 0 ? 'women' : 'men'
-									}/${staff.accountId}.jpg`}
+									src={
+										consultant.avatarUrl ??
+										`https://randomuser.me/api/portraits/med/${
+											consultant.gender ? 'men' : 'women'
+										}/${consultant.id.slice(-2)}.jpg`
+									}
 									alt='consultant'
 									className='w-24 h-24 rounded-full object-cover border-4 border-blue-200 mb-4'
 								/>
 								<h2 className='text-lg font-semibold text-blue-900'>
-									{staff.name}
+									{consultant.firstName} {consultant.lastName}
 								</h2>
 								<span className='text-xs text-white bg-gradient-to-l from-main to-secondary px-3 py-1 rounded-full mt-1'>
-									{staff.specialization}
+									{consultant.degree}
 								</span>
 								<p className='text-sm text-gray-600 mt-3 h-16 max-h-16 truncate text-wrap'>
-									{staff.biography}
+									{consultant.biography ?? 'No biography provided.'}
 								</p>
 							</div>
 
 							<div className='flex items-center justify-between mt-6'>
 								<span className='text-sm text-yellow-500 font-medium'>
-									⭐ {staff.rating.toFixed(1)} / 5
+									{consultant.yearOfExperience} yrs exp
 								</span>
 								<Button
 									label='Book Consultant'
 									labelMobile='Book'
 									onClick={() =>
-										router.push(`/app/consultants/${staff.accountId}`)
+										router.push(`/app/consultants/${consultant.id}`)
 									}
 								/>
 							</div>
@@ -89,8 +87,8 @@ const ConsultantList = () => {
 						New Consultant Coming Soon
 					</h2>
 					<p className='text-sm text-gray-500 mt-2'>
-						We’re expanding our team of healthcare professionals. Stay tuned for
-						our new consultant!
+						We&apos;re expanding our team of healthcare professionals. Stay
+						tuned for our new consultant!
 					</p>
 				</div>
 			</div>
@@ -98,7 +96,7 @@ const ConsultantList = () => {
 			<div className='center-all w-full'>
 				<Pagination
 					currentPage={page}
-					isFetching={false}
+					isFetching={loading}
 					setCurrentPage={setPage}
 					totalPages={1}
 				/>
