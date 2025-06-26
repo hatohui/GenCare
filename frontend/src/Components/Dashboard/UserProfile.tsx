@@ -64,9 +64,14 @@ const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 			)}
 
 			{!collapsed && (
-				<div className='flex flex-col items-start'>
+				<div className='flex flex-col items-start max-w-full'>
 					<div className='text-sm text-general'>{data?.firstName}</div>
-					<div className='text-xs text-slate-300'>{data?.email}</div>
+					<div
+						className='text-xs text-slate-300 truncate overflow-hidden max-w-[11rem]'
+						style={{ WebkitLineClamp: 1 }}
+					>
+						{data?.email}
+					</div>
 				</div>
 			)}
 
