@@ -4,6 +4,7 @@ using Application.DTOs.Payment;
 using Application.DTOs.Payment.Momo;
 using Application.Repositories;
 using Application.Services;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         var purchase = await purchaseRepository.GetById(Guid.Parse(purchaseId));
         if (purchase == null)
         {
-            throw new ArgumentException("Purchase not found");
+            throw new AppException(404, "Purchase not found");
         }
         //calculate total amount
         decimal amount = 0;
