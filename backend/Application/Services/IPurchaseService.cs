@@ -18,5 +18,8 @@ namespace Application.Services
         /// </returns>
         Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest, string accessToken);
         Task<List<BookedService>> GetBookedService(string accountId);
+        
+        Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(Guid accountId, string? search);
+
     }
 }
