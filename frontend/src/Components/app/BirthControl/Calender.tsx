@@ -21,7 +21,17 @@ interface CalendarProps {
 }
 
 export default function Calendar({ year, month, cycle }: CalendarProps) {
-	if (!cycle) return null
+	const parseWithShift = (isoStr: string) => addDays(parseISO(isoStr), 1)
+
+	const ovulationDay = useMemo(() => {
+		if (!cycle) return null
+		const start = parseWithShift(cycle.startUnsafeDate)
+		const end = parseWithShift(cycle.endUnsafeDate)
+		const diff = differenceInDays(end, start)
+		return addToDate(start, Math.floor(diff / 2))
+	}, [cycle])
+
+	if (!cycle || !ovulationDay) return null
 
 	const {
 		menstrualStartDate,
@@ -39,17 +49,12 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 	const startDateGrid = startOfWeek(monthStart, { weekStartsOn: 0 })
 	const endDateGrid = endOfWeek(monthEnd, { weekStartsOn: 0 })
 
-	// Calculate ovulation day as the midpoint between startUnsafeDate and endUnsafeDate
-	const ovulationDay = useMemo(() => {
-		const start = parseISO(startUnsafeDate)
-		const end = parseISO(endUnsafeDate)
-		const diff = differenceInDays(end, start)
-		return addToDate(start, Math.floor(diff / 2))
-	}, [startUnsafeDate, endUnsafeDate])
-
 	// Function to check if a day is within the interval
 	const inInterval = (date: Date, start: string, end: string) =>
-		isWithinInterval(date, { start: parseISO(start), end: parseISO(end) })
+		isWithinInterval(date, {
+			start: parseWithShift(start),
+			end: parseWithShift(end),
+		})
 
 	const rows: React.ReactNode[] = []
 	let currentDay = startDateGrid

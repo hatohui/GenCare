@@ -1,8 +1,6 @@
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import useToken from '@/Hooks/useToken'
 import { Service } from '@/Interfaces/Service/Types/Service'
-import { CldImage } from 'next-cloudinary'
 import AutoCarousel from '../AutoCarousel'
 
 export default function ServiceDetail({

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 // import PurchaseItem from './PurchaseItem'
-import Pagination from '../Management/Pagination'
 import { useViewPurchaseById } from '@/Services/book-service'
 import { useSearchParams } from 'next/navigation'
 
@@ -10,11 +9,15 @@ const PurchaseList = ({ id }: { id: string }) => {
 	const searchParams = useSearchParams()
 	const [search, setSearch] = useState<string>('')
 
-	const { data, isError, isFetching } = useViewPurchaseById(id, search)
+	const { data, error, isFetching } = useViewPurchaseById(id, search)
 
 	useEffect(() => {
 		setSearch(searchParams.get('search') || '')
 	}, [searchParams])
+
+	if (error) return <div>error</div>
+
+	if (isFetching) return <div>loading</div>
 
 	return (
 		<div className='h-screen'>

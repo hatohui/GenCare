@@ -4,7 +4,6 @@ import { useGetAccountsByPageStaff } from '@/Services/account-service'
 import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import Pagination from '../Management/Pagination'
-import { CldImage } from 'next-cloudinary'
 import AccountItem from './AccountItem'
 
 const AccountList = () => {
@@ -17,7 +16,7 @@ const AccountList = () => {
 		setSearch(searchParams.get('search') || '')
 	}, [searchParams])
 
-	const { isError, isFetching, data } = useGetAccountsByPageStaff(
+	const { isFetching, data } = useGetAccountsByPageStaff(
 		itemsPerPage,
 		page ? page : 0,
 		search

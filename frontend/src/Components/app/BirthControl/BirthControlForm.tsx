@@ -31,7 +31,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 	const updateBirthControl = useUpdateBirthControl()
 
 	const [startDate, setStartDate] = useState<Date | null>(null)
-	const [endDate, setEndDate] = useState<Date | null>(null)
+	const [endDate] = useState<Date | null>(null)
 
 	const {
 		register,
@@ -52,7 +52,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 	}, [startDate, endDate])
 
 	const onSubmit = (data: BirthControlFormData) => {
-		const [startDate, endDate] = data.dateRange
+		const [startDate] = data.dateRange
 
 		if (!startDate) return
 
