@@ -5,22 +5,16 @@ import MotionLink from '../MotionLink'
 import Image from 'next/image'
 import useToken from '@/Hooks/useToken'
 import { useRouter } from 'next/navigation'
-
-export type ServiceCardProps = {
-	id: string
-	name: string
-	price: number
-	description: string
-	imageUrl?: string
-}
+import { Service } from '@/Interfaces/Service/Types/Service'
+import { CldImage } from 'next-cloudinary'
 
 export const ServiceCard = ({
 	name,
 	price,
 	description,
 	id,
-	imageUrl,
-}: ServiceCardProps) => {
+	imageUrls,
+}: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>) => {
 	const { accessToken } = useToken()
 	const router = useRouter()
 
@@ -47,18 +41,13 @@ export const ServiceCard = ({
 			transition={{ duration: 0.5, ease: 'easeOut' }}
 			className='bg-white rounded-2xl p-5 h-full shadow-md hover:shadow-lg transition-shadow duration-300'
 		>
-			{imageUrl ? (
-				<div className='h-[300px] bg-gray-500 animate-pulse round center-all'>
-					<motion.div
-						animate={{
-							rotate: 360,
-							transition: { repeat: Infinity, duration: 2, ease: 'linear' },
-						}}
-						className={
-							'w-[50px] h-[50px] rounded-full border-4  transform border-t-accent'
-						}
-					/>
-				</div>
+			{imageUrls ? (
+				<CldImage
+					src={imageUrls[0].url}
+					width={1000}
+					height={1000}
+					alt='service'
+				/>
 			) : (
 				<Image
 					src='/images/gencarelogo.png'
@@ -68,7 +57,6 @@ export const ServiceCard = ({
 					className='h-[300px] object-cover'
 				/>
 			)}
-
 			<div className='pt-3'>
 				<h3 className='text-xl font-semibold mb-2'>{name}</h3>
 				<p className='text-accent mb-2'>{price.toLocaleString('vi-VN')} VND</p>

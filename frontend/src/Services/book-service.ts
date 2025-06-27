@@ -1,5 +1,8 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
-import { OrderDetailResponse } from '@/Interfaces/Payment/Types/BookService'
+import {
+	BookedServicesResponse,
+	OrderDetailResponse,
+} from '@/Interfaces/Payment/Types/BookService'
 import { MomoServiceResponse } from '@/Interfaces/Payment/Types/MomoService'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -42,6 +45,22 @@ const bookingApi = {
 			.delete(`${ORDER_URL}/${id}`, { headers: { Authorization: header } })
 			.then(res => res.data)
 	},
+	ViewPurchaseByIdd: (header: string, id: string, search: string | null) => {
+		return axios
+			.get<BookedServicesResponse>(`${BOOKING_URL}/${id}?search=${search}`, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
+}
+
+export const useViewPurchaseById = (id: string, search: string | null) => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['viewPurchaseById', id, search],
+		queryFn: () => bookingApi.ViewPurchaseByIdd(header, id, search),
+	})
 }
 
 export const useBookServices = () => {

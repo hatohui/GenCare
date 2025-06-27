@@ -1,12 +1,17 @@
+import { Account } from '@/Interfaces/Auth/Types/Account'
 import { CldImage } from 'next-cloudinary'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
-const AccountItem = ({ item }: { item: any }) => {
+const AccountItem = ({ item }: { item: Account }) => {
+	const router = useRouter()
+
 	return (
 		<div>
 			<div
 				key={item.id}
 				className='flex flex-col gap-2 rounded-[30px] bg-white p-4 hover:shadow-2xl hover:scale-105 transition duration-300 h-[200px]'
+				onClick={() => router.push(`/dashboard/payments/${item.id}`)}
 			>
 				{item.avatarUrl && (
 					<CldImage
