@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Payment.ManualPayment.Request;
 using Application.DTOs.Payment.ManualPayment.Response;
+using Application.Helpers;
 using Application.Repositories;
 using Domain.Common.Constants;
 using Domain.Entities;
@@ -46,23 +47,20 @@ public class ManualPaymentService(
         {
             PurchaseId = purchase.Id,
             CreatedAt = ToUnspecified(DateTime.Now),
+            TransactionId = CreateRandomTransaction.GenerateRandomString(10),
             Amount = totalAmount,
             Status = PaymentStatus.Paid,
-            PaymentMethod = request.PaymentMethod,
+            PaymentMethod = PaymentMethod.Cash,
             ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
             
         };
-        var confirmPayment = await paymentHistoryRepository.ConfirmPayment(payment);
+        await paymentHistoryRepository.ConfirmPayment(payment);
         
         return new ConfirmPaymentByStaffResponse()
         {
-            PurchaseId = confirmPayment!.PurchaseId,
-            TransactionId = confirmPayment.TransactionId,
-            Amount = confirmPayment.Amount,
-            PaymentMethod = confirmPayment.PaymentMethod,
-            Status = confirmPayment.Status,
-            CreatedAt = confirmPayment.CreatedAt,
-            ExpiredAt = confirmPayment.ExpiredAt,
+            Success = true,
+            Message = "Payment successfully confirmed. Thank you for your prompt action.",
+           
         };
     }
 }
