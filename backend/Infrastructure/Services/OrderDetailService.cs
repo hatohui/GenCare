@@ -16,15 +16,17 @@ public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
         if (orderDetail is null)
             throw new AppException(404, "Order detail not found");
 
-        //get purchase by account id
-        var purchases = await purchaseRepository.GetByAccountId(Guid.Parse(accountId));
-        if (purchases is null || purchases.Count == 0)
-            throw new AppException(403, "You are not allowed to delete this order detail");
-        
-        //check if order detail belongs to the account
-        if (!purchases.Any(p => p.Id == orderDetail.PurchaseId))
-            throw new AppException(403, "You are not allowed to delete this order detail");
-        
+        //get purchase by id
+        var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
+
+        //check if purchase exists
+        if (purchase is null)
+            throw new AppException(404, "Purchase for this order detail is not found");
+
+        //check if account id of purchase is the same as account id of order detail
+        if (purchase.AccountId.ToString("D") != accountId)
+            throw new AppException(403, "You are not allowed to delete this order detail because you are not the owner of this purchase");
+
         //if payment history of the order detail does not exist, delete the order detail
         //if exists, block deletion
         var payment = await paymentHistoryRepository.GetById(orderDetail.PurchaseId);
@@ -37,7 +39,22 @@ public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
         if (resultTest is not null)
             throw new AppException(400, "You are not allowed to delete this order detail because test result exists");
 
+        //check if purchase has only one order detail
+        var tmp = false;
+        if (purchase.OrderDetails.Count == 1)
+        {
+            //if purchase has only one order detail, set isEmpty to true
+            tmp = true;
+        }
+
         //now can delete order detail
         await orderDetailRepository.Delete(orderDetail);
+
+        //after deleting order detail, check if purchase has no order details left
+        //if purchase has no order details left, delete purchase
+        if (tmp)
+        {
+            await purchaseRepository.Delete(purchase);
+        }
     }
 }
