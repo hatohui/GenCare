@@ -28,7 +28,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager},{RoleNames.Staff}")]
     public async Task<IActionResult> GetAccountsByPageAsync(
         [FromQuery] GetAccountByPageRequest request
     )
