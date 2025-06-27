@@ -149,7 +149,6 @@ public class PurchaseService(
             }
             else
             {
-                // Sử dụng PaymentStatus.Paid thay vì "paid"
                 if (string.Equals(status, PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase))
                     continue;
             }
@@ -163,7 +162,6 @@ public class PurchaseService(
             Order = new List<BookedServiceModel>()
         };
 
-        // Cũng fix ở đây
         var paymentCheck = await paymentHistoryRepository.GetById(purchase.Id);
         responseItem.IsPaid = paymentCheck != null &&
                               !string.IsNullOrEmpty(paymentCheck.Status) &&

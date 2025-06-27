@@ -81,9 +81,11 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         {
             query = query.OrderBy(s => s.Name);
         }
-        else if (orderByPrice.HasValue && orderByPrice.Value)
+        else if (orderByPrice.HasValue)
         {
-            query = query.OrderBy(s => s.Price);
+            query = orderByPrice.Value
+                ? query.OrderBy(s => s.Price)
+                : query.OrderByDescending(s => s.Price);
         }
         
         else
