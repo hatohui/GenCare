@@ -97,8 +97,6 @@ public class PurchaseService(
                 paid = false;
             //get order details of this purchase
             var orderDetails = purchase.OrderDetails;
-            if (orderDetails == null || orderDetails.Count == 0)
-                throw new AppException(404, "No order details found for this account");
             foreach (var orderDetail in orderDetails)
             {
                 //find service by id
