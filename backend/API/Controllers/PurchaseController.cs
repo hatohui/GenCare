@@ -46,9 +46,9 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     }
     [HttpGet("staff/{accountId}")]
     [Authorize(Roles = $"{RoleNames.Staff}")]
-    public async Task<IActionResult> GetBookedServicesForStaffAsync(Guid accountId, [FromQuery] string? search)
+    public async Task<IActionResult> GetBookedServicesForStaffAsync(Guid accountId, [FromQuery] string? search,[FromQuery] bool? isPaid)
     {
-        var response = await purchaseService.GetBookedServicesForStaffAsync(accountId, search);
+        var response = await purchaseService.GetBookedServicesForStaffAsync(accountId, search,isPaid);
         return Ok(response);
     }
     

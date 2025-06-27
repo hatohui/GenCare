@@ -5,6 +5,7 @@ using Application.DTOs.Purchase.Response;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -120,49 +121,80 @@ public class PurchaseService(
         return rs;
     }
 
-    public async Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(Guid accountId, string? search)
+   public async Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(
+    Guid accountId,
+    string? search,
+    bool? isPaid)
+{
+    var purchases = await purchaseRepository.GetByAccountId(accountId);
+    var result = new List<BookedServiceListResponse>();
+
+    foreach (var purchase in purchases)
     {
-        var purchases = await purchaseRepository.GetByAccountId(accountId);
-        var result = new List<BookedServiceListResponse>();
-
-        foreach (var purchase in purchases)
+        // Nếu có truyền search (giả định là PurchaseId), thì chỉ lọc theo search
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            // Nếu có search thì lọc theo purchaseId
-            if (!string.IsNullOrWhiteSpace(search) &&
-                !purchase.Id.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
+            if (!purchase.Id.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
                 continue;
+        }
+        else if (isPaid.HasValue)
+        {
+            var payment = await paymentHistoryRepository.GetById(purchase.Id);
+            var status = payment?.Status?.ToLower();
 
-            var responseItem = new BookedServiceListResponse
+            if (isPaid.Value)
             {
-                PurchaseId = purchase.Id.ToString(),
-                Price = 0,
-                Order = new List<BookedServiceModel>()
-            };
-
-            foreach (var od in purchase.OrderDetails)
-            {
-                var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
-                if (service == null) continue;
-
-                responseItem.Order.Add(new BookedServiceModel
-                {
-                    OrderDetailId = od.Id,
-                    ServiceName = service.Name,
-                    FirstName = od.FirstName,
-                    LastName = od.LastName,
-                    PhoneNumber = od.Phone,
-                    DateOfBirth = od.DateOfBirth.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)),
-                    Gender = od.Gender,
-                    CreatedAt = purchase.CreatedAt,
-                });
-
-                responseItem.Price += service.Price;
+                // isPaid = true => chỉ lấy nếu status = "paid"
+                if (status != "paid")
+                    continue;
             }
-
-            if (responseItem.Order.Any())
-                result.Add(responseItem);
+            else
+            {
+                // isPaid = false => chỉ lấy nếu KHÔNG có status "paid" hoặc "pedding"
+                if (status == "paid" || status == "pedding")
+                    continue;
+            }
         }
 
-        return result;
+        var responseItem = new BookedServiceListResponse
+        {
+            PurchaseId = purchase.Id.ToString(),
+            IsPaid = false,
+            Price = 0,
+            Order = new List<BookedServiceModel>()
+        };
+
+        // Luôn kiểm tra lại để set IsPaid trong response
+        var paymentCheck = await paymentHistoryRepository.GetById(purchase.Id);
+        responseItem.IsPaid = paymentCheck != null &&
+                              !string.IsNullOrEmpty(paymentCheck.Status) &&
+                              paymentCheck.Status.Equals("paid", StringComparison.OrdinalIgnoreCase);
+
+        foreach (var od in purchase.OrderDetails)
+        {
+            var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
+            if (service == null) continue;
+
+            responseItem.Order.Add(new BookedServiceModel
+            {
+                OrderDetailId = od.Id,
+                ServiceName = service.Name,
+                FirstName = od.FirstName,
+                LastName = od.LastName,
+                PhoneNumber = od.Phone,
+                DateOfBirth = od.DateOfBirth.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)),
+                Gender = od.Gender,
+                CreatedAt = purchase.CreatedAt,
+            });
+
+            responseItem.Price += service.Price;
+        }
+
+        if (responseItem.Order.Any())
+            result.Add(responseItem);
     }
+
+    return result;
+}
+
 }

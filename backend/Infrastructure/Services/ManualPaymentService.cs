@@ -39,9 +39,11 @@ public class ManualPaymentService(
         var serviceIds = await orderDetailRepository.GetDistinctServiceIdsByPurchaseIdAsync(purchase.Id);
 
         var services = await serviceRepository.GetByIdsAsync(serviceIds);
+        
+        var servicePriceDict = services.ToDictionary(s => s.Id, s => s.Price);
 
         //calculate total amount
-        var totalAmount = services.Sum(s => s.Price);
+        var totalAmount = orderDetails.Sum(od => servicePriceDict[od.ServiceId]);
 
         var payment = new PaymentHistory()
         {
