@@ -121,7 +121,7 @@ public class PurchaseService(
         return rs;
     }
 
-   public async Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(
+  public async Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(
     Guid accountId,
     string? search,
     bool? isPaid)
@@ -131,7 +131,6 @@ public class PurchaseService(
 
     foreach (var purchase in purchases)
     {
-        // Nếu có truyền search (giả định là PurchaseId), thì chỉ lọc theo search
         if (!string.IsNullOrWhiteSpace(search))
         {
             if (!purchase.Id.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
@@ -140,18 +139,18 @@ public class PurchaseService(
         else if (isPaid.HasValue)
         {
             var payment = await paymentHistoryRepository.GetById(purchase.Id);
-            var status = payment?.Status?.ToLower();
+            var status = payment?.Status?.Trim(); // Thêm .Trim()
 
             if (isPaid.Value)
             {
-                // isPaid = true => chỉ lấy nếu status = "paid"
-                if (status != "paid")
+                // Sử dụng PaymentStatus.Paid thay vì "paid"
+                if (!string.Equals(status, PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase))
                     continue;
             }
             else
             {
-                // isPaid = false => chỉ lấy nếu KHÔNG có status "paid" hoặc "pedding"
-                if (status == "paid" || status == "pedding")
+                // Sử dụng PaymentStatus.Paid thay vì "paid"
+                if (string.Equals(status, PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase))
                     continue;
             }
         }
@@ -164,11 +163,11 @@ public class PurchaseService(
             Order = new List<BookedServiceModel>()
         };
 
-        // Luôn kiểm tra lại để set IsPaid trong response
+        // Cũng fix ở đây
         var paymentCheck = await paymentHistoryRepository.GetById(purchase.Id);
         responseItem.IsPaid = paymentCheck != null &&
                               !string.IsNullOrEmpty(paymentCheck.Status) &&
-                              paymentCheck.Status.Equals("paid", StringComparison.OrdinalIgnoreCase);
+                              string.Equals(paymentCheck.Status.Trim(), PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase);
 
         foreach (var od in purchase.OrderDetails)
         {
