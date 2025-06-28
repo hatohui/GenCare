@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Service.Requests;
+﻿using Application.DTOs.Service;
+using Application.DTOs.Service.Requests;
 using Application.DTOs.Service.Responses;
 using Application.Helpers;
 using Application.Repositories;
@@ -72,13 +73,17 @@ public class ServicesService(
                 Name = s.Name,
                 Description = s.Description ?? "",
                 Price = s.Price,
-                ImageUrls = image?.Select(m => m.Url).ToList() ?? new List<string>(),
+                ImageUrls  = image?.Select(m => new MediaServiceModel()
+                {
+                    Id = m.Id,
+                    Url = m.Url
+                }).ToList() ?? new List<MediaServiceModel>(),
                 IsDeleted = s.IsDeleted,
                 CreatedAt = s.CreatedAt,
                 UpdatedAt = s.UpdatedAt,
-                CreatedById = s.CreatedBy.ToString(),
-                DeletedById = s.CreatedBy.ToString(),
-                UpdatedById = s.UpdatedBy.ToString()
+                CreatedBy = s.CreatedBy.ToString(),
+                DeletedBy = s.CreatedBy.ToString(),
+                UpdatedBy = s.UpdatedBy.ToString()
             });
         }
 
@@ -99,14 +104,18 @@ public class ServicesService(
             throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
 
-        var imUrls = mediaService?.Select(m => m.Url).ToList();
+        
         return new ViewServiceResponse()
         {
             Id = service.Id.ToString(),
             Name = service.Name,
             Description = service.Description ?? "",
             Price = service.Price,
-            ImageUrls = imUrls,
+            ImageUrls  = mediaService?.Select(m => new MediaServiceModel()
+            {
+                Id = m.Id,
+                Url = m.Url
+            }).ToList() ?? new List<MediaServiceModel>(),
             CreatedAt = service.CreatedAt,
         };
     }
@@ -116,14 +125,14 @@ public class ServicesService(
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
-        // ✅ Validate quyền truy cập
+        // Check if the user has the right role to create a service
         if (role != RoleNames.Admin && role != RoleNames.Manager)
             throw new AppException(403, "UNAUTHORIZED");
 
-        // ✅ Validate dữ liệu đầu vào
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new AppException(400, "Service name cannot be empty.");
 
+        // Check if the service name already exists
         if (await serviceRepository.ExistsByNameAsync(request.Name))
             throw new AppException(400, "Service name already exists.");
 
@@ -148,17 +157,17 @@ public class ServicesService(
         }
 
 
-        // ✅ Tạo mới Service
+        
         var service = new Service
         {
             Name = request.Name,
             Description = request.Description,
             Price = request.Price,
             CreatedBy = accountId,
-            Media = mediaList // gán luôn list media
+            Media = mediaList 
         };
 
-        // ✅ Lưu vào DB
+        
         await serviceRepository.AddServiceAsync(service);
 
         return new CreateServiceResponse
@@ -265,8 +274,8 @@ public class ServicesService(
         {
             Success = success,
             Message = success
-                ? "Xóa dịch vụ và ảnh thành công"
-                : "Xóa dịch vụ thất bại"
+                ? "Service and images deleted successfully."
+                : "Failed to delete the service."
         };
     }
 }

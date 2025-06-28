@@ -7,7 +7,7 @@ export default function AuthLayout({
 }) {
 	return (
 		<>
-			<ReturnButton />
+			<ReturnButton to='/' />
 			<main>{children}</main>
 		</>
 	)

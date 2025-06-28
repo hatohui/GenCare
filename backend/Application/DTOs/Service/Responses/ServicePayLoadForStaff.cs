@@ -2,11 +2,10 @@
 
 public class ServicePayLoadForStaff : ServicePayLoad
 {
-    public string? DeletedById { get; set; }
-    public string? CreatedById { get; set; }
+    public string? DeletedBy { get; set; }
+    public string? CreatedBy { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public string? UpdatedById { get; set; }
+    public string? UpdatedBy { get; set; }
     public bool IsDeleted { get; set; }
-    public List<string>? ImageUrls { get; set; }
-}
+    public List<MediaServiceModel>? ImageUrls { get; set; }}

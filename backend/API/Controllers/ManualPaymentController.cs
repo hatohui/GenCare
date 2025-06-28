@@ -9,7 +9,7 @@ namespace API.Controllers;
 [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
 public class ManualPaymentController(IManualPaymentService manualPaymentService) : ControllerBase
 {
-    [HttpPost("confirm")]
+    [HttpPost]
     public async Task<IActionResult> ConfirmManualPayment([FromBody] ConfirmPaymentByStaffRequest request)
     {
         var result = await manualPaymentService.ConfirmAsync(request);
