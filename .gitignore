@@ -417,3 +417,4 @@ next-env.d.ts
 .next
 frontend/.env.local
 frontend/playwright-report/index.html
+frontend/playwright-report/index.html
