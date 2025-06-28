@@ -297,6 +297,7 @@ node_modules/
 # Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
 *.vbw
 test-results/
+playwright-report/
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
@@ -415,3 +416,4 @@ yarn-error.log*
 next-env.d.ts
 .next
 frontend/.env.local
+frontend/playwright-report/index.html
