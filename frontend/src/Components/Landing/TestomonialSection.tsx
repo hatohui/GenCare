@@ -21,7 +21,7 @@ export default function TestimonialsSection() {
 	const x = useTransform(scrollYProgress, [0, 1.2], ['50%', '-95%'])
 
 	//const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
-	const image = useTransform(scrollYProgress, [0, 1.5], ['-25%', '25%'])
+	const image = useTransform(scrollYProgress, [0, 1], ['-20%', '20%'])
 
 	return (
 		<section
