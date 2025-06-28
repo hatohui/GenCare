@@ -85,7 +85,8 @@ public class PurchaseService
             throw new AppException(404, "No purchases found for this account");
         //map all order details in purchases to BookedService list
         List<BookedService> rs = new();
-        foreach(var purchase in purchases)
+        purchases = purchases.Where(p => p.OrderDetails != null && p.OrderDetails.Count > 0).ToList();
+        foreach (var purchase in purchases)
         {
             //check if payment history of this purchase exists
             var paid = true;
@@ -94,8 +95,6 @@ public class PurchaseService
                 paid = false;
             //get order details of this purchase
             var orderDetails = purchase.OrderDetails;
-            if (orderDetails == null || orderDetails.Count == 0)
-                throw new AppException(404, "No order details found for this account");
             foreach (var orderDetail in orderDetails)
             {
                 //find service by id
