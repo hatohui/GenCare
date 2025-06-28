@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories;
 
 public class MessageRepository(IApplicationDbContext dbContext): IMessageRepository
 {
-    public async Task<Message?> GetByIdAsync(Guid id)
+    public async Task<Message?> GetMessageByIdAsync(Guid id)
     {
         return await dbContext.Messages
             .Include(m => m.Media)

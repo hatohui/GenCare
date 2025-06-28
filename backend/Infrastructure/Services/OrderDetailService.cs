@@ -35,7 +35,7 @@ public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
 
         //check if result of order detail exists?
         //if exists, block deletion
-        var resultTest = await testTrackerRepository.ViewTestTrackerAsync(orderDetail.Id);
+        var resultTest = await testTrackerRepository.ViewResultAsync(orderDetail.Id);
         if (resultTest is not null)
             throw new AppException(400, "You are not allowed to delete this order detail because test result exists");
 

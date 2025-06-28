@@ -29,7 +29,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
     /// <param name="orderDetailId">ID of the test order detail.</param>
     /// <param name="accessToken"></param>
     /// <returns>Test result information or throws if not found.</returns>
-    public async Task<ViewTestResultResponse?> ViewTestResultAsync(Guid orderDetailId,string accessToken)
+    public async Task<ViewTestResultResponse?> ViewResultAsync(Guid orderDetailId,string accessToken)
     {
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
@@ -43,7 +43,6 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         if (purchase == null)
             throw new AppException(404,"Purchase not found.");
         
-        
         //check if the account is authorized to view this test result
         if(purchase.AccountId != accountId)
             throw new AppException(403, "You are not authorized to view this test result.");
@@ -55,7 +54,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         if(payment.Status != PaymentStatus.Paid)
             throw new AppException(402,"Payment is not completed.");
         
-        var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId) ??
+        var testResult = await testTrackerRepository.ViewResultAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
 
         return new ViewTestResultResponse
@@ -75,11 +74,11 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
     /// </summary>
     /// <param name="request">Update request for the test result.</param>
     /// <returns>Update result (success/failure, message).</returns>
-    public async Task<UpdateTestResultResponse> UpdateTestResultAsync(UpdateTestResultRequest request)
+    public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request)
     {
         if (!Guid.TryParse(request.OrderDetailId, out Guid orderDetailId))
             throw new AppException(400, "Invalid AccountId format.");
-        var testResult = await testTrackerRepository.ViewTestTrackerAsync(orderDetailId)
+        var testResult = await testTrackerRepository.ViewResultAsync(orderDetailId)
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
@@ -113,7 +112,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         if (isChanged)
         {
             testResult.UpdatedAt = ToUnspecified(DateTime.UtcNow);
-            await testTrackerRepository.UpdateTestTrackerAsync(testResult);
+            await testTrackerRepository.UpdateResultAsync(testResult);
         }
 
         return new UpdateTestResultResponse
@@ -129,12 +128,12 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
     /// <param name="request">Delete request with OrderDetailId.</param>
     /// <returns>Delete result (success/failure, message).</returns>
 
-    public async Task<DeleteTestResultResponse> DeleteTestTrackerAsync(DeleteTestResultRequest request)
+    public async Task<DeleteTestResultResponse> DeleteResultAsync(DeleteTestResultRequest request)
     {
-        if (!await testTrackerRepository.CheckTestTrackerExistsAsync(request.OrderDetailId))
+        if (!await testTrackerRepository.CheckResultExistsAsync(request.OrderDetailId))
             throw new InvalidOperationException("Test tracker not found.");
 
-        var deleted = await testTrackerRepository.DeleteTestTrackerAsync(request.OrderDetailId);
+        var deleted = await testTrackerRepository.DeleteResultAsync(request.OrderDetailId);
         return new DeleteTestResultResponse
         {
             Success = deleted,
