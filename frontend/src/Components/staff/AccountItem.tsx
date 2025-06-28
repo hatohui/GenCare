@@ -10,8 +10,17 @@ const AccountItem = ({ item }: { item: Account }) => {
 		<div>
 			<div
 				key={item.id}
-				className='flex flex-col gap-2 rounded-[30px] bg-white p-4 hover:shadow-2xl hover:scale-105 transition duration-300 h-[200px]'
+				className='flex flex-col gap-2 rounded-[30px] bg-white p-4 hover:shadow-2xl hover:scale-105 transition duration-300 h-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent'
 				onClick={() => router.push(`/dashboard/payments/${item.id}`)}
+				onKeyDown={e => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault()
+						router.push(`/dashboard/payments/${item.id}`)
+					}
+				}}
+				role='button'
+				tabIndex={0}
+				aria-label={`View payment details for ${item.firstName} ${item.lastName}`}
 			>
 				{item.avatarUrl && (
 					<CldImage

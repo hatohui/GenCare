@@ -41,7 +41,7 @@ export const ServiceCard = ({
 			transition={{ duration: 0.5, ease: 'easeOut' }}
 			className='bg-white rounded-2xl p-5 h-full shadow-md hover:shadow-lg transition-shadow duration-300'
 		>
-			{imageUrls ? (
+			{imageUrls && imageUrls.length > 0 ? (
 				<CldImage
 					src={imageUrls[0].url}
 					width={1000}

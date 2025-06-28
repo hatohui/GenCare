@@ -14,18 +14,31 @@ const PurchaseList = ({ id }: { id: string }) => {
 
 	useEffect(() => {
 		setSearch(searchParams.get('search') || '')
-		setIsPaid(searchParams.get('isPaid') === 'true')
+		const isPaidParam = searchParams.get('isPaid')
+		setIsPaid(isPaidParam === null ? null : isPaidParam === 'true')
 	}, [searchParams])
 
-	if (error) return <div>error</div>
+	if (error)
+		return (
+			<div className='text-red-500 text-center py-4'>
+				Error loading purchases. Please try again.
+			</div>
+		)
 
-	if (isFetching) return <div>loading</div>
+	if (isFetching)
+		return <div className='text-center py-4'>Loading purchases...</div>
 
 	return (
 		<div className=''>
-			{data?.map(purchase => (
-				<PurchaseItem key={purchase.purchaseId} purchase={purchase} />
-			))}
+			{data && data.length > 0 ? (
+				data.map(purchase => (
+					<PurchaseItem key={purchase.purchaseId} purchase={purchase} />
+				))
+			) : (
+				<div className='text-center py-8 text-gray-500'>
+					No purchases found.
+				</div>
+			)}
 		</div>
 	)
 }

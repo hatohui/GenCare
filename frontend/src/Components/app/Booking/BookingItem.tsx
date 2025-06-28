@@ -1,19 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'motion/react'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import clsx from 'clsx'
 import { useDeleteOrderDetail, useMomoPay } from '@/Services/book-service'
 import { useRouter } from 'next/navigation'
 import { TrashCanSVG } from '@/Components/SVGs'
+import ConfirmDialog from '@/Components/ConfirmationDialog'
 
 const BookingItem = ({ item }: { item: OrderDetail }) => {
 	const momoPayment = useMomoPay(item.purchaseId)
 	const deleteOrder = useDeleteOrderDetail(item.orderDetailId)
 	const router = useRouter()
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
 	const handlePayment = () => {
 		momoPayment.mutate(undefined, {
 			onSuccess: data => router.push(data.payUrl),
+			onError: error => {
+				console.error('Payment failed:', error)
+				// Add user-friendly error notification
+			},
 		})
 	}
 
@@ -28,6 +34,16 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 			className='bg-general p-6 flex flex-col rounded-[30px] mb-6 max-w-5xl mx-auto shadow-lg hover:shadow-xl transition ease-in-out duration-300'
 			whileHover={{ scale: 1.02 }}
 		>
+			<ConfirmDialog
+				isOpen={showDeleteConfirm}
+				title='Delete Booking'
+				message='Are you sure you want to delete this booking? This action cannot be undone.'
+				onConfirm={() => {
+					handleDelete()
+					setShowDeleteConfirm(false)
+				}}
+				onCancel={() => setShowDeleteConfirm(false)}
+			/>
 			<div className='flex justify-between'>
 				<h3 className='font-bold text-2xl text-main'>{item.serviceName}</h3>
 
@@ -37,7 +53,7 @@ const BookingItem = ({ item }: { item: OrderDetail }) => {
 						? item.createdAt.toLocaleString()
 						: new Date(item.createdAt).toLocaleString()}
 				</span>
-				<span onClick={handleDelete}>
+				<span onClick={() => setShowDeleteConfirm(true)}>
 					<TrashCanSVG className='size-12 rounded-full hover:bg-accent/20 p-2 transition text-accent' />
 				</span>
 			</div>

@@ -16,7 +16,7 @@ const AccountList = () => {
 		setSearch(searchParams.get('search') || '')
 	}, [searchParams])
 
-	const { isFetching, data } = useGetAccountsByPageStaff(
+	const { isFetching, data, error } = useGetAccountsByPageStaff(
 		itemsPerPage,
 		page ? page : 0,
 		search
@@ -28,6 +28,11 @@ const AccountList = () => {
 
 	return (
 		<div className=''>
+			{error && (
+				<div className='text-red-500 text-center py-4'>
+					Error loading accounts. Please try again.
+				</div>
+			)}
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
 				{data?.accounts.map((item, index) => (
 					<AccountItem key={index} item={item} />

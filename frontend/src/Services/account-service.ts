@@ -43,7 +43,9 @@ const accountApi = {
 	) => {
 		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
-		}${role ? `&role=${role}` : ''}${active ? `&active=${active}` : ''}`
+		}${role ? `&role=${role}` : ''}${
+			active !== null && active !== undefined ? `&active=${active}` : ''
+		}`
 
 		return axiosInstance
 			.get<GetAccountByPageResponse>(queryUrl, {
@@ -119,7 +121,7 @@ export const useGetAccountsByPageStaff = (
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['accounts', page, count, search],
+		queryKey: ['accounts-staff', page, count, search],
 		queryFn: () =>
 			accountApi.getByPage(header, count, page, search, 'member', true),
 		placeholderData: keepPreviousData,

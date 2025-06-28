@@ -5,7 +5,7 @@ import {
 } from '@/Interfaces/Payment/Types/BookService'
 import { MomoServiceResponse } from '@/Interfaces/Payment/Types/MomoService'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 
 const BOOKING_URL = `${DEFAULT_API_URL}/purchases`
@@ -48,15 +48,18 @@ const bookingApi = {
 		search: string | null,
 		isPaid: boolean | null
 	) => {
+		const params = new URLSearchParams()
+		if (search) params.append('search', search)
+		if (isPaid !== null) params.append('isPaid', isPaid.toString())
+		const queryString = params.toString()
+		const url = `${BOOKING_URL}/staff/${id}${
+			queryString ? `?${queryString}` : ''
+		}`
+
 		return axios
-			.get<BookedServicesResponse>(
-				`${BOOKING_URL}/staff/${id}?search=${search}${
-					isPaid ? `&isPaid=${isPaid}` : ''
-				}`,
-				{
-					headers: { Authorization: header },
-				}
-			)
+			.get<BookedServicesResponse>(url, {
+				headers: { Authorization: header },
+			})
 			.then(res => res.data)
 	},
 	ManualPay: (data: { purchaseId: string }, header: string) => {
@@ -68,10 +71,14 @@ const bookingApi = {
 
 export const useManualPay = () => {
 	const header = useAccessTokenHeader()
+	const queryClient = useQueryClient()
 
 	return useMutation({
 		mutationFn: (data: { purchaseId: string }) =>
 			bookingApi.ManualPay(data, header),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['viewPurchaseById'] })
+		},
 	})
 }
 

@@ -3,12 +3,7 @@
 import SearchBar from '@/Components/Management/SearchBar'
 import PurchaseList from '@/Components/staff/PurchaseList'
 import clsx from 'clsx'
-import {
-	useParams,
-	usePathname,
-	useRouter,
-	useSearchParams,
-} from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { use, useEffect } from 'react'
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {

@@ -7,14 +7,15 @@ type AutoCarouselProps = {
 
 const AutoCarousel: React.FC<AutoCarouselProps> = ({ imageUrls }) => {
 	const [current, setCurrent] = useState(0)
+	const [isPaused, setIsPaused] = useState(false)
 
 	useEffect(() => {
-		if (!imageUrls || imageUrls.length <= 1) return
+		if (!imageUrls || imageUrls.length <= 1 || isPaused) return
 		const interval = setInterval(() => {
 			setCurrent(prev => (prev + 1) % imageUrls.length)
 		}, 3000)
 		return () => clearInterval(interval)
-	}, [imageUrls])
+	}, [imageUrls, isPaused])
 
 	if (!imageUrls || imageUrls.length === 0) {
 		return (
@@ -25,10 +26,14 @@ const AutoCarousel: React.FC<AutoCarouselProps> = ({ imageUrls }) => {
 	}
 
 	return (
-		<div className='relative h-96 w-full rounded-lg overflow-hidden shadow-lg'>
+		<div
+			className='relative h-96 w-full rounded-lg overflow-hidden shadow-lg'
+			onMouseEnter={() => setIsPaused(true)}
+			onMouseLeave={() => setIsPaused(false)}
+		>
 			{imageUrls.map((img, index) => (
 				<div
-					key={index}
+					key={img.id}
 					className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
 						current === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
 					}`}

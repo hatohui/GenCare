@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 
 interface ConfirmDialogProps {
@@ -18,6 +18,17 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 	onConfirm,
 	onCancel,
 }) => {
+	useEffect(() => {
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === 'Escape' && isOpen) {
+				onCancel()
+			}
+		}
+
+		document.addEventListener('keydown', handleEscape)
+		return () => document.removeEventListener('keydown', handleEscape)
+	}, [isOpen, onCancel])
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -27,7 +38,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className='fixed inset-0 z-40 bg-black/50 bg-opacity-50'
+						className='fixed inset-0 z-40 bg-black/50'
 					/>
 
 					{/* Dialog */}

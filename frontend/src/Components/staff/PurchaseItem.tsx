@@ -12,9 +12,20 @@ const PurchaseItem = ({ purchase }: { purchase: BookedService }) => {
 	const manualPayment = useManualPay()
 
 	const handlePayment = () => {
-		manualPayment.mutate({ purchaseId: purchase.purchaseId })
-		setShowConfirm(false)
-		console.log('Payment for purchase ID:', purchase.purchaseId)
+		manualPayment.mutate(
+			{ purchaseId: purchase.purchaseId },
+			{
+				onSuccess: () => {
+					setShowConfirm(false)
+					// Add success notification
+				},
+				onError: error => {
+					console.error('Manual payment failed:', error)
+					setShowConfirm(false)
+					// Add error notification
+				},
+			}
+		)
 	}
 
 	return (
@@ -58,12 +69,18 @@ const PurchaseItem = ({ purchase }: { purchase: BookedService }) => {
 								e.stopPropagation() // prevent toggling on button click
 								setShowConfirm(true)
 							}}
-							disabled={purchase.isPaid}
+							disabled={purchase.isPaid || manualPayment.isPending}
 							className={`py-2 px-4 rounded-full text-white ${
-								purchase.isPaid ? 'bg-gray-400 cursor-not-allowed' : 'bg-accent'
+								purchase.isPaid || manualPayment.isPending
+									? 'bg-gray-400 cursor-not-allowed'
+									: 'bg-accent'
 							}`}
 						>
-							{!purchase.isPaid ? 'Xác Nhận Trả' : 'Đã Thanh Toán'}
+							{manualPayment.isPending
+								? 'Processing...'
+								: !purchase.isPaid
+								? 'Xác Nhận Trả'
+								: 'Đã Thanh Toán'}
 						</button>
 					</div>
 				</div>
