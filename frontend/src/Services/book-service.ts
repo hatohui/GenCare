@@ -11,6 +11,7 @@ import axios from 'axios'
 const BOOKING_URL = `${DEFAULT_API_URL}/purchases`
 const PAY_URL = `${DEFAULT_API_URL}/payments`
 const ORDER_URL = `${DEFAULT_API_URL}/orderDetails`
+const MANUAL_PAY_URL = `${DEFAULT_API_URL}/manual-payment`
 
 const bookingApi = {
 	GetOrder: (header: string) => {
@@ -24,10 +25,6 @@ const bookingApi = {
 		return axios
 			.post(`${BOOKING_URL}`, data, { headers: { Authorization: header } })
 			.then(res => res.data)
-			.catch(error => {
-				console.error('Error booking services:', error)
-				throw error
-			})
 	},
 	MomoPay: (header: string, purchaseId: string) => {
 		return axios
@@ -45,21 +42,49 @@ const bookingApi = {
 			.delete(`${ORDER_URL}/${id}`, { headers: { Authorization: header } })
 			.then(res => res.data)
 	},
-	ViewPurchaseByIdd: (header: string, id: string, search: string | null) => {
+	ViewPurchaseById: (
+		header: string,
+		id: string,
+		search: string | null,
+		isPaid: boolean | null
+	) => {
 		return axios
-			.get<BookedServicesResponse>(`${BOOKING_URL}/${id}?search=${search}`, {
-				headers: { Authorization: header },
-			})
+			.get<BookedServicesResponse>(
+				`${BOOKING_URL}/staff/${id}?search=${search}${
+					isPaid ? `&isPaid=${isPaid}` : ''
+				}`,
+				{
+					headers: { Authorization: header },
+				}
+			)
+			.then(res => res.data)
+	},
+	ManualPay: (data: { purchaseId: string }, header: string) => {
+		return axios
+			.post(`${MANUAL_PAY_URL}`, data, { headers: { Authorization: header } })
 			.then(res => res.data)
 	},
 }
 
-export const useViewPurchaseById = (id: string, search: string | null) => {
+export const useManualPay = () => {
+	const header = useAccessTokenHeader()
+
+	return useMutation({
+		mutationFn: (data: { purchaseId: string }) =>
+			bookingApi.ManualPay(data, header),
+	})
+}
+
+export const useViewPurchaseById = (
+	id: string,
+	search: string | null,
+	isPaid: boolean | null
+) => {
 	const header = useAccessTokenHeader()
 
 	return useQuery({
-		queryKey: ['viewPurchaseById', id, search],
-		queryFn: () => bookingApi.ViewPurchaseByIdd(header, id, search),
+		queryKey: ['viewPurchaseById', id, search, isPaid],
+		queryFn: () => bookingApi.ViewPurchaseById(header, id, search, isPaid),
 	})
 }
 
@@ -77,6 +102,7 @@ export const useGetOrder = () => {
 	return useQuery({
 		queryKey: ['getOrder'],
 		queryFn: () => bookingApi.GetOrder(header),
+		staleTime: 1000,
 	})
 }
 

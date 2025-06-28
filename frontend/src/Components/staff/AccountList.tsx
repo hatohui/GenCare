@@ -27,7 +27,7 @@ const AccountList = () => {
 		: 5
 
 	return (
-		<div className='h-screen'>
+		<div className=''>
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
 				{data?.accounts.map((item, index) => (
 					<AccountItem key={index} item={item} />

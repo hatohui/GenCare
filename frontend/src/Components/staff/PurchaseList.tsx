@@ -1,18 +1,20 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-// import PurchaseItem from './PurchaseItem'
 import { useViewPurchaseById } from '@/Services/book-service'
 import { useSearchParams } from 'next/navigation'
+import PurchaseItem from './PurchaseItem'
 
 const PurchaseList = ({ id }: { id: string }) => {
 	const searchParams = useSearchParams()
 	const [search, setSearch] = useState<string>('')
+	const [isPaid, setIsPaid] = useState<boolean | null>(null)
 
-	const { data, error, isFetching } = useViewPurchaseById(id, search)
+	const { data, error, isFetching } = useViewPurchaseById(id, search, isPaid)
 
 	useEffect(() => {
 		setSearch(searchParams.get('search') || '')
+		setIsPaid(searchParams.get('isPaid') === 'true')
 	}, [searchParams])
 
 	if (error) return <div>error</div>
@@ -20,13 +22,10 @@ const PurchaseList = ({ id }: { id: string }) => {
 	if (isFetching) return <div>loading</div>
 
 	return (
-		<div className='h-screen'>
-			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
-				{data?.map((purchase, index) => (
-					<div key={index}>asd</div>
-					// <PurchaseItem key={index} purchase={purchase} />
-				))}
-			</div>
+		<div className=''>
+			{data?.map(purchase => (
+				<PurchaseItem key={purchase.purchaseId} purchase={purchase} />
+			))}
 		</div>
 	)
 }
