@@ -1,6 +1,5 @@
 'use client'
 
-import BlogSection from '@/Components/Landing/Blogsection'
 import FooterSection from '@/Components/Landing/Footer'
 import LandingPart from '@/Components/Landing/LandingPart'
 import ServicesSection from '@/Components/Landing/ServicesSection'

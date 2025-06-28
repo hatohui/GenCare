@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 import BlogSection from './Blogsection'
-import ProcessSteps from './StepByStepSection'
+
 import Image from 'next/image'
 
 const Testimonials = [
@@ -58,7 +58,7 @@ export default function TestimonialsSection() {
 
 	const x = useTransform(scrollYProgress, [0, 1.2], ['50%', '-95%'])
 
-	const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
+	//const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
 	const image = useTransform(scrollYProgress, [0, 1.5], ['-25%', '25%'])
 
 	return (
@@ -82,8 +82,8 @@ export default function TestimonialsSection() {
 				<motion.div style={{ x }} className='flex gap-5 p-6 '>
 					<div className='min-w-[300px] flex items-end'>
 						<p className='text-lg text-gray-600 mb-12 w-[250px]'>
-							"GenCare provided exceptional service and care. The staff is
-							friendly and professional. Highly recommended!"
+							GenCare provided exceptional service and care. The staff is
+							friendly and professional. Highly recommended!
 						</p>
 					</div>
 					{Testimonials.map((item, i) => (
