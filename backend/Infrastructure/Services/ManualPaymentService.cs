@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Payment.ManualPayment.Request;
 using Application.DTOs.Payment.ManualPayment.Response;
+using Application.Helpers;
 using Application.Repositories;
 using Domain.Common.Constants;
 using Domain.Entities;
@@ -38,31 +39,30 @@ public class ManualPaymentService(
         var serviceIds = await orderDetailRepository.GetDistinctServiceIdsByPurchaseIdAsync(purchase.Id);
 
         var services = await serviceRepository.GetByIdsAsync(serviceIds);
+        
+        var servicePriceDict = services.ToDictionary(s => s.Id, s => s.Price);
 
         //calculate total amount
-        var totalAmount = services.Sum(s => s.Price);
+        var totalAmount = orderDetails.Sum(od => servicePriceDict[od.ServiceId]);
 
         var payment = new PaymentHistory()
         {
             PurchaseId = purchase.Id,
             CreatedAt = ToUnspecified(DateTime.Now),
+            TransactionId = CreateRandomTransaction.GenerateRandomString(10),
             Amount = totalAmount,
             Status = PaymentStatus.Paid,
-            PaymentMethod = request.PaymentMethod,
+            PaymentMethod = PaymentMethod.Cash,
             ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
             
         };
-        var confirmPayment =await paymentHistoryRepository.ConfirmPayment(payment);
+        await paymentHistoryRepository.ConfirmPayment(payment);
         
         return new ConfirmPaymentByStaffResponse()
         {
-            PurchaseId = confirmPayment!.PurchaseId,
-            TransactionId = confirmPayment.TransactionId,
-            Amount = confirmPayment.Amount,
-            PaymentMethod = confirmPayment.PaymentMethod,
-            Status = confirmPayment.Status,
-            CreatedAt = confirmPayment.CreatedAt,
-            ExpiredAt = confirmPayment.ExpiredAt,
+            Success = true,
+            Message = "Payment successfully confirmed. Thank you for your prompt action.",
+           
         };
     }
 }

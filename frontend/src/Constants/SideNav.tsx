@@ -82,4 +82,10 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		svg: <HeartSVG />,
 		level: PermissionLevel.member,
 	},
+	{
+		label: 'Consultants',
+		to: '/app/consultants',
+		svg: <AccountSVG />,
+		level: PermissionLevel.member,
+	},
 ]

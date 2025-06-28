@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ItemCard from './ItemCard'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 import {
@@ -23,9 +23,13 @@ const AccountList = () => {
 
 	const { isLoading, isError, isFetching, data } = query
 
+	useEffect(() => {
+		setPage(1)
+	}, [search])
+
 	const pageCount = data?.totalCount
 		? Math.ceil(data.totalCount / itemsPerPage)
-		: 5
+		: 1
 
 	const handleDelete = (id: string) => {
 		if (window.confirm('Are you sure you want to delete this account?')) {

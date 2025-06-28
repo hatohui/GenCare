@@ -65,4 +65,5 @@ public interface IAccountService
     Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string accountId);
 
     Task<ProfileViewModel> GetProfileAsync(Guid accountId);
+    Task<ConsultantInfoGetResponse> GetConsultantProfile(int page, int count, string? search);
 }
