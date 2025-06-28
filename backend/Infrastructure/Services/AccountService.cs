@@ -539,14 +539,12 @@ public class AccountService
             search = search.ToLower();
             foreach (var consultant in consultants)
             {
-                bool flag = false;
-                flag = consultant.FirstName?.ToLower()?.Contains(search) ?? flag;
-                flag = consultant.LastName?.ToLower()?.Contains(search) ?? flag;
-
-                //get department of consultant
-                var department = await departmentRepo.GetDepartmentByIdAsync(consultant.StaffInfo!.DepartmentId);
-                flag = department?.Name?.ToLower()?.Contains(search) ?? flag;
-                if(flag)
+                ////get staff info of consultant
+                var staff_info = await staffInfoRepo.GetStaffInfoByAccountIdAsync(consultant.Id);
+                //flag = staff_info?.Biography?.ToLower()?.Contains(search) ?? flag;
+                if ((staff_info?.Biography?.ToLower()?.Contains(search) ?? false) || 
+                    (consultant.FirstName?.ToLower()?.Contains(search) ?? false) ||
+                    (consultant.LastName?.ToLower()?.Contains(search) ?? false))
                 {
                     tmp.Add(consultant);
                 }
