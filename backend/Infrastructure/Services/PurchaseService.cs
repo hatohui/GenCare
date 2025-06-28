@@ -1,16 +1,17 @@
 ﻿using System.Security.AccessControl;
+using Application.DTOs.Purchase;
 using Application.DTOs.Purchase.Request;
 using Application.DTOs.Purchase.Response;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class PurchaseService
-(
+public class PurchaseService(
     IPurchaseRepository purchaseRepository,
     IAccountRepository accountRepository,
     IServiceRepository serviceRepository,
@@ -18,12 +19,14 @@ public class PurchaseService
 ) : IPurchaseService
 {
     //add new purchase
-    public async Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest, string accessToken)
+    public async Task<BookingServiceResponse> AddPurchaseAsync(BookingServiceRequest bookingServiceRequest,
+        string accessToken)
     {
         //get account id from access token
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         //get account by id
-        var account = await accountRepository.GetAccountByIdAsync(accountId) ?? throw new Exception("Account not found");
+        var account = await accountRepository.GetAccountByIdAsync(accountId) ??
+                      throw new Exception("Account not found");
         //create purchase
         var purchase = new Purchase
         {
@@ -48,11 +51,12 @@ public class PurchaseService
                 DateOfBirth = o.DateOfBirth,
                 Gender = o.Gender,
                 Service = await serviceRepository.SearchServiceByIdAsync(o.ServiceId)
-                            ?? throw new Exception("Service not found")
+                          ?? throw new Exception("Service not found")
             };
             //add order detail to corresponding purchase
             purchase.OrderDetails.Add(ordDetail);
         }
+
         ////create paymentHistory for purchase
         //var paymentHistory = new PaymentHistory
         //{
@@ -85,7 +89,7 @@ public class PurchaseService
             throw new AppException(404, "No purchases found for this account");
         //map all order details in purchases to BookedService list
         List<BookedService> rs = new();
-        foreach(var purchase in purchases)
+        foreach (var purchase in purchases)
         {
             //check if payment history of this purchase exists
             var paid = true;
@@ -94,8 +98,6 @@ public class PurchaseService
                 paid = false;
             //get order details of this purchase
             var orderDetails = purchase.OrderDetails;
-            if (orderDetails == null || orderDetails.Count == 0)
-                throw new AppException(404, "No order details found for this account");
             foreach (var orderDetail in orderDetails)
             {
                 //find service by id
@@ -107,7 +109,7 @@ public class PurchaseService
                     ServiceName = service?.Name ?? "Unknown Service",
                     FirstName = orderDetail.FirstName,
                     LastName = orderDetail.LastName,
-                    PhoneNumber = orderDetail.Phone,                    
+                    PhoneNumber = orderDetail.Phone,
                     DateOfBirth = orderDetail.DateOfBirth,
                     Gender = orderDetail.Gender,
                     CreatedAt = purchase.CreatedAt,
@@ -115,7 +117,81 @@ public class PurchaseService
                 });
             }
         }
+
         return rs;
     }
+
+  public async Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(
+    Guid accountId,
+    string? search,
+    bool? isPaid)
+{
+    var purchases = await purchaseRepository.GetByAccountId(accountId);
+    var result = new List<BookedServiceListResponse>();
+
+    foreach (var purchase in purchases)
+    {
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            if (!purchase.Id.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
+                continue;
+        }
+        else if (isPaid.HasValue)
+        {
+            var payment = await paymentHistoryRepository.GetById(purchase.Id);
+            var status = payment?.Status?.Trim(); // Thêm .Trim()
+
+            if (isPaid.Value)
+            {
+                // Sử dụng PaymentStatus.Paid thay vì "paid"
+                if (!string.Equals(status, PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase))
+                    continue;
+            }
+            else
+            {
+                if (string.Equals(status, PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase))
+                    continue;
+            }
+        }
+
+        var responseItem = new BookedServiceListResponse
+        {
+            PurchaseId = purchase.Id.ToString(),
+            IsPaid = false,
+            Price = 0,
+            Order = new List<BookedServiceModel>()
+        };
+
+        var paymentCheck = await paymentHistoryRepository.GetById(purchase.Id);
+        responseItem.IsPaid = paymentCheck != null &&
+                              !string.IsNullOrEmpty(paymentCheck.Status) &&
+                              string.Equals(paymentCheck.Status.Trim(), PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase);
+
+        foreach (var od in purchase.OrderDetails)
+        {
+            var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
+            if (service == null) continue;
+
+            responseItem.Order.Add(new BookedServiceModel
+            {
+                OrderDetailId = od.Id,
+                ServiceName = service.Name,
+                FirstName = od.FirstName,
+                LastName = od.LastName,
+                PhoneNumber = od.Phone,
+                DateOfBirth = od.DateOfBirth.ToDateTime(TimeOnly.FromDateTime(DateTime.Now)),
+                Gender = od.Gender,
+                CreatedAt = purchase.CreatedAt,
+            });
+
+            responseItem.Price += service.Price;
+        }
+
+        if (responseItem.Order.Any())
+            result.Add(responseItem);
+    }
+
+    return result;
+}
 
 }

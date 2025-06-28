@@ -518,4 +518,76 @@ public class AccountService
 
         return profile;
     }
+
+    public async Task<ConsultantInfoGetResponse> GetConsultantProfile(int page, int count, string? search)
+    {
+        //get all account
+        var accounts = await accountRepo.GetAll();
+        //filter by role is Consultant and has staff info and isDeleted = false
+        var consultants = accounts
+            .Where(a => !a.IsDeleted && a.Role.Name.ToLower() == RoleNames.Consultant.ToLower() && a.StaffInfo is not null)
+            .ToList();
+        //sort by alphabetical order by first name and last name
+        consultants = consultants
+            .OrderBy(a => a.FirstName)
+            .ThenBy(a => a.LastName)
+            .ToList();
+        //filter by search(firstName, lastName, biography)
+        if (search is not null)
+        {
+            List<Account> tmp = new();
+            search = search.ToLower();
+            foreach (var consultant in consultants)
+            {
+                ////get staff info of consultant
+                var staff_info = await staffInfoRepo.GetStaffInfoByAccountIdAsync(consultant.Id);
+                //flag = staff_info?.Biography?.ToLower()?.Contains(search) ?? flag;
+                if ((staff_info?.Biography?.ToLower()?.Contains(search) ?? false) || 
+                    (consultant.FirstName?.ToLower()?.Contains(search) ?? false) ||
+                    (consultant.LastName?.ToLower()?.Contains(search) ?? false))
+                {
+                    tmp.Add(consultant);
+                }
+            }
+            consultants = tmp;
+        }
+
+        //pagination
+        if (page < 1) page = 1;
+        if (count < 1) count = 10;
+        consultants = consultants.Skip((page - 1) * count)
+                                 .Take(count)
+                                 .ToList();
+
+        //create a list to hold consultant information models
+        List<ConsultantInfoModel> consultantInfoModels = new();
+        foreach (var consultant in consultants)
+        {
+            //get department of consultant
+            var department = await departmentRepo.GetDepartmentByIdAsync(consultant.StaffInfo!.DepartmentId);
+            //add consultant information model
+            consultantInfoModels.Add(new ConsultantInfoModel()
+            {
+                Id = consultant.Id.ToString("D"),
+                Role = consultant.Role.Name,
+                Email = consultant.Email,
+                FirstName = consultant.FirstName,
+                LastName = consultant.LastName,
+                Gender = consultant.Gender,
+                PhoneNumber = consultant.Phone,
+                DateOfBirth = consultant.DateOfBirth,
+                AvatarUrl = consultant.AvatarUrl,
+                Degree = consultant.StaffInfo?.Degree ?? string.Empty,
+                YearOfExperience = consultant.StaffInfo?.YearOfExperience ?? 0,
+                Biography = consultant.StaffInfo?.Biography,
+                Department = department?.Name ?? string.Empty
+            });
+        }
+        ConsultantInfoGetResponse response = new()
+        {
+            TotalCount = consultantInfoModels.Count,
+            Consultants = consultantInfoModels
+        };
+        return response;
+    }
 }

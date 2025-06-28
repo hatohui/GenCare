@@ -122,7 +122,7 @@ public class MessageService(IMessageRepository messageRepository,
     public async Task<DeleteMessageResponse> DeleteMessageAsync(Guid messageId, string accessToken)
     {
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
-        var message = await messageRepository.GetByIdAsync(messageId);
+        var message = await messageRepository.GetMessageByIdAsync(messageId);
         // Check if the message exists
         if (message == null)
             throw new AppException(404, "Message not found.");
