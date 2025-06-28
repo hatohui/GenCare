@@ -169,9 +169,12 @@ public class AccountController(IAccountService accountService) : ControllerBase
     }
 
     [HttpGet("consultants")]
-    public async Task<IActionResult> GetAllConsultantInfo()
+    public async Task<IActionResult> GetAllConsultantInfo(
+        [FromQuery] int page,
+        [FromQuery] int count,
+        [FromQuery] string? search)
     {
-        var response = await accountService.GetAllConsultantProfile();
+        var response = await accountService.GetConsultantProfile(page, count, search);
         return Ok(response);
     }
 }

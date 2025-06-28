@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS "purchase" (
 
 CREATE TABLE IF NOT EXISTS "payment_history" (
     "purchase_id" UUID PRIMARY KEY,
-    "transaction_id" UUID NOT NULL,
+    "transaction_id" VARCHAR(255) NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "amount" DECIMAL(18,2) NOT NULL,
     "status" CHAR(10) NOT NULL DEFAULT 'pending',
