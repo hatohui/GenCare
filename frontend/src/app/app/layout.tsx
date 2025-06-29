@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 import { useRouter } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { useGetMe } from '@/Services/account-service'

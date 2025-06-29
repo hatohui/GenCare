@@ -16,8 +16,8 @@ const ServiceList = () => {
 	const itemsPerPage = 6
 
 	useEffect(() => {
-		setOrderByPrice(Boolean(searchParams.get('orderByPrice')))
-		setSearch(searchParams.get('search') || '')
+		setOrderByPrice(Boolean(searchParams?.get('orderByPrice')))
+		setSearch(searchParams?.get('search') || '')
 	}, [searchParams])
 
 	const { isError, isFetching, data } = useServiceByPage(

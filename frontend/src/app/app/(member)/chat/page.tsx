@@ -1,32 +1,34 @@
 'use client'
 import ChatArea from '@/Components/Chat/ChatArea'
 import ChatControl from '@/Components/Chat/ChatControl'
-import clsx from 'clsx'
-import React, { useState, useRef } from 'react'
+import { useAiChat } from '@/Hooks/Chat/useAIChat'
+import { useGetMe } from '@/Services/account-service'
 
 const ChatPage = () => {
-	const [messages, setMessages] = useState<{ text: string; from: string }[]>([])
-	const [inputValue, setInputValue] = useState('')
-	const inputRef = useRef<HTMLInputElement>(null)
+	const {
+		history,
+		inputValue,
+		setInputValue,
+		inputRef,
+		isPending,
+		isError,
+		sendMessage,
+	} = useAiChat()
 
-	const sendMessage = () => {
-		if (inputValue) {
-			setMessages(prevMessages => [
-				...prevMessages,
-				{ text: inputValue, from: 'You' },
-			])
-
-			setInputValue('')
-		}
-
-		inputRef.current?.focus()
-	}
+	const { data } = useGetMe()
 
 	return (
 		<div className='flex flex-col h-full justify-between rounded-lg shadow-lg overflow-hidden bg-general text-text'>
-			<ChatArea messages={messages} />
+			<ChatArea
+				history={history}
+				isPending={isPending}
+				isError={isError}
+				userIcon={data?.avatarUrl}
+				consultantIcon=''
+			/>
 			<ChatControl
 				inputRef={inputRef}
+				isPending={isPending}
 				inputValue={inputValue}
 				setInputValue={setInputValue}
 				sendMessage={sendMessage}
