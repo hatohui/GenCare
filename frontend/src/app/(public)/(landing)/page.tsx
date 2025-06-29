@@ -18,15 +18,12 @@ const Page = () => {
 			<ServicesSection />
 			{/* <BlogSection /> */}
 			<TestimonialsSection />
-			<div className='abosolute -translate-y-[750px] z-10  '>
-				<motion.div
-					initial={{ filter: 'blur(0px)' }}
-					whileInView={{ filter: 'blur(2px)' }}
-					className=''
-				></motion.div>
+			<div className='abosolute -translate-y-[750px] z-10 h-0  '>
 				<ProcessSteps />
 			</div>
-			<FooterSection />
+			<div className='abosolute translate-y-[750px] z-10  '>
+				<FooterSection />
+			</div>
 		</main>
 	)
 }
