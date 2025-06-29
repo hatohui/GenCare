@@ -28,7 +28,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(GetAccountByPageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager},{RoleNames.Staff}")]
     public async Task<IActionResult> GetAccountsByPageAsync(
         [FromQuery] GetAccountByPageRequest request
     )
@@ -169,9 +169,12 @@ public class AccountController(IAccountService accountService) : ControllerBase
     }
 
     [HttpGet("consultants")]
-    public async Task<IActionResult> GetAllConsultantInfo()
+    public async Task<IActionResult> GetAllConsultantInfo(
+        [FromQuery] int page,
+        [FromQuery] int count,
+        [FromQuery] string? search)
     {
-        var response = await accountService.GetAllConsultantProfile();
+        var response = await accountService.GetConsultantProfile(page, count, search);
         return Ok(response);
     }
 }

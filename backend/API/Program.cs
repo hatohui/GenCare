@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Api.Middlewares;
 using API.ActionFilters;
+using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Payment.Momo;
@@ -26,23 +26,30 @@ using Microsoft.OpenApi.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
-//=============connect momo api=====================
+//=============connect momo api===================== //
 builder.Services.Configure<MomoConfig>(options =>
 {
-    options.PartnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE")
+    options.PartnerCode =
+        Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE")
         ?? throw new InvalidOperationException("Missing Momo Partner Code");
-    options.AccessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY")
+    options.AccessKey =
+        Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY")
         ?? throw new InvalidOperationException("Missing Momo Access Key");
-    options.SecretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY")
+    options.SecretKey =
+        Environment.GetEnvironmentVariable("MOMO_SECRET_KEY")
         ?? throw new InvalidOperationException("Missing Momo Secret Key");
-    options.Endpoint = Environment.GetEnvironmentVariable("MOMO_ENDPOINT")
+    options.Endpoint =
+        Environment.GetEnvironmentVariable("MOMO_ENDPOINT")
         ?? throw new InvalidOperationException("Missing Momo Endpoint");
-    options.ReturnUrl = Environment.GetEnvironmentVariable("MOMO_RETURN_URL")
+    options.ReturnUrl =
+        Environment.GetEnvironmentVariable("MOMO_RETURN_URL")
         ?? throw new InvalidOperationException("Missing Momo Return URL");
-    options.NotifyUrl = Environment.GetEnvironmentVariable("MOMO_NOTIFY_URL")
+    options.NotifyUrl =
+        Environment.GetEnvironmentVariable("MOMO_NOTIFY_URL")
         ?? throw new InvalidOperationException("Missing Momo Notify URL");
-    options.RequestType = Environment.GetEnvironmentVariable("MOMO_REQUEST_TYPE")
-     ?? throw new InvalidOperationException("Missing Momo Request Type");
+    options.RequestType =
+        Environment.GetEnvironmentVariable("MOMO_REQUEST_TYPE")
+        ?? throw new InvalidOperationException("Missing Momo Request Type");
 });
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMomoService, MomoService>();
@@ -131,7 +138,7 @@ builder
                 }
 
                 return Task.CompletedTask;
-            }
+            },
         };
     })
     .AddCookie()
@@ -151,7 +158,11 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder =>
         {
             corsPolicyBuilder
-                .WithOrigins("http://localhost:3000", "https://www.gencare.site","http://127.0.0.1:5500")
+                .WithOrigins(
+                    "http://localhost:3000",
+                    "https://www.gencare.site",
+                    "http://127.0.0.1:5500"
+                )
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -212,17 +223,15 @@ builder.Services.AddScoped<IPaymentHistoryRepository, PaymentHistoryRepository>(
 builder.Services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IManualPaymentService, ManualPaymentService>();
-
-
+builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    var uri = Environment.GetEnvironmentVariable("REDIS_URI")
-                   ?? throw new InvalidOperationException("Missing REDIS_URI");
+    var uri =
+        Environment.GetEnvironmentVariable("REDIS_URI")
+        ?? throw new InvalidOperationException("Missing REDIS_URI");
     options.Configuration = RedisConnectionHelper.FromUri(uri);
-
-
 });
 
 //===========Database Configuration===========
@@ -244,14 +253,12 @@ builder.Services.AddDbContext<GenCareDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
-
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(opt =>
     {
         opt.UseNpgsqlConnection(connectionString);
     })
 );
-
 
 // ====== App Pipeline ======
 var app = builder.Build();

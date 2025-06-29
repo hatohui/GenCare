@@ -13,7 +13,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
     {
         var accessToken = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
 
-        var result = await testTrackerService.ViewTestResultAsync(id, accessToken);
+        var result = await testTrackerService.ViewResultAsync(id, accessToken);
 
         if (result == null)
             return NotFound();
@@ -25,7 +25,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
     public async Task<IActionResult> UpdateTestResult([FromRoute] string id,[FromBody] UpdateTestResultRequest request)
     {
         request.OrderDetailId = id;
-        var response = await testTrackerService.UpdateTestResultAsync(request);
+        var response = await testTrackerService.UpdateResultAsync(request);
 
         if (!response.Success)
             return BadRequest(response.Message);
@@ -41,7 +41,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
             OrderDetailId = id
         };
 
-        var response = await testTrackerService.DeleteTestTrackerAsync(request);
+        var response = await testTrackerService.DeleteResultAsync(request);
 
         if (!response.Success)
             return BadRequest(response.Message);

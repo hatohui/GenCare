@@ -104,18 +104,18 @@ public class ServicesService(
             throw new AppException(404, "Service not found.");
         var mediaService = await mediaRepository.GetAllMediaByServiceIdAsync(service.Id);
 
-        var imageUrl = mediaService?.Select(m => m.Url).ToList();
+        
         return new ViewServiceResponse()
         {
             Id = service.Id.ToString(),
             Name = service.Name,
             Description = service.Description ?? "",
             Price = service.Price,
-            // ImageUrls  = imageUrl?.Select(m => new MediaServiceModel()
-            // {
-            //     // Id = m.Id,
-            //     // Url = m.Url
-            // }).ToList() ?? new List<MediaServiceModel>(),
+            ImageUrls  = mediaService?.Select(m => new MediaServiceModel()
+            {
+                Id = m.Id,
+                Url = m.Url
+            }).ToList() ?? new List<MediaServiceModel>(),
             CreatedAt = service.CreatedAt,
         };
     }
