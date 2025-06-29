@@ -41,10 +41,10 @@ const Page = () => {
 		}
 	}, [searchParams, refetch])
 
-	const handleViewTestResult = (item: OrderDetail) => {
-		setSelectedBooking(item)
-		setShowTestResult(true)
-	}
+	// const handleViewTestResult = (item: OrderDetail) => {
+	// 	setSelectedBooking(item)
+	// 	setShowTestResult(true)
+	// }
 
 	const handleCloseTestResult = () => {
 		setShowTestResult(false)
@@ -156,7 +156,7 @@ const Page = () => {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.2 }}
 			>
-				<BookingList data={data} onViewTestResult={handleViewTestResult} />
+				<BookingList data={data} />
 			</motion.div>
 
 			{/* Test Result Modal */}

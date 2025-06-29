@@ -137,7 +137,7 @@ const ServiceList = () => {
 						}}
 						className='h-full'
 					>
-						<ServiceCard {...item} />
+						<ServiceCard service={item} />
 					</motion.div>
 				))}
 			</div>

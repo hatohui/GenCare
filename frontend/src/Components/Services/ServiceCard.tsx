@@ -9,7 +9,7 @@ import { CldImage } from 'next-cloudinary'
 import { toast } from 'react-hot-toast'
 
 interface ServiceCardProps {
-	service: Service
+	service: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
@@ -112,3 +112,4 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 }
 
 export default ServiceCard
+export { ServiceCard }

@@ -2,18 +2,14 @@
 
 import React from 'react'
 import BookingItem from './BookingItem'
-import {
-	OrderDetails,
-	OrderDetail,
-} from '@/Interfaces/Payment/Types/BookService'
+import { OrderDetails } from '@/Interfaces/Payment/Types/BookService'
 import { motion } from 'motion/react'
 
 interface BookingListProps {
 	data: OrderDetails | undefined
-	onViewTestResult: (item: OrderDetail) => void
 }
 
-const BookingList = ({ data, onViewTestResult }: BookingListProps) => {
+const BookingList = ({ data }: BookingListProps) => {
 	if (!data) return null
 
 	return (
@@ -25,7 +21,7 @@ const BookingList = ({ data, onViewTestResult }: BookingListProps) => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: index * 0.1 }}
 				>
-					<BookingItem item={item} onViewTestResult={onViewTestResult} />
+					<BookingItem booking={item} />
 				</motion.div>
 			))}
 		</div>

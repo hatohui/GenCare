@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,6 +32,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 
 	const [startDate, setStartDate] = useState<Date | null>(null)
 	const [isSaving, setIsSaving] = useState(false)
+	const lastSavedDateRef = useRef<Date | null>(null)
 
 	const {
 		register,
@@ -88,12 +89,18 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 		]
 	)
 
-	// Auto-save when date changes
+	// Auto-save when date changes (only if different from last saved)
 	useEffect(() => {
-		if (startDate) {
+		if (
+			startDate &&
+			!isSaving &&
+			(!lastSavedDateRef.current ||
+				startDate.getTime() !== lastSavedDateRef.current.getTime())
+		) {
 			handleSaveDate(startDate)
+			lastSavedDateRef.current = startDate
 		}
-	}, [startDate, handleSaveDate])
+	}, [startDate, isSaving, handleSaveDate])
 
 	return (
 		<div className='bg-white p-6 rounded-[30px] shadow-sm border border-gray-200'>
