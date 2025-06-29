@@ -2,24 +2,49 @@
 
 import SearchBar from '@/Components/Management/SearchBar'
 import AccountList from '@/Components/staff/AccountList'
-import clsx from 'clsx'
+import { motion } from 'motion/react'
 import React from 'react'
 
 const Page = () => {
 	return (
-		<section
-			className={clsx('flex flex-col gap-4 md:gap-5')}
-			aria-label='Account'
-		>
-			<div className='w-full flex gap-3 px-1'>
-				<div className='w-full'>
-					<div className='flex items-center px-5 gap-3 grow shadow-sm bg-general py-1 pt-2 round'>
-						<SearchBar className='mx-2' waitTime={1000} />
+		<div className='max-w-7xl mx-auto p-6'>
+			{/* Header */}
+			<motion.div
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				className='text-center mb-8'
+			>
+				<h1 className='text-3xl font-bold text-main mb-2'>
+					Quản Lý Thanh Toán
+				</h1>
+				<p className='text-gray-600'>
+					Xem và quản lý thanh toán của khách hàng
+				</p>
+			</motion.div>
+
+			{/* Search Section */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className='mb-8'
+			>
+				<div className='bg-white border border-gray-200 rounded-[20px] p-4 shadow-sm'>
+					<div className='flex items-center gap-3'>
+						<SearchBar className='flex-1' waitTime={1000} />
 					</div>
 				</div>
-			</div>
-			<AccountList />
-		</section>
+			</motion.div>
+
+			{/* Account List */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.2 }}
+			>
+				<AccountList />
+			</motion.div>
+		</div>
 	)
 }
 

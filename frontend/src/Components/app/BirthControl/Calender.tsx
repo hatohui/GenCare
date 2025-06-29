@@ -10,6 +10,7 @@ import {
 	parseISO,
 	differenceInDays,
 	addDays as addToDate,
+	isValid,
 } from 'date-fns'
 import { motion } from 'framer-motion'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
@@ -21,17 +22,41 @@ interface CalendarProps {
 }
 
 export default function Calendar({ year, month, cycle }: CalendarProps) {
-	const parseWithShift = (isoStr: string) => addDays(parseISO(isoStr), 1)
+	const parseWithShift = (isoStr: string) => {
+		try {
+			const parsed = parseISO(isoStr)
+			return isValid(parsed) ? addDays(parsed, 1) : null
+		} catch {
+			return null
+		}
+	}
 
 	const ovulationDay = useMemo(() => {
-		if (!cycle) return null
+		if (!cycle?.startUnsafeDate || !cycle?.endUnsafeDate) return null
+
 		const start = parseWithShift(cycle.startUnsafeDate)
 		const end = parseWithShift(cycle.endUnsafeDate)
+
+		if (!start || !end) return null
+
 		const diff = differenceInDays(end, start)
 		return addToDate(start, Math.floor(diff / 2))
 	}, [cycle])
 
-	if (!cycle || !ovulationDay) return null
+	// Don't render if no valid cycle data
+	if (!cycle || !ovulationDay) {
+		return (
+			<div className='flex items-center justify-center py-12'>
+				<div className='text-center'>
+					<div className='text-gray-400 text-4xl mb-4'>📅</div>
+					<p className='text-gray-600 mb-2'>Chưa có dữ liệu chu kỳ</p>
+					<p className='text-sm text-gray-500'>
+						Vui lòng chọn ngày bắt đầu chu kỳ để xem lịch
+					</p>
+				</div>
+			</div>
+		)
+	}
 
 	const {
 		menstrualStartDate,
@@ -49,12 +74,22 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 	const startDateGrid = startOfWeek(monthStart, { weekStartsOn: 0 })
 	const endDateGrid = endOfWeek(monthEnd, { weekStartsOn: 0 })
 
-	// Function to check if a day is within the interval
-	const inInterval = (date: Date, start: string, end: string) =>
-		isWithinInterval(date, {
-			start: parseWithShift(start),
-			end: parseWithShift(end),
-		})
+	// Function to check if a day is within the interval with error handling
+	const inInterval = (date: Date, start: string, end: string) => {
+		try {
+			const startDate = parseWithShift(start)
+			const endDate = parseWithShift(end)
+
+			if (!startDate || !endDate) return false
+
+			return isWithinInterval(date, {
+				start: startDate,
+				end: endDate,
+			})
+		} catch {
+			return false
+		}
+	}
 
 	const rows: React.ReactNode[] = []
 	let currentDay = startDateGrid
@@ -99,8 +134,8 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 					aria-label={title}
 					className={`p-2 h-16 flex flex-col items-center justify-start text-sm rounded-md
 						${isCurrentMonth ? bgClass : 'bg-gray-100 text-gray-400'}
-						border border-gray-200`}
-					whileHover={{ scale: 1.05 }}
+						border border-gray-200 hover:shadow-sm transition-shadow`}
+					whileHover={{ scale: 1.02 }}
 				>
 					<span className='font-medium text-gray-800'>
 						{label} {ovulationIcon}
@@ -129,19 +164,21 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 	const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
 
 	return (
-		<div className='space-y-3'>
+		<div className='space-y-4'>
 			{/* Weekday headers */}
 			<div className='grid grid-cols-7 text-center font-semibold text-sm text-gray-600'>
 				{weekdays.map(day => (
-					<div key={day}>{day}</div>
+					<div key={day} className='py-2'>
+						{day}
+					</div>
 				))}
 			</div>
 
 			{/* Calendar grid */}
-			{rows}
+			<div className='space-y-1'>{rows}</div>
 
 			{/* Legend */}
-			<div className='grid grid-cols-4 gap-2 text-xs mt-4 text-gray-700'>
+			<div className='grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mt-6 text-gray-700'>
 				<div className='flex items-center gap-2'>
 					<div className='w-4 h-4 rounded bg-red-200 border border-gray-300' />
 					<span>Pha kinh nguyệt</span>
@@ -161,9 +198,13 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 			</div>
 
 			{/* Note for users */}
-			<div className='mt-2 text-xs text-gray-500'>
-				Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸)
-				thường rơi vào giữa khoảng không an toàn.
+			<div className='mt-4 p-3 bg-blue-50 rounded-[15px] text-xs text-blue-700'>
+				<p className='font-medium mb-1'>Lưu ý quan trọng:</p>
+				<p>
+					Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸)
+					thường rơi vào giữa khoảng không an toàn. Phương pháp này không đảm
+					bảo 100% hiệu quả tránh thai.
+				</p>
 			</div>
 		</div>
 	)
