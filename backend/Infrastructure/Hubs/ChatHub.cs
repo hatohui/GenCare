@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Application.Helpers;
+using Domain.Common.Constants;
+using Domain.Exceptions;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.HUbs;
 
@@ -20,4 +23,29 @@ public class ChatHub : Hub
 
         await base.OnConnectedAsync();
     }
+    public async Task JoinAsAvailableStaffOrConsultant()
+    {
+        var httpContext = Context.GetHttpContext();
+
+        var token = httpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
+
+        if (string.IsNullOrEmpty(token))
+            throw new AppException(401, "Missing or invalid access token.");
+
+        var role = JwtHelper.GetRoleFromToken(token);
+
+        if (role != RoleNames.Staff && role != RoleNames.Consultant)
+            throw new AppException(403, "You are not allowed to join this group.");
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, "AvailableStaffOrConsultant");
+        await Clients.Caller.SendAsync("JoinedGroup", "AvailableStaffOrConsultant");
+    }
+
+    public async Task JoinConversation(string conversationId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
+        await Clients.Caller.SendAsync("JoinedConversation", conversationId);
+    }
+
+
 }

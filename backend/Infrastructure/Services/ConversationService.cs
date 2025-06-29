@@ -3,10 +3,12 @@ using Application.DTOs.Conversation.Response;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
+using Infrastructure.HUbs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.Services;
 
-public class ConversationService(IConversationRepository conversationRepository) : IConversationService
+public class ConversationService(IConversationRepository conversationRepository, ChatHub chatHub) : IConversationService
 {
     private static DateTime ToUnspecified(DateTime dt)
     {
@@ -22,6 +24,16 @@ public class ConversationService(IConversationRepository conversationRepository)
             Status = false,
             StartAt = ToUnspecified(DateTime.Now),
         };
+        // Real-time notify to all available staff/consultants
+        await chatHub.Clients
+                .Group("AvailableStaffOrConsultant")
+                .SendAsync("NewConversationCreated", new
+        {
+            conversationId = conversation.Id,
+            memberId = conversation.MemberId,
+            startAt = conversation.StartAt,
+            status = conversation.Status
+        });
 
         await conversationRepository.AddAsync(conversation);
         return new CreateConversationResponse()
