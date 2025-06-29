@@ -3,7 +3,7 @@
 import { motion } from 'motion/react'
 import MotionLink from '../MotionLink'
 import Image from 'next/image'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 import { useRouter } from 'next/navigation'
 
 export type ServiceCardProps = {

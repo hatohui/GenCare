@@ -21,7 +21,7 @@ const ServicesPage = () => {
 	const deleteMutation = useDeleteService()
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
 	const searchParams = useSearchParams()
-	const search = searchParams.get('search')
+	const search = searchParams?.get('search') ?? ''
 	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
 	const [includeDeleted, setIncludeDeleted] = useState<boolean | null>(null)
 	const [sortByAlphabetical, setSortByAlphabetical] = useState<boolean>(false)

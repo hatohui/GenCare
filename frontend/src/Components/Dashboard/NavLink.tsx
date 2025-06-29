@@ -25,8 +25,8 @@ export default function NavLinks({
 	if (!data)
 		return <div className='w-full text-center animate-pulse'>Loading...</div>
 
-	const currentRoot = pathname.split('/')[1]
-	const links = getNavOptionsFromRole(data.role.name, currentRoot)
+	const currentRoot = pathname?.split('/')[1]
+	const links = getNavOptionsFromRole(data.role.name, currentRoot ?? '')
 
 	return (
 		<>

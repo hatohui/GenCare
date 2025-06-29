@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { ServiceCardProps } from './ServiceCard'
 import { useRouter } from 'next/navigation'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 
 export default function ServiceDetail({
 	id,

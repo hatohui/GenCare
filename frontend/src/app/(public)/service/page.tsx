@@ -13,8 +13,8 @@ export default function Page() {
 	const searchParams = useSearchParams()
 
 	useEffect(() => {
-		const sort = searchParams.get('orderByPrice') || ''
-		const search = searchParams.get('search') || ''
+		const sort = searchParams?.get('orderByPrice') || ''
+		const search = searchParams?.get('search') || ''
 
 		console.log(sort, search)
 	}, [searchParams]) // triggers when the URL params change
@@ -38,11 +38,11 @@ export default function Page() {
 						'px-4 py-2 text-main border border-accent rounded-full hover:bg-accent/50 hover:text-white transition-colors',
 						{
 							'bg-accent text-white':
-								searchParams.get('orderByPrice') === 'true',
+								searchParams?.get('orderByPrice') === 'true',
 						}
 					)}
 					onClick={() => {
-						const params = new URLSearchParams(searchParams)
+						const params = new URLSearchParams(searchParams?.toString() || '')
 						if (params.has('orderByPrice')) {
 							params.delete('orderByPrice')
 						} else {
