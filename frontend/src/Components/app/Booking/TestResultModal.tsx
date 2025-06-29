@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { XMarkSVG, DocumentSVG, DownloadSVG, EyeSVG } from '@/Components/SVGs'
+import { XMarkSVG, DownloadSVG, EyeSVG } from '@/Components/SVGs'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 
 interface TestResultModalProps {
@@ -39,7 +39,7 @@ interface GeneralTestResult {
 type TestResultData = GeneralTestResult
 
 // Mock data generator (replace with your real data)
-const generateMockTestResult = (serviceName: string): TestResultData => {
+const generateMockTestResult = (): TestResultData => {
 	// Simple fake data for all service types
 	return {
 		type: 'general',
@@ -149,14 +149,16 @@ const GeneralTestResultView = ({
 				</div>
 			</div>
 
-			<div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
 				{data.results.map((result, index) => (
 					<div
 						key={index}
-						className='bg-white border border-gray-200 rounded-[15px] p-4'
+						className='bg-white border border-gray-200 rounded-[15px] p-4 min-h-[120px]'
 					>
 						<div className='flex justify-between items-start mb-2'>
-							<h4 className='font-medium text-gray-800'>{result.parameter}</h4>
+							<h4 className='font-medium text-gray-800 text-sm'>
+								{result.parameter}
+							</h4>
 							<span
 								className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
 									result.status
@@ -165,11 +167,11 @@ const GeneralTestResultView = ({
 								{getStatusText(result.status)}
 							</span>
 						</div>
-						<div className='text-2xl font-bold text-main'>
+						<div className='text-xl font-bold text-main mb-1'>
 							{result.value} {result.unit}
 						</div>
 						{result.normalRange && (
-							<div className='text-sm text-gray-600'>
+							<div className='text-xs text-gray-600'>
 								Bình thường: {result.normalRange}
 							</div>
 						)}
@@ -180,12 +182,16 @@ const GeneralTestResultView = ({
 			<div className='space-y-4'>
 				<div className='bg-white border border-gray-200 rounded-[15px] p-4'>
 					<h4 className='font-medium text-gray-800 mb-2'>Tóm tắt</h4>
-					<p className='text-gray-700'>{data.summary}</p>
+					<p className='text-gray-700 text-sm leading-relaxed'>
+						{data.summary}
+					</p>
 				</div>
 
 				<div className='bg-white border border-gray-200 rounded-[15px] p-4'>
 					<h4 className='font-medium text-gray-800 mb-2'>Khuyến nghị</h4>
-					<p className='text-gray-700'>{data.recommendations}</p>
+					<p className='text-gray-700 text-sm leading-relaxed'>
+						{data.recommendations}
+					</p>
 				</div>
 			</div>
 		</div>
@@ -207,7 +213,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 			setIsLoading(true)
 			// Simulate API call
 			setTimeout(() => {
-				const result = generateMockTestResult(bookingItem.serviceName)
+				const result = generateMockTestResult()
 				setTestResult(result)
 				setIsLoading(false)
 			}, 1000)
@@ -245,9 +251,9 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 
 	return (
 		<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm'>
-			<div className='bg-white rounded-[30px] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative'>
+			<div className='bg-white rounded-[30px] max-w-4xl w-full h-[90vh] flex flex-col shadow-2xl relative'>
 				{/* Header */}
-				<div className='flex justify-between items-center p-6 border-b border-gray-200'>
+				<div className='flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0'>
 					<div>
 						<h2 className='text-xl font-bold text-main'>Kết quả xét nghiệm</h2>
 						<p className='text-gray-600 text-sm'>
@@ -264,7 +270,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 				</div>
 
 				{/* Content */}
-				<div className='p-6 overflow-y-auto max-h-[calc(90vh-140px)]'>
+				<div className='flex-1 overflow-y-auto p-6'>
 					{isLoading ? (
 						<div className='flex justify-center items-center py-12'>
 							<div className='text-center'>
@@ -279,7 +285,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 
 				{/* Footer */}
 				{!isLoading && testResult && (
-					<div className='flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50'>
+					<div className='flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0'>
 						<div className='text-sm text-gray-600'>
 							Kết quả được tạo vào: {new Date().toLocaleDateString('vi-VN')}
 						</div>

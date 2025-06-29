@@ -19,7 +19,7 @@ const PaymentCallback = () => {
 		// Get payment status from URL parameters
 		const resultCode = searchParams.get('resultCode')
 		const message = searchParams.get('message') || ''
-		const orderId = searchParams.get('orderId') || ''
+		// const orderId = searchParams.get('orderId') || ''
 
 		// Simulate processing time
 		const timer = setTimeout(() => {

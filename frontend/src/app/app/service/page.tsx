@@ -141,7 +141,7 @@ export default function Page() {
 							<span>Bộ lọc hiện tại:</span>
 							{searchParams.get('search') && (
 								<span className='bg-main/10 text-main px-3 py-1 rounded-full'>
-									Tìm kiếm: "{searchParams.get('search')}"
+									Tìm kiếm: {searchParams.get('search')}
 								</span>
 							)}
 							{searchParams.get('orderByPrice') && (

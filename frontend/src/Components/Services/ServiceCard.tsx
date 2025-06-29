@@ -1,28 +1,25 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'motion/react'
-import MotionLink from '../MotionLink'
-import Image from 'next/image'
 import useToken from '@/Hooks/useToken'
-import { useRouter } from 'next/navigation'
 import { Service } from '@/Interfaces/Service/Types/Service'
+import { useRouter } from 'next/navigation'
 import { CldImage } from 'next-cloudinary'
 import { toast } from 'react-hot-toast'
 
-export const ServiceCard = ({
-	name,
-	price,
-	description,
-	id,
-	imageUrls,
-}: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>) => {
+interface ServiceCardProps {
+	service: Service
+}
+
+const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 	const { accessToken } = useToken()
 	const router = useRouter()
 
-	const handleAddToCart = () => {
+	const handleBookNow = () => {
 		try {
 			// Validate service data
-			if (!id || !name || !price) {
+			if (!service.id || !service.name || !service.price) {
 				console.error('Invalid service data')
 				toast.error('Thông tin dịch vụ không hợp lệ')
 				return
@@ -36,7 +33,7 @@ export const ServiceCard = ({
 			}
 
 			// Navigate to booking page
-			router.push(`/app/booking/${id}`)
+			router.push(`/app/booking/${service.id}`)
 		} catch (error) {
 			console.error('Error navigating to booking:', error)
 			toast.error('Có lỗi xảy ra. Vui lòng thử lại.')
@@ -45,7 +42,7 @@ export const ServiceCard = ({
 
 	const handleViewDetails = () => {
 		try {
-			router.push(`/service/${id}`)
+			router.push(`/service/${service.id}`)
 		} catch (error) {
 			console.error('Error navigating to service details:', error)
 			toast.error('Có lỗi xảy ra. Vui lòng thử lại.')
@@ -56,60 +53,62 @@ export const ServiceCard = ({
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
-			whileHover={{ scale: 1.02, y: -5 }}
-			transition={{ duration: 0.3, ease: 'easeOut' }}
-			className='bg-white rounded-[30px] p-6 h-full shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100'
+			whileHover={{ y: -5 }}
+			className='bg-white border border-gray-200 rounded-[30px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300'
 		>
 			{/* Service Image */}
 			<div className='relative mb-4 overflow-hidden rounded-[20px]'>
-				{imageUrls && imageUrls.length > 0 ? (
+				{service.imageUrls && service.imageUrls.length > 0 ? (
 					<CldImage
-						src={imageUrls[0].url}
+						src={service.imageUrls[0].url}
 						width={400}
 						height={250}
-						alt={name}
+						alt={service.name}
 						className='w-full h-[250px] object-cover hover:scale-105 transition-transform duration-300'
 					/>
 				) : (
-					<Image
-						src='/images/gencarelogo.png'
-						alt='gencare-logo'
-						width={400}
-						height={250}
-						className='w-full h-[250px] object-cover hover:scale-105 transition-transform duration-300'
-					/>
+					<div className='w-full h-[250px] bg-gradient-to-br from-main to-secondary flex items-center justify-center'>
+						<span className='text-white text-lg font-semibold'>
+							{service.name}
+						</span>
+					</div>
 				)}
+
 				{/* Price Badge */}
 				<div className='absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg'>
-					{price.toLocaleString('vi-VN')} VND
+					{service.price.toLocaleString('vi-VN')} VND
 				</div>
 			</div>
 
 			{/* Service Content */}
-			<div className='flex-1 flex flex-col'>
-				<h3 className='text-xl font-bold text-main mb-2 line-clamp-2'>
-					{name}
-				</h3>
-				<p className='text-gray-600 mb-6 text-sm line-clamp-3 flex-1'>
-					{description}
-				</p>
+			<div className='p-6'>
+				<div className='flex-1 flex flex-col'>
+					<h3 className='text-xl font-bold text-main mb-2 line-clamp-2'>
+						{service.name}
+					</h3>
+					<p className='text-gray-600 mb-6 text-sm line-clamp-3 flex-1'>
+						{service.description}
+					</p>
 
-				{/* Action Buttons */}
-				<div className='flex gap-3 mt-auto'>
-					<button
-						onClick={handleViewDetails}
-						className='flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-[20px] font-medium text-sm transition-colors duration-200'
-					>
-						Xem chi tiết
-					</button>
-					<button
-						onClick={handleAddToCart}
-						className='flex-1 bg-accent hover:bg-accent/90 text-white px-4 py-3 rounded-[20px] font-medium text-sm transition-colors duration-200 shadow-sm hover:shadow-md'
-					>
-						Đặt ngay
-					</button>
+					{/* Action Buttons */}
+					<div className='flex gap-3'>
+						<button
+							onClick={handleViewDetails}
+							className='flex-1 px-4 py-2 border border-main text-main rounded-[20px] hover:bg-main hover:text-white transition-colors font-medium'
+						>
+							Xem chi tiết
+						</button>
+						<button
+							onClick={handleBookNow}
+							className='flex-1 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors font-medium'
+						>
+							Đặt ngay
+						</button>
+					</div>
 				</div>
 			</div>
 		</motion.div>
 	)
 }
+
+export default ServiceCard

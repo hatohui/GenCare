@@ -103,9 +103,10 @@ const PurchaseList = ({ id }: PurchaseListProps) => {
 	const paidPurchases = data.filter(p => p.isPaid).length
 	const unpaidPurchases = totalPurchases - paidPurchases
 	const totalAmount = data.reduce((sum, p) => sum + p.price, 0)
-	const paidAmount = data
-		.filter(p => p.isPaid)
-		.reduce((sum, p) => sum + p.price, 0)
+
+	const renderPurchaseItem = (purchase: any) => {
+		return <PurchaseItem key={purchase.purchaseId} purchase={purchase} />
+	}
 
 	return (
 		<div className='space-y-6'>
@@ -160,7 +161,7 @@ const PurchaseList = ({ id }: PurchaseListProps) => {
 									delay: index * 0.1,
 								}}
 							>
-								<PurchaseItem purchase={purchase} />
+								{renderPurchaseItem(purchase)}
 							</motion.div>
 						))}
 					</AnimatePresence>
