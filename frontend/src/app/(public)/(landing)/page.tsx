@@ -7,11 +7,10 @@ import ProcessSteps from '@/Components/Landing/StepByStepSection'
 import TestimonialsSection from '@/Components/Landing/TestomonialSection'
 import TrustedBySection from '@/Components/Landing/TrustedBySection'
 import WhyChooseUsSection from '@/Components/Landing/WhyChooseUs'
-import { motion } from 'motion/react'
 
 const Page = () => {
 	return (
-		<main className='relative scroll-bar'>
+		<main className='relative scroll-smooth'>
 			<LandingPart />
 			<TrustedBySection />
 			<WhyChooseUsSection />

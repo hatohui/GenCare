@@ -81,7 +81,7 @@ export default function ProcessSteps() {
 
 				<div className='relative min-h-[600px]'>
 					{/* Timeline line */}
-					<div className='absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-blue-500 to-pink-500 h-full'></div>
+					<div className='absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-blue-500 to-pink-500 h-full z-0'></div>
 
 					{/* Timeline items */}
 					{timelineData.map((item, i) => (
@@ -90,14 +90,14 @@ export default function ProcessSteps() {
 							initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
 							whileInView={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.6, delay: i * 0.2 }}
-							className={`flex items-center mb-16 ${
+							className={`relative flex items-center mb-16 ${
 								i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
 							}`}
 						>
 							{/* Content card */}
 							<motion.div
 								whileHover={{ scale: 1.05 }}
-								className={`bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-80 ${
+								className={`bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-80 z-10 ${
 									i % 2 === 0 ? 'mr-16' : 'ml-16'
 								}`}
 							>
@@ -112,10 +112,10 @@ export default function ProcessSteps() {
 								</div>
 							</motion.div>
 
-							{/* Circle on timeline */}
+							{/* Circle on timeline - positioned absolutely to stay on the line */}
 							<motion.div
 								whileHover={{ scale: 1.2 }}
-								className='w-16 h-16 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white font-bold text-xl z-10 bg-gradient-to-r from-blue-500 to-pink-500 flex-shrink-0'
+								className='absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white font-bold text-xl z-0 bg-gradient-to-r from-blue-500 to-pink-500'
 							>
 								{item.step}
 							</motion.div>
