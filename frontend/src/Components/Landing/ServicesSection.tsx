@@ -24,7 +24,7 @@ export default function ServicesSection() {
 					<motion.div
 						key={service.id}
 						whileHover={{ scale: 1.05 }}
-						className='bg-white p-6 rounded-xl shadow hover:shadow-xl transition border border-gray-100 flex flex-col justify-between'
+						className='bg-white p-6 rounded-xl shadow hover:shadow-xl border border-gray-100 flex flex-col justify-between'
 					>
 						<div className='mb-6'>
 							<div className='w-16 h-16 mx-auto mb-4  bg-secondary rounded-full flex items-center justify-center text-2xl'>

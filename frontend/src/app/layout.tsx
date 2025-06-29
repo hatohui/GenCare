@@ -61,7 +61,7 @@ export default function RootLayout({
 			<head>
 				<link rel='icon' href='/favicon.ico' sizes='any' />
 			</head>
-			<body className={`${inter.variable} ${geistMono.variable} antialiased`}>
+			<body className={`${inter.variable} ${geistMono.variable} antialiased `}>
 				<Suspense fallback={<LoadingPage />}>
 					<TanstackProvider>{children}</TanstackProvider>
 				</Suspense>

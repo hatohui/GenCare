@@ -52,6 +52,22 @@ VALUES
   ((SELECT id FROM "role" WHERE name = 'member'), 'member27@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Xander', 'Perez', '1234567890', '1994-02-20', TRUE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'member'), 'member28@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Yara', 'Roberts', '2345678901', '1995-09-11', TRUE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'member'), 'member29@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Zoe', 'Walker', '3456789012', '1996-01-28', TRUE, NULL, NOW(), FALSE),
+  ((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant2@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Dat', 'Pham', '0987654321', '1996-05-12', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant3@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Linh', 'Truong', '0912345678', '2001-11-28', FALSE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant4@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Phat', 'Nguyen', '0906123456', '1987-03-07', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant5@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Khoa', 'Dang', '0978321654', '1999-08-19', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant6@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Anh', 'Bao', '0933888999', '2003-01-23', FALSE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant7@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Dang', 'Huu', '0964246810', '1992-09-16', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant8@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Hoang', 'Khai', '0922111222', '1985-12-05', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant9@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Long', 'Lam Phi', '0945678901', '2000-07-30', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant10@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Tuyen', 'Le Sy', '0868555444', '1997-04-14', FALSE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant11@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Huy', 'Dinh Gia', '0899777333', '1993-10-21', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant12@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Kiet', 'Pham Anh', '0834234567', '1995-02-09', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant13@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Nhan', 'Nguyen Huu', '0886222111', '1998-06-25', FALSE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant14@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Dong', 'Huynh Van', '0703123789', '1989-11-02', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant15@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Luan', 'Phan Van', '0799456123', '1994-08-18', FALSE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant16@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Khanh', 'Nguyen Bao', '0356987654', '1990-12-27', TRUE, NULL, NOW(), FALSE),
+	((SELECT id FROM "role" WHERE name = 'consultant'), 'consultant17@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Tri', 'Le Van', '0382112233', '1994-08-18', FALSE, NULL, NOW(), FALSE),
   ((SELECT id FROM "role" WHERE name = 'member'), 'member30@example.com', '$2a$11$RqiCAeS/n.czBM4uIpfxaen.0K6m/.FFclLWb1sQLcA7hJ.DgfVhe', 'Adam', 'Carter', '4567890123', '1997-06-17', TRUE, NULL, NOW(), FALSE);
 
 --4. Insert staff_info
@@ -60,7 +76,55 @@ SELECT a.id, d.id, 'MD', 5, 'Experienced Doctor in Cardiology'
 FROM "account" a, "department" d WHERE a.email = 'staff1@example.com' AND d.name = 'Cardiology'
 UNION ALL
 SELECT a.id, d.id, 'PhD', 3, 'Pediatric Specialist'
-FROM "account" a, "department" d WHERE a.email = 'consultant1@example.com' AND d.name = 'Pediatrics';
+FROM "account" a, "department" d WHERE a.email = 'consultant1@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'MD', 5, 'Experienced Doctor in Cardiology'
+FROM "account" a, "department" d WHERE a.email = 'consultant2@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 5, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant3@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 3, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant4@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 7, 'Experienced Doctor in Cardiology'
+FROM "account" a, "department" d WHERE a.email = 'consultant5@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 1, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant6@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 2, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant7@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 4, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant8@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 3, 'Experienced Doctor in Cardiology'
+FROM "account" a, "department" d WHERE a.email = 'consultant9@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 6, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant10@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 5, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant11@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 3, 'Experienced Doctor in Cardiology'
+FROM "account" a, "department" d WHERE a.email = 'consultant12@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 7, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant13@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 1, 'Experienced Doctor in Cardiology'
+FROM "account" a, "department" d WHERE a.email = 'consultant14@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 2, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant15@example.com' AND d.name = 'Pediatrics'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 5, 'Experienced Doctor in Cardiology'
+FROM "account" a, "department" d WHERE a.email = 'consultant16@example.com' AND d.name = 'Cardiology'
+UNION ALL
+SELECT a.id, d.id, 'PhD', 6, 'Pediatric Specialist'
+FROM "account" a, "department" d WHERE a.email = 'consultant17@example.com' AND d.name = 'Pediatrics';
 
 -- -- 5. Insert slots
 -- INSERT INTO "slot" (no, start_at, end_at, is_deleted) VALUES

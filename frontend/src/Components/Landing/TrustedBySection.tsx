@@ -45,7 +45,7 @@ const items = [
 
 export default function TrustedBySection() {
 	return (
-		<section className='relative md:absolute py-10 bg-gradient-to-b from-white to-general text-center  px-6 rounded-[30px] w-3xl md:w-7xl  mx-auto left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-2xl'>
+		<section className='relative md:absolute py-10 bg-gradient-to-b from-white to-general text-center px-6 rounded-[30px] mx-auto md:w-3xl lg:w-6xl md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 shadow-2xl'>
 			<div className='max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-0 px-6 text-center'>
 				{items.map((item, i) => (
 					<motion.div

@@ -2,6 +2,10 @@
 
 import { motion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
+import BlogSection from './Blogsection'
+
+import Image from 'next/image'
+import Testimonials from '@/Constants/Testomonial'
 
 /**
  * Section for testimonials. Scroll-based animation for each testimonial.
@@ -14,46 +18,68 @@ export default function TestimonialsSection() {
 	const targetRef = useRef<HTMLDivElement | null>(null)
 	const { scrollYProgress } = useScroll({ target: targetRef })
 
-	const x = useTransform(scrollYProgress, [0, 1.2], ['45%', '-95%'])
+	const x = useTransform(scrollYProgress, [0, 1.2], ['50%', '-95%'])
 
-	const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
+	//const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
+	const image = useTransform(scrollYProgress, [0, 1], ['-20%', '20%'])
 
 	return (
 		<section
 			ref={targetRef}
-			className='relative py-20 h-[400vh] flex-col items-center justify-center text-center bg-white '
+			className='relative py-20 h-[500vh] flex-col items-center justify-center text-center bg-white  '
 		>
+			<BlogSection />
 			<motion.div
-				style={{ backgroundColor: bgColor }}
-				className='sticky top-1 h-screen overflow-hidden flex flex-col items-center justify-center'
+				style={{}}
+				className='sticky top-0 translate-y-12 h-screen overflow-hidden flex flex-col items-center '
 			>
 				<motion.h2
 					initial={{ opacity: 0, y: 50 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6 }}
-					className='text-4xl font-bold mb-12 text-secondary '
+					className='text-4xl font-bold mb-12 text-secondary'
 				>
 					Khách Hàng Nói Gì
 				</motion.h2>
-				<motion.div style={{ x }} className='flex gap-8 p-6 '>
-					{Array(5)
-						.fill(0)
-						.map((_, i) => (
+
+				<motion.div style={{ x }} className='flex gap-5 p-6 '>
+					<div className='min-w-[300px] flex items-end'>
+						<p className='text-lg text-gray-600 mb-12 w-[250px]'>
+							GenCare provided exceptional service and care. The staff is
+							friendly and professional. Highly recommended!
+						</p>
+					</div>
+					{Testimonials.map((item, i) => (
+						<motion.div
+							key={i}
+							initial={{ opacity: 0, y: 50, filter: 'brightness(0.8)' }}
+							whileHover={{ scale: 1.05, filter: 'brightness(1)' }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5 }}
+							className='relative bg-white w-[300px] h-[400px] rounded shadow hover:shadow-xl flex flex-col items-center justify-between overflow-hidden'
+						>
+							<p className='absolute text-3xl z-10 font-extrabold text-general top-1/12 left-1/12'>
+								{item.name}
+							</p>
 							<motion.div
-								key={i}
-								whileHover={{ scale: 1.05 }}
-								className=' bg-white p-6 min-w-[300px] rounded-xl shadow hover:shadow-xl transition flex flex-col items-center'
+								style={{ x: image }}
+								className='absolute w-[500px] z-0'
 							>
-								<div className='w-16 h-16 mb-4 bg-pink-200 rounded-full flex items-center justify-center text-2xl'>
-									😊
-								</div>
-								<p className='text-gray-600 text-sm mb-2'>
-									&quot;Dịch vụ tuyệt vời! Tôi cảm thấy được lắng nghe và hỗ
-									trợ.&quot;
-								</p>
-								<div className='font-bold'>Khách hàng {i + 1}</div>
+								<Image
+									src={item.avatar}
+									alt={`Portrait of ${item.name}`}
+									className='object-cover h-[400px]'
+									width={500}
+									height={500}
+								/>
 							</motion.div>
-						))}
+
+							<div className='absolute h-[100px]  bottom-9'>
+								<p className='text-general text-lg z-10 bottom-0 p-6'>
+									&quot; {item.content} &quot;
+								</p>
+							</div>
+						</motion.div>
+					))}
 				</motion.div>
 			</motion.div>
 		</section>
