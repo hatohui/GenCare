@@ -11,4 +11,5 @@ public interface ITestTrackerRepository
     Task<bool> DeleteResultAsync(Guid orderDetailId);
 
     Task<bool> CheckResultExistsAsync(Guid orderDetailId);
+    Task AddAsync(Result result);
 }

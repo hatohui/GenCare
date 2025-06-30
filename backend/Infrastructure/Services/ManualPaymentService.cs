@@ -12,7 +12,9 @@ public class ManualPaymentService(
     IPurchaseRepository purchaseRepository,
     IOrderDetailRepository orderDetailRepository,
     IServiceRepository serviceRepository,
-    IPaymentHistoryRepository paymentHistoryRepository) : IManualPaymentService
+    IPaymentHistoryRepository paymentHistoryRepository,
+    ITestTrackerRepository testTrackerRepository
+    ) : IManualPaymentService
 {
     private static DateTime ToUnspecified(DateTime dt)
     {
@@ -56,8 +58,24 @@ public class ManualPaymentService(
             ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
             
         };
-        await paymentHistoryRepository.ConfirmPayment(payment);
-        
+        await paymentHistoryRepository.Add(payment);
+        // Create result for each order detail
+        foreach (var orderDetail in orderDetails)
+        {
+            var result = new Result
+            {
+                OrderDetailId = orderDetail.Id,
+                OrderDate = ToUnspecified(DateTime.Now),
+                // Các giá trị còn lại (sample/result/status/resultData) để staff nhập sau
+                SampleDate = null,
+                ResultDate = null,
+                Status = false,
+                ResultData = null,
+                UpdatedAt = ToUnspecified(DateTime.Now)
+            };
+
+            await testTrackerRepository.AddAsync(result);
+        }
         return new ConfirmPaymentByStaffResponse()
         {
             Success = true,

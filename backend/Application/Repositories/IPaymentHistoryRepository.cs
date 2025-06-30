@@ -14,5 +14,4 @@ public interface IPaymentHistoryRepository
     Task Update(PaymentHistory paymentHistory);
     Task Delete(PaymentHistory paymentHistory);
     
-    Task<PaymentHistory?> ConfirmPayment(PaymentHistory paymentHistory);
 }
