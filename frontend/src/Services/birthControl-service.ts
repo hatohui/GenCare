@@ -9,7 +9,6 @@ const BOOKING_URL = `${DEFAULT_API_URL}/birthControl`
 type BirthControlRequest = {
 	accountId: string
 	startDate: string
-	endDate?: string
 }
 
 const birthControlApi = {
@@ -28,10 +27,15 @@ const birthControlApi = {
 		data: BirthControlRequest
 	}) =>
 		axios
-			.put(`${BOOKING_URL}`, data, {
+			.put<BirthControlDates>(`${BOOKING_URL}`, data, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data),
+			.then(res => {
+				console.log('start date end ate', data)
+
+				console.log(res.data)
+				return res.data
+			}),
 	create: async ({
 		header,
 		data,
@@ -40,10 +44,13 @@ const birthControlApi = {
 		data: BirthControlRequest
 	}) =>
 		axios
-			.post(`${BOOKING_URL}`, data, {
+			.post<BirthControlDates>(`${BOOKING_URL}`, data, {
 				headers: { Authorization: header },
 			})
-			.then(res => res.data),
+			.then(res => {
+				console.log(res.data)
+				return res.data
+			}),
 }
 
 export const useGetBirthControl = (id: string) => {
@@ -52,6 +59,7 @@ export const useGetBirthControl = (id: string) => {
 	return useQuery({
 		queryKey: ['getBirthControl', id],
 		queryFn: () => birthControlApi.get({ header, id }),
+		staleTime: 0,
 	})
 }
 
@@ -70,5 +78,6 @@ export const useUpdateBirthControl = () => {
 	return useMutation({
 		mutationFn: (data: BirthControlRequest) =>
 			birthControlApi.update({ header, data }),
+		mutationKey: ['updateBirthControl'],
 	})
 }
