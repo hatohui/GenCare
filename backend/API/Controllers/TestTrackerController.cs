@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.TestTracker.Request;
 using Application.Services;
+using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -33,7 +34,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
         return NoContent();
     }
     [HttpDelete("{id}")]
-    [Authorize(Roles = "admin,staff")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
     public async Task<IActionResult> DeleteTestTracker(Guid id)
     {
         var request = new DeleteTestResultRequest
@@ -47,5 +48,13 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
             return BadRequest(response.Message);
 
         return NoContent();
+    }
+
+    [HttpGet("all")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Manager},{RoleNames.Consultant}")]
+    public async Task<IActionResult> GetAllBookedOrders()
+    {
+        var result = await testTrackerService.GetBookedServiceModelAsync();
+        return Ok(result);
     }
 }
