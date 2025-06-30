@@ -1,7 +1,6 @@
 'use client'
 import Button from '@/Components/Button'
 import Pagination from '@/Components/Management/Pagination'
-import { usePagination } from '@/Hooks/List/usePagination'
 import { useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { useGetConsultants } from '@/Services/account-service'
@@ -10,11 +9,12 @@ import LoadingIcon from '@/Components/LoadingIcon'
 import { motion, AnimatePresence } from 'motion/react'
 import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
 import Image from 'next/image'
+import { PaginationContext } from './layout'
 
 const PAGE_SIZE = 8
 
 const ConsultantList = () => {
-	const { page, setPage } = usePagination(undefined, PAGE_SIZE)
+	const { page, setPage } = React.useContext(PaginationContext)
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const searchTerm = searchParams?.get('search') ?? ''
@@ -77,8 +77,11 @@ const ConsultantList = () => {
 				</div>
 			)}
 
-			<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6'>
-				<AnimatePresence mode='wait'>
+			<AnimatePresence mode='wait'>
+				<div
+					key={page}
+					className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6'
+				>
 					{data.consultants.map((consultant, idx) => {
 						const fullName =
 							`${consultant.firstName ?? ''} ${
@@ -100,10 +103,10 @@ const ConsultantList = () => {
 								animate={{ opacity: 1, y: 0 }}
 								exit={{ opacity: 0, y: -30 }}
 								transition={{
-									duration: 0.4,
+									duration: 0.3,
 									type: 'spring',
 									stiffness: 120,
-									delay: idx * 0.08,
+									delay: idx * 0.05,
 								}}
 								whileHover={{
 									scale: 1.04,
@@ -151,22 +154,33 @@ const ConsultantList = () => {
 							</motion.div>
 						)
 					})}
-				</AnimatePresence>
-				{page === totalPages && (
-					<div className='bg-white border border-blue-100 rounded-2xl shadow-sm flex flex-col items-center justify-center p-6 text-center h-full min-h-[320px]'>
-						<div className='w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-400 text-3xl font-bold mb-4'>
-							+
-						</div>
-						<h2 className='text-lg font-semibold text-blue-500'>
-							New Consultant Coming Soon
-						</h2>
-						<p className='text-sm text-gray-500 mt-2'>
-							We&apos;re expanding our team of healthcare professionals. Stay
-							tuned for our new consultant!
-						</p>
-					</div>
-				)}
-			</div>
+					{page === totalPages && (
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -30 }}
+							transition={{
+								duration: 0.3,
+								type: 'spring',
+								stiffness: 120,
+								delay: data.consultants.length * 0.05,
+							}}
+							className='bg-white border border-blue-100 rounded-2xl shadow-sm flex flex-col items-center justify-center p-6 text-center h-full min-h-[320px]'
+						>
+							<div className='w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-400 text-3xl font-bold mb-4'>
+								+
+							</div>
+							<h2 className='text-lg font-semibold text-blue-500'>
+								New Consultant Coming Soon
+							</h2>
+							<p className='text-sm text-gray-500 mt-2'>
+								We&apos;re expanding our team of healthcare professionals. Stay
+								tuned for our new consultant!
+							</p>
+						</motion.div>
+					)}
+				</div>
+			</AnimatePresence>
 			<div className='center-all w-full'>
 				<Pagination
 					currentPage={page}
