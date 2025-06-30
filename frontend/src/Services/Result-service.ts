@@ -9,7 +9,7 @@ const Result_URL = `${DEFAULT_API_URL}/result`
 const ResultAPI = {
 	GetTest: (header: string, orderDetailId: string) => {
 		return axios
-			.get(`${Result_URL}/${orderDetailId}`, {
+			.get<Omit<Result, 'OrderDetailId'>>(`${Result_URL}/${orderDetailId}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)

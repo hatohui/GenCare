@@ -38,73 +38,6 @@ interface GeneralTestResult {
 
 type TestResultData = GeneralTestResult
 
-// Mock data generator (replace with your real data)
-const generateMockTestResult = (): TestResultData => {
-	// Simple fake data for all service types
-	return {
-		type: 'general',
-		data: {
-			results: [
-				{
-					parameter: 'Huyết áp',
-					value: '120/80',
-					unit: 'mmHg',
-					normalRange: '<140/90',
-					status: 'normal',
-				},
-				{
-					parameter: 'Nhịp tim',
-					value: 72,
-					unit: 'bpm',
-					normalRange: '60-100',
-					status: 'normal',
-				},
-				{
-					parameter: 'Nhiệt độ',
-					value: 36.8,
-					unit: '°C',
-					normalRange: '36.5-37.5',
-					status: 'normal',
-				},
-				{
-					parameter: 'Cân nặng',
-					value: 65,
-					unit: 'kg',
-					normalRange: 'N/A',
-					status: 'normal',
-				},
-				{
-					parameter: 'Đường huyết',
-					value: 95,
-					unit: 'mg/dL',
-					normalRange: '70-100',
-					status: 'normal',
-				},
-				{
-					parameter: 'Cholesterol',
-					value: 180,
-					unit: 'mg/dL',
-					normalRange: '<200',
-					status: 'normal',
-				},
-			],
-			summary:
-				'Tất cả các chỉ số đều trong giới hạn bình thường. Sức khỏe tổng thể tốt.',
-			recommendations:
-				'Duy trì lối sống lành mạnh, tập thể dục đều đặn 30 phút mỗi ngày, ăn uống cân bằng dinh dưỡng.',
-			doctor: 'Dr. Trần Thị B',
-			datePerformed: new Date().toLocaleDateString('vi-VN'),
-			testId: 'TEST-001',
-			patientId: 'PAT-001',
-			serviceId: 'SVC-001',
-			labTechnician: 'Tech. Nguyễn Văn C',
-			verifiedBy: 'Dr. Lê Thị D',
-			verifiedAt: new Date().toISOString(),
-			reportUrl: '/api/test-results/001/pdf',
-		},
-	}
-}
-
 // Component for rendering general test results
 const GeneralTestResultView = ({
 	data,
@@ -204,6 +137,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	onClose,
 	bookingItem,
 }) => {
+	// Restore state and effect for mock data
 	const [testResult, setTestResult] = useState<TestResultData | null>(null)
 	const [isLoading, setIsLoading] = useState(false)
 
@@ -221,8 +155,6 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	}, [isOpen, bookingItem])
 
 	const handleClose = () => {
-		setTestResult(null)
-		setIsLoading(false)
 		onClose()
 	}
 
@@ -270,18 +202,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 				</div>
 
 				{/* Content */}
-				<div className='flex-1 overflow-y-auto p-6'>
-					{isLoading ? (
-						<div className='flex justify-center items-center py-12'>
-							<div className='text-center'>
-								<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-main mx-auto mb-4'></div>
-								<p className='text-gray-600'>Đang tải kết quả...</p>
-							</div>
-						</div>
-					) : (
-						renderTestResult()
-					)}
-				</div>
+				<div className='flex-1 overflow-y-auto p-6'>{renderTestResult()}</div>
 
 				{/* Footer */}
 				{!isLoading && testResult && (
@@ -310,6 +231,73 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 			</div>
 		</div>
 	)
+}
+
+// Restore the mock data generator
+const generateMockTestResult = (): TestResultData => {
+	// Simple fake data for all service types
+	return {
+		type: 'general',
+		data: {
+			results: [
+				{
+					parameter: 'Huyết áp',
+					value: '120/80',
+					unit: 'mmHg',
+					normalRange: '<140/90',
+					status: 'normal',
+				},
+				{
+					parameter: 'Nhịp tim',
+					value: 72,
+					unit: 'bpm',
+					normalRange: '60-100',
+					status: 'normal',
+				},
+				{
+					parameter: 'Nhiệt độ',
+					value: 36.8,
+					unit: '°C',
+					normalRange: '36.5-37.5',
+					status: 'normal',
+				},
+				{
+					parameter: 'Cân nặng',
+					value: 65,
+					unit: 'kg',
+					normalRange: 'N/A',
+					status: 'normal',
+				},
+				{
+					parameter: 'Đường huyết',
+					value: 95,
+					unit: 'mg/dL',
+					normalRange: '70-100',
+					status: 'normal',
+				},
+				{
+					parameter: 'Cholesterol',
+					value: 180,
+					unit: 'mg/dL',
+					normalRange: '<200',
+					status: 'normal',
+				},
+			],
+			summary:
+				'Tất cả các chỉ số đều trong giới hạn bình thường. Sức khỏe tổng thể tốt.',
+			recommendations:
+				'Duy trì lối sống lành mạnh, tập thể dục đều đặn 30 phút mỗi ngày, ăn uống cân bằng dinh dưỡng.',
+			doctor: 'Dr. Trần Thị B',
+			datePerformed: new Date().toLocaleDateString('vi-VN'),
+			testId: 'TEST-001',
+			patientId: 'PAT-001',
+			serviceId: 'SVC-001',
+			labTechnician: 'Tech. Nguyễn Văn C',
+			verifiedBy: 'Dr. Lê Thị D',
+			verifiedAt: new Date().toISOString(),
+			reportUrl: '/api/test-results/001/pdf',
+		},
+	}
 }
 
 export default TestResultModal
