@@ -6,8 +6,12 @@ import {
 	PermissionLevel,
 } from '@/Utils/Permissions/isAllowedRole'
 import { forbidden } from 'next/navigation'
-import React from 'react'
+import React, { useState, createContext } from 'react'
 
+export const PaginationContext = createContext<{
+	page: number
+	setPage: React.Dispatch<React.SetStateAction<number>>
+}>({ page: 1, setPage: () => {} })
 const Layout = ({
 	children,
 	actions,
@@ -16,7 +20,7 @@ const Layout = ({
 	actions: React.ReactNode
 }) => {
 	const { isLoading, data } = useAccountStore()
-
+	const [page, setPage] = useState(1)
 	if (isLoading) return <LoadingPage />
 
 	if (!isAllowedRole(data?.role.name, PermissionLevel.member)) forbidden()
@@ -24,7 +28,9 @@ const Layout = ({
 	return (
 		<div className='flex flex-col h-full w-full gap-4'>
 			<div className=''>{actions}</div>
-			<div className='flex flex-col flex-2/3'>{children}</div>
+			<PaginationContext.Provider value={{ page, setPage }}>
+				<div className='flex flex-col flex-2/3'>{children}</div>
+			</PaginationContext.Provider>
 		</div>
 	)
 }

@@ -14,7 +14,7 @@ export const usePagination = (
 		if (page > totalPages) {
 			setPage(1)
 		}
-	}, [totalPages])
+	}, [page, totalPages])
 
 	return {
 		page,

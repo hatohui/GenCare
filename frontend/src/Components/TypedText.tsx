@@ -25,7 +25,7 @@ const TypedText = ({
 		return () => {
 			typed.destroy()
 		}
-	}, [])
+	}, [defaultOptions, options])
 
 	return isFirstLoad ? (
 		<span className={className} ref={el} />
