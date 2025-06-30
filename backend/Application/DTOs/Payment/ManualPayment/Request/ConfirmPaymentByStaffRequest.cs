@@ -4,7 +4,6 @@ public class ConfirmPaymentByStaffRequest
 {
     public Guid PurchaseId { get; set; }
     
-   
     
     
 }

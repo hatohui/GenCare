@@ -1,4 +1,5 @@
-﻿using Application.DTOs.TestTracker.Request;
+﻿using Application.DTOs.Purchase;
+using Application.DTOs.TestTracker.Request;
 using Application.DTOs.TestTracker.Response;
 using Application.Helpers;
 using Application.Repositories;
@@ -11,7 +12,9 @@ namespace Infrastructure.Services;
 public class TestTrackerService(ITestTrackerRepository testTrackerRepository, 
                                 IPurchaseRepository purchaseRepository, 
                                 IPaymentHistoryRepository paymentHistoryRepository,
-                                IOrderDetailRepository orderDetailRepository) : ITestTrackerService
+                                IOrderDetailRepository orderDetailRepository,
+                                IServiceRepository serviceRepository
+                                ) : ITestTrackerService
 {
     /// <summary>
     /// Converts a DateTime to Unspecified kind (removes timezone information).
@@ -51,7 +54,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         var payment = await paymentHistoryRepository.GetById(purchase.Id);
         if (payment == null)
             throw new AppException(402, "No payment record found.");
-        if(payment.Status != PaymentStatus.Paid)
+        if(payment.Status.Trim() != PaymentStatus.Paid.Trim())
             throw new AppException(402,"Payment is not completed.");
         
         var testResult = await testTrackerRepository.ViewResultAsync(orderDetailId) ??
@@ -139,5 +142,34 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
             Success = deleted,
             Message = deleted ? "Deleted successfully." : "Failed to delete test result."
         };
+    }
+
+    public async Task<List<BookedServiceModel>> GetBookedServiceModelAsync()
+    {
+        var purchases = await purchaseRepository.GetAllPurchasesAsync(); // lấy tất cả purchases (bao gồm OrderDetails)
+        var result = new List<BookedServiceModel>();
+
+        foreach (var purchase in purchases)
+        {
+            foreach (var od in purchase.OrderDetails)
+            {
+                var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
+                if (service == null) continue;
+
+                result.Add(new BookedServiceModel
+                {
+                    OrderDetailId = od.Id,
+                    ServiceName = service.Name,
+                    FirstName = od.FirstName,
+                    LastName = od.LastName,
+                    PhoneNumber = od.Phone,
+                    DateOfBirth = od.DateOfBirth.ToDateTime(TimeOnly.MinValue),
+                    Gender = od.Gender,
+                    CreatedAt = purchase.CreatedAt,
+                });
+            }
+        }
+
+        return result;
     }
 }
