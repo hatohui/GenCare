@@ -61,19 +61,25 @@ const LandingPart = () => {
 						className='text-center lg:text-left p-4 text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl font-bold xl:font-extrabold'
 						{...animateStyle}
 					>
-						<TypedText
-							typeSpeed={10}
-							className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'
-							strings={['Giải Pháp Y Tế Giới Tính, Dành Cho ']}
-							onComplete={() => setTyping(true)}
-						/>
-						<span>&nbsp;</span>
-						{typing && (
-							<TypedText
-								typeSpeed={10}
-								className='bg-gradient-to-r text-stroke-[1px] from-secondary to-main bg-clip-text underline text-transparent'
-								strings={['Bạn!']}
-							/>
+						{!typing ? (
+							<>
+								<TypedText
+									typeSpeed={10}
+									className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'
+									strings={['Giải Pháp Y Tế Giới Tính, Dành Cho ']}
+									onComplete={() => setTyping(true)}
+								/>
+								<span>&nbsp;</span>
+							</>
+						) : (
+							<>
+								<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
+									Giải Pháp Y Tế Giới Tính, Dành Cho{' '}
+								</span>
+								<span className='bg-gradient-to-r text-stroke-[1px] from-secondary to-main bg-clip-text underline text-transparent'>
+									Bạn!
+								</span>
+							</>
 						)}
 					</motion.h1>
 
