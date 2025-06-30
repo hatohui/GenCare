@@ -3,17 +3,45 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { useRouter, useSearchParams } from 'next/navigation'
 import axios from 'axios'
 import { useMutation } from '@tanstack/react-query'
 import { DEFAULT_API_URL } from '@/Constants/API'
-import {
-	ForgotPasswordRequest,
-	forgotPasswordSchema,
-} from '@/Interfaces/Auth/Schema/forgot-password'
+import { ResetPasswordRequest } from '@/Interfaces/Auth/Schema/forgot-password'
 
-export default function ForgotPasswordPage() {
+const resetPasswordSchema = z
+	.object({
+		password: z
+			.string()
+			.min(8, 'Password must be at least 8 characters')
+			.max(32, 'Password must be at most 32 characters')
+			.regex(
+				/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+				'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+			),
+		confirmPassword: z.string(),
+	})
+	.refine(data => data.password === data.confirmPassword, {
+		message: 'Passwords do not match',
+		path: ['confirmPassword'],
+	})
+
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
+
+export default function ResetPasswordPage() {
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const email = searchParams?.get('email') ?? ''
+	const token = searchParams?.get('token') ?? ''
 	const [retryTimer, setRetryTimer] = useState<number | null>(null)
 	const [intervalRef, setIntervalRef] = useState<NodeJS.Timeout | null>(null)
+
+	React.useEffect(() => {
+		if (!email || !token) {
+			router.push('/forgot-password')
+		}
+	}, [email, token, router])
 
 	React.useEffect(() => {
 		return () => {
@@ -27,16 +55,15 @@ export default function ForgotPasswordPage() {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<ForgotPasswordRequest>({
-		resolver: zodResolver(forgotPasswordSchema),
+	} = useForm<ResetPasswordFormData>({
+		resolver: zodResolver(resetPasswordSchema),
 	})
 
 	const { mutate, isPending } = useMutation({
-		mutationKey: ['forgot-password'],
-		mutationFn: async (data: ForgotPasswordRequest) =>
-			axios.post(`${DEFAULT_API_URL}/auth/forgot-password`, data),
+		mutationKey: ['reset-password'],
+		mutationFn: async (data: ResetPasswordRequest) =>
+			axios.post(`${DEFAULT_API_URL}/auth/reset-password`, data),
 		onSuccess: () => {
-			// Do not reset the form to preserve the email input
 			startRetryTimer()
 		},
 		onError: (error: any) => {
@@ -45,7 +72,7 @@ export default function ForgotPasswordPage() {
 	})
 
 	const startRetryTimer = () => {
-		setRetryTimer(10) // 10 seconds timer
+		setRetryTimer(10)
 		const interval = setInterval(() => {
 			setRetryTimer(prev => {
 				if (prev !== null) {
@@ -53,6 +80,7 @@ export default function ForgotPasswordPage() {
 						clearInterval(interval)
 						setIntervalRef(null)
 						setRetryTimer(null)
+						router.push('/login')
 					}
 					return prev - 1
 				}
@@ -62,34 +90,57 @@ export default function ForgotPasswordPage() {
 		setIntervalRef(interval)
 	}
 
-	const onSubmit = (data: ForgotPasswordRequest) => {
-		mutate(data)
+	const onSubmit = (data: ResetPasswordFormData) => {
+		mutate({
+			email,
+			newPassword: data.password,
+			resetPasswordToken: token,
+		})
 	}
 
 	return (
 		<div className='full-screen center-all bg-gradient-to-b from-main to-secondary p-4 relative'>
 			<div className='absolute top-0 left-0 full-screen florageBackground' />
 			<div className='w-full max-w-md space-y-6 bg-white p-8 rounded-lg shadow-lg relative z-10'>
-				<h2 className='text-center text-3xl font-bold tracking-tight text-slate-950'>
-					Forgot Password
-				</h2>
+				<h1 className='text-center text-3xl font-bold tracking-tight text-slate-950'>
+					Reset Your Password
+				</h1>
 				<form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
 					<div className='space-y-2'>
-						<label htmlFor='email-address' className='sr-only'>
-							Email address
+						<label
+							htmlFor='password'
+							className='block text-sm font-medium text-slate-950'
+						>
+							Password
 						</label>
 						<input
-							{...register('email')}
-							id='email-address'
-							name='email'
-							type='email'
-							autoComplete='email'
-							required
-							className='relative block w-full px-3 py-2 text-slate-950 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-main focus:border-main sm:text-sm'
-							placeholder='Email address'
+							id='password'
+							type='password'
+							className='relative block w-full px-3 py-2 text-slate-950 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-main focus:border-main sm:text-sm'
+							{...register('password')}
 						/>
-						{errors.email && (
-							<p className='text-sm text-accent'>{errors.email.message}</p>
+						{errors.password && (
+							<p className='text-sm text-accent'>{errors.password.message}</p>
+						)}
+					</div>
+
+					<div className='space-y-2'>
+						<label
+							htmlFor='confirmPassword'
+							className='block text-sm font-medium text-slate-950'
+						>
+							Confirm Password
+						</label>
+						<input
+							id='confirmPassword'
+							type='password'
+							className='relative block w-full px-3 py-2 text-slate-950 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-main focus:border-main sm:text-sm'
+							{...register('confirmPassword')}
+						/>
+						{errors.confirmPassword && (
+							<p className='text-sm text-accent'>
+								{errors.confirmPassword.message}
+							</p>
 						)}
 					</div>
 
@@ -120,19 +171,18 @@ export default function ForgotPasswordPage() {
 										d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
 									></path>
 								</svg>
-								Loading...
+								Resetting...
 							</span>
 						) : retryTimer !== null ? (
 							`Retry in ${retryTimer}s`
 						) : (
-							'Send Reset Email'
+							'Reset Password'
 						)}
 					</button>
 				</form>
 				{retryTimer !== null && (
 					<p className='text-sm text-green-600 text-center'>
-						We sent you an email. Please check your inbox for the reset password
-						link.
+						Password reset successful. You will be redirected to login shortly.
 					</p>
 				)}
 			</div>
