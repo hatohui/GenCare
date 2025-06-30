@@ -13,6 +13,15 @@ import {
 
 export default function ForgotPasswordPage() {
 	const [retryTimer, setRetryTimer] = useState<number | null>(null)
+	const [intervalRef, setIntervalRef] = useState<NodeJS.Timeout | null>(null)
+
+	React.useEffect(() => {
+		return () => {
+			if (intervalRef) {
+				clearInterval(intervalRef)
+			}
+		}
+	}, [intervalRef])
 
 	const {
 		register,
@@ -42,6 +51,7 @@ export default function ForgotPasswordPage() {
 				if (prev !== null) {
 					if (prev <= 1) {
 						clearInterval(interval)
+						setIntervalRef(null)
 						setRetryTimer(null)
 					}
 					return prev - 1
@@ -49,6 +59,7 @@ export default function ForgotPasswordPage() {
 				return null
 			})
 		}, 1000)
+		setIntervalRef(interval)
 	}
 
 	const onSubmit = (data: ForgotPasswordRequest) => {

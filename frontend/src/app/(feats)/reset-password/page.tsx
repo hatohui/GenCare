@@ -35,6 +35,21 @@ export default function ResetPasswordPage() {
 	const email = searchParams?.get('email') ?? ''
 	const token = searchParams?.get('token') ?? ''
 	const [retryTimer, setRetryTimer] = useState<number | null>(null)
+	const [intervalRef, setIntervalRef] = useState<NodeJS.Timeout | null>(null)
+
+	React.useEffect(() => {
+		if (!email || !token) {
+			router.push('/forgot-password')
+		}
+	}, [email, token, router])
+
+	React.useEffect(() => {
+		return () => {
+			if (intervalRef) {
+				clearInterval(intervalRef)
+			}
+		}
+	}, [intervalRef])
 
 	const {
 		register,
@@ -63,6 +78,7 @@ export default function ResetPasswordPage() {
 				if (prev !== null) {
 					if (prev <= 1) {
 						clearInterval(interval)
+						setIntervalRef(null)
 						setRetryTimer(null)
 						router.push('/login')
 					}
@@ -71,6 +87,7 @@ export default function ResetPasswordPage() {
 				return null
 			})
 		}, 1000)
+		setIntervalRef(interval)
 	}
 
 	const onSubmit = (data: ResetPasswordFormData) => {
@@ -138,7 +155,7 @@ export default function ResetPasswordPage() {
 									className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
 									xmlns='http://www.w3.org/2000/svg'
 									fill='none'
-									viewBox='0 24 24'
+									viewBox='0 0 24 24'
 								>
 									<circle
 										className='opacity-25'
