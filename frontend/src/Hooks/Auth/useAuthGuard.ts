@@ -39,8 +39,9 @@ export function useAuthGuard(
 
 	useEffect(() => {
 		if (token && user) {
-			accountStore.setAccount(user)
-
+			if (accountStore.data !== user) {
+				accountStore.setAccount(user)
+			}
 			if (!isAllowedRole(user.role.name, requiredRole)) {
 				router.push('/403')
 			}
