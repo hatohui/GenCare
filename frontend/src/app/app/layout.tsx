@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 import { useRouter } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { useGetMe } from '@/Services/account-service'
@@ -72,7 +72,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground'>
 			<Sidenav />
-			<main className='flex-1 p-7 h-full scroll-smooth'>{children}</main>
+			<main className='flex-1 p-7 h-full scroll-smooth overflow-scroll'>
+				{children}
+			</main>
 		</div>
 	)
 }

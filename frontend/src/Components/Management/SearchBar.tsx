@@ -13,7 +13,7 @@ const SearchBar = ({
 	className?: string
 }) => {
 	const searchParams = useSearchParams()
-	const search = searchParams.get('search')
+	const search = searchParams?.get('search')
 	const [searchParam, setSearchParam] = useState(search)
 	const router = useRouter()
 	const pathname = usePathname()
@@ -25,7 +25,7 @@ const SearchBar = ({
 
 	const createQueryString = useCallback(
 		(name: string, value: string) => {
-			const params = new URLSearchParams(searchParams.toString())
+			const params = new URLSearchParams(searchParams?.toString())
 			params.set(name, value)
 			return params.toString()
 		},

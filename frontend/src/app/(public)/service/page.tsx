@@ -14,14 +14,14 @@ export default function Page() {
 	const searchParams = useSearchParams()
 
 	useEffect(() => {
-		const sort = searchParams.get('orderByPrice') || ''
-		const search = searchParams.get('search') || ''
+		const sort = searchParams?.get('orderByPrice') || ''
+		const search = searchParams?.get('search') || ''
 
 		console.log(sort, search)
 	}, [searchParams]) // triggers when the URL params change
 
 	return (
-		<main className='min-h-screen bg-gradient-to-b from-white to-general mt-20'>
+		<section className='min-h-screen bg-gradient-to-b from-white to-general mt-20'>
 			{/* Hero Section */}
 			<section className='relative py-20 bg-gradient-to-r from-main to-secondary text-white overflow-hidden'>
 				{/* Background overlay */}
@@ -76,13 +76,15 @@ export default function Page() {
 										'px-6 py-3 rounded-[30px] font-medium transition-all duration-300 border-2',
 										{
 											'bg-main text-white border-main':
-												searchParams.get('orderByPrice') === 'true',
+												searchParams?.get('orderByPrice') === 'true',
 											'bg-white text-main border-main/30 hover:bg-main/5':
-												searchParams.get('orderByPrice') !== 'true',
+												searchParams?.get('orderByPrice') !== 'true',
 										}
 									)}
 									onClick={() => {
-										const params = new URLSearchParams(searchParams)
+										const params = new URLSearchParams(
+											searchParams ? searchParams : ''
+										)
 										if (params.has('orderByPrice')) {
 											params.delete('orderByPrice')
 										} else {
@@ -91,8 +93,8 @@ export default function Page() {
 										window.location.search = params.toString()
 									}}
 								>
-									{searchParams.get('orderByPrice') === 'true' ? '✓' : '⚡'} Sắp
-									xếp theo giá
+									{searchParams?.get('orderByPrice') === 'true' ? '✓' : '⚡'}{' '}
+									Sắp xếp theo giá
 								</button>
 								<BookingButton />
 							</div>
@@ -182,6 +184,36 @@ export default function Page() {
 					</div>
 				</div>
 			</section>
-		</main>
+			<div className='flex items-center gap-2 mx-auto px-6 py-4'>
+				<button
+					className={clsx(
+						'px-4 py-2 text-main border border-accent rounded-full hover:bg-accent/50 hover:text-white transition-colors',
+						{
+							'bg-accent text-white':
+								searchParams?.get('orderByPrice') === 'true',
+						}
+					)}
+					onClick={() => {
+						const params = new URLSearchParams(searchParams?.toString() || '')
+						if (params.has('orderByPrice')) {
+							params.delete('orderByPrice')
+						} else {
+							params.set('orderByPrice', 'true')
+						}
+						window.location.search = params.toString()
+					}}
+				>
+					Sắp xếp theo giá
+				</button>
+			</div>
+
+			<div className=' max-w-7xl mx-auto px-6 py-8'>
+				<h2 className='text-2xl font-bold text-main mb-6'>Dịch Vụ Nổi Bật</h2>
+
+				<ServiceList />
+
+				<FlorageBackground />
+			</div>
+		</section>
 	)
 }

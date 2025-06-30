@@ -1,7 +1,7 @@
 // /app/lib/axios.ts
 import axios from 'axios'
 import { DEFAULT_API_URL } from '@/Constants/API'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 
 const axiosInstance = axios.create({
 	baseURL: DEFAULT_API_URL,

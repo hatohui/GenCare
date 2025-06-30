@@ -16,9 +16,13 @@ const AccountList = () => {
 	const [page, setPage] = useState<number>(1)
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
 	const searchParams = useSearchParams()
-	const search = searchParams.get('search')
+	const search = searchParams?.get('search')
 	const accountDeleteMutate = useDeleteAccount()
-	const query = useGetAccountsByPage(itemsPerPage, page ? page : 1, search)
+	const query = useGetAccountsByPage(
+		itemsPerPage,
+		page ? page : 1,
+		search ?? null
+	)
 	const updateAccountMutation = useUpdateAccount()
 
 	const { isLoading, isError, isFetching, data } = query

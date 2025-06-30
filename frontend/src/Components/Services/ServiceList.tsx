@@ -15,8 +15,8 @@ const ServiceList = () => {
 	const itemsPerPage = 6
 
 	useEffect(() => {
-		setOrderByPrice(Boolean(searchParams.get('orderByPrice')))
-		setSearch(searchParams.get('search') || '')
+		setOrderByPrice(Boolean(searchParams?.get('orderByPrice')))
+		setSearch(searchParams?.get('search') || '')
 	}, [searchParams])
 
 	const { isError, isFetching, data } = useServiceByPage(
@@ -44,7 +44,7 @@ const ServiceList = () => {
 						}}
 						className=' rounded-[30px] p-2 duration-300'
 					>
-						<ServiceCard {...item} />
+						<ServiceCard service={item} />
 					</motion.div>
 				))}
 

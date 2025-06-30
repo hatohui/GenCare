@@ -8,7 +8,7 @@ import {
 } from '@/Utils/Permissions/isAllowedRole'
 import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 import { useGetMe } from '@/Services/account-service'
-import useToken from '../useToken'
+import useToken from './useToken'
 
 export function useAuthGuard(
 	requiredRole: PermissionLevel = PermissionLevel.staff
