@@ -44,7 +44,7 @@ const ServiceList = () => {
 						}}
 						className=' rounded-[30px] p-2 duration-300'
 					>
-						<ServiceCard {...item} />
+						<ServiceCard service={item} />
 					</motion.div>
 				))}
 

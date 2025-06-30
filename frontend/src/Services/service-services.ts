@@ -17,16 +17,22 @@ const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
 const serviceApi = {
 	//false = sort giam dan true = sort tang dan
-	getByPage: (page: number, count: number, order: boolean, search: string) =>
-		axios
+	getByPage: (
+		page: number,
+		count: number,
+		order: boolean | null,
+		search: string
+	) => {
+		return axios
 			.get<GetServiceByPageResponse>(
 				`${SERVICE_URL}?Page=${page}&Count=${count}` +
-					(order ? '&sortByPrice=true' : '') +
+					(order !== null ? `&sortByPrice=${order}` : '') +
 					(search ? `&search=${search}` : '')
 			)
 			.then(res => {
 				return res.data
-			}),
+			})
+	},
 	getByPageAdmin: (
 		header: string,
 		page: number,
@@ -106,12 +112,12 @@ const serviceApi = {
 export const useServiceByPage = (
 	page: number,
 	count: number,
-	order: boolean,
+	order: boolean | null,
 	search: string = ''
 ) => {
 	return useQuery({
 		queryKey: ['services', page, count, order, search],
-		queryFn: () => serviceApi.getByPage(page, count, order || false, search),
+		queryFn: () => serviceApi.getByPage(page, count, order, search),
 		placeholderData: keepPreviousData,
 	})
 }
