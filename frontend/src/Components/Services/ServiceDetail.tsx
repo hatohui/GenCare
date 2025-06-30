@@ -1,6 +1,6 @@
-import Image from 'next/image'
-import { ServiceCardProps } from './ServiceCard'
 import { useRouter } from 'next/navigation'
+import { Service } from '@/Interfaces/Service/Types/Service'
+import AutoCarousel from '../AutoCarousel'
 import useToken from '@/Hooks/Auth/useToken'
 
 export default function ServiceDetail({
@@ -8,10 +8,9 @@ export default function ServiceDetail({
 	name,
 	price,
 	description,
-	imageUrl = '',
-}: ServiceCardProps) {
+	imageUrls,
+}: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>) {
 	const { accessToken } = useToken()
-	console.log(id)
 
 	const router = useRouter()
 	const handleAddToCart = () => {
@@ -63,17 +62,7 @@ export default function ServiceDetail({
 				<div className='space-y-8'>
 					{/* Image Section */}
 					<div className='bg-gray-200 h-96 w-full flex items-center justify-center rounded-lg overflow-hidden shadow-lg transition duration-300 hover:scale-105 hover:shadow-2xl p-2'>
-						{imageUrl ? (
-							<Image
-								src={imageUrl}
-								alt={name}
-								className='h-full w-full object-cover rounded-lg'
-								width={500}
-								height={500}
-							/>
-						) : (
-							<p className='text-gray-500'>No Image Available</p>
-						)}
+						<AutoCarousel imageUrls={imageUrls} />
 					</div>
 
 					{/* Description Section */}
