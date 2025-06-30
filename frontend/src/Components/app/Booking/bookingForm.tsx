@@ -21,11 +21,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const updateBooking = useBookServices()
 	const router = useRouter()
 	const [paymentMethod, setPaymentMethod] = useState<'momo' | 'later'>('later')
-	const [purchaseId, setPurchaseId] = useState<string | null>(null)
 	const [showPaymentOptions, setShowPaymentOptions] = useState(false)
-
-	// Create MoMo payment hook
-	const momoPayMutation = useMomoPay(purchaseId || '')
 
 	const {
 		register,
@@ -53,45 +49,38 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 		name: 'people',
 	})
 
-	const onSubmit = async (data: FormSchema) => {
+	const momoPayMutation = useMomoPay()
+
+	const onSubmit = async (formData: FormSchema) => {
 		try {
 			const result = await updateBooking.mutateAsync({
-				OrderDetails: data.people,
+				OrderDetails: formData.people,
 			})
-
-			// If payment method is MoMo, proceed to payment
 			if (paymentMethod === 'momo') {
-				setPurchaseId(result.purchaseId || result.id)
-				setShowPaymentOptions(true)
+				const purchaseId = result.purchaseId || result.id
+				if (!purchaseId) {
+					toast.error('Không tìm thấy thông tin đặt dịch vụ')
+					return
+				}
+				await new Promise(res => setTimeout(res, 800))
+				try {
+					const momoResult = await momoPayMutation.mutateAsync(purchaseId)
+					if (momoResult.payUrl) {
+						window.location.href = momoResult.payUrl
+					} else {
+						toast.error('Không thể tạo liên kết thanh toán')
+					}
+				} catch (error) {
+					console.error('MoMo payment failed:', error)
+					toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
+				}
 			} else {
-				// Pay later - just redirect to booking list
 				toast.success('Đặt dịch vụ thành công! Bạn có thể thanh toán sau.')
 				router.push('/app/booking')
 			}
 		} catch (error) {
 			console.error('Booking failed:', error)
 			toast.error('Đặt dịch vụ thất bại. Vui lòng thử lại.')
-		}
-	}
-
-	const handleMomoPayment = async () => {
-		if (!purchaseId) {
-			toast.error('Không tìm thấy thông tin đặt dịch vụ')
-			return
-		}
-
-		try {
-			const result = await momoPayMutation.mutateAsync()
-
-			// Redirect to MoMo payment URL
-			if (result.payUrl) {
-				window.location.href = result.payUrl
-			} else {
-				toast.error('Không thể tạo liên kết thanh toán')
-			}
-		} catch (error) {
-			console.error('MoMo payment failed:', error)
-			toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
 		}
 	}
 
@@ -457,22 +446,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							</p>
 						</div>
 
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
-							<button
-								onClick={handleMomoPayment}
-								className='flex items-center justify-center space-x-3 p-6 border-2 border-pink-300 rounded-[20px] hover:bg-pink-50 transition-colors'
-							>
-								<div className='w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center'>
-									<span className='text-white font-bold text-lg'>M</span>
-								</div>
-								<div className='text-left'>
-									<h4 className='font-semibold text-gray-800'>
-										Thanh toán MoMo
-									</h4>
-									<p className='text-sm text-gray-600'>Thanh toán ngay</p>
-								</div>
-							</button>
-
+						<div className='grid grid-cols-1 gap-4 mb-6'>
 							<button
 								onClick={handlePayLater}
 								className='flex items-center justify-center space-x-3 p-6 border-2 border-gray-300 rounded-[20px] hover:bg-gray-50 transition-colors'

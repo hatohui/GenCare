@@ -156,11 +156,10 @@ export const useGetOrder = () => {
 	})
 }
 
-export const useMomoPay = (purchaseId: string) => {
+export const useMomoPay = () => {
 	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: () => bookingApi.MomoPay(header, purchaseId),
+		mutationFn: (purchaseId: string) => bookingApi.MomoPay(header, purchaseId),
 		onError: handleApiError,
 		...retryConfig,
 	})

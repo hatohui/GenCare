@@ -5,9 +5,10 @@ import { motion } from 'motion/react'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import { EyeSVG, DownloadSVG } from '@/Components/SVGs'
 import TestResultModal from './TestResultModal'
-import { useMomoPay } from '@/Services/book-service'
+import { useMomoPay, useDeleteOrderDetail } from '@/Services/book-service'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
+import ConfirmDialog from '@/Components/ConfirmationDialog'
 
 interface BookingItemProps {
 	booking: OrderDetail
@@ -15,12 +16,14 @@ interface BookingItemProps {
 
 const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [showConfirm, setShowConfirm] = useState(false)
 
 	// Debug: Log the booking data to check purchaseId
 	console.log('BookingItem - booking data:', booking)
 	console.log('BookingItem - purchaseId:', booking.purchaseId)
 
-	const momoPayMutation = useMomoPay(booking.purchaseId)
+	const momoPayMutation = useMomoPay()
+	const deleteMutation = useDeleteOrderDetail(booking.orderDetailId)
 
 	const formatDate = (date: Date | string) => {
 		try {
@@ -60,7 +63,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 				booking.purchaseId
 			)
 
-			const result = await momoPayMutation.mutateAsync()
+			const result = await momoPayMutation.mutateAsync(booking.purchaseId)
 
 			// Redirect to MoMo payment URL
 			if (result.payUrl) {
@@ -72,6 +75,26 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 			console.error('MoMo payment failed:', error)
 			toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
 		}
+	}
+
+	const handleDelete = async () => {
+		setShowConfirm(true)
+	}
+
+	const handleConfirmDelete = async () => {
+		setShowConfirm(false)
+		await deleteMutation.mutateAsync(undefined, {
+			onSuccess() {
+				toast.success('Đã hủy đặt dịch vụ!')
+			},
+			onError() {
+				toast.error('Hủy đặt dịch vụ thất bại!')
+			},
+		})
+	}
+
+	const handleCancelDelete = () => {
+		setShowConfirm(false)
 	}
 
 	return (
@@ -129,26 +152,35 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 							</>
 						) : (
 							// Show payment button for unpaid services
-							<button
-								onClick={handleMomoPayment}
-								disabled={momoPayMutation.isPending}
-								className={`flex items-center gap-2 px-4 py-2 rounded-[20px] transition-colors ${
-									momoPayMutation.isPending
-										? 'bg-gray-400 cursor-not-allowed'
-										: 'bg-pink-500 hover:bg-pink-600 text-white'
-								}`}
-							>
-								{momoPayMutation.isPending ? (
-									<LoadingIcon className='size-4' />
-								) : (
-									<div className='w-4 h-4 bg-white rounded-full flex items-center justify-center'>
-										<span className='text-pink-500 font-bold text-xs'>M</span>
-									</div>
-								)}
-								{momoPayMutation.isPending
-									? 'Đang xử lý...'
-									: 'Thanh toán MoMo'}
-							</button>
+							<>
+								<button
+									onClick={handleMomoPayment}
+									disabled={momoPayMutation.isPending}
+									className={`flex items-center gap-2 px-4 py-2 rounded-[20px] transition-colors ${
+										momoPayMutation.isPending
+											? 'bg-gray-400 cursor-not-allowed'
+											: 'bg-pink-500 hover:bg-pink-600 text-white'
+									}`}
+								>
+									{momoPayMutation.isPending ? (
+										<LoadingIcon className='size-4' />
+									) : (
+										<div className='w-4 h-4 bg-white rounded-full flex items-center justify-center'>
+											<span className='text-pink-500 font-bold text-xs'>M</span>
+										</div>
+									)}
+									{momoPayMutation.isPending
+										? 'Đang xử lý...'
+										: 'Thanh toán MoMo'}
+								</button>
+								<button
+									onClick={handleDelete}
+									disabled={deleteMutation.isPending}
+									className='flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-[20px] hover:bg-red-600 transition-colors'
+								>
+									{deleteMutation.isPending ? 'Đang xóa...' : 'Hủy đặt'}
+								</button>
+							</>
 						)}
 					</div>
 				</div>
@@ -162,6 +194,14 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 					bookingItem={booking}
 				/>
 			)}
+
+			<ConfirmDialog
+				isOpen={showConfirm}
+				title='Xác nhận hủy đặt dịch vụ'
+				message='Bạn có chắc chắn muốn hủy đặt dịch vụ này?'
+				onConfirm={handleConfirmDelete}
+				onCancel={handleCancelDelete}
+			/>
 		</>
 	)
 }
