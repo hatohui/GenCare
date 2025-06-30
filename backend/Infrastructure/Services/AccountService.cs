@@ -12,6 +12,7 @@ using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Infrastructure.Services;
@@ -78,7 +79,7 @@ public class AccountService
         };
     }
 
-    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
+    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request, string schemaHost)
     {
         //find user by email
         var user = await accountRepo.GetByEmailAsync(request.Email!);
@@ -93,7 +94,8 @@ public class AccountService
         //create reset password URL
         var encodedToken = WebUtility.UrlEncode(resetPwdToken);
         var encodedEmail = WebUtility.UrlEncode(request.Email);
-        var callbackUrl = $"{Environment.GetEnvironmentVariable("AppUrl")}/reset-password?email={encodedEmail}&token={encodedToken}";
+        //var callbackUrl = $"{Environment.GetEnvironmentVariable("APP_URL")}/reset-password?email={encodedEmail}&token={encodedToken}";
+        var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
 
         var msg = $"Link to reset your password: {callbackUrl}";
         //send email with reset password link
