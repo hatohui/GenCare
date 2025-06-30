@@ -1,5 +1,4 @@
 import { useRouter } from 'next/navigation'
-import { Service } from '@/Interfaces/Service/Types/Service'
 import AutoCarousel from '../AutoCarousel'
 import useToken from '@/Hooks/Auth/useToken'
 import FlorageBackground from '../Landing/FlorageBackground'
@@ -212,7 +211,7 @@ export default function ServiceDetail({
 							</div>
 							<div className='font-bold text-main mb-1'>{item.name}</div>
 							<div className='text-gray-600 text-sm text-center mb-2'>
-								"{item.content}"
+								{item.content}
 							</div>
 						</motion.div>
 					))}
