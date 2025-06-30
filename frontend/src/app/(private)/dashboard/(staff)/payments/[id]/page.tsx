@@ -15,8 +15,8 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 	const pathname = usePathname()
 
 	useEffect(() => {
-		const sort = searchParams.get('isPaid') || ''
-		const search = searchParams.get('search') || ''
+		const sort = searchParams?.get('isPaid') || ''
+		const search = searchParams?.get('search') || ''
 
 		console.log(sort, search)
 	}, [searchParams])
@@ -30,7 +30,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 		)
 	}
 
-	const currentFilter = searchParams.get('isPaid')
+	const currentFilter = searchParams?.get('isPaid')
 
 	return (
 		<div className='max-w-7xl mx-auto p-6'>
@@ -78,7 +78,9 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 								: 'bg-gray-100 text-gray-700 hover:bg-gray-200'
 						}`}
 						onClick={() => {
-							const params = new URLSearchParams(searchParams)
+							const params = new URLSearchParams(
+								searchParams ? searchParams : ''
+							)
 							params.delete('isPaid')
 							router.push(`${pathname}?${params.toString()}`)
 						}}
@@ -92,7 +94,9 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 								: 'bg-gray-100 text-gray-700 hover:bg-gray-200'
 						}`}
 						onClick={() => {
-							const params = new URLSearchParams(searchParams)
+							const params = new URLSearchParams(
+								searchParams ? searchParams : ''
+							)
 							params.set('isPaid', 'true')
 							router.push(`${pathname}?${params.toString()}`)
 						}}
@@ -106,7 +110,9 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 								: 'bg-gray-100 text-gray-700 hover:bg-gray-200'
 						}`}
 						onClick={() => {
-							const params = new URLSearchParams(searchParams)
+							const params = new URLSearchParams(
+								searchParams ? searchParams : ''
+							)
 							params.set('isPaid', 'false')
 							router.push(`${pathname}?${params.toString()}`)
 						}}

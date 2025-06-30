@@ -16,7 +16,7 @@ const AccountList = () => {
 	const itemsPerPage = 6
 
 	useEffect(() => {
-		setSearch(searchParams.get('search') || '')
+		setSearch(searchParams?.get('search') || '')
 		// Reset to first page when search changes
 		setPage(1)
 	}, [searchParams])

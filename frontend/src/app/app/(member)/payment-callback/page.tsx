@@ -17,8 +17,8 @@ const PaymentCallback = () => {
 
 	useEffect(() => {
 		// Get payment status from URL parameters
-		const resultCode = searchParams.get('resultCode')
-		const message = searchParams.get('message') || ''
+		const resultCode = searchParams?.get('resultCode')
+		const message = searchParams?.get('message') || ''
 		// const orderId = searchParams.get('orderId') || ''
 
 		// Simulate processing time

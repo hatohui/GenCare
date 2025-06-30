@@ -25,7 +25,7 @@ export default function Page() {
 
 	const handleSortToggle = () => {
 		try {
-			const params = new URLSearchParams(searchParams)
+			const params = new URLSearchParams(searchParams ? searchParams : '')
 			if (!params.has('orderByPrice')) {
 				params.set('orderByPrice', 'true')
 			} else if (params.get('orderByPrice') === 'true') {
@@ -42,7 +42,7 @@ export default function Page() {
 	}
 
 	const getSortButtonText = () => {
-		const orderByPrice = searchParams.get('orderByPrice')
+		const orderByPrice = searchParams?.get('orderByPrice')
 		if (orderByPrice === 'true') return 'Giá tăng dần ↑'
 		if (orderByPrice === 'false') return 'Giá giảm dần ↓'
 		return 'Sắp xếp giá'
@@ -150,7 +150,9 @@ export default function Page() {
 								</span>
 							)}
 							<button
-								onClick={() => router.push(pathname)}
+								onClick={() =>
+									router.push(pathname ? pathname : '/app/service')
+								}
 								className='text-red-500 hover:text-red-700 text-sm underline'
 							>
 								Xóa tất cả

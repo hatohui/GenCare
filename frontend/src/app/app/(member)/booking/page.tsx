@@ -1,27 +1,21 @@
 'use client'
 
 import BookingList from '@/Components/app/Booking/BookingList'
-import TestResultModal from '@/Components/app/Booking/TestResultModal'
 import { useGetOrder } from '@/Services/book-service'
-import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 const Page = () => {
 	const { data, isLoading, error, refetch } = useGetOrder()
-	const [selectedBooking, setSelectedBooking] = useState<OrderDetail | null>(
-		null
-	)
-	const [showTestResult, setShowTestResult] = useState(false)
 	const searchParams = useSearchParams()
 
 	// Check for payment callback parameters
 	useEffect(() => {
-		const resultCode = searchParams.get('resultCode')
-		const message = searchParams.get('message')
+		const resultCode = searchParams?.get('resultCode')
+		const message = searchParams?.get('message')
 
 		if (resultCode !== null) {
 			// Clear URL parameters
@@ -40,16 +34,6 @@ const Page = () => {
 			}
 		}
 	}, [searchParams, refetch])
-
-	// const handleViewTestResult = (item: OrderDetail) => {
-	// 	setSelectedBooking(item)
-	// 	setShowTestResult(true)
-	// }
-
-	const handleCloseTestResult = () => {
-		setShowTestResult(false)
-		setSelectedBooking(null)
-	}
 
 	if (isLoading) {
 		return (
@@ -158,13 +142,6 @@ const Page = () => {
 			>
 				<BookingList data={data} />
 			</motion.div>
-
-			{/* Test Result Modal */}
-			<TestResultModal
-				isOpen={showTestResult}
-				onClose={handleCloseTestResult}
-				bookingItem={selectedBooking}
-			/>
 		</div>
 	)
 }

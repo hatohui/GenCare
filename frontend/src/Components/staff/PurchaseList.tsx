@@ -20,8 +20,8 @@ const PurchaseList = ({ id }: PurchaseListProps) => {
 	const { data, error, isFetching } = useViewPurchaseById(id, search, isPaid)
 
 	useEffect(() => {
-		setSearch(searchParams.get('search') || '')
-		const isPaidParam = searchParams.get('isPaid')
+		setSearch(searchParams?.get('search') || '')
+		const isPaidParam = searchParams?.get('isPaid')
 		setIsPaid(isPaidParam === null ? null : isPaidParam === 'true')
 	}, [searchParams])
 

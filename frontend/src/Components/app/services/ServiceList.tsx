@@ -18,13 +18,13 @@ const ServiceList = () => {
 
 	useEffect(() => {
 		setOrderByPrice(
-			searchParams.get('orderByPrice') === 'true'
+			searchParams?.get('orderByPrice') === 'true'
 				? true
-				: searchParams.get('orderByPrice') === 'false'
+				: searchParams?.get('orderByPrice') === 'false'
 				? false
 				: null
 		)
-		setSearch(searchParams.get('search') || '')
+		setSearch(searchParams?.get('search') || '')
 	}, [searchParams])
 
 	const { isError, isFetching, data, error } = useServiceByPage(
