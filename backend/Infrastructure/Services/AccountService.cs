@@ -79,7 +79,7 @@ public class AccountService
         };
     }
 
-    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request, string schemaHost)
+    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
         //find user by email
         var user = await accountRepo.GetByEmailAsync(request.Email!);
@@ -91,11 +91,15 @@ public class AccountService
         //generate reset password token
         var resetPwdToken = JwtHelper.GeneratePasswordResetToken(user.Id);
 
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var isDevelopment = environment == "Development";
+        var schemaHost = isDevelopment ? "http://localhost:3000" : Environment.GetEnvironmentVariable("APP_URL");
+
         //create reset password URL
         var encodedToken = WebUtility.UrlEncode(resetPwdToken);
         var encodedEmail = WebUtility.UrlEncode(request.Email);
-        //var callbackUrl = $"{Environment.GetEnvironmentVariable("APP_URL")}/reset-password?email={encodedEmail}&token={encodedToken}";
         var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
+        //var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
 
         var msg = $"Link to reset your password: {callbackUrl}";
         //send email with reset password link
