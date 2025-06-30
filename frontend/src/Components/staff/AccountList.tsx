@@ -161,9 +161,10 @@ const AccountList = () => {
 				>
 					<Pagination
 						currentPage={page}
-						totalPages={pageCount}
 						isFetching={isFetching}
 						setCurrentPage={setPage}
+						totalCount={data?.totalCount ?? 0}
+						itemsPerPage={itemsPerPage}
 					/>
 				</motion.div>
 			)}
