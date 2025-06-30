@@ -30,7 +30,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
 
         var response = await purchaseService.AddPurchaseAsync(request, accessToken);
-        return Created();
+        return Ok(response);
     }
 
     [HttpGet]
