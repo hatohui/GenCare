@@ -5,8 +5,8 @@ import { motion } from 'motion/react'
 import useToken from '@/Hooks/Auth/useToken'
 import { Service } from '@/Interfaces/Service/Types/Service'
 import { useRouter } from 'next/navigation'
-import { CldImage } from 'next-cloudinary'
 import { toast } from 'react-hot-toast'
+import AutoCarousel from '../AutoCarousel'
 
 interface ServiceCardProps {
 	service: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>
@@ -59,13 +59,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 			{/* Service Image */}
 			<div className='relative mb-4 overflow-hidden rounded-[20px]'>
 				{service.imageUrls && service.imageUrls.length > 0 ? (
-					<CldImage
-						src={service.imageUrls[0].url}
-						width={400}
-						height={250}
-						alt={service.name}
-						className='w-full h-[250px] object-cover hover:scale-105 transition-transform duration-300'
-					/>
+					<AutoCarousel imageUrls={service.imageUrls} />
 				) : (
 					<div className='w-full h-[250px] bg-gradient-to-br from-main to-secondary flex items-center justify-center'>
 						<span className='text-white text-lg font-semibold'>
@@ -107,6 +101,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 					</div>
 				</div>
 			</div>
+
+			{/* Hover Effect Overlay */}
+			<div className='absolute inset-0 bg-gradient-to-br from-main/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
 		</motion.div>
 	)
 }

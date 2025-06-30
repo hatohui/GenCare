@@ -25,7 +25,7 @@ const Testimonials = [
 	},
 	{
 		name: 'Hoàng Thanh Tùng',
-		avatar: '/landing/5.jpg',
+		avatar: '/landing/5.JPG',
 		content:
 			'Tôi đánh giá cao tính năng theo dõi lịch sử khám bệnh và nhắc nhở dùng thuốc của Health Care.',
 	},
