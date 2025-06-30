@@ -21,7 +21,6 @@ namespace Application.Services
         
         Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(Guid accountId, string? search,bool? isPaid);
         
-        Task<List<BookedServiceListResponse>> GetAllBookedServicesForStaffAsync();
 
     }
 }

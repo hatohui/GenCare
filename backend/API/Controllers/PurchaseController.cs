@@ -52,13 +52,6 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         return Ok(response);
     }
     
-    [HttpGet("staff/all")]
-    [Authorize(Roles = $"{RoleNames.Staff}")]
-    public async Task<IActionResult> GetAllBookedServicesForStaffAsync()
-    {
-        var accountId = JwtHelper.GetAccountIdFromToken(AuthHelper.GetAccessToken(HttpContext));
-        var response = await purchaseService.GetAllBookedServicesForStaffAsync();
-        return Ok(response);
-    }
+   
 
 }

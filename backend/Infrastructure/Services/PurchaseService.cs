@@ -194,8 +194,5 @@ public class PurchaseService(
     return result;
 }
 
-public async Task<List<BookedServiceListResponse>> GetAllBookedServicesForStaffAsync()
-{
-    throw new NotImplementedException();
-}
+
 }
