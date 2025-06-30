@@ -578,3 +578,20 @@ export const CalendarSVG = ({ className }: SVGProps) => (
 		/>
 	</svg>
 )
+
+export const ChatSVG = ({ className }: SVGProps) => (
+	<svg
+		xmlns='http://www.w3.org/2000/svg'
+		fill='none'
+		viewBox='0 0 24 24'
+		strokeWidth={1.5}
+		stroke='currentColor'
+		className={clsx(className, 'size-6')}
+	>
+		<path
+			strokeLinecap='round'
+			strokeLinejoin='round'
+			d='M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072m-3.08.433 4.5-4.5m0 0-4.5-4.5m4.5 4.5H9.75'
+		/>
+	</svg>
+)

@@ -17,11 +17,11 @@ export default function Page() {
 	const pathname = usePathname()
 
 	useEffect(() => {
-		const sort = searchParams.get('orderByPrice') || ''
-		const search = searchParams.get('search') || ''
+		const sort = searchParams?.get('orderByPrice') || ''
+		const search = searchParams?.get('search') || ''
 
 		console.log(sort, search)
-	}, [searchParams]) // triggers when the URL params change
+	}, [searchParams])
 
 	const handleSortToggle = () => {
 		try {
@@ -106,16 +106,16 @@ export default function Page() {
 									'px-6 py-3 text-sm font-medium rounded-[30px] border transition-all duration-200 flex items-center gap-2',
 									{
 										'bg-main text-white border-main shadow-md hover:shadow-lg':
-											searchParams.get('orderByPrice') !== null,
+											searchParams?.get('orderByPrice') !== null,
 										'bg-white text-gray-700 border-gray-300 hover:border-main hover:bg-gray-50':
-											searchParams.get('orderByPrice') === null,
+											searchParams?.get('orderByPrice') === null,
 									}
 								)}
 							>
 								<span>{getSortButtonText()}</span>
-								{searchParams.get('orderByPrice') && (
+								{searchParams?.get('orderByPrice') && (
 									<span className='text-xs'>
-										{searchParams.get('orderByPrice') === 'true' ? '↑' : '↓'}
+										{searchParams?.get('orderByPrice') === 'true' ? '↑' : '↓'}
 									</span>
 								)}
 							</button>
@@ -135,16 +135,16 @@ export default function Page() {
 				className='max-w-7xl mx-auto px-6 py-8'
 			>
 				{/* Active Filters Display */}
-				{(searchParams.get('search') || searchParams.get('orderByPrice')) && (
+				{(searchParams?.get('search') || searchParams?.get('orderByPrice')) && (
 					<div className='mb-6'>
 						<div className='flex items-center gap-2 text-sm text-gray-600'>
 							<span>Bộ lọc hiện tại:</span>
-							{searchParams.get('search') && (
+							{searchParams?.get('search') && (
 								<span className='bg-main/10 text-main px-3 py-1 rounded-full'>
-									Tìm kiếm: {searchParams.get('search')}
+									Tìm kiếm: {searchParams?.get('search')}
 								</span>
 							)}
-							{searchParams.get('orderByPrice') && (
+							{searchParams?.get('orderByPrice') && (
 								<span className='bg-accent/10 text-accent px-3 py-1 rounded-full'>
 									{getSortButtonText()}
 								</span>

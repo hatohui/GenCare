@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation'
-import useToken from '@/Hooks/useToken'
 import { Service } from '@/Interfaces/Service/Types/Service'
 import AutoCarousel from '../AutoCarousel'
+import useToken from '@/Hooks/Auth/useToken'
 
 export default function ServiceDetail({
 	id,

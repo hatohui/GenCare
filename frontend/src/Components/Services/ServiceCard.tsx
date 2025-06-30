@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'motion/react'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 import { Service } from '@/Interfaces/Service/Types/Service'
 import { useRouter } from 'next/navigation'
 import { CldImage } from 'next-cloudinary'

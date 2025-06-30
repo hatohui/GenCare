@@ -1,6 +1,7 @@
 import {
 	AccountSVG,
 	BookingListVSG,
+	ChatSVG,
 	CustomerSVG,
 	HeartSVG,
 	HomeSVG,
@@ -99,5 +100,11 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		to: '/dashboard/tests',
 		svg: <AccountSVG />,
 		level: PermissionLevel.staff,
+	},
+	{
+		label: 'Chat with us',
+		to: '/app/chat',
+		svg: <ChatSVG />,
+		level: PermissionLevel.member,
 	},
 ]

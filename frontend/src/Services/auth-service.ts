@@ -1,6 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { useAccountStore } from '@/Hooks/useAccount'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 import { LoginApi } from '@/Interfaces/Auth/Schema/login'
 import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'

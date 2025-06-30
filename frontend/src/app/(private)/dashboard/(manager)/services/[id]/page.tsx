@@ -14,7 +14,8 @@ import {
 
 const ServiceDetailPage = () => {
 	const params = useParams()
-	const serviceId = typeof params.id === 'string' ? params.id : undefined
+	const serviceId =
+		params && typeof params.id === 'string' ? params.id : undefined
 	const updateServiceMutation = useUpdateService()
 	const query = useServiceById(serviceId ?? '')
 
