@@ -26,7 +26,7 @@ public interface IAccountService
     /// </summary>
     /// <param name="request">The forgot password request containing the user's email.</param>
     /// <returns>The response containing the callback URL for password reset.</returns>
-    Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request);
+    Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request, string schemaHost);
 
     /// <summary>
     /// Resets the user's password using a valid reset token.
