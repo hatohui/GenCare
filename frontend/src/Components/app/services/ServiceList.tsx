@@ -147,9 +147,10 @@ const ServiceList = () => {
 				<div className='flex justify-center pt-8'>
 					<Pagination
 						currentPage={page}
-						totalPages={pageCount}
 						isFetching={isFetching}
 						setCurrentPage={setPage}
+						totalCount={data?.totalCount || 0}
+						itemsPerPage={itemsPerPage}
 					/>
 				</div>
 			)}

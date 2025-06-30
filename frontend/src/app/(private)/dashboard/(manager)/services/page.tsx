@@ -43,10 +43,6 @@ const ServicesPage = () => {
 	const { isError, isFetching, data, isLoading } = query
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 
-	const pageCount = data?.totalCount
-		? Math.ceil(data.totalCount / itemsPerPage)
-		: 5
-
 	const handleDelete = (id: string) => {
 		if (window.confirm('Bạn có muốn xóa mục này không?'))
 			deleteMutation.mutate(id, {
@@ -207,9 +203,10 @@ const ServicesPage = () => {
 				<div className='center-all'>
 					<Pagination
 						currentPage={currentPage}
-						totalPages={pageCount}
 						isFetching={isFetching}
 						setCurrentPage={setCurrentPage}
+						totalCount={data?.totalCount || 0}
+						itemsPerPage={itemsPerPage}
 					/>
 				</div>
 			</section>

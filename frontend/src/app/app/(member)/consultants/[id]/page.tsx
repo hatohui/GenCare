@@ -6,7 +6,6 @@ import Button from '@/Components/Button'
 import clsx from 'clsx'
 import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
-import { useGetAccountById } from '@/Services/account-service'
 import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
 import Image from 'next/image'
 
@@ -31,18 +30,11 @@ const BookConsultantPage = () => {
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
 
-	const {
-		data: consultantApi,
-		isLoading: isConsultantLoading,
-		error,
-	} = useGetAccountById(consultantFromContext ? '' : consultantId)
-	const consultant = consultantFromContext || consultantApi
-
-	if (isUserLoading || (isConsultantLoading && !consultantFromContext)) {
+	if (isUserLoading || (isUserLoading && !consultantFromContext)) {
 		return <div className='h-full w-full center-all'>Loading....</div>
 	}
 
-	if (error || !consultant) {
+	if (!consultantFromContext) {
 		return (
 			<div className='h-full w-full center-all text-red-500'>
 				Consultant not found.
@@ -51,7 +43,9 @@ const BookConsultantPage = () => {
 	}
 
 	const fullName =
-		`${consultant.firstName ?? ''} ${consultant.lastName ?? ''}`.trim() || 'N/A'
+		`${consultantFromContext.firstName ?? ''} ${
+			consultantFromContext.lastName ?? ''
+		}`.trim() || 'N/A'
 	const initials =
 		fullName !== 'N/A'
 			? fullName
@@ -73,7 +67,7 @@ const BookConsultantPage = () => {
 		console.log({
 			bookedBy: userData.id,
 			role: userData.role.name,
-			consultantId: consultant.id,
+			consultantId: consultantFromContext.id,
 			date: selectedDate.toISOString(),
 			time: selectedTime,
 			notes,
@@ -150,9 +144,9 @@ const BookConsultantPage = () => {
 
 			{/* Consultant Info Card */}
 			<div className='bg-blue-50 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center'>
-				{consultant.avatarUrl ? (
+				{consultantFromContext.avatarUrl ? (
 					<Image
-						src={consultant.avatarUrl}
+						src={consultantFromContext.avatarUrl}
 						alt={fullName}
 						width={112}
 						height={112}
@@ -165,13 +159,15 @@ const BookConsultantPage = () => {
 				)}
 				<h3 className='text-lg font-semibold text-blue-900'>{fullName}</h3>
 				<p className='text-sm text-white bg-gradient-to-l from-main to-secondary px-3 py-1 rounded-full mt-1'>
-					{'department' in consultant
-						? consultant.department
-						: (consultant as any).departmentName ?? ''}
+					{'department' in consultantFromContext
+						? consultantFromContext.department
+						: (consultantFromContext as any).departmentName ?? ''}
 				</p>
-				<p className='text-sm text-gray-600 mt-4'>{consultant.biography}</p>
+				<p className='text-sm text-gray-600 mt-4'>
+					{consultantFromContext.biography}
+				</p>
 				<p className='text-sm text-yellow-600 mt-3 font-medium'>
-					⭐ {consultant.yearOfExperience}+ years
+					⭐ {consultantFromContext.yearOfExperience}+ years
 				</p>
 			</div>
 		</div>
