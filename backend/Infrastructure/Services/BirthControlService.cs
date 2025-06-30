@@ -29,6 +29,8 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
     public async Task<ViewBirthControlResponse?> ViewBirthControlAsync(Guid accountId)
     {
         var birthControl = await birthControlRepository.GetBirthControlAsync(accountId);
+        if (birthControl == null)
+            throw new AppException(404, "Birth control not found for this account.");
 
         var menstrualStart = birthControl.StartDate;
         var menstrualEnd = birthControl.StartDate.AddDays(4);
