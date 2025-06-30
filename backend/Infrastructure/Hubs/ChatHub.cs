@@ -27,7 +27,8 @@ public class ChatHub : Hub
     {
         var httpContext = Context.GetHttpContext();
 
-        var token = httpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
+        // ✅ Lấy token từ query string
+        var token = httpContext?.Request.Query["access_token"].ToString();
 
         if (string.IsNullOrEmpty(token))
             throw new AppException(401, "Missing or invalid access token.");

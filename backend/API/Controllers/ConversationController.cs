@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/conversation")]
+[Route("api/conversations")]
 public class ConversationController(IConversationService conversationService): ControllerBase
 {
     [HttpPost]
@@ -57,16 +57,18 @@ public class ConversationController(IConversationService conversationService): C
             return Ok(response);
         return NotFound(new { Message = "Conversation not found." });
     }
-    [HttpPost("join")]
-    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Consultant}")]
-    public async Task<IActionResult> JoinConversation([FromBody] JoinConversationRequest request)
+    [HttpPost("{conversationId}/assign")]
+    public async Task<IActionResult> AssignStaffToConversation(Guid conversationId)
     {
-        Guid staffId = JwtHelper.GetAccountIdFromToken(Request.Headers["Authorization"]);
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var staffId = JwtHelper.GetAccountIdFromToken(token);
 
+        var result = await conversationService.AssignStaffToConversationAsync(conversationId, staffId);
+        if (!result)
+            return BadRequest("Không thể gán nhân viên. Có thể cuộc trò chuyện đã được gán.");
 
-        var success = await conversationService.AssignStaffToConversationAsync(request.ConversationId, staffId);
-        return success ? Ok("Joined conversation.") : BadRequest(new { error = "Could not join." });
-
+        return Ok(new { Success = true, Message = "Gán nhân viên thành công." });
     }
+
 
 }

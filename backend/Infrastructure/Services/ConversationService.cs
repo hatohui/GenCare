@@ -39,7 +39,8 @@ public class ConversationService(IConversationRepository conversationRepository,
         return new CreateConversationResponse()
         {
             Success = true,
-            Message = "Conversation created successfully."
+            Message = "Conversation created successfully.",
+            ConversationId = conversation.Id
         };
     }
 
