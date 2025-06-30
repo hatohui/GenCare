@@ -1,12 +1,18 @@
 import { motion } from 'motion/react'
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import TypedText from '../TypedText'
 import Image from 'next/image'
 import AnimatedLink from '../MotionLink'
 import FlorageBackground from './FlorageBackground'
+import { usePathname } from 'next/navigation'
 
 const LandingPart = () => {
 	const [typing, setTyping] = useState(false)
+	const pathname = usePathname()
+
+	useEffect(() => {
+		setTyping(false)
+	}, [pathname])
 
 	const animateStyle = useMemo(
 		() => ({

@@ -7,6 +7,7 @@ import { Service } from '@/Interfaces/Service/Types/Service'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import AutoCarousel from '../AutoCarousel'
+import { CldImage } from 'next-cloudinary'
 
 interface ServiceCardProps {
 	service: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>
@@ -59,7 +60,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 			{/* Service Image */}
 			<div className='relative mb-4 overflow-hidden rounded-[20px]'>
 				{service.imageUrls && service.imageUrls.length > 0 ? (
-					<AutoCarousel imageUrls={service.imageUrls} />
+					<CldImage
+						src={service.imageUrls[0].url}
+						alt={service.name}
+						width={500}
+						height={500}
+						className='w-full h-[250px] object-cover hover:scale-105 transition-all duration-300'
+					/>
 				) : (
 					<div className='w-full h-[250px] bg-gradient-to-br from-main to-secondary flex items-center justify-center'>
 						<span className='text-white text-lg font-semibold'>
