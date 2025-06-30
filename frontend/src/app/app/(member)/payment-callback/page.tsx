@@ -14,12 +14,14 @@ const PaymentCallback = () => {
 		'loading'
 	)
 	const [message, setMessage] = useState('')
+	const [orderId, setOrderId] = useState<string | null>(null)
 
 	useEffect(() => {
 		// Get payment status from URL parameters
 		const resultCode = searchParams?.get('resultCode')
 		const message = searchParams?.get('message') || ''
-		// const orderId = searchParams.get('orderId') || ''
+		const orderIdParam = searchParams?.get('orderId') || null
+		setOrderId(orderIdParam)
 
 		// Simulate processing time
 		const timer = setTimeout(() => {
@@ -62,6 +64,9 @@ const PaymentCallback = () => {
 							Vui lòng chờ trong giây lát, chúng tôi đang xác nhận giao dịch của
 							bạn.
 						</p>
+						{orderId && (
+							<p className='text-xs text-gray-400'>Mã đơn hàng: {orderId}</p>
+						)}
 					</div>
 				)}
 
@@ -78,6 +83,11 @@ const PaymentCallback = () => {
 							Thanh toán thành công!
 						</h2>
 						<p className='text-gray-600'>{message}</p>
+						{orderId && (
+							<p className='text-sm text-gray-500'>
+								Mã đơn hàng: <span className='font-mono'>{orderId}</span>
+							</p>
+						)}
 						<div className='bg-green-50 border border-green-200 rounded-[15px] p-4'>
 							<p className='text-sm text-green-700'>
 								Chúng tôi sẽ gửi email xác nhận và thông tin chi tiết về dịch vụ
@@ -114,6 +124,11 @@ const PaymentCallback = () => {
 							Thanh toán thất bại
 						</h2>
 						<p className='text-gray-600'>{message}</p>
+						{orderId && (
+							<p className='text-sm text-gray-500'>
+								Mã đơn hàng: <span className='font-mono'>{orderId}</span>
+							</p>
+						)}
 						<div className='bg-red-50 border border-red-200 rounded-[15px] p-4'>
 							<p className='text-sm text-red-700'>
 								Vui lòng thử lại hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục.
