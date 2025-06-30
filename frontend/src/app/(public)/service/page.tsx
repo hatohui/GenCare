@@ -23,11 +23,10 @@ export default function Page() {
 	return (
 		<section className='min-h-screen bg-gradient-to-b from-white to-general mt-20'>
 			{/* Hero Section */}
-			<section className='relative py-20 bg-gradient-to-r from-main to-secondary text-white overflow-hidden'>
+			<section className='relative z-0 py-20 bg-gradient-to-r from-main to-secondary text-white overflow-hidden'>
 				{/* Background overlay */}
-				<div className='absolute inset-0 bg-black/10'></div>
-
-				<div className='relative z-10 max-w-7xl mx-auto px-6 text-center'>
+				<div className='absolute top-0 left-0 z-10 florageBackground' />
+				<div className='relative max-w-7xl mx-auto px-6 text-center'>
 					<motion.h1
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -35,7 +34,7 @@ export default function Page() {
 						className='text-4xl md:text-5xl font-bold mb-6'
 					>
 						Dịch Vụ{' '}
-						<span className='bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text text-transparent'>
+						<span className='bg-gradient-to-r from-yellow-300 to-accent bg-clip-text text-transparent'>
 							Chăm Sóc Sức Khỏe
 						</span>
 					</motion.h1>
@@ -58,6 +57,23 @@ export default function Page() {
 			{/* Search and Filter Section */}
 			<section className='py-8 bg-white border-b border-gray-100'>
 				<div className='max-w-7xl mx-auto px-6'>
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className='text-center mb-12'
+					>
+						<h2 className='text-3xl md:text-4xl font-bold mb-4 text-secondary'>
+							Dịch Vụ{' '}
+							<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
+								Nổi Bật
+							</span>
+						</h2>
+						<p className='text-gray-600 max-w-2xl mx-auto'>
+							Chọn lựa từ các dịch vụ chăm sóc sức khỏe chất lượng cao, được
+							thiết kế để đáp ứng mọi nhu cầu của bạn
+						</p>
+					</motion.div>
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -106,24 +122,6 @@ export default function Page() {
 			{/* Services Section */}
 			<section className='py-16'>
 				<div className='max-w-7xl mx-auto px-6'>
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6 }}
-						className='text-center mb-12'
-					>
-						<h2 className='text-3xl md:text-4xl font-bold mb-4 text-secondary'>
-							Dịch Vụ{' '}
-							<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
-								Nổi Bật
-							</span>
-						</h2>
-						<p className='text-gray-600 max-w-2xl mx-auto'>
-							Chọn lựa từ các dịch vụ chăm sóc sức khỏe chất lượng cao, được
-							thiết kế để đáp ứng mọi nhu cầu của bạn
-						</p>
-					</motion.div>
-
 					<ServiceList />
 				</div>
 			</section>
@@ -184,36 +182,6 @@ export default function Page() {
 					</div>
 				</div>
 			</section>
-			<div className='flex items-center gap-2 mx-auto px-6 py-4'>
-				<button
-					className={clsx(
-						'px-4 py-2 text-main border border-accent rounded-full hover:bg-accent/50 hover:text-white transition-colors',
-						{
-							'bg-accent text-white':
-								searchParams?.get('orderByPrice') === 'true',
-						}
-					)}
-					onClick={() => {
-						const params = new URLSearchParams(searchParams?.toString() || '')
-						if (params.has('orderByPrice')) {
-							params.delete('orderByPrice')
-						} else {
-							params.set('orderByPrice', 'true')
-						}
-						window.location.search = params.toString()
-					}}
-				>
-					Sắp xếp theo giá
-				</button>
-			</div>
-
-			<div className=' max-w-7xl mx-auto px-6 py-8'>
-				<h2 className='text-2xl font-bold text-main mb-6'>Dịch Vụ Nổi Bật</h2>
-
-				<ServiceList />
-
-				<FlorageBackground />
-			</div>
 		</section>
 	)
 }

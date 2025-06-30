@@ -76,7 +76,7 @@ export default function FooterSection() {
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
 						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.1 }}
+						transition={{ duration: 0.6 }}
 					>
 						<h4 className='text-lg font-semibold mb-6 text-white'>Dịch Vụ</h4>
 						<ul className='space-y-3'>
@@ -123,7 +123,7 @@ export default function FooterSection() {
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
 						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.2 }}
+						transition={{ duration: 0.6 }}
 					>
 						<h4 className='text-lg font-semibold mb-6 text-white'>Hỗ Trợ</h4>
 						<ul className='space-y-3'>
@@ -171,7 +171,7 @@ export default function FooterSection() {
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6, delay: 0.3 }}
+					transition={{ duration: 0.6 }}
 					className='bg-white/10 rounded-2xl p-8 mb-8 backdrop-blur-sm'
 				>
 					<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
@@ -251,7 +251,7 @@ export default function FooterSection() {
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6, delay: 0.4 }}
+					transition={{ duration: 0.6 }}
 					className='border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center'
 				>
 					<p className='text-gray-300 text-sm mb-4 md:mb-0'>

@@ -89,7 +89,7 @@ export default function ProcessSteps() {
 							key={i}
 							initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
 							whileInView={{ opacity: 1, x: 0 }}
-							transition={{ duration: 0.6, delay: i * 0.2 }}
+							transition={{ duration: 0.6 }}
 							className={`relative flex items-center mb-16 ${
 								i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
 							}`}
@@ -115,7 +115,7 @@ export default function ProcessSteps() {
 							{/* Circle on timeline - positioned absolutely to stay on the line */}
 							<motion.div
 								whileHover={{ scale: 1.2 }}
-								className='absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white font-bold text-xl z-0 bg-gradient-to-r from-blue-500 to-pink-500'
+								className='absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white font-bold text-xl z-0 bg-accent'
 							>
 								{item.step}
 							</motion.div>

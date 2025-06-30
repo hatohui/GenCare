@@ -21,11 +21,15 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 		return <div>loading error</div>
 	}
 
-	const serviceData = service || {
-		id: '',
-		name: '',
-		description: '',
-		price: 0,
+	const serviceData = {
+		id: service?.id || '',
+		name: service?.name || '',
+		description: service?.description || '',
+		price: service?.price || 0,
+		imageUrls: service?.imageUrls || [],
+		createdAt: service?.createdAt || null,
+		updatedAt: service?.updatedAt || null,
+		createdBy: service?.createdBy || null,
 	}
 
 	return (
