@@ -205,7 +205,7 @@ const ServicesPage = () => {
 						currentPage={currentPage}
 						isFetching={isFetching}
 						setCurrentPage={setCurrentPage}
-						totalCount={data?.totalCount || 0}
+						totalCount={data?.totalCount ?? 0}
 						itemsPerPage={itemsPerPage}
 					/>
 				</div>
