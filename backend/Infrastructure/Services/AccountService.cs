@@ -557,6 +557,8 @@ public class AccountService
             }
             consultants = tmp;
         }
+        //count
+        var totalCount = consultants.Count;
 
         //pagination
         if (page < 1) page = 1;
@@ -591,7 +593,7 @@ public class AccountService
         }
         ConsultantInfoGetResponse response = new()
         {
-            TotalCount = consultantInfoModels.Count,
+            TotalCount = totalCount,
             Consultants = consultantInfoModels
         };
         return response;
