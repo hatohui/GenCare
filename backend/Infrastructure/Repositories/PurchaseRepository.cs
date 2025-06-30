@@ -18,6 +18,11 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<List<Purchase>> GetAllPurchasesAsync()
+        => await dbContext.Purchases
+                 .Include(p => p.OrderDetails)
+                    .ToListAsync(); 
+
 
     public async Task<List<Purchase>> GetByAccountId(Guid accountId)
     {
