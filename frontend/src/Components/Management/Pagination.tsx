@@ -8,15 +8,18 @@ export type PaginationProps = {
 	currentPage: number
 	isFetching: boolean
 	setCurrentPage: React.Dispatch<React.SetStateAction<number>>
-	totalPages: number
+	totalCount: number
+	itemsPerPage: number
 }
 
 const Pagination = ({
 	currentPage,
 	isFetching,
 	setCurrentPage,
-	totalPages,
+	totalCount,
+	itemsPerPage,
 }: PaginationProps) => {
+	const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage))
 	return (
 		<nav
 			aria-label='Pagination'

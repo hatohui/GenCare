@@ -12,6 +12,7 @@ using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Infrastructure.Services;
@@ -90,10 +91,15 @@ public class AccountService
         //generate reset password token
         var resetPwdToken = JwtHelper.GeneratePasswordResetToken(user.Id);
 
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var isDevelopment = environment == "Development";
+        var schemaHost = isDevelopment ? "http://localhost:3000" : Environment.GetEnvironmentVariable("APP_URL");
+
         //create reset password URL
         var encodedToken = WebUtility.UrlEncode(resetPwdToken);
         var encodedEmail = WebUtility.UrlEncode(request.Email);
-        var callbackUrl = $"{Environment.GetEnvironmentVariable("AppUrl")}/reset-password?email={encodedEmail}&token={encodedToken}";
+        var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
+        //var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
 
         var msg = $"Link to reset your password: {callbackUrl}";
         //send email with reset password link
@@ -551,6 +557,8 @@ public class AccountService
             }
             consultants = tmp;
         }
+        //count
+        var totalCount = consultants.Count;
 
         //pagination
         if (page < 1) page = 1;
@@ -585,7 +593,7 @@ public class AccountService
         }
         ConsultantInfoGetResponse response = new()
         {
-            TotalCount = consultantInfoModels.Count,
+            TotalCount = totalCount,
             Consultants = consultantInfoModels
         };
         return response;

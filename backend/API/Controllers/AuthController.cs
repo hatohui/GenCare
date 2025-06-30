@@ -190,6 +190,7 @@ public class AuthController
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPasswordSync([FromBody] ForgotPasswordRequest request)
     {
+        //var schemaHost = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
         var response = await accountService.ForgotPasswordAsync(request);
         return Ok(response);
     }

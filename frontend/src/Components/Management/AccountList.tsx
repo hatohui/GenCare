@@ -106,7 +106,8 @@ const AccountList = () => {
 					currentPage={page}
 					isFetching={isFetching}
 					setCurrentPage={setPage}
-					totalPages={pageCount}
+					totalCount={pageCount}
+					itemsPerPage={itemsPerPage}
 				/>
 			</div>
 		</>
