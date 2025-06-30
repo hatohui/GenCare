@@ -10,7 +10,7 @@ export default function ServicesSection() {
 	if (isLoading) return <LoadingSkeleton />
 
 	return (
-		<section className='snap-start py-20 bg-gradient-to-b from-white to-main text-center'>
+		<section className='snap-start py-20 bg-gradient-to-b from-general to-main text-center'>
 			<motion.h2
 				initial={{ opacity: 0, y: 50 }}
 				whileInView={{ opacity: 1, y: 0 }}

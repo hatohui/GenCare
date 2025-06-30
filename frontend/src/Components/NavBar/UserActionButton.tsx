@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { UserSVG } from '../SVGs'
 import { useRouter } from 'next/navigation'
 import { useLogoutAccount } from '@/Services/auth-service'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	const tokenStore = useToken()

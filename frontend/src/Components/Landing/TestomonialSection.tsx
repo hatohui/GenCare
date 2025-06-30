@@ -57,9 +57,14 @@ export default function TestimonialsSection() {
 							transition={{ duration: 0.5 }}
 							className='relative bg-white w-[300px] h-[400px] rounded shadow hover:shadow-xl flex flex-col items-center justify-between overflow-hidden'
 						>
-							<p className='absolute text-3xl z-10 font-extrabold text-general top-1/12 left-1/12'>
-								{item.name}
-							</p>
+							{/* Name overlay */}
+							<div className='absolute top-4 left-4 z-20'>
+								<p className='text-2xl font-bold text-white drop-shadow-lg'>
+									{item.name}
+								</p>
+							</div>
+
+							{/* Background image */}
 							<motion.div
 								style={{ x: image }}
 								className='absolute w-[500px] z-0'
@@ -73,8 +78,9 @@ export default function TestimonialsSection() {
 								/>
 							</motion.div>
 
-							<div className='absolute h-[100px]  bottom-9'>
-								<p className='text-general text-lg z-10 bottom-0 p-6'>
+							{/* Testimonial text overlay */}
+							<div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 z-10'>
+								<p className='text-white text-lg leading-relaxed'>
 									&quot; {item.content} &quot;
 								</p>
 							</div>

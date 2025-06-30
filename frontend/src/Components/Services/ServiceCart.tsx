@@ -2,7 +2,7 @@
 import { motion } from 'motion/react'
 import { BookingListVSG } from '../SVGs'
 import { useRouter } from 'next/navigation'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 
 export const BookingButton = () => {
 	const router = useRouter()

@@ -6,6 +6,7 @@ import {
 	PutAccountRequest,
 	PutAccountResponse,
 } from '@/Interfaces/Account/Schema/account'
+import { GetConsultantsResponse } from '@/Interfaces/Account/Schema/consultant'
 import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
@@ -38,14 +39,42 @@ const accountApi = {
 		count: number,
 		page: number,
 		search: string | null,
-		role?: Role | null
+		role?: Role | null,
+		active?: boolean | null
 	) => {
 		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
-		}${role ? `&role=${role}` : ''}`
+		}${role ? `&role=${role}` : ''}${
+			active !== null && active !== undefined ? `&active=${active}` : ''
+		}`
 
 		return axiosInstance
 			.get<GetAccountByPageResponse>(queryUrl, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
+
+	/**
+	 * Retrieves a paginated list of consultants with optional search filtering.
+	 * @param header The access token header
+	 * @param count The number of consultants per page (must be positive)
+	 * @param page The page number (starts from 1)
+	 * @param search Optional keyword to filter consultants
+	 * @returns A promise that resolves with a paginated list of consultants
+	 */
+	getConsultants: (
+		header: string,
+		count: number,
+		page: number,
+		search: string | null
+	) => {
+		const queryUrl = `${ACCOUNT_URL}/consultants?page=${page}&count=${count}${
+			search ? `&search=${search}` : ''
+		}`
+
+		return axiosInstance
+			.get<GetConsultantsResponse>(queryUrl, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
@@ -80,6 +109,15 @@ const accountApi = {
 			})
 			.then(res => res.data)
 	},
+
+	getConsultantById: (header: string, id: string) => {
+		const queryUrl = `${ACCOUNT_URL}/consultants/${id}`
+		return axiosInstance
+			.get(queryUrl, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
 }
 
 export const useGetMe = () => {
@@ -110,6 +148,22 @@ export const useGetAccountsByPage = (
 	})
 }
 
+export const useGetAccountsByPageStaff = (
+	count: number,
+	page: number,
+	search: string | null
+) => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['accounts-staff', page, count, search],
+		queryFn: () =>
+			accountApi.getByPage(header, count, page, search, 'member', true),
+		placeholderData: keepPreviousData,
+		enabled: !!header,
+	})
+}
+
 export const useGetAccountById = (id: string) => {
 	const header = useAccessTokenHeader()
 
@@ -133,5 +187,27 @@ export const useDeleteAccount = () => {
 
 	return useMutation({
 		mutationFn: (id: string) => accountApi.delete(header, id),
+	})
+}
+
+/**
+ * Hook to fetch a paginated list of consultants with optional search filtering.
+ * @param count The number of consultants per page (must be positive)
+ * @param page The page number (starts from 1)
+ * @param search Optional keyword to filter consultants
+ * @returns React Query result with consultants data
+ */
+export const useGetConsultants = (
+	count: number,
+	page: number,
+	search: string | null
+) => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['consultants', page, count, search],
+		queryFn: () => accountApi.getConsultants(header, count, page, search),
+		placeholderData: keepPreviousData,
+		enabled: !!header,
 	})
 }

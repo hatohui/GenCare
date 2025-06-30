@@ -21,7 +21,7 @@ const ServicesPage = () => {
 	const deleteMutation = useDeleteService()
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
 	const searchParams = useSearchParams()
-	const search = searchParams.get('search')
+	const search = searchParams?.get('search') ?? ''
 	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
 	const [includeDeleted, setIncludeDeleted] = useState<boolean | null>(null)
 	const [sortByAlphabetical, setSortByAlphabetical] = useState<boolean>(false)
@@ -42,10 +42,6 @@ const ServicesPage = () => {
 
 	const { isError, isFetching, data, isLoading } = query
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
-
-	const pageCount = data?.totalCount
-		? Math.ceil(data.totalCount / itemsPerPage)
-		: 5
 
 	const handleDelete = (id: string) => {
 		if (window.confirm('Bạn có muốn xóa mục này không?'))
@@ -207,9 +203,10 @@ const ServicesPage = () => {
 				<div className='center-all'>
 					<Pagination
 						currentPage={currentPage}
-						totalPages={pageCount}
 						isFetching={isFetching}
 						setCurrentPage={setCurrentPage}
+						totalCount={data?.totalCount ?? 0}
+						itemsPerPage={itemsPerPage}
 					/>
 				</div>
 			</section>

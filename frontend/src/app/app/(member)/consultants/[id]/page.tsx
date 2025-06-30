@@ -1,11 +1,13 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
 import Button from '@/Components/Button'
 import clsx from 'clsx'
 import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
+import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
+import Image from 'next/image'
 
 const timeSlots = [
 	'08:00 AM',
@@ -17,39 +19,59 @@ const timeSlots = [
 ]
 
 const BookConsultantPage = () => {
-	const { data, isLoading } = useAccountStore()
+	const { data: userData, isLoading: isUserLoading } = useAccountStore()
 	const router = useRouter()
+	const params = useParams()
+	const consultantId = params?.id as string
+	const { consultants } = useConsultantContext()
+	const consultantFromContext = consultants.find(c => c.id === consultantId)
 
 	const [selectedDate, setSelectedDate] = React.useState<Date | null>(null)
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
 
-	if (isLoading || !data)
+	if (isUserLoading || (isUserLoading && !consultantFromContext)) {
 		return <div className='h-full w-full center-all'>Loading....</div>
-
-	const consultantFake = {
-		accountId: '1',
-		name: 'Dr. Nguyen Van A',
-		specialization: 'General Practitioner',
-		rating: 4.8,
-		biography: '10+ years of experience providing comprehensive primary care.',
 	}
+
+	if (!consultantFromContext) {
+		return (
+			<div className='h-full w-full center-all text-red-500'>
+				Consultant not found.
+			</div>
+		)
+	}
+
+	const fullName =
+		`${consultantFromContext.firstName ?? ''} ${
+			consultantFromContext.lastName ?? ''
+		}`.trim() || 'N/A'
+	const initials =
+		fullName !== 'N/A'
+			? fullName
+					.split(' ')
+					.map(n => n[0])
+					.join('')
+					.toUpperCase()
+			: 'N/A'
 
 	const handleSubmit = () => {
 		if (!selectedDate || !selectedTime) {
 			alert('Please select a date and time.')
 			return
 		}
-
+		if (!userData) {
+			alert('User not loaded.')
+			return
+		}
 		console.log({
-			bookedBy: data.id,
-			role: data.role.name,
-			consultantId: consultantFake.accountId,
+			bookedBy: userData.id,
+			role: userData.role.name,
+			consultantId: consultantFromContext.id,
 			date: selectedDate.toISOString(),
 			time: selectedTime,
 			notes,
 		})
-
 		router.push('/app/appointments/confirmation')
 	}
 
@@ -65,7 +87,7 @@ const BookConsultantPage = () => {
 				</button>
 
 				<h2 className='text-xl font-bold text-blue-900'>
-					Book with {consultantFake.name}
+					Book with {fullName}
 				</h2>
 
 				{/* Calendar Range */}
@@ -122,22 +144,30 @@ const BookConsultantPage = () => {
 
 			{/* Consultant Info Card */}
 			<div className='bg-blue-50 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center'>
-				<img
-					src={`https://randomuser.me/api/portraits/med/${
-						+consultantFake.accountId % 2 === 0 ? 'women' : 'men'
-					}/${consultantFake.accountId}.jpg`}
-					alt='consultant'
-					className='w-28 h-28 rounded-full object-cover border-4 border-white shadow mb-4'
-				/>
-				<h3 className='text-lg font-semibold text-blue-900'>
-					{consultantFake.name}
-				</h3>
+				{consultantFromContext.avatarUrl ? (
+					<Image
+						src={consultantFromContext.avatarUrl}
+						alt={fullName}
+						width={112}
+						height={112}
+						className='w-28 h-28 rounded-full object-cover border-4 border-white shadow mb-4'
+					/>
+				) : (
+					<div className='w-28 h-28 rounded-full bg-blue-200 border-4 border-white shadow mb-4 flex items-center justify-center text-blue-600 font-bold text-3xl'>
+						{initials}
+					</div>
+				)}
+				<h3 className='text-lg font-semibold text-blue-900'>{fullName}</h3>
 				<p className='text-sm text-white bg-gradient-to-l from-main to-secondary px-3 py-1 rounded-full mt-1'>
-					{consultantFake.specialization}
+					{'department' in consultantFromContext
+						? consultantFromContext.department
+						: (consultantFromContext as any).departmentName ?? ''}
 				</p>
-				<p className='text-sm text-gray-600 mt-4'>{consultantFake.biography}</p>
+				<p className='text-sm text-gray-600 mt-4'>
+					{consultantFromContext.biography}
+				</p>
 				<p className='text-sm text-yellow-600 mt-3 font-medium'>
-					⭐ {consultantFake.rating.toFixed(1)} / 5.0
+					⭐ {consultantFromContext.yearOfExperience}+ years
 				</p>
 			</div>
 		</div>
