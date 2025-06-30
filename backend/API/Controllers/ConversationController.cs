@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Conversation.Request;
 using Application.DTOs.Conversation.Response;
+using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -56,4 +57,16 @@ public class ConversationController(IConversationService conversationService): C
             return Ok(response);
         return NotFound(new { Message = "Conversation not found." });
     }
+    [HttpPost("join")]
+    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Consultant}")]
+    public async Task<IActionResult> JoinConversation([FromBody] JoinConversationRequest request)
+    {
+        Guid staffId = JwtHelper.GetAccountIdFromToken(Request.Headers["Authorization"]);
+
+
+        var success = await conversationService.AssignStaffToConversationAsync(request.ConversationId, staffId);
+        return success ? Ok("Joined conversation.") : BadRequest(new { error = "Could not join." });
+
+    }
+
 }

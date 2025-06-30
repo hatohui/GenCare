@@ -12,5 +12,7 @@ public interface IConversationService
     Task<List<Conversation>> GetPendingConversationsAsync();
     Task<ViewAllConversationResponse> ViewAllConversationAsync();
     Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request);
+
+    Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId);
 }
     

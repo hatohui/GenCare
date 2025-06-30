@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.Services;
 
-public class ConversationService(IConversationRepository conversationRepository, ChatHub chatHub) : IConversationService
+public class ConversationService(IConversationRepository conversationRepository, IHubContext<ChatHub> chatHub) : IConversationService
 {
     private static DateTime ToUnspecified(DateTime dt)
     {
@@ -20,7 +20,7 @@ public class ConversationService(IConversationRepository conversationRepository,
         {
             Id = Guid.NewGuid(),
             MemberId = request.MemberId,
-            StaffId = request.StaffId,
+            StaffId = null, // Initially no staff assigned
             Status = false,
             StartAt = ToUnspecified(DateTime.Now),
         };
@@ -104,5 +104,18 @@ public class ConversationService(IConversationRepository conversationRepository,
     }
 
     public async Task<List<Conversation>> GetPendingConversationsAsync() => await conversationRepository.GetPendingConversationsAsync();
+    public async Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId)
+    {
+        var convo = await conversationRepository.GetByIdAsync(conversationId);
+        if (convo == null || convo.StaffId != null)
+            return false;
+
+        convo.StaffId = staffId;
+        convo.Status = true;
+        convo.StartAt = DateTime.Now;
+
+        return await conversationRepository.UpdateAsync(convo);
+    }
+
     
 }

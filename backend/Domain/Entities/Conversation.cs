@@ -4,7 +4,7 @@ public class Conversation
 {
     public Guid Id { get; set; }
 
-    public Guid StaffId { get; set; }
+    public Guid? StaffId { get; set; }
 
     public Guid MemberId { get; set; }
 
