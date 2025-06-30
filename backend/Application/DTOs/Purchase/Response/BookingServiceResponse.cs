@@ -1,5 +1,5 @@
 ﻿namespace Application.DTOs.Purchase.Response;
 public record class BookingServiceResponse
 {
-    public string? message { get; set; }
+    public string PurchaseId { get; set; } = null!;
 }

@@ -90,6 +90,18 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.member,
 	},
 	{
+		label: 'Payments',
+		to: '/dashboard/payments',
+		svg: <MoneySVG />,
+		level: PermissionLevel.staff,
+	},
+	{
+		label: 'Test Results',
+		to: '/dashboard/tests',
+		svg: <AccountSVG />,
+		level: PermissionLevel.staff,
+	},
+	{
 		label: 'Chat with us',
 		to: '/app/chat',
 		svg: <ChatSVG />,
