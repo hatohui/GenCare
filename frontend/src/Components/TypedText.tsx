@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
