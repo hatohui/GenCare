@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 [ApiController]
-[Route("api/slot")]
+[Route("api/slots")]
 public class SlotController(ISlotService slotService) : ControllerBase
 {
     [HttpPost]
@@ -36,8 +36,8 @@ public class SlotController(ISlotService slotService) : ControllerBase
         return Ok(response);
     }
 
-    // GET: api/Slot/all
-    [HttpGet("all")]
+    // GET: api/Slot/
+    [HttpGet]
     public async Task<IActionResult> ViewAllSlot()
     {
         var response = await slotService.ViewAllSlot();
