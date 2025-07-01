@@ -12,5 +12,7 @@ public interface IResultRepository
     Task<List<Result>> ViewResultListAsync();
 
     Task<bool> CheckResultExistsAsync(Guid orderDetailId);
+
     Task AddAsync(Result result);
+
 }

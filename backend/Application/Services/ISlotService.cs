@@ -9,7 +9,7 @@ public interface ISlotService
     Task<CreateSlotResponse> CreateSlot(CreateSlotRequest request);
     Task<UpdateSlotResponse> UpdateSlot(UpdateSlotRequest request);
     
-    Task<DeleteSlotResponse> DeleteSlot(DeleteSlotRequest request);
+    Task<DeleteSlotResponse> DeleteSlot(Guid id);
     
     Task<ViewAllSlotResponse> ViewAllSlot();
     

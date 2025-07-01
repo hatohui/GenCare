@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { useGetMe } from '@/Services/account-service'
 import { isTokenValid } from '@/Utils/Auth/isTokenValid'
+import BackgroundCircles from '@/Components/BackgroundCircles'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)
@@ -70,9 +71,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	}
 
 	return (
-		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground'>
+		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground relative'>
+			<BackgroundCircles
+				circleCount={8}
+				dotCount={12}
+				zIndex='z-0'
+				circleSize={25}
+				dotSize={5}
+				animationDuration={18}
+				delayMultiplier={1.2}
+			/>
 			<Sidenav />
-			<main className='flex-1 p-7 h-full scroll-smooth overflow-scroll'>
+			<main className='flex-1 p-7 h-full scroll-smooth overflow-scroll relative z-10'>
 				{children}
 			</main>
 		</div>

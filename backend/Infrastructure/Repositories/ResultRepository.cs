@@ -38,6 +38,7 @@ public class ResultRepository(IApplicationDbContext dbContext) : IResultReposito
         return await dbContext.Results
             .AnyAsync(t => t.OrderDetailId == orderDetailId);
     }
+
     public async Task AddAsync(Result result)
     {
         await dbContext.Results.AddAsync(result);

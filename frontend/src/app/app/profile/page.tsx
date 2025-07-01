@@ -16,7 +16,7 @@ const Page = () => {
 	console.log(data)
 
 	return (
-		<div className='w-6xl mx-auto'>
+		<div className='mx-auto'>
 			<Profile data={data} />
 		</div>
 	)

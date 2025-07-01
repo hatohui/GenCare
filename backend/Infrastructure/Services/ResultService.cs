@@ -6,6 +6,7 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
+using Domain.Entities;
 using Domain.Exceptions;
 using Newtonsoft.Json;
 
@@ -34,7 +35,7 @@ public class ResultService(IResultRepository resultRepository,
     /// <param name="orderDetailId">ID of the test order detail.</param>
     /// <param name="accessToken"></param>
     /// <returns>Test result information or throws if not found.</returns>
-    public async Task<ViewTestResultResponse?> ViewResultAsync(Guid orderDetailId,string accessToken)
+    public async Task<ViewTestResultResponse?> ViewResultAsync(Guid orderDetailId, string accessToken)
     {
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         var role = JwtHelper.GetRoleFromToken(accessToken);
@@ -42,13 +43,13 @@ public class ResultService(IResultRepository resultRepository,
         //get order detail by id
         var orderDetail = await orderDetailRepository.GetByIdAsync(orderDetailId);
         if (orderDetail == null)
-            throw new AppException(404,"Order detail not found.");
-        
+            throw new AppException(404, "Order detail not found.");
+
         //get purchase by order detail
         var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
         if (purchase == null)
-            throw new AppException(404,"Purchase not found.");
-        
+            throw new AppException(404, "Purchase not found.");
+
         //check if the account is authorized to view this test result
         if (role == RoleNames.Member && purchase.AccountId != accountId)
             throw new AppException(403, "You are not authorized to view this test result.");
@@ -95,7 +96,7 @@ public class ResultService(IResultRepository resultRepository,
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
-        
+
         var sampleDate = request.SampleDate?.ToLocalTime();
         var resultDate = request.ResultDate?.ToLocalTime();
         if (sampleDate != null && resultDate != null && resultDate < sampleDate)
@@ -235,5 +236,10 @@ public class ResultService(IResultRepository resultRepository,
         }
 
         return responseList;
+    }
+
+    public async Task AddResult(Result result)
+    {
+        await testTrackerRepository.AddAsync(result);
     }
 }
