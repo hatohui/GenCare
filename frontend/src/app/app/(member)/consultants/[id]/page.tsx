@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { useCreateAppointment } from '@/Services/appointment-service'
 import { convertToISOString, formatDateForDisplay } from '@/Utils/dateTime'
 import { toast } from 'react-hot-toast'
+import { motion, AnimatePresence } from 'motion/react'
 
 const timeSlots = [
 	'08:00 AM',
@@ -107,128 +108,290 @@ const BookConsultantPage = () => {
 	const isFormValid = selectedDate && selectedTime
 
 	return (
-		<div className='grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto p-6 overflow-auto'>
-			{/* Booking Form */}
-			<div className='bg-white border border-blue-100 rounded-2xl p-6 shadow-sm space-y-2'>
-				<button
-					onClick={() => router.back()}
-					className='text-sm text-blue-600 hover:underline'
-					disabled={isLoading}
+		<div className='relative min-h-screen overflow-hidden'>
+			<motion.div
+				className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto p-4 sm:p-6 overflow-auto relative z-20'
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{
+					duration: 0.6,
+					type: 'spring',
+					stiffness: 100,
+					damping: 15,
+				}}
+			>
+				{/* Booking Form */}
+				<motion.div
+					className='bg-white border border-blue-100 rounded-2xl p-6 shadow-sm space-y-2'
+					initial={{ opacity: 0, x: -50 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={{
+						duration: 0.6,
+						delay: 0.2,
+						type: 'spring',
+						stiffness: 100,
+					}}
 				>
-					← Back
-				</button>
-
-				<h2 className='text-xl font-bold text-blue-900'>
-					Book with {fullName}
-				</h2>
-
-				{/* Selected Date Display */}
-				{selectedDate && (
-					<div className='bg-blue-50 p-3 rounded-lg'>
-						<p className='text-sm text-blue-700'>
-							📅 Selected: {formatDateForDisplay(selectedDate)}
-						</p>
-					</div>
-				)}
-
-				{/* Calendar Range */}
-				<div className='center-all'>
-					<Calendar
-						className='bg-none shadow-none'
-						selectedDate={selectedDate}
-						setSelectedDate={setSelectedDate}
-					/>
-				</div>
-
-				{/* Time Slot */}
-				<div>
-					<label className='text-sm font-medium text-gray-700 mb-1 block'>
-						Choose Time
-					</label>
-					<div className='grid grid-cols-3 gap-3'>
-						{timeSlots.map(slot => (
-							<button
-								key={slot}
-								onClick={() => setSelectedTime(slot)}
-								disabled={isLoading}
-								className={clsx(
-									'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
-									selectedTime === slot
-										? 'bg-blue-500 text-white border-blue-600'
-										: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
-									isLoading && 'opacity-50 cursor-not-allowed'
-								)}
-							>
-								{slot}
-							</button>
-						))}
-					</div>
-				</div>
-
-				{/* Notes */}
-				<div>
-					<label className='text-sm font-medium text-gray-700 mb-1 block'>
-						Notes (optional)
-					</label>
-					<textarea
-						value={notes}
-						onChange={e => setNotes(e.target.value)}
-						rows={3}
+					<motion.button
+						onClick={() => router.back()}
+						className='text-sm text-blue-600 hover:underline'
 						disabled={isLoading}
-						className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed'
-						placeholder='E.g. symptoms, language preference, etc.'
-					/>
-				</div>
+						whileHover={{ x: -5, scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						transition={{ duration: 0.2 }}
+					>
+						← Back
+					</motion.button>
 
-				{/* Submit */}
-				<div className='text-right'>
-					<Button
-						label={isLoading ? 'Đang xử lý...' : 'Confirm Booking'}
-						onClick={handleSubmit}
-						disabled={!isFormValid || isLoading}
-					/>
-				</div>
+					<motion.h2
+						className='text-xl font-bold text-blue-900'
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.5, delay: 0.3 }}
+					>
+						Book with {fullName}
+					</motion.h2>
 
-				{/* Error Display */}
-				{createAppointmentMutation.isError && (
-					<div className='bg-red-50 border border-red-200 rounded-lg p-3'>
-						<p className='text-sm text-red-600'>
-							{createAppointmentMutation.error instanceof Error
-								? createAppointmentMutation.error.message
-								: 'Có lỗi xảy ra khi đặt lịch hẹn.'}
-						</p>
+					{/* Selected Date Display */}
+					<AnimatePresence mode='wait'>
+						{selectedDate && (
+							<motion.div
+								className='bg-blue-50 p-3 rounded-lg'
+								initial={{ opacity: 0, scale: 0.8, y: 20 }}
+								animate={{ opacity: 1, scale: 1, y: 0 }}
+								exit={{ opacity: 0, scale: 0.8, y: -20 }}
+								transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
+							>
+								<p className='text-sm text-blue-700'>
+									📅 Selected: {formatDateForDisplay(selectedDate)}
+								</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
+
+					{/* Calendar Range */}
+					<motion.div
+						className='center-all'
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.4 }}
+					>
+						<Calendar
+							className='bg-none shadow-none'
+							selectedDate={selectedDate}
+							setSelectedDate={setSelectedDate}
+						/>
+					</motion.div>
+
+					{/* Time Slot */}
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.5 }}
+					>
+						<label className='text-sm font-medium text-gray-700 mb-1 block'>
+							Choose Time
+						</label>
+						<div className='grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3'>
+							{timeSlots.map((slot, idx) => (
+								<motion.button
+									key={slot}
+									onClick={() => setSelectedTime(slot)}
+									disabled={isLoading}
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									transition={{ duration: 0.3, delay: 0.6 + idx * 0.1 }}
+									whileHover={{
+										scale: 1.05,
+										boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
+										transition: { duration: 0.2 },
+									}}
+									whileTap={{ scale: 0.95 }}
+									className={clsx(
+										'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
+										selectedTime === slot
+											? 'bg-blue-500 text-white border-blue-600'
+											: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
+										isLoading && 'opacity-50 cursor-not-allowed'
+									)}
+								>
+									{slot}
+								</motion.button>
+							))}
+						</div>
+					</motion.div>
+
+					{/* Notes */}
+					<motion.div
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.7 }}
+					>
+						<label className='text-sm font-medium text-gray-700 mb-1 block'>
+							Notes (optional)
+						</label>
+						<motion.textarea
+							value={notes}
+							onChange={e => setNotes(e.target.value)}
+							rows={3}
+							disabled={isLoading}
+							whileFocus={{
+								scale: 1.02,
+								boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.2)',
+								transition: { duration: 0.2 },
+							}}
+							className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
+							placeholder='E.g. symptoms, language preference, etc.'
+						/>
+					</motion.div>
+
+					{/* Submit */}
+					<motion.div
+						className='text-right'
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.8 }}
+					>
+						<motion.div
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							transition={{ duration: 0.2 }}
+						>
+							<Button
+								label={isLoading ? 'Đang xử lý...' : 'Confirm Booking'}
+								onClick={handleSubmit}
+								disabled={!isFormValid || isLoading}
+							/>
+						</motion.div>
+					</motion.div>
+
+					{/* Error Display */}
+					<AnimatePresence mode='wait'>
+						{createAppointmentMutation.isError && (
+							<motion.div
+								className='bg-red-50 border border-red-200 rounded-lg p-3'
+								initial={{ opacity: 0, y: 20, scale: 0.9 }}
+								animate={{ opacity: 1, y: 0, scale: 1 }}
+								exit={{ opacity: 0, y: -20, scale: 0.9 }}
+								transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
+							>
+								<p className='text-sm text-red-600'>
+									{createAppointmentMutation.error instanceof Error
+										? createAppointmentMutation.error.message
+										: 'Có lỗi xảy ra khi đặt lịch hẹn.'}
+								</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
+				</motion.div>
+
+				{/* Consultant Info Card */}
+				<motion.div
+					className='bg-blue-50 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center relative overflow-hidden'
+					initial={{ opacity: 0, x: 50 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={{
+						duration: 0.6,
+						delay: 0.3,
+						type: 'spring',
+						stiffness: 100,
+					}}
+				>
+					<div className='relative z-10'>
+						<motion.div
+							whileHover={{
+								rotate: 360,
+								scale: 1.1,
+								transition: { duration: 0.6, type: 'spring' },
+							}}
+						>
+							{consultantFromContext.avatarUrl ? (
+								<Image
+									src={consultantFromContext.avatarUrl}
+									alt={fullName}
+									width={112}
+									height={112}
+									className='w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg mb-4'
+								/>
+							) : (
+								<div className='w-28 h-28 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-4 border-white shadow-lg mb-4 flex items-center justify-center text-white font-bold text-3xl'>
+									{initials}
+								</div>
+							)}
+						</motion.div>
+
+						<motion.h3
+							className='text-lg font-semibold text-blue-900'
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.6 }}
+							whileHover={{
+								scale: 1.05,
+								color: '#1e40af',
+								transition: { duration: 0.2 },
+							}}
+						>
+							{fullName}
+						</motion.h3>
+
+						<motion.p
+							className='text-sm px-3 py-1 rounded-full mt-1 relative'
+							style={{
+								background: 'linear-gradient(to left, #067dad, #038474)',
+								WebkitBackgroundClip: 'text',
+								WebkitTextFillColor: 'transparent',
+								backgroundClip: 'text',
+								color: '#067dad',
+							}}
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ duration: 0.5, delay: 0.7 }}
+							whileHover={{
+								scale: 1.1,
+								boxShadow: '0 4px 12px rgba(6, 125, 173, 0.4)',
+								transition: { duration: 0.2 },
+							}}
+						>
+							{'department' in consultantFromContext
+								? consultantFromContext.department
+								: (consultantFromContext as any).departmentName ?? ''}
+						</motion.p>
+
+						<motion.p
+							className='text-sm text-gray-600 mt-4'
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.8 }}
+							whileHover={{
+								color: '#374151',
+								transition: { duration: 0.2 },
+							}}
+						>
+							{consultantFromContext.biography}
+						</motion.p>
+
+						<motion.p
+							className='text-sm text-yellow-600 mt-3 font-medium flex items-center justify-center gap-1'
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.9 }}
+							whileHover={{
+								scale: 1.1,
+								color: '#f59e0b',
+								transition: { duration: 0.2 },
+							}}
+						>
+							<motion.span
+								animate={{ rotate: [0, 10, -10, 0] }}
+								transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+							>
+								⭐
+							</motion.span>
+							{consultantFromContext.yearOfExperience}+ years
+						</motion.p>
 					</div>
-				)}
-			</div>
-
-			{/* Consultant Info Card */}
-			<div className='bg-blue-50 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center'>
-				{consultantFromContext.avatarUrl ? (
-					<Image
-						src={consultantFromContext.avatarUrl}
-						alt={fullName}
-						width={112}
-						height={112}
-						className='w-28 h-28 rounded-full object-cover border-4 border-white shadow mb-4'
-					/>
-				) : (
-					<div className='w-28 h-28 rounded-full bg-blue-200 border-4 border-white shadow mb-4 flex items-center justify-center text-blue-600 font-bold text-3xl'>
-						{initials}
-					</div>
-				)}
-				<h3 className='text-lg font-semibold text-blue-900'>{fullName}</h3>
-				<p className='text-sm text-white bg-gradient-to-l from-main to-secondary px-3 py-1 rounded-full mt-1'>
-					{'department' in consultantFromContext
-						? consultantFromContext.department
-						: (consultantFromContext as any).departmentName ?? ''}
-				</p>
-				<p className='text-sm text-gray-600 mt-4'>
-					{consultantFromContext.biography}
-				</p>
-				<p className='text-sm text-yellow-600 mt-3 font-medium'>
-					⭐ {consultantFromContext.yearOfExperience}+ years
-				</p>
-			</div>
+				</motion.div>
+			</motion.div>
 		</div>
 	)
 }

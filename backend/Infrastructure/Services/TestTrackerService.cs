@@ -85,6 +85,11 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
+        
+        var sampleDate = request.SampleDate?.ToLocalTime();
+        var resultDate = request.ResultDate?.ToLocalTime();
+        if (sampleDate != null && resultDate != null && resultDate < sampleDate)
+            throw new AppException(400, "Result date cannot be earlier than sample date.");
 
         if (request.OrderDate != null && ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate.Value))
         {
