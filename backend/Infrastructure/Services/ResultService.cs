@@ -1,20 +1,22 @@
 ﻿using Application.DTOs.Purchase;
-using Application.DTOs.TestTracker.Request;
-using Application.DTOs.TestTracker.Response;
+using Application.DTOs.Result;
+using Application.DTOs.Result.Request;
+using Application.DTOs.Result.Response;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
 using Domain.Exceptions;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Services;
 
-public class TestTrackerService(ITestTrackerRepository testTrackerRepository, 
+public class ResultService(IResultRepository resultRepository, 
                                 IPurchaseRepository purchaseRepository, 
                                 IPaymentHistoryRepository paymentHistoryRepository,
                                 IOrderDetailRepository orderDetailRepository,
                                 IServiceRepository serviceRepository
-                                ) : ITestTrackerService
+                                ) : IResultService
 {
     /// <summary>
     /// Converts a DateTime to Unspecified kind (removes timezone information).
@@ -58,7 +60,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         if(payment.Status.Trim() != PaymentStatus.Paid.Trim())
             throw new AppException(402,"Payment is not completed.");
         
-        var testResult = await testTrackerRepository.ViewResultAsync(orderDetailId) ??
+        var testResult = await resultRepository.ViewResultAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
 
         return new ViewTestResultResponse
@@ -67,7 +69,9 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
             SampleDate = testResult.SampleDate,
             ResultDate = testResult.ResultDate,
             Status = testResult.Status,
-            ResultData = testResult.ResultData,
+            ResultData = string.IsNullOrWhiteSpace(testResult.ResultData)
+                ? null
+                : JsonConvert.DeserializeObject<Dictionary<string, TestItemResult>>(testResult.ResultData),
             UpdatedAt = testResult.UpdatedAt
         };
     }
@@ -76,13 +80,18 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
     /// Updates a test result based on the provided information.
     /// Only updates fields that are supplied (non-null), following PATCH semantics.
     /// </summary>
-    /// <param name="request">Update request for the test result.</param>
-    /// <returns>Update result (success/failure, message).</returns>
-    public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request)
+    /// <param name="request">The update request containing the fields to be updated.</param>
+    /// <param name="orderDetailId">The ID of the order detail associated with the test result.</param>
+    /// <returns>
+    /// An <see cref="UpdateTestResultResponse"/> object indicating whether the update was successful
+    /// and providing a message about the operation.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">Thrown if the test result is not found.</exception>
+    /// <exception cref="AppException">Thrown if the result date is earlier than the sample date.</exception>
+    public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId)
     {
-        if (!Guid.TryParse(request.OrderDetailId, out Guid orderDetailId))
-            throw new AppException(400, "Invalid AccountId format.");
-        var testResult = await testTrackerRepository.ViewResultAsync(orderDetailId)
+        
+        var testResult = await resultRepository.ViewResultAsync(orderDetailId)
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
@@ -112,16 +121,23 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
             testResult.Status = request.Status.Value;
             isChanged = true;
         }
-        if (request.ResultData != null && testResult.ResultData != request.ResultData)
+        if (request.ResultData != null)
         {
-            testResult.ResultData = request.ResultData;
-            isChanged = true;
+            // Serialize object lại thành JSON string để lưu
+            var newResultDataJson = JsonConvert.SerializeObject(request.ResultData);
+
+            if (testResult.ResultData != newResultDataJson)
+            {
+                testResult.ResultData = newResultDataJson;
+                isChanged = true;
+            }
         }
+
 
         if (isChanged)
         {
             testResult.UpdatedAt = ToUnspecified(DateTime.UtcNow);
-            await testTrackerRepository.UpdateResultAsync(testResult);
+            await resultRepository.UpdateResultAsync(testResult);
         }
 
         return new UpdateTestResultResponse
@@ -139,10 +155,10 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
 
     public async Task<DeleteTestResultResponse> DeleteResultAsync(DeleteTestResultRequest request)
     {
-        if (!await testTrackerRepository.CheckResultExistsAsync(request.OrderDetailId))
+        if (!await resultRepository.CheckResultExistsAsync(request.OrderDetailId))
             throw new InvalidOperationException("Test tracker not found.");
 
-        var deleted = await testTrackerRepository.DeleteResultAsync(request.OrderDetailId);
+        var deleted = await resultRepository.DeleteResultAsync(request.OrderDetailId);
         return new DeleteTestResultResponse
         {
             Success = deleted,
@@ -194,6 +210,30 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
 
     public async Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync()
     {
-        throw new NotImplementedException();
+        var testResults = await resultRepository.ViewResultListAsync();
+        var responseList = new List<ViewTestResultResponse>();
+
+        foreach (var testResult in testResults)
+        {
+            if (string.IsNullOrWhiteSpace(testResult.ResultData) || 
+                !testResult.ResultData.TrimStart().StartsWith("{"))
+            {
+                continue; 
+            }
+
+            var parsedResultData = JsonConvert.DeserializeObject<Dictionary<string, TestItemResult>>(testResult.ResultData!);
+
+            responseList.Add(new ViewTestResultResponse
+            {
+                OrderDate = testResult.OrderDate,
+                SampleDate = testResult.SampleDate,
+                ResultDate = testResult.ResultDate,
+                Status = testResult.Status,
+                ResultData = parsedResultData,
+                UpdatedAt = testResult.UpdatedAt
+            });
+        }
+
+        return responseList;
     }
 }

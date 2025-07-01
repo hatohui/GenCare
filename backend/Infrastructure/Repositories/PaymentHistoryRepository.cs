@@ -25,14 +25,19 @@ public class PaymentHistoryRepository(IApplicationDbContext dbContext) : IPaymen
 
     public async Task<HashSet<Guid>> GetPaidPurchaseIdsAsync(IEnumerable<Purchase> purchases)
     {
-        var purchaseIds = purchases.Select(p => p.Id).ToList(); 
-        return await dbContext.PaymentHistories
+        // Get all purchase IDs from the provided purchases
+        var purchaseIds = purchases.Select(p => p.Id).ToList();
+
+        // Query the PaymentHistories to find PurchaseId if the status is 'Paid'
+        var paidPurchaseIds = await dbContext.PaymentHistories
             .Where(ph => purchaseIds.Contains(ph.PurchaseId)
-                         && ph.Status != null
-                         && string.Equals(ph.Status.Trim(), PaymentStatus.Paid, StringComparison.OrdinalIgnoreCase))
+                         && ph.Status.Trim().ToLower() == PaymentStatus.Paid.ToLower())
             .Select(ph => ph.PurchaseId)
             .Distinct()
-            .ToHashSetAsync();
+            .ToListAsync();
+
+        return paidPurchaseIds.ToHashSet();
+
     }
 
     public async Task<List<PaymentHistory>> GetByPurchaseIdsAsync(List<Guid> purchaseIds)
