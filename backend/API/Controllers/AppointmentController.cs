@@ -2,6 +2,7 @@
 using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -77,5 +78,17 @@ public class AppointmentController(IAppointmentService appointmentService) : Con
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         await appointmentService.DeleteAppointmentAsync(id, accountId.ToString("D"));
         return NoContent(); //204
+    }
+
+    [HttpGet("{id}")]
+    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Member},{RoleNames.Admin},{RoleNames.Manager}")]
+    public async Task<IActionResult> GetAppoinmentById([FromRoute] string id)
+    {
+        //get access token from header
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get id from access
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        var response = await appointmentService.ViewAppointmentByIdAsync(id, accountId.ToString("D"));
+        return Ok(response);
     }
 }

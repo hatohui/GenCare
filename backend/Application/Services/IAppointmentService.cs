@@ -38,5 +38,7 @@ namespace Application.Services
         /// <param name="deleteId">The identifier of the user performing the delete operation.</param>
         /// <returns>A task representing the asynchronous delete operation.</returns>
         Task DeleteAppointmentAsync(string appointmentId, string deleteId);
+
+        Task<AppointmentViewResponse> ViewAppointmentByIdAsync(string appointmentId, string accountId);
     }
 }
