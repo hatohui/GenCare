@@ -177,4 +177,9 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
 
         return result;
     }
+
+    public async Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync()
+    {
+        throw new NotImplementedException();
+    }
 }
