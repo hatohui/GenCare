@@ -8,6 +8,9 @@ import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
 import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
 import Image from 'next/image'
+import { useCreateAppointment } from '@/Services/appointment-service'
+import { convertToISOString, formatDateForDisplay } from '@/Utils/dateTime'
+import { toast } from 'react-hot-toast'
 
 const timeSlots = [
 	'08:00 AM',
@@ -25,10 +28,14 @@ const BookConsultantPage = () => {
 	const consultantId = params?.id as string
 	const { consultants } = useConsultantContext()
 	const consultantFromContext = consultants.find(c => c.id === consultantId)
+	const createAppointmentMutation = useCreateAppointment()
 
 	const [selectedDate, setSelectedDate] = React.useState<Date | null>(null)
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
+
+	// Loading states
+	const isLoading = isUserLoading || createAppointmentMutation.isPending
 
 	if (isUserLoading || (isUserLoading && !consultantFromContext)) {
 		return <div className='h-full w-full center-all'>Loading....</div>
@@ -38,6 +45,14 @@ const BookConsultantPage = () => {
 		return (
 			<div className='h-full w-full center-all text-red-500'>
 				Consultant not found.
+			</div>
+		)
+	}
+
+	if (!userData) {
+		return (
+			<div className='h-full w-full center-all text-red-500'>
+				User not authenticated.
 			</div>
 		)
 	}
@@ -55,25 +70,41 @@ const BookConsultantPage = () => {
 					.toUpperCase()
 			: 'N/A'
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
+		// Validation
 		if (!selectedDate || !selectedTime) {
-			alert('Please select a date and time.')
+			toast.error('Vui lòng chọn ngày và giờ hẹn.')
 			return
 		}
+
 		if (!userData) {
-			alert('User not loaded.')
+			toast.error('Thông tin người dùng không hợp lệ.')
 			return
 		}
-		console.log({
-			bookedBy: userData.id,
-			role: userData.role.name,
-			consultantId: consultantFromContext.id,
-			date: selectedDate.toISOString(),
-			time: selectedTime,
-			notes,
-		})
-		router.push('/app/appointments/confirmation')
+
+		try {
+			// Convert date and time to ISO string
+			const scheduleAt = convertToISOString(selectedDate, selectedTime)
+
+			// Prepare request data
+			const appointmentData = {
+				memberId: userData.id,
+				staffId: consultantFromContext.id,
+				scheduleAt: scheduleAt,
+			}
+
+			// Create appointment
+			await createAppointmentMutation.mutateAsync(appointmentData)
+
+			// Show success message
+			toast.success('Đặt lịch hẹn thành công!')
+		} catch (error) {
+			// Error handling is done in the mutation
+			console.error('Appointment creation failed:', error)
+		}
 	}
+
+	const isFormValid = selectedDate && selectedTime
 
 	return (
 		<div className='grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto p-6 overflow-auto'>
@@ -82,6 +113,7 @@ const BookConsultantPage = () => {
 				<button
 					onClick={() => router.back()}
 					className='text-sm text-blue-600 hover:underline'
+					disabled={isLoading}
 				>
 					← Back
 				</button>
@@ -89,6 +121,15 @@ const BookConsultantPage = () => {
 				<h2 className='text-xl font-bold text-blue-900'>
 					Book with {fullName}
 				</h2>
+
+				{/* Selected Date Display */}
+				{selectedDate && (
+					<div className='bg-blue-50 p-3 rounded-lg'>
+						<p className='text-sm text-blue-700'>
+							📅 Selected: {formatDateForDisplay(selectedDate)}
+						</p>
+					</div>
+				)}
 
 				{/* Calendar Range */}
 				<div className='center-all'>
@@ -109,11 +150,13 @@ const BookConsultantPage = () => {
 							<button
 								key={slot}
 								onClick={() => setSelectedTime(slot)}
+								disabled={isLoading}
 								className={clsx(
-									'py-2 px-3 text-sm rounded-lg border text-center',
+									'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
 									selectedTime === slot
 										? 'bg-blue-500 text-white border-blue-600'
-										: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400'
+										: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
+									isLoading && 'opacity-50 cursor-not-allowed'
 								)}
 							>
 								{slot}
@@ -131,15 +174,31 @@ const BookConsultantPage = () => {
 						value={notes}
 						onChange={e => setNotes(e.target.value)}
 						rows={3}
-						className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm'
+						disabled={isLoading}
+						className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed'
 						placeholder='E.g. symptoms, language preference, etc.'
 					/>
 				</div>
 
 				{/* Submit */}
 				<div className='text-right'>
-					<Button label='Confirm Booking' onClick={handleSubmit} />
+					<Button
+						label={isLoading ? 'Đang xử lý...' : 'Confirm Booking'}
+						onClick={handleSubmit}
+						disabled={!isFormValid || isLoading}
+					/>
 				</div>
+
+				{/* Error Display */}
+				{createAppointmentMutation.isError && (
+					<div className='bg-red-50 border border-red-200 rounded-lg p-3'>
+						<p className='text-sm text-red-600'>
+							{createAppointmentMutation.error instanceof Error
+								? createAppointmentMutation.error.message
+								: 'Có lỗi xảy ra khi đặt lịch hẹn.'}
+						</p>
+					</div>
+				)}
 			</div>
 
 			{/* Consultant Info Card */}
