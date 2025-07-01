@@ -73,8 +73,20 @@ public class AppointmentService(IAccountRepository accountRepository,
         await appointmentRepository.Update(appointment);
     }
 
-    public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync()
+    public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync(string accountId)
     {
+        //get account by id
+        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
+        if (account == null)
+        {
+            throw new AppException(404, "Account not found");
+        }
+        //check authorization
+        bool isLow = false;
+        string role = account.Role!.Name.ToLower();
+        if (role == RoleNames.Member.ToLower() || role == RoleNames.Staff.ToLower())
+            isLow = true;
+        //create response
         var list = await appointmentRepository.GetAll();
         List<AllAppointmentViewResponse> rs = new();
         foreach (var appointment in list)
@@ -92,7 +104,11 @@ public class AppointmentService(IAccountRepository accountRepository,
                 Status = appointment.Status
             });
         }
-
+        //if account is member or staff, filter appointments
+        if (isLow)
+        {
+            rs = rs.Where(a => a.MemberId == account.Id.ToString("D") || a.StaffId == account.Id.ToString("D")).ToList();
+        }
         return rs;
     }
 

@@ -37,11 +37,15 @@ public class AppointmentController(IAppointmentService appointmentService) : Con
     /// </summary>
     /// <returns>A list of all appointments.</returns>
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Member},{RoleNames.Staff}")]
     public async Task<IActionResult> ViewAllAppointment()
     {
+        //get access token
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+        //get id
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         //call service
-        var appointments = await appointmentService.ViewAllAppointmentsAsync();
+        var appointments = await appointmentService.ViewAllAppointmentsAsync(accountId.ToString("D"));
         return Ok(appointments);
     }
 

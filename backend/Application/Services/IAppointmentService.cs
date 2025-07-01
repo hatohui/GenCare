@@ -20,7 +20,7 @@ namespace Application.Services
         /// Retrieves all appointments.
         /// </summary>
         /// <returns>A list of all appointment view responses.</returns>
-        Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync();
+        Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync(string accountId);
 
         /// <summary>
         /// Updates an existing appointment.
