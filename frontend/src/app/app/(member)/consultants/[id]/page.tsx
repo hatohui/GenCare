@@ -35,6 +35,21 @@ const BookConsultantPage = () => {
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
 
+	// Check for reduced motion preference
+	const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+
+	React.useEffect(() => {
+		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+		setPrefersReducedMotion(mediaQuery.matches)
+
+		const handleChange = (e: MediaQueryListEvent) => {
+			setPrefersReducedMotion(e.matches)
+		}
+
+		mediaQuery.addEventListener('change', handleChange)
+		return () => mediaQuery.removeEventListener('change', handleChange)
+	}, [])
+
 	// Loading states
 	const isLoading = isUserLoading || createAppointmentMutation.isPending
 
@@ -110,8 +125,9 @@ const BookConsultantPage = () => {
 	return (
 		<div className='relative min-h-screen overflow-hidden'>
 			{/* Floating Background Circles */}
-			<div className='fixed inset-0 pointer-events-none z-10'>
-				{[...Array(8)].map((_, i) => (
+			<div className='fixed inset-0 pointer-events-none z-0'>
+				{/* Reduced number of animated elements for better performance */}
+				{[...Array(prefersReducedMotion ? 3 : 6)].map((_, i) => (
 					<motion.div
 						key={i}
 						className='absolute rounded-full bg-gradient-to-br from-blue-300/60 to-blue-400/50'
@@ -120,25 +136,41 @@ const BookConsultantPage = () => {
 							height: `${80 + i * 30}px`,
 							left: `${10 + i * 12}%`,
 							top: `${20 + i * 8}%`,
+							willChange: 'transform, opacity',
 						}}
-						animate={{
-							y: [0, -120, 0],
-							x: [0, 60, 0],
-							rotate: [0, 180, 360],
-							scale: [1, 1.3, 1],
-							opacity: [0.4, 0.8, 0.4],
-						}}
-						transition={{
-							duration: 15 + i * 2,
-							repeat: Infinity,
-							ease: 'easeInOut',
-							delay: i * 1.5,
-						}}
+						animate={
+							prefersReducedMotion
+								? {
+										opacity: [0.4, 0.6, 0.4],
+								  }
+								: {
+										y: [0, -120, 0],
+										x: [0, 60, 0],
+										rotate: [0, 180, 360],
+										scale: [1, 1.3, 1],
+										opacity: [0.4, 0.8, 0.4],
+								  }
+						}
+						transition={
+							prefersReducedMotion
+								? {
+										duration: 4,
+										repeat: Infinity,
+										ease: 'easeInOut',
+										delay: i * 0.5,
+								  }
+								: {
+										duration: 15 + i * 2,
+										repeat: Infinity,
+										ease: 'easeInOut',
+										delay: i * 1.5,
+								  }
+						}
 					/>
 				))}
 
-				{/* Smaller floating dots */}
-				{[...Array(12)].map((_, i) => (
+				{/* Smaller floating dots - reduced count for performance */}
+				{[...Array(prefersReducedMotion ? 6 : 8)].map((_, i) => (
 					<motion.div
 						key={`dot-${i}`}
 						className='absolute rounded-full bg-blue-400/70'
@@ -147,19 +179,35 @@ const BookConsultantPage = () => {
 							height: `${12 + (i % 3) * 6}px`,
 							left: `${5 + i * 8}%`,
 							top: `${10 + i * 6}%`,
+							willChange: 'transform, opacity',
 						}}
-						animate={{
-							y: [0, -100, 0],
-							x: [0, 40, 0],
-							opacity: [0.3, 0.9, 0.3],
-							scale: [1, 1.6, 1],
-						}}
-						transition={{
-							duration: 12 + i * 1.5,
-							repeat: Infinity,
-							ease: 'easeInOut',
-							delay: i * 0.8,
-						}}
+						animate={
+							prefersReducedMotion
+								? {
+										opacity: [0.3, 0.6, 0.3],
+								  }
+								: {
+										y: [0, -100, 0],
+										x: [0, 40, 0],
+										opacity: [0.3, 0.9, 0.3],
+										scale: [1, 1.6, 1],
+								  }
+						}
+						transition={
+							prefersReducedMotion
+								? {
+										duration: 3,
+										repeat: Infinity,
+										ease: 'easeInOut',
+										delay: i * 0.3,
+								  }
+								: {
+										duration: 12 + i * 1.5,
+										repeat: Infinity,
+										ease: 'easeInOut',
+										delay: i * 0.8,
+								  }
+						}
 					/>
 				))}
 			</div>
@@ -359,25 +407,41 @@ const BookConsultantPage = () => {
 						animate={{ opacity: 1 }}
 						transition={{ duration: 1, delay: 0.5 }}
 					>
-						{[...Array(4)].map((_, i) => (
+						{[...Array(prefersReducedMotion ? 2 : 4)].map((_, i) => (
 							<motion.div
 								key={i}
 								className='absolute w-3 h-3 bg-blue-200/40 rounded-full'
 								style={{
 									left: `${20 + i * 25}%`,
 									top: `${15 + i * 20}%`,
+									willChange: 'transform, opacity',
 								}}
-								animate={{
-									y: [0, -15, 0],
-									x: [0, 8, 0],
-									opacity: [0.2, 0.6, 0.2],
-									scale: [1, 1.3, 1],
-								}}
-								transition={{
-									duration: 3 + i * 0.5,
-									repeat: Infinity,
-									delay: i * 0.3,
-								}}
+								animate={
+									prefersReducedMotion
+										? {
+												opacity: [0.2, 0.4, 0.2],
+										  }
+										: {
+												y: [0, -15, 0],
+												x: [0, 8, 0],
+												opacity: [0.2, 0.6, 0.2],
+												scale: [1, 1.3, 1],
+										  }
+								}
+								transition={
+									prefersReducedMotion
+										? {
+												duration: 2,
+												repeat: Infinity,
+												ease: 'easeInOut',
+												delay: i * 0.2,
+										  }
+										: {
+												duration: 3 + i * 0.5,
+												repeat: Infinity,
+												delay: i * 0.3,
+										  }
+								}
 							/>
 						))}
 					</motion.div>
@@ -420,7 +484,14 @@ const BookConsultantPage = () => {
 						</motion.h3>
 
 						<motion.p
-							className='text-sm text-white bg-gradient-to-l from-main to-secondary px-3 py-1 rounded-full mt-1'
+							className='text-sm px-3 py-1 rounded-full mt-1 relative'
+							style={{
+								background: 'linear-gradient(to left, #067dad, #038474)',
+								WebkitBackgroundClip: 'text',
+								WebkitTextFillColor: 'transparent',
+								backgroundClip: 'text',
+								color: '#067dad',
+							}}
 							initial={{ opacity: 0, scale: 0.8 }}
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ duration: 0.5, delay: 0.7 }}
@@ -460,8 +531,14 @@ const BookConsultantPage = () => {
 							}}
 						>
 							<motion.span
-								animate={{ rotate: [0, 10, -10, 0] }}
-								transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+								animate={
+									prefersReducedMotion ? {} : { rotate: [0, 10, -10, 0] }
+								}
+								transition={
+									prefersReducedMotion
+										? {}
+										: { duration: 2, repeat: Infinity, repeatDelay: 3 }
+								}
 							>
 								⭐
 							</motion.span>
