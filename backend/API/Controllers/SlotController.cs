@@ -26,11 +26,13 @@ public class SlotController(ISlotService slotService) : ControllerBase
     }
 
     // DELETE: api/Slot
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> DeleteSlot([FromBody] DeleteSlotRequest request)
+    public async Task<IActionResult> DeleteSlot([FromRoute]Guid id)
     {
-        var response = await slotService.DeleteSlot(request);
+       
+    
+        var response = await slotService.DeleteSlot(id);
         return Ok(response);
     }
 
