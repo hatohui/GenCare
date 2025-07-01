@@ -4,11 +4,16 @@ import React, { useState } from 'react'
 import { useGetAllOrderDetail, useGetResult } from '@/Services/Result-service'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
+import { ResultData } from '@/Interfaces/Tests/Types/Tests'
+import TestResultEditModal from '@/Components/staff/TestResultEditModal'
+import StatusBadge from '@/Components/Lab/StatusBadge'
+import { EyeSVG, PencilSVG } from '@/Components/SVGs'
 
 const Page = () => {
 	const { data, isLoading, isError, refetch } = useGetAllOrderDetail()
 	const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
 	const [modalOpen, setModalOpen] = useState(false)
+	const [editOrderId, setEditOrderId] = useState<string | null>(null)
 
 	// Fetch result only when modal is open and order is selected
 	const {
@@ -61,7 +66,7 @@ const Page = () => {
 				) : (
 					<div className='overflow-x-auto'>
 						<table className='min-w-full text-sm'>
-							<thead>
+							<thead className='sticky top-0 bg-white z-10 shadow-sm'>
 								<tr className='text-left border-b'>
 									<th className='py-2 px-3'>Mã đơn</th>
 									<th className='py-2 px-3'>Tên khách hàng</th>
@@ -76,7 +81,13 @@ const Page = () => {
 									data.map((order: any) => (
 										<tr
 											key={order.orderDetailId}
-											className='border-b hover:bg-gray-50'
+											className='border-b hover:bg-blue-50 transition cursor-pointer'
+											onClick={e => {
+												// Only trigger if not clicking a button
+												if (!(e.target as HTMLElement).closest('button')) {
+													handleOpenModal(order.orderDetailId)
+												}
+											}}
 										>
 											<td className='py-2 px-3 font-mono'>
 												{order.orderDetailId}
@@ -89,21 +100,35 @@ const Page = () => {
 												{new Date(order.createdAt).toLocaleDateString('vi-VN')}
 											</td>
 											<td className='py-2 px-3'>
-												<span
-													className={
-														order.status ? 'text-green-600' : 'text-yellow-600'
-													}
-												>
-													{order.status ? 'Hoàn thành' : 'Chờ xử lý'}
-												</span>
+												<StatusBadge
+													status={order.status ? 'completed' : 'pending'}
+												/>
 											</td>
 											<td className='py-2 px-3'>
-												<button
-													className='bg-main hover:bg-accent text-white px-4 py-2 rounded-lg transition-colors font-medium'
-													onClick={() => handleOpenModal(order.orderDetailId)}
-												>
-													Xem kết quả
-												</button>
+												<div className='flex gap-2'>
+													<button
+														className='flex items-center gap-1 bg-main hover:bg-accent text-white px-3 py-2 rounded-lg transition-colors font-medium shadow-sm'
+														onClick={e => {
+															e.stopPropagation()
+															handleOpenModal(order.orderDetailId)
+														}}
+														title='Xem kết quả'
+													>
+														<EyeSVG className='size-5' />
+														<span className='hidden sm:inline'>Xem</span>
+													</button>
+													<button
+														className='flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-colors font-medium shadow-sm'
+														onClick={e => {
+															e.stopPropagation()
+															setEditOrderId(order.orderDetailId)
+														}}
+														title='Chỉnh sửa kết quả'
+													>
+														<PencilSVG className='size-5' />
+														<span className='hidden sm:inline'>Sửa</span>
+													</button>
+												</div>
 											</td>
 										</tr>
 									))
@@ -149,15 +174,48 @@ const Page = () => {
 								<h2 className='text-lg font-semibold text-main mb-2'>
 									Kết quả xét nghiệm
 								</h2>
-								{/* Display result fields here, add edit functionality as needed */}
-								<pre className='bg-gray-100 rounded p-2 text-xs overflow-x-auto'>
-									{JSON.stringify(resultData, null, 2)}
-								</pre>
-								{/* TODO: Add edit and action buttons here, using your color palette */}
+								<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
+									{Object.entries(resultData.resultData as ResultData).map(
+										([parameter, result], index) => (
+											<div
+												key={index}
+												className='bg-gray-100 rounded p-2 text-xs overflow-x-auto'
+											>
+												<div className='font-bold'>{parameter}</div>
+												<div>
+													Giá trị: {result.value} {result.unit}
+												</div>
+												<div>Khoảng tham chiếu: {result.referenceRange}</div>
+												<div>
+													Trạng thái:{' '}
+													{result.flag === 'normal'
+														? 'Bình thường'
+														: result.flag === 'high'
+														? 'Cao'
+														: 'Thấp'}
+												</div>
+											</div>
+										)
+									)}
+								</div>
 							</div>
-						) : null}
+						) : (
+							<div className='text-center text-gray-400'>
+								Không có dữ liệu kết quả.
+							</div>
+						)}
 					</div>
 				</div>
+			)}
+
+			{/* Edit Result Modal */}
+			{editOrderId && (
+				<TestResultEditModal
+					isOpen={!!editOrderId}
+					onClose={() => setEditOrderId(null)}
+					orderDetailId={editOrderId}
+					useMock={false}
+				/>
 			)}
 		</div>
 	)

@@ -5,12 +5,14 @@ interface TestResultEditModalProps {
 	isOpen: boolean
 	onClose: () => void
 	orderDetailId: string | null
+	useMock?: boolean
 }
 
 const TestResultEditModal: React.FC<TestResultEditModalProps> = ({
 	isOpen,
 	onClose,
 	orderDetailId,
+	useMock = false,
 }) => {
 	if (!isOpen || !orderDetailId) return null
 
@@ -28,6 +30,7 @@ const TestResultEditModal: React.FC<TestResultEditModalProps> = ({
 					<TestResultEditForm
 						orderDetailId={orderDetailId}
 						onSuccess={onClose}
+						useMock={useMock}
 					/>
 				</div>
 			</div>

@@ -124,9 +124,9 @@ const TestOrderItem: React.FC<TestOrderItemProps> = ({ purchase }) => {
 												</p>
 												<p className='text-sm text-gray-900'>
 													{order.createdAt
-														? new Date(order.createdAt).toLocaleDateString(
-																'vi-VN'
-														  )
+														? new Date(order.createdAt)
+																.toISOString()
+																.slice(0, 10)
 														: '-'}
 												</p>
 											</div>
@@ -150,6 +150,7 @@ const TestOrderItem: React.FC<TestOrderItemProps> = ({ purchase }) => {
 				isOpen={!!editOrderId}
 				onClose={() => setEditOrderId(null)}
 				orderDetailId={editOrderId}
+				useMock={true}
 			/>
 		</div>
 	)
