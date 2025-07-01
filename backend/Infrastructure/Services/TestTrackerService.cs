@@ -10,8 +10,8 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class TestTrackerService(ITestTrackerRepository testTrackerRepository, 
-                                IPurchaseRepository purchaseRepository, 
+public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
+                                IPurchaseRepository purchaseRepository,
                                 IPaymentHistoryRepository paymentHistoryRepository,
                                 IOrderDetailRepository orderDetailRepository,
                                 IServiceRepository serviceRepository
@@ -33,31 +33,31 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
     /// <param name="orderDetailId">ID of the test order detail.</param>
     /// <param name="accessToken"></param>
     /// <returns>Test result information or throws if not found.</returns>
-    public async Task<ViewTestResultResponse?> ViewResultAsync(Guid orderDetailId,string accessToken)
+    public async Task<ViewTestResultResponse?> ViewResultAsync(Guid orderDetailId, string accessToken)
     {
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
         //get order detail by id
         var orderDetail = await orderDetailRepository.GetByIdAsync(orderDetailId);
         if (orderDetail == null)
-            throw new AppException(404,"Order detail not found.");
-        
+            throw new AppException(404, "Order detail not found.");
+
         //get purchase by order detail
         var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
         if (purchase == null)
-            throw new AppException(404,"Purchase not found.");
-        
+            throw new AppException(404, "Purchase not found.");
+
         //check if the account is authorized to view this test result
-        if(purchase.AccountId != accountId)
+        if (purchase.AccountId != accountId)
             throw new AppException(403, "You are not authorized to view this test result.");
         //get payment history by purchase,
         //check if payment is completed
         var payment = await paymentHistoryRepository.GetById(purchase.Id);
         if (payment == null)
             throw new AppException(402, "No payment record found.");
-        if(payment.Status.Trim() != PaymentStatus.Paid.Trim())
-            throw new AppException(402,"Payment is not completed.");
-        
+        if (payment.Status.Trim() != PaymentStatus.Paid.Trim())
+            throw new AppException(402, "Payment is not completed.");
+
         var testResult = await testTrackerRepository.ViewResultAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
 
@@ -86,7 +86,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
-        
+
         var sampleDate = request.SampleDate?.ToLocalTime();
         var resultDate = request.ResultDate?.ToLocalTime();
         if (sampleDate != null && resultDate != null && resultDate < sampleDate)
@@ -181,6 +181,6 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
 
     public async Task AddResult(Result result)
     {
-        await testTrackerRepository.Add(result);
+        await testTrackerRepository.AddAsync(result);
     }
 }
