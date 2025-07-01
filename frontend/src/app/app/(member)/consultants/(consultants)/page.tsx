@@ -37,7 +37,7 @@ const ConsultantList = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex justify-center items-center min-h-[400px]'>
+			<div className='flex justify-center items-center min-h-[300px] sm:min-h-[400px]'>
 				<LoadingIcon />
 			</div>
 		)
@@ -45,8 +45,10 @@ const ConsultantList = () => {
 
 	if (error) {
 		return (
-			<div className='text-center py-8'>
-				<p className='text-red-600 mb-4'>Failed to load consultants</p>
+			<div className='text-center py-4 sm:py-8 px-4'>
+				<p className='text-red-600 mb-4 text-sm sm:text-base'>
+					Failed to load consultants
+				</p>
 				<Button label='Try Again' onClick={() => window.location.reload()} />
 			</div>
 		)
@@ -54,8 +56,8 @@ const ConsultantList = () => {
 
 	if (!data || data.consultants.length === 0) {
 		return (
-			<div className='text-center py-8'>
-				<p className='text-gray-600 mb-4'>
+			<div className='text-center py-4 sm:py-8 px-4'>
+				<p className='text-gray-600 mb-4 text-sm sm:text-base'>
 					{searchTerm
 						? 'No consultants found matching your search.'
 						: 'No consultants available.'}
@@ -68,8 +70,8 @@ const ConsultantList = () => {
 		<>
 			{/* Results Info */}
 			{data && (
-				<div className='px-6 pb-4'>
-					<p className='text-sm text-gray-600'>
+				<div className='px-3 sm:px-6 pb-2 sm:pb-4'>
+					<p className='text-xs sm:text-sm text-gray-600'>
 						Showing {(page - 1) * PAGE_SIZE + 1} to{' '}
 						{Math.min(page * PAGE_SIZE, data.totalCount)} of {data.totalCount}{' '}
 						consultants
@@ -80,7 +82,7 @@ const ConsultantList = () => {
 			<AnimatePresence mode='wait'>
 				<div
 					key={page}
-					className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6'
+					className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 p-3 sm:p-4 lg:p-6'
 				>
 					{data.consultants.map((consultant, idx) => {
 						const fullName =
@@ -109,46 +111,46 @@ const ConsultantList = () => {
 									delay: idx * 0.05,
 								}}
 								whileHover={{
-									scale: 1.04,
+									scale: 1.02,
 									boxShadow: '0 8px 32px 0 rgba(0,0,0,0.12)',
 								}}
-								className='bg-white border border-blue-100 rounded-2xl shadow-sm flex flex-col items-center justify-between p-4 text-center h-full min-h-[300px] min-w-[320px] mx-auto cursor-pointer'
+								className='bg-white border border-blue-100 rounded-xl sm:rounded-2xl shadow-sm flex flex-col items-center justify-between p-3 sm:p-4 text-center h-full min-h-[280px] sm:min-h-[300px] w-full cursor-pointer'
 								onClick={() => handleConsultantClick(consultant)}
 							>
-								<div className='flex flex-col items-center'>
+								<div className='flex flex-col items-center flex-1'>
 									{consultant.avatarUrl ? (
 										<Image
 											src={consultant.avatarUrl}
 											alt={fullName}
 											width={80}
 											height={80}
-											className='w-20 min-h-20 rounded-full object-cover border-4 border-blue-200 mb-2'
+											className='w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 sm:border-4 border-blue-200 mb-2'
 										/>
 									) : (
-										<div className='min-h-[120px] min-w-[120px] rounded-full bg-blue-200 border-4 border-blue-200 mb-2 flex items-center justify-center text-blue-600 font-semibold text-base'>
+										<div className='w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-200 border-2 sm:border-4 border-blue-200 mb-2 flex items-center justify-center text-blue-600 font-semibold text-sm sm:text-base'>
 											{initials}
 										</div>
 									)}
-									<h2 className='text-base font-semibold text-blue-900'>
+									<h2 className='text-sm sm:text-base font-semibold text-blue-900 mb-1'>
 										{fullName}
 									</h2>
-									<span className='text-xs text-white bg-gradient-to-l from-main to-secondary px-2 py-0.5 rounded-full mt-1'>
+									<span className='text-xs text-white bg-gradient-to-l from-main to-secondary px-2 py-0.5 rounded-full'>
 										{consultant.department}
 									</span>
-									<p className='text-xs text-gray-600 mt-2 h-12 max-h-12 truncate text-wrap'>
+									<p className='text-xs text-gray-600 mt-2 h-12 max-h-12 line-clamp-2 px-1'>
 										{consultant.biography ??
 											`${consultant.degree} with ${consultant.yearOfExperience} years of experience`}
 									</p>
 								</div>
-								<div className='flex items-center justify-between mt-1 w-full'>
-									<span className='text-xs text-yellow-500 font-medium'>
+								<div className='flex items-center justify-between mt-2 w-full gap-2'>
+									<span className='text-xs text-yellow-500 font-medium flex-shrink-0'>
 										⭐ {consultant.yearOfExperience}+ years
 									</span>
 									<Button
 										label='Book Consultant'
 										labelMobile='Book'
 										onClick={() => handleConsultantClick(consultant)}
-										className='text-xs px-2 py-1'
+										className='text-xs px-2 py-1 flex-shrink-0'
 									/>
 								</div>
 							</motion.div>
@@ -165,15 +167,15 @@ const ConsultantList = () => {
 								stiffness: 120,
 								delay: data.consultants.length * 0.05,
 							}}
-							className='bg-white border border-blue-100 rounded-2xl shadow-sm flex flex-col items-center justify-center p-6 text-center h-full min-h-[320px]'
+							className='bg-white border border-blue-100 rounded-xl sm:rounded-2xl shadow-sm flex flex-col items-center justify-center p-4 sm:p-6 text-center h-full min-h-[280px] sm:min-h-[320px] w-full'
 						>
-							<div className='w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-400 text-3xl font-bold mb-4'>
+							<div className='w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-400 text-2xl sm:text-3xl font-bold mb-3 sm:mb-4'>
 								+
 							</div>
-							<h2 className='text-lg font-semibold text-blue-500'>
+							<h2 className='text-base sm:text-lg font-semibold text-blue-500'>
 								New Consultant Coming Soon
 							</h2>
-							<p className='text-sm text-gray-500 mt-2'>
+							<p className='text-xs sm:text-sm text-gray-500 mt-2 px-2'>
 								We&apos;re expanding our team of healthcare professionals. Stay
 								tuned for our new consultant!
 							</p>
@@ -181,7 +183,7 @@ const ConsultantList = () => {
 					)}
 				</div>
 			</AnimatePresence>
-			<div className='center-all w-full'>
+			<div className='center-all w-full px-3 sm:px-6'>
 				<Pagination
 					currentPage={page}
 					isFetching={isLoading}
