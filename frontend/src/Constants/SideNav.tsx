@@ -30,6 +30,12 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.member,
 	},
 	{
+		label: 'Statistics',
+		to: '/dashboard/statistics',
+		svg: <ServiceSVG />,
+		level: PermissionLevel.admin,
+	},
+	{
 		label: 'Invoices',
 		to: '/dashboard/invoices',
 		svg: <MoneySVG />,
@@ -53,12 +59,7 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		svg: <ServiceSVG />,
 		level: PermissionLevel.manager,
 	},
-	{
-		label: 'Analytics',
-		to: '/dashboard/analytics',
-		svg: <ServiceSVG />,
-		level: PermissionLevel.admin,
-	},
+
 	{
 		label: 'Schedule',
 		to: '/app/schedule',
