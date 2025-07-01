@@ -11,6 +11,6 @@ public interface ITestTrackerService
     Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request);
 
     Task<DeleteTestResultResponse> DeleteResultAsync(DeleteTestResultRequest request);
-    Task<List<BookedServiceModel>> GetBookedServiceModelAsync();
+    Task<List<BookedServiceModel>> GetBookedServiceModelAsync(int page, int count, string? orderDetailId);
     Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync();
 }

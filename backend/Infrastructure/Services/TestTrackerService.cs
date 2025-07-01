@@ -35,6 +35,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
     public async Task<ViewTestResultResponse?> ViewResultAsync(Guid orderDetailId,string accessToken)
     {
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
+        var role = JwtHelper.GetRoleFromToken(accessToken);
 
         //get order detail by id
         var orderDetail = await orderDetailRepository.GetByIdAsync(orderDetailId);
@@ -47,7 +48,7 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
             throw new AppException(404,"Purchase not found.");
         
         //check if the account is authorized to view this test result
-        if(purchase.AccountId != accountId)
+        if (role == RoleNames.Member && purchase.AccountId != accountId)
             throw new AppException(403, "You are not authorized to view this test result.");
         //get payment history by purchase,
         //check if payment is completed
@@ -149,15 +150,24 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         };
     }
 
-    public async Task<List<BookedServiceModel>> GetBookedServiceModelAsync()
+    public async Task<List<BookedServiceModel>> GetBookedServiceModelAsync(int page, int count, string? orderDetailId)
     {
-        var purchases = await purchaseRepository.GetAllPurchasesAsync(); // lấy tất cả purchases (bao gồm OrderDetails)
+        var purchases = await purchaseRepository.GetAllPurchasesAsync();
+        var paidPurchaseIds = await paymentHistoryRepository.GetPaidPurchaseIdsAsync(purchases);
+
         var result = new List<BookedServiceModel>();
 
         foreach (var purchase in purchases)
         {
+            if (!paidPurchaseIds.Contains(purchase.Id))
+                continue;
+
             foreach (var od in purchase.OrderDetails)
             {
+                if (!string.IsNullOrWhiteSpace(orderDetailId) &&
+                    !od.Id.ToString().Contains(orderDetailId, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
                 if (service == null) continue;
 
@@ -170,12 +180,16 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
                     PhoneNumber = od.Phone,
                     DateOfBirth = od.DateOfBirth.ToDateTime(TimeOnly.MinValue),
                     Gender = od.Gender,
-                    CreatedAt = purchase.CreatedAt,
+                    CreatedAt = purchase.CreatedAt
                 });
             }
         }
 
-        return result;
+        return result
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((page - 1) * count)
+            .Take(count)
+            .ToList();
     }
 
     public async Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync()

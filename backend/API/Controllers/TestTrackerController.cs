@@ -10,6 +10,8 @@ namespace API.Controllers;
 public class TestTrackerController(ITestTrackerService testTrackerService) : ControllerBase
 {
     [HttpGet("{id}")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Manager},{RoleNames.Consultant},{RoleNames.Member}")]
+
     public async Task<IActionResult> ViewTestTrackerById(Guid id)
     {
         var accessToken = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
@@ -52,9 +54,16 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
 
     [HttpGet("all")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Manager},{RoleNames.Consultant}")]
-    public async Task<IActionResult> GetAllBookedOrders()
+    public async Task<IActionResult> GetAllBookedOrders(
+        [FromQuery] int? page,
+        [FromQuery] int? count,
+        [FromQuery] string? orderDetailId)
     {
-        var result = await testTrackerService.GetBookedServiceModelAsync();
+        var currentPage = page.GetValueOrDefault(1);
+        var pageSize = count.GetValueOrDefault(10);
+
+        var result = await testTrackerService.GetBookedServiceModelAsync(currentPage, pageSize, orderDetailId);
         return Ok(result);
     }
+
 }
