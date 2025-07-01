@@ -2,6 +2,6 @@
 
 public class ViewServiceForUserResponse
 {
-    public int Total { get; set; }
+    public int TotalCount { get; set; }
     public List<ServicePayLoad> Services { get; set; }
 }

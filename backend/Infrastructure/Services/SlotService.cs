@@ -98,10 +98,10 @@ public class SlotService(ISlotRepository slotRepository) : ISlotService
         };
     }
 
-    public async Task<DeleteSlotResponse> DeleteSlot(DeleteSlotRequest request)
+    public async Task<DeleteSlotResponse> DeleteSlot(Guid id)
     {
         //check in db if slot exists
-        var slot = await slotRepository.GetById(request.SlotId);
+        var slot = await slotRepository.GetById(id);
         if (slot == null)
             throw new AppException(404, "Slot not found.");
 

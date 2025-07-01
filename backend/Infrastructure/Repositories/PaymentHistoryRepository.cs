@@ -22,12 +22,7 @@ public class PaymentHistoryRepository(IApplicationDbContext dbContext) : IPaymen
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<PaymentHistory?> ConfirmPayment(PaymentHistory paymentHistory)
-    {
-        await dbContext.PaymentHistories.AddAsync(paymentHistory);
-        await dbContext.SaveChangesAsync();
-        return paymentHistory;
-    }
+  
 
     public async Task<List<PaymentHistory>> GetAll()
     {
