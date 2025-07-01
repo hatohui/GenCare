@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 [ApiController]
-[Route("api/slot")]
+[Route("api/slots")]
 public class SlotController(ISlotService slotService) : ControllerBase
 {
     [HttpPost]
@@ -26,16 +26,18 @@ public class SlotController(ISlotService slotService) : ControllerBase
     }
 
     // DELETE: api/Slot
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> DeleteSlot([FromBody] DeleteSlotRequest request)
+    public async Task<IActionResult> DeleteSlot([FromRoute]Guid id)
     {
-        var response = await slotService.DeleteSlot(request);
+       
+    
+        var response = await slotService.DeleteSlot(id);
         return Ok(response);
     }
 
-    // GET: api/Slot/all
-    [HttpGet("all")]
+    // GET: api/Slot/
+    [HttpGet]
     public async Task<IActionResult> ViewAllSlot()
     {
         var response = await slotService.ViewAllSlot();

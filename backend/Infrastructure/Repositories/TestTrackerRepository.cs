@@ -33,7 +33,7 @@ public class TestTrackerRepository(IApplicationDbContext dbContext) : ITestTrack
             .AnyAsync(t => t.OrderDetailId == orderDetailId);
     }
 
-    public async Task Add(Result result)
+    public async Task AddAsync(Result result)
     {
         await dbContext.Results.AddAsync(result);
         await dbContext.SaveChangesAsync();

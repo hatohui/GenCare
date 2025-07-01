@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
@@ -10,6 +10,11 @@ const TypedText = ({
 	const el = useRef(null)
 	const [isFirstLoad, setIsFirstLoad] = useState(true)
 
+	// Reset isFirstLoad when strings change
+	React.useEffect(() => {
+		setIsFirstLoad(true)
+	}, [options.strings && options.strings.join('')])
+
 	const defaultOptions: TypedOptions = {
 		typeSpeed: 30,
 		backSpeed: 25,
@@ -18,7 +23,7 @@ const TypedText = ({
 		onComplete: () => setIsFirstLoad(false),
 	}
 
-	useEffect(() => {
+	React.useEffect(() => {
 		if (!el.current) return
 		const typed = new Typed(el.current, { ...defaultOptions, ...options })
 
