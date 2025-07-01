@@ -32,6 +32,7 @@ public class TestTrackerRepository(IApplicationDbContext dbContext) : ITestTrack
         return await dbContext.Results
             .AnyAsync(t => t.OrderDetailId == orderDetailId);
     }
+
     public async Task AddAsync(Result result)
     {
         await dbContext.Results.AddAsync(result);
