@@ -5,6 +5,7 @@ using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
+using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
@@ -171,5 +172,10 @@ public class TestTrackerService(ITestTrackerRepository testTrackerRepository,
         }
 
         return result;
+    }
+
+    public async Task AddResult(Result result)
+    {
+        await testTrackerRepository.Add(result);
     }
 }
