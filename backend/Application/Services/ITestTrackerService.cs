@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Purchase;
-using Application.DTOs.TestTracker.Request;
-using Application.DTOs.TestTracker.Response;
+using Application.DTOs.Result.Request;
+using Application.DTOs.Result.Response;
+
 using Domain.Entities;
 
 namespace Application.Services;
