@@ -101,7 +101,22 @@ public class AccountService
         var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
         //var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
 
-        var msg = $"Link to reset your password: {callbackUrl}";
+        var msg = $@"
+<html>
+<body>
+    <p>Dear user,</p>
+    <p>We received a request to reset your password. Please click the button below:</p>
+    <p>
+        <a href=""{callbackUrl}"" style=""padding:10px 20px; background:#007bff; color:#fff; text-decoration:none; border-radius:5px;"">
+            Reset Password
+        </a>
+    </p>
+    <p>If you did not request a password reset, please ignore this email.</p>
+    <p>This link will expire in 5 minutes for your security.</p>
+    <p>Thank you,<br/>Your Support Team</p>
+</body>
+</html>
+";
         //send email with reset password link
         await emailService.SendEmailAsync(
             request.Email!,
