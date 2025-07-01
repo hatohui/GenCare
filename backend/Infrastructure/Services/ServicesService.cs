@@ -31,7 +31,7 @@ public class ServicesService(
         
         var response = new ViewServiceForUserResponse()
         {
-            Total = totalCount,
+            TotalCount = totalCount,
             Services = new List<ServicePayLoad>()
         };
         foreach (var s in services)
