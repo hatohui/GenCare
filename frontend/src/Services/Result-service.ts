@@ -28,6 +28,22 @@ const ResultAPI = {
 			})
 			.then(res => res.data)
 	},
+	getAllOrderDetail: (header: string) => {
+		return axios
+			.get(`${Result_URL}/all`, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
+}
+
+export const useGetAllOrderDetail = () => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['all-order-detail'],
+		queryFn: () => ResultAPI.getAllOrderDetail(header),
+	})
 }
 
 export const useGetResult = (orderDetailId: string) => {

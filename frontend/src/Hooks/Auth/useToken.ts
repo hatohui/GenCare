@@ -1,37 +1,60 @@
 import { TOKEN_STORE_STRING } from '@/Constants/Auth'
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
 
 export type TokenStore = {
 	accessToken: string | null
 	isHydrated: boolean
-	setAccessToken: (token: string) => void
+	setAccessToken: (token: string, rememberMe?: boolean) => void
 	removeAccessToken: () => void
+	setRememberMe: (remember: boolean) => void
+	removeRememberMe: () => void
 }
 
-const useToken = create<TokenStore>()(
-	persist(
-		set => ({
-			accessToken: null,
-			isHydrated: false,
-			setAccessToken: (token: string) => set({ accessToken: token }),
-			removeAccessToken: () => set({ accessToken: null, isHydrated: false }),
-		}),
-		{
-			name: TOKEN_STORE_STRING,
-			storage: createJSONStorage(() => sessionStorage),
-			partialize: state => ({ accessToken: state.accessToken }),
-			onRehydrateStorage: () => {
-				return (state, error) => {
-					if (error) {
-						console.error('Rehydration error:', error)
-						return
-					}
-					if (state) state.isHydrated = true
-				}
-			},
+const getRememberMe = () => {
+	if (typeof window === 'undefined') return false
+	return localStorage.getItem('rememberMe') === 'true'
+}
+
+const getStoredToken = () => {
+	if (typeof window === 'undefined') return null
+	if (getRememberMe()) {
+		return localStorage.getItem('accessToken')
+	} else {
+		return sessionStorage.getItem('accessToken')
+	}
+}
+
+const useToken = create<TokenStore>()((set, get) => ({
+	accessToken: getStoredToken(),
+	isHydrated: true,
+	setAccessToken: (token: string, rememberMe = false) => {
+		if (rememberMe) {
+			localStorage.setItem('accessToken', token)
+			localStorage.setItem('rememberMe', 'true')
+			sessionStorage.removeItem('accessToken')
+		} else {
+			sessionStorage.setItem('accessToken', token)
+			localStorage.removeItem('accessToken')
+			localStorage.removeItem('rememberMe')
 		}
-	)
-)
+		set({ accessToken: token })
+	},
+	removeAccessToken: () => {
+		localStorage.removeItem('accessToken')
+		localStorage.removeItem('rememberMe')
+		sessionStorage.removeItem('accessToken')
+		set({ accessToken: null, isHydrated: true })
+	},
+	setRememberMe: (remember: boolean) => {
+		if (remember) {
+			localStorage.setItem('rememberMe', 'true')
+		} else {
+			localStorage.removeItem('rememberMe')
+		}
+	},
+	removeRememberMe: () => {
+		localStorage.removeItem('rememberMe')
+	},
+}))
 
 export default useToken
