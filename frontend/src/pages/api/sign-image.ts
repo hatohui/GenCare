@@ -1,36 +1,36 @@
 import { v2 as cloudinary } from 'cloudinary'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
-export async function POST(request: Request) {
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse
+) {
 	try {
 		if (!process.env.CLOUDINARY_API_SECRET) {
-			return Response.json(
-				{ error: 'Cloudinary API secret not configured' },
-				{ status: 500 }
-			)
+			return res
+				.status(500)
+				.json({ error: 'Cloudinary API secret not configured' })
 		}
 
-		const body = (await request.json()) as {
-			paramsToSign: Record<string, string>
+		const { paramsToSign } = req.body
+		if (!paramsToSign || typeof paramsToSign !== 'object') {
+			return res.status(400).json({ error: 'Invalid paramsToSign provided' })
 		}
 
-		if (!body.paramsToSign || typeof body.paramsToSign !== 'object') {
-			return Response.json(
-				{ error: 'Invalid paramsToSign provided' },
-				{ status: 400 }
-			)
-		}
-
-		const { paramsToSign } = body
 		const signature = cloudinary.utils.api_sign_request(
 			paramsToSign,
 			process.env.CLOUDINARY_API_SECRET!
 		)
 
-		return Response.json({
-			signature,
-		})
+		return res.status(200).json({ signature })
 	} catch (error) {
 		console.error('Error signing Cloudinary request:', error)
-		return Response.json({ error: 'Internal server error' }, { status: 500 })
+		return res.status(500).json({ error: 'Internal server error' })
 	}
 }

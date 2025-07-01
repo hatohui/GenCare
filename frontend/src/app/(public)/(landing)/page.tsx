@@ -10,7 +10,7 @@ import WhyChooseUsSection from '@/Components/Landing/WhyChooseUs'
 
 const Page = () => {
 	return (
-		<main className='relative scroll-smooth'>
+		<main className='relative'>
 			<LandingPart />
 			<TrustedBySection />
 			<WhyChooseUsSection />
