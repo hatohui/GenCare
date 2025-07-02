@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.TestTracker.Response;
+﻿namespace Application.DTOs.Result.Response;
 
 public class ViewTestResultResponse
 {
@@ -10,7 +10,7 @@ public class ViewTestResultResponse
 
     public bool? Status { get; set; }
 
-    public string? ResultData { get; set; }
+    public Dictionary<string, TestItemResult>? ResultData { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 }

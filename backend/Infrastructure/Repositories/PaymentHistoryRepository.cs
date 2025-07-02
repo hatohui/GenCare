@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Repositories;
 using Domain.Abstractions;
+using Domain.Common.Constants;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
@@ -22,12 +23,30 @@ public class PaymentHistoryRepository(IApplicationDbContext dbContext) : IPaymen
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<PaymentHistory?> ConfirmPayment(PaymentHistory paymentHistory)
+    public async Task<HashSet<Guid>> GetPaidPurchaseIdsAsync(IEnumerable<Purchase> purchases)
     {
-        await dbContext.PaymentHistories.AddAsync(paymentHistory);
-        await dbContext.SaveChangesAsync();
-        return paymentHistory;
+        // Get all purchase IDs from the provided purchases
+        var purchaseIds = purchases.Select(p => p.Id).ToList();
+
+        // Query the PaymentHistories to find PurchaseId if the status is 'Paid'
+        var paidPurchaseIds = await dbContext.PaymentHistories
+            .Where(ph => purchaseIds.Contains(ph.PurchaseId)
+                         && ph.Status.Trim().ToLower() == PaymentStatus.Paid.ToLower())
+            .Select(ph => ph.PurchaseId)
+            .Distinct()
+            .ToListAsync();
+
+        return paidPurchaseIds.ToHashSet();
+
     }
+
+    public async Task<List<PaymentHistory>> GetByPurchaseIdsAsync(List<Guid> purchaseIds)
+    {
+        return await dbContext.PaymentHistories
+            .Where(ph => purchaseIds.Contains(ph.PurchaseId))
+            .ToListAsync();
+    }
+
 
     public async Task<List<PaymentHistory>> GetAll()
     {

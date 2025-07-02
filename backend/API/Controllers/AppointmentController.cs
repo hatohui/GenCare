@@ -2,6 +2,7 @@
 using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
@@ -36,11 +37,15 @@ public class AppointmentController(IAppointmentService appointmentService) : Con
     /// </summary>
     /// <returns>A list of all appointments.</returns>
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
+    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Member},{RoleNames.Staff}")]
     public async Task<IActionResult> ViewAllAppointment()
     {
+        //get access token
+        var accessToken = AuthHelper.GetAccessToken(HttpContext);
+        //get id
+        var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         //call service
-        var appointments = await appointmentService.ViewAllAppointmentsAsync();
+        var appointments = await appointmentService.ViewAllAppointmentsAsync(accountId.ToString("D"));
         return Ok(appointments);
     }
 
@@ -77,5 +82,17 @@ public class AppointmentController(IAppointmentService appointmentService) : Con
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         await appointmentService.DeleteAppointmentAsync(id, accountId.ToString("D"));
         return NoContent(); //204
+    }
+
+    [HttpGet("{id}")]
+    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Member},{RoleNames.Admin},{RoleNames.Manager}")]
+    public async Task<IActionResult> GetAppoinmentById([FromRoute] string id)
+    {
+        //get access token from header
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get id from access
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        var response = await appointmentService.ViewAppointmentByIdAsync(id, accountId.ToString("D"));
+        return Ok(response);
     }
 }
