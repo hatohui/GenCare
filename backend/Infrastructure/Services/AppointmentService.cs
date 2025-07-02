@@ -73,8 +73,20 @@ public class AppointmentService(IAccountRepository accountRepository,
         await appointmentRepository.Update(appointment);
     }
 
-    public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync()
+    public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync(string accountId)
     {
+        //get account by id
+        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
+        if (account == null)
+        {
+            throw new AppException(404, "Account not found");
+        }
+        //check authorization
+        bool isLow = false;
+        string role = account.Role!.Name.ToLower();
+        if (role == RoleNames.Member.ToLower() || role == RoleNames.Staff.ToLower())
+            isLow = true;
+        //create response
         var list = await appointmentRepository.GetAll();
         List<AllAppointmentViewResponse> rs = new();
         foreach (var appointment in list)
@@ -92,7 +104,57 @@ public class AppointmentService(IAccountRepository accountRepository,
                 Status = appointment.Status
             });
         }
-
+        //if account is member or staff, filter appointments
+        if (isLow)
+        {
+            rs = rs.Where(a => a.MemberId == account.Id.ToString("D") || a.StaffId == account.Id.ToString("D")).ToList();
+        }
         return rs;
+    }
+
+    public async Task<AppointmentViewResponse> ViewAppointmentByIdAsync(string appointmentId, string accountId)
+    {
+        //get account by id
+        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
+        if(account == null)
+        {
+            throw new AppException(404, "Account not found");
+        }
+        //check authorization
+        bool isLow = false;
+        string role = account.Role!.Name.ToLower();
+        if (role == RoleNames.Member.ToLower() || role == RoleNames.Staff.ToLower())
+            isLow = true;
+        //get appointment by id
+        var appointment = await appointmentRepository.GetById(appointmentId);
+        if(appointment == null)
+        {
+            throw new AppException(404, "Appoinment not found");
+        }
+        //create response
+        var response = new AppointmentViewResponse() {
+            MemberId = appointment.Member.Id.ToString("D"),
+            MemberName = $"{appointment.Member.FirstName} {appointment.Member.LastName}",
+            StaffId = appointment.Staff.Id.ToString("D"),
+            StaffName = $"{appointment.Staff.FirstName} {appointment.Staff.LastName}",
+            ScheduleAt = appointment.ScheduleAt,
+            JoinUrl = appointment.JoinUrl,
+            IsDeleted = appointment.IsDeleted,
+            Status = appointment.Status
+        };
+
+        //if account is member or staff, check if appointment is for them
+        if (isLow)
+        {
+            if (appointment.Member.Id != account.Id && appointment.Staff.Id != account.Id)
+            {
+                throw new AppException(403, "You are not authorized to view this appointment");
+            }
+            else
+            {
+                return response;
+            }
+        }
+        return response;
     }
 }

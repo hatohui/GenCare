@@ -20,7 +20,7 @@ namespace Application.Services
         /// Retrieves all appointments.
         /// </summary>
         /// <returns>A list of all appointment view responses.</returns>
-        Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync();
+        Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync(string accountId);
 
         /// <summary>
         /// Updates an existing appointment.
@@ -38,5 +38,7 @@ namespace Application.Services
         /// <param name="deleteId">The identifier of the user performing the delete operation.</param>
         /// <returns>A task representing the asynchronous delete operation.</returns>
         Task DeleteAppointmentAsync(string appointmentId, string deleteId);
+
+        Task<AppointmentViewResponse> ViewAppointmentByIdAsync(string appointmentId, string accountId);
     }
 }
