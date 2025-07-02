@@ -3,6 +3,8 @@ import {
 	DeleteAccountResponse,
 	GetAccountByIdResponse,
 	GetAccountByPageResponse,
+	PostAccountRequest,
+	PostAccountResponse,
 	PutAccountRequest,
 	PutAccountResponse,
 } from '@/Interfaces/Account/Schema/account'
@@ -88,7 +90,40 @@ const accountApi = {
 			})
 			.then(res => res.data)
 	},
-	updateAccount: (header: string, id: string, data: any) => {
+	create: (header: string, data: PostAccountRequest) => {
+		// Transform frontend structure to backend structure
+		const transformedData: any = {
+			AccountRequest: {
+				email: data.account.email,
+				firstName: data.account.firstName,
+				lastName: data.account.lastName,
+				gender: data.account.gender,
+				phoneNumber: data.account.phoneNumber,
+				dateOfBirth: data.account.dateOfBirth,
+				password: data.account.password,
+				roleId: (data.account as any).roleId, // roleId added in form
+				avatarUrl: (data.account as any).avatarUrl || '', // Default if not provided
+			},
+		}
+
+		// Only add StaffInfoRequest if all required fields are present
+		if (data.staffInfo && data.department) {
+			transformedData.StaffInfoRequest = {
+				degree: data.staffInfo.degree,
+				yearOfExperience: data.staffInfo.yearOfExperience,
+				biography: data.staffInfo.biography || '',
+				departmentId: data.department, // Map department to departmentId
+			}
+		}
+
+		return axiosInstance
+			.post<PostAccountResponse>(ACCOUNT_URL, transformedData, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
+
+	updateAccount: (header: string, id: string, data: PutAccountRequest) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
 			.put<PutAccountResponse>(queryUrl, data, {
@@ -170,6 +205,14 @@ export const useGetAccountById = (id: string) => {
 	return useQuery({
 		queryKey: ['account', id],
 		queryFn: () => accountApi.getById(header, id),
+	})
+}
+
+export const useCreateAccount = () => {
+	const header = useAccessTokenHeader()
+
+	return useMutation({
+		mutationFn: (data: PostAccountRequest) => accountApi.create(header, data),
 	})
 }
 

@@ -46,7 +46,7 @@ export function useAuthGuard(
 				router.push('/403')
 			}
 		}
-	}, [user, token, isHydrated, accountStore, router])
+	}, [user, token, isHydrated, accountStore, router, requiredRole])
 
 	return {
 		user,

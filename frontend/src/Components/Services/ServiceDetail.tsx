@@ -5,7 +5,7 @@ import FlorageBackground from '../Landing/FlorageBackground'
 import ReturnButton from '../ReturnButton'
 import { motion } from 'motion/react'
 import Testimonials from '@/Constants/Testomonial'
-import Image from 'next/image'
+import { CldImage } from 'next-cloudinary'
 
 const benefits = [
 	{
@@ -201,7 +201,7 @@ export default function ServiceDetail({
 							className='bg-white rounded-2xl shadow-lg p-6 w-80 flex flex-col items-center hover:shadow-xl transition'
 						>
 							<div className='w-16 h-16 rounded-full overflow-hidden mb-3 border-4 border-accent'>
-								<Image
+								<CldImage
 									src={item.avatar}
 									alt={item.name}
 									width={64}

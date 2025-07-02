@@ -1,14 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import clsx from 'clsx'
 import {
 	useAllSchedules,
 	useCreateSchedule,
-	useDeleteSchedule,
 } from '@/Services/schedule-services'
 import { useAllSlotsAdmin } from '@/Services/slot-services'
-import { GetSlotResponse } from '@/Interfaces/Slot/Schema/slot'
-import { ScheduleListResponse } from '@/Interfaces/Schedule/Schema/schedule'
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns'
 import AssignSlotModal from '@/Components/Schedule/AssignSlotModal'
 import toast from 'react-hot-toast'
@@ -40,7 +37,6 @@ const ScheduleCalendar = ({
 		weekEnd.toISOString()
 	)
 	const createScheduleMutation = useCreateSchedule()
-	const deleteScheduleMutation = useDeleteSchedule()
 
 	const slots = slotsQuery.data?.data?.slots || []
 	const schedules = schedulesQuery.data || []

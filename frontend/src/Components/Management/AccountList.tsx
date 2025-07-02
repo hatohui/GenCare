@@ -27,13 +27,11 @@ const AccountList = () => {
 
 	const { isLoading, isError, isFetching, data } = query
 
+	console.log(data)
+
 	useEffect(() => {
 		setPage(1)
 	}, [search])
-
-	const pageCount = data?.totalCount
-		? Math.ceil(data.totalCount / itemsPerPage)
-		: 1
 
 	const handleDelete = (id: string) => {
 		if (window.confirm('Are you sure you want to delete this account?')) {
@@ -62,54 +60,86 @@ const AccountList = () => {
 
 	return (
 		<>
-			<div className='flex-1 overflow-y-scroll scroll-bar'>
-				<div className='flex flex-col gap-3 px-2 py-1' role='list'>
-					{data?.accounts &&
-					data.accounts.length === 0 &&
-					!isLoading &&
-					!isFetching ? (
-						<div className='w-full h-full center-all'>No data found.</div>
-					) : (
-						data?.accounts.map((account, key) => (
-							<ItemCard<Account>
-								id={account.id}
-								data={account}
-								delay={key}
-								key={account.id}
-								label={`${account.firstName} ${account.lastName}`}
-								secondaryLabel={account.email}
-								status={account.isDeleted ? 'FAILED' : 'SUCCESS'}
-								thirdLabel={account.dateOfBirth}
-								fourthLabel={account.role.name}
-								path='/dashboard/accounts/'
-								handleDelete={handleDelete}
-								handleRestore={handleRestore}
-								isActive={account.isDeleted}
-							/>
-						))
-					)}
-					{(isFetching || isLoading) && (
-						<div className='h-full center-all w-full animate-pulse'>
+			{/* Show loading state */}
+			{(isFetching || isLoading) && (
+				<div className='flex-1 flex items-center justify-center pt-20'>
+					<div className='text-center'>
+						<div className='animate-pulse text-lg font-medium text-slate-700'>
 							Đang tải dữ liệu...
 						</div>
-					)}
-					{isError && (
-						<div className='h-full center-all w-full text-red-500'>
-							Internal Server Error.
-						</div>
-					)}
+					</div>
 				</div>
-			</div>
+			)}
 
-			<div className='center-all'>
-				<Pagination
-					currentPage={page}
-					isFetching={isFetching}
-					setCurrentPage={setPage}
-					totalCount={pageCount}
-					itemsPerPage={itemsPerPage}
-				/>
-			</div>
+			{/* Show error state */}
+			{isError && !isFetching && !isLoading && (
+				<div className='flex-1 flex items-center justify-center pt-20'>
+					<div className='text-center text-red-500 font-medium'>
+						Internal Server Error.
+					</div>
+				</div>
+			)}
+
+			{/* Show empty state */}
+			{data?.accounts &&
+				data.accounts.length === 0 &&
+				!isLoading &&
+				!isFetching &&
+				!isError && (
+					<div className='flex-1 flex items-center justify-center pt-20'>
+						<div className='text-center text-slate-500'>No data found.</div>
+					</div>
+				)}
+
+			{/* Show content */}
+			{!isFetching &&
+				!isLoading &&
+				!isError &&
+				data?.accounts &&
+				data.accounts.length > 0 && (
+					<div
+						className='flex-1 overflow-y-scroll scroll-bar'
+						style={{
+							maskImage:
+								'linear-gradient(to bottom, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%)',
+							WebkitMaskImage:
+								'linear-gradient(to bottom, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%)',
+						}}
+					>
+						<div className='flex flex-col gap-3 px-2 py-1' role='list'>
+							{data.accounts.map((account, key) => (
+								<ItemCard<Account>
+									id={account.id}
+									data={account}
+									delay={key}
+									key={account.id}
+									label={`${account.firstName} ${account.lastName}`}
+									secondaryLabel={account.email}
+									status={account.isDeleted ? 'FAILED' : 'SUCCESS'}
+									thirdLabel={account.dateOfBirth}
+									fourthLabel={account.role.name}
+									path='/dashboard/accounts/'
+									handleDelete={handleDelete}
+									handleRestore={handleRestore}
+									isActive={account.isDeleted}
+								/>
+							))}
+						</div>
+					</div>
+				)}
+
+			{/* Pagination - only show when there's content or when not loading */}
+			{!isFetching && !isLoading && data && (
+				<div className='center-all'>
+					<Pagination
+						currentPage={page}
+						isFetching={isFetching}
+						setCurrentPage={setPage}
+						totalCount={data?.totalCount || 0}
+						itemsPerPage={itemsPerPage}
+					/>
+				</div>
+			)}
 		</>
 	)
 }
