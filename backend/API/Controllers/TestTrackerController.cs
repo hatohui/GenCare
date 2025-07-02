@@ -1,4 +1,4 @@
-﻿using Application.DTOs.TestTracker.Request;
+﻿using Application.DTOs.Result.Request;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -7,14 +7,15 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/result")]
-public class TestTrackerController(ITestTrackerService testTrackerService) : ControllerBase
+public class TestTrackerController(IResultService resultService) : ControllerBase
 {
     [HttpGet("{id}")]
+
     public async Task<IActionResult> ViewTestTrackerById(Guid id)
     {
         var accessToken = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
 
-        var result = await testTrackerService.ViewResultAsync(id, accessToken);
+        var result = await resultService.ViewResultAsync(id, accessToken);
 
         if (result == null)
             return NotFound();
@@ -23,10 +24,9 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
     }
     [HttpPut("{id}")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
-    public async Task<IActionResult> UpdateTestResult([FromRoute] string id,[FromBody] UpdateTestResultRequest request)
+    public async Task<IActionResult> UpdateTestResult([FromRoute] Guid id,[FromBody] UpdateTestResultRequest request)
     {
-        request.OrderDetailId = id;
-        var response = await testTrackerService.UpdateResultAsync(request);
+        var response = await resultService.UpdateResultAsync(request, id);
 
         if (!response.Success)
             return BadRequest(response.Message);
@@ -42,7 +42,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
             OrderDetailId = id
         };
 
-        var response = await testTrackerService.DeleteResultAsync(request);
+        var response = await resultService.DeleteResultAsync(request);
 
         if (!response.Success)
             return BadRequest(response.Message);
@@ -52,9 +52,16 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
 
     [HttpGet("all")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Manager},{RoleNames.Consultant}")]
-    public async Task<IActionResult> GetAllBookedOrders()
+    public async Task<IActionResult> GetAllBookedOrders(
+        [FromQuery] int? page,
+        [FromQuery] int? count,
+        [FromQuery] string? orderDetailId)
     {
-        var result = await testTrackerService.GetBookedServiceModelAsync();
+        var currentPage = page.GetValueOrDefault(1);
+        var pageSize = count.GetValueOrDefault(10);
+
+        var result = await resultService.GetBookedServiceModelAsync(currentPage, pageSize, orderDetailId);
         return Ok(result);
     }
+
 }
