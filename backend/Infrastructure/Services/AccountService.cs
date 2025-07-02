@@ -316,7 +316,8 @@ public class AccountService
             {
                 Name = account.Role.Name,
                 Description = account.Role.Description
-            }
+            },
+            Phone = account.Phone ?? string.Empty
         };
         return rs;
     }
