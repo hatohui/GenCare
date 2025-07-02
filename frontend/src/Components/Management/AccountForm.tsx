@@ -6,6 +6,7 @@ import { Account } from '@/Interfaces/Auth/Types/Account'
 import { PutAccountRequest } from '@/Interfaces/Account/Schema/account'
 import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import { CldImage } from 'next-cloudinary'
+import { toast } from 'react-hot-toast'
 
 interface AccountFormProps {
 	initialData?: Account
@@ -50,6 +51,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 	const handleUploadError = (error: string) => {
 		console.error('❌ Avatar upload error:', error)
 		setUploadError(error)
+		toast.error(error)
 	}
 	const handleChange = (
 		e: React.ChangeEvent<
@@ -90,6 +92,9 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 		}
 
 		setErrors(newErrors)
+		if (Object.values(newErrors).length > 0) {
+			Object.values(newErrors).forEach(msg => toast.error(msg))
+		}
 		return Object.keys(newErrors).length === 0
 	}
 
@@ -157,11 +162,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 							text='Upload Avatar'
 							className='px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity text-sm shadow-md disabled:opacity-50'
 						/>
-						{uploadError && (
-							<div className='text-red-500 text-sm mt-2 text-center'>
-								{uploadError}
-							</div>
-						)}
+						{/* Remove uploadError display, toast will show it */}
 					</div>
 
 					{/* Basic Information */}

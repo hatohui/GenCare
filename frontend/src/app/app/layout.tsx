@@ -60,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router, data, accountStore, tokenStore])
+	}, [token, isClient, router, data])
 
 	if (!isClient || isLoading) {
 		return (
