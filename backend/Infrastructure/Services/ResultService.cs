@@ -66,6 +66,7 @@ public class ResultService(IResultRepository resultRepository,
 
         return new ViewTestResultResponse
         {
+            OrderDetailId = orderDetailId,
             OrderDate = testResult.OrderDate,
             SampleDate = testResult.SampleDate,
             ResultDate = testResult.ResultDate,
@@ -112,14 +113,14 @@ public class ResultService(IResultRepository resultRepository,
             testResult.SampleDate = ToUnspecified(request.SampleDate.Value);
             isChanged = true;
         }
-        if (request.ResultDate != null && ToUnspecified(testResult.ResultDate.GetValueOrDefault()) != ToUnspecified(request.ResultDate.Value))
+        if (ToUnspecified(testResult.ResultDate.GetValueOrDefault()) != ToUnspecified(request.ResultDate.Value))
         {
             testResult.ResultDate = ToUnspecified(request.ResultDate.Value);
             isChanged = true;
         }
-        if (request.Status != null && testResult.Status != request.Status.Value)
+        if (testResult.Status != request.Status)
         {
-            testResult.Status = request.Status.Value;
+            testResult.Status = request.Status;
             isChanged = true;
         }
         if (request.ResultData != null)
@@ -226,6 +227,7 @@ public class ResultService(IResultRepository resultRepository,
 
             responseList.Add(new ViewTestResultResponse
             {
+                OrderDetailId = testResult.OrderDetailId,
                 OrderDate = testResult.OrderDate,
                 SampleDate = testResult.SampleDate,
                 ResultDate = testResult.ResultDate,
