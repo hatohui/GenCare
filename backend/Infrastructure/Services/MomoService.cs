@@ -4,6 +4,7 @@ using Application.DTOs.Payment;
 using Application.DTOs.Payment.Momo;
 using Application.Repositories;
 using Application.Services;
+using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -14,7 +15,8 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
     HttpClient httpClient,
     IServiceRepository serviceRepository,
     IPurchaseRepository purchaseRepository,
-    IPaymentHistoryService paymentHistoryService) : IMomoService
+    IPaymentHistoryService paymentHistoryService,
+    ITestTrackerService testTrackerService) : IMomoService
 {
 
     public async Task<MomoPaymentResponse> CreatePaymentAsync(string purchaseId)
@@ -133,6 +135,24 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             };
 
             await paymentHistoryService.CreatePaymentHistoryAsync(model);
+            //create test result for all order details
+            //get purchase by id
+            var purchase = await purchaseRepository.GetById(Guid.Parse(orderId));
+            var orderDetails = purchase?.OrderDetails;
+            if (orderDetails != null)
+            {
+                foreach (var orderDetail in orderDetails)
+                {
+                    Result result = new()
+                    {
+                        OrderDetail = orderDetail,
+                        OrderDate = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                    };
+                    await testTrackerService.AddResult(result);
+                }
+            }
+
             response = "Payment processed successfully";
         }
         else

@@ -22,7 +22,7 @@ public class TestTrackerController(ITestTrackerService testTrackerService) : Con
         return Ok(result);
     }
     [HttpPut("{id}")]
-    [Authorize(Roles = "admin,staff")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
     public async Task<IActionResult> UpdateTestResult([FromRoute] string id,[FromBody] UpdateTestResultRequest request)
     {
         request.OrderDetailId = id;
