@@ -1,4 +1,3 @@
-import { TOKEN_STORE_STRING } from '@/Constants/Auth'
 import { create } from 'zustand'
 
 export type TokenStore = {
@@ -24,7 +23,7 @@ const getStoredToken = () => {
 	}
 }
 
-const useToken = create<TokenStore>()((set, get) => ({
+const useToken = create<TokenStore>()(set => ({
 	accessToken: getStoredToken(),
 	isHydrated: true,
 	setAccessToken: (token: string, rememberMe = false) => {

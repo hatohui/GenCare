@@ -1,21 +1,10 @@
 import React from 'react'
+import { Result } from '@/Interfaces/Tests/Types/Tests'
 
-interface TestOrder {
-	orderDetailId: string
-	patientName: string
-	testType: string
-	orderDate: string
-	sampleDate: string | null
-	resultDate: string | null
-	status: 'pending' | 'completed'
-}
-
-const DashboardStats = ({ orders }: { orders: TestOrder[] }) => {
+const DashboardStats = ({ orders }: { orders: Result[] }) => {
 	const total = orders.length
-	const completed = orders.filter(
-		(o: TestOrder) => o.status === 'completed'
-	).length
-	const pending = orders.filter((o: TestOrder) => o.status === 'pending').length
+	const completed = orders.filter((o: Result) => o.status).length
+	const pending = orders.filter((o: Result) => !o.status).length
 
 	return (
 		<div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>

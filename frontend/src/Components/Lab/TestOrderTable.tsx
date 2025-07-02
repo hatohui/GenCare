@@ -1,18 +1,9 @@
 import React from 'react'
 import StatusBadge from './StatusBadge'
 import { useRouter } from 'next/navigation'
+import { Result } from '@/Interfaces/Tests/Types/Tests'
 
-interface TestOrder {
-	orderDetailId: string
-	patientName: string
-	testType: string
-	orderDate: string
-	sampleDate: string | null
-	resultDate: string | null
-	status: 'pending' | 'completed'
-}
-
-const TestOrderTable = ({ orders }: { orders: TestOrder[] }) => {
+const TestOrderTable = ({ orders }: { orders: Result[] }) => {
 	const router = useRouter()
 	return (
 		<div className='overflow-x-auto bg-white rounded-xl shadow p-4'>
@@ -20,8 +11,6 @@ const TestOrderTable = ({ orders }: { orders: TestOrder[] }) => {
 				<thead>
 					<tr className='text-left border-b'>
 						<th className='py-2 px-3'>Mã đơn</th>
-						<th className='py-2 px-3'>Tên bệnh nhân</th>
-						<th className='py-2 px-3'>Loại xét nghiệm</th>
 						<th className='py-2 px-3'>Ngày đặt</th>
 						<th className='py-2 px-3'>Ngày lấy mẫu</th>
 						<th className='py-2 px-3'>Ngày trả kết quả</th>
@@ -32,21 +21,29 @@ const TestOrderTable = ({ orders }: { orders: TestOrder[] }) => {
 				<tbody>
 					{orders.length === 0 && (
 						<tr>
-							<td colSpan={8} className='text-center py-6 text-gray-400'>
+							<td colSpan={6} className='text-center py-6 text-gray-400'>
 								Không có dữ liệu
 							</td>
 						</tr>
 					)}
-					{orders.map((order: TestOrder) => (
+					{orders.map((order: Result) => (
 						<tr key={order.orderDetailId} className='border-b hover:bg-gray-50'>
 							<td className='py-2 px-3 font-mono'>{order.orderDetailId}</td>
-							<td className='py-2 px-3'>{order.patientName}</td>
-							<td className='py-2 px-3'>{order.testType}</td>
-							<td className='py-2 px-3'>{order.orderDate}</td>
-							<td className='py-2 px-3'>{order.sampleDate || '-'}</td>
-							<td className='py-2 px-3'>{order.resultDate || '-'}</td>
 							<td className='py-2 px-3'>
-								<StatusBadge status={order.status} />
+								{order.orderDate.toLocaleDateString('vi-VN')}
+							</td>
+							<td className='py-2 px-3'>
+								{order.sampleDate
+									? order.sampleDate.toLocaleDateString('vi-VN')
+									: '-'}
+							</td>
+							<td className='py-2 px-3'>
+								{order.resultDate
+									? order.resultDate.toLocaleDateString('vi-VN')
+									: '-'}
+							</td>
+							<td className='py-2 px-3'>
+								<StatusBadge status={order.status ? 'completed' : 'pending'} />
 							</td>
 							<td className='py-2 px-3'>
 								<button

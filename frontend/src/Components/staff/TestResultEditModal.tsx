@@ -18,15 +18,15 @@ const TestResultEditModal: React.FC<TestResultEditModalProps> = ({
 
 	return (
 		<div className='fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4'>
-			<div className='bg-white rounded-[30px] max-w-lg w-full shadow-2xl relative'>
+			<div className='bg-white rounded-[30px] w-[80%] shadow-2xl relative max-h-[95vh] overflow-y-auto'>
 				<button
 					onClick={onClose}
-					className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors text-2xl font-bold'
+					className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors text-2xl font-bold z-10'
 					aria-label='Đóng'
 				>
 					×
 				</button>
-				<div className='p-6'>
+				<div className='h-full '>
 					<TestResultEditForm
 						orderDetailId={orderDetailId}
 						onSuccess={onClose}

@@ -10,7 +10,7 @@ import StatusBadge from '@/Components/Lab/StatusBadge'
 import { EyeSVG, PencilSVG } from '@/Components/SVGs'
 
 const Page = () => {
-	const { data, isLoading, isError, refetch } = useGetAllOrderDetail()
+	const { data, isLoading, isError } = useGetAllOrderDetail()
 	const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
 	const [modalOpen, setModalOpen] = useState(false)
 	const [editOrderId, setEditOrderId] = useState<string | null>(null)
@@ -20,8 +20,9 @@ const Page = () => {
 		data: resultData,
 		isLoading: isResultLoading,
 		isError: isResultError,
-		refetch: refetchResult,
-	} = useGetResult(selectedOrderId || '')
+	} = useGetResult(selectedOrderId || '', {
+		enabled: !!selectedOrderId, // Only run query when selectedOrderId is not null
+	})
 
 	const handleOpenModal = (orderId: string) => {
 		setSelectedOrderId(orderId)
@@ -101,7 +102,9 @@ const Page = () => {
 											</td>
 											<td className='py-2 px-3'>
 												<StatusBadge
-													status={order.status ? 'completed' : 'pending'}
+													status={
+														order.status === true ? 'completed' : 'pending'
+													}
 												/>
 											</td>
 											<td className='py-2 px-3'>
@@ -174,30 +177,36 @@ const Page = () => {
 								<h2 className='text-lg font-semibold text-main mb-2'>
 									Kết quả xét nghiệm
 								</h2>
-								<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
-									{Object.entries(resultData.resultData as ResultData).map(
-										([parameter, result], index) => (
-											<div
-												key={index}
-												className='bg-gray-100 rounded p-2 text-xs overflow-x-auto'
-											>
-												<div className='font-bold'>{parameter}</div>
-												<div>
-													Giá trị: {result.value} {result.unit}
+								{resultData.resultData ? (
+									<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
+										{Object.entries(resultData.resultData as ResultData).map(
+											([parameter, result], index) => (
+												<div
+													key={index}
+													className='bg-gray-100 rounded p-2 text-xs overflow-x-auto'
+												>
+													<div className='font-bold'>{parameter}</div>
+													<div>
+														Giá trị: {result.value} {result.unit}
+													</div>
+													<div>Khoảng tham chiếu: {result.referenceRange}</div>
+													<div>
+														Trạng thái:{' '}
+														{result.flag === 'normal'
+															? 'Bình thường'
+															: result.flag === 'high'
+															? 'Cao'
+															: 'Thấp'}
+													</div>
 												</div>
-												<div>Khoảng tham chiếu: {result.referenceRange}</div>
-												<div>
-													Trạng thái:{' '}
-													{result.flag === 'normal'
-														? 'Bình thường'
-														: result.flag === 'high'
-														? 'Cao'
-														: 'Thấp'}
-												</div>
-											</div>
-										)
-									)}
-								</div>
+											)
+										)}
+									</div>
+								) : (
+									<div className='text-center text-gray-400 mb-6'>
+										Chưa có dữ liệu kết quả xét nghiệm.
+									</div>
+								)}
 							</div>
 						) : (
 							<div className='text-center text-gray-400'>

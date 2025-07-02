@@ -3,33 +3,19 @@
 import React, { useEffect, useState } from 'react'
 import { useViewPurchaseById } from '@/Services/book-service'
 import { useSearchParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'motion/react'
 import LoadingIcon from '../LoadingIcon'
 import { UserSVG } from '../SVGs'
-import StatusBadge from '@/Components/Lab/StatusBadge'
-import TestResultEditModal from './TestResultEditModal'
 import TestOrderItem from './TestOrderItem'
+import { Result } from '@/Interfaces/Tests/Types/Tests'
 
-interface TestOrder {
-	orderDetailId: string
-	patientName: string
-	testType: string
-	orderDate: string
-	sampleDate: string | null
-	resultDate: string | null
-	status: 'completed' | 'pending'
-	accountId?: string
-}
-
-const mapOrderToTestOrder = (order: any): TestOrder => ({
+const mapOrderToResult = (order: any): Result => ({
 	orderDetailId: order.orderDetailId,
-	patientName: (order.firstName + ' ' + order.lastName).trim(),
-	testType: order.serviceName,
-	orderDate: order.createdAt as unknown as string,
-	sampleDate: (order as any).sampleDate || null,
-	resultDate: (order as any).resultDate || null,
-	status: order.status ? 'completed' : 'pending',
-	accountId: order.accountId || (order as any).accountId || '',
+	orderDate: new Date(order.createdAt),
+	sampleDate: order.sampleDate ? new Date(order.sampleDate) : undefined,
+	resultDate: order.resultDate ? new Date(order.resultDate) : undefined,
+	status: order.status || false,
+	resultData: order.resultData || undefined,
+	updatedAt: order.updatedAt ? new Date(order.updatedAt) : undefined,
 })
 
 const TestList = ({ id }: { id: string }) => {
@@ -112,9 +98,15 @@ const TestList = ({ id }: { id: string }) => {
 
 	return (
 		<div className='space-y-6'>
-			{data.map((purchase: any, idx: number) => (
-				<TestOrderItem key={purchase.purchaseId} purchase={purchase} />
-			))}
+			{data.map((purchase: any) => {
+				// Map each order in the purchase to a Result object
+				const results = purchase.order.map((order: any) =>
+					mapOrderToResult(order)
+				)
+				return results.map((result: Result) => (
+					<TestOrderItem key={result.orderDetailId} result={result} />
+				))
+			})}
 		</div>
 	)
 }

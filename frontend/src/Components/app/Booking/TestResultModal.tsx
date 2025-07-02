@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { XMarkSVG, DownloadSVG, EyeSVG } from '@/Components/SVGs'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import { ResultData } from '@/Interfaces/Tests/Types/Tests'
+import { useGetResult } from '@/Services/Result-service'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -65,19 +66,10 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	onClose,
 	bookingItem,
 }) => {
-	const [testResult, setTestResult] = useState<ResultData | null>(null)
-	const [isLoading, setIsLoading] = useState(false)
-
-	React.useEffect(() => {
-		if (isOpen && bookingItem) {
-			setIsLoading(true)
-			setTimeout(() => {
-				const result = generateMockResultData()
-				setTestResult(result)
-				setIsLoading(false)
-			}, 1000)
-		}
-	}, [isOpen, bookingItem])
+	const orderDetailId = bookingItem?.orderDetailId || ''
+	const { data, isLoading, error } = useGetResult(orderDetailId, {
+		enabled: isOpen && !!orderDetailId,
+	})
 
 	const handleClose = () => {
 		onClose()
@@ -94,14 +86,17 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	}
 
 	const renderTestResult = () => {
-		if (!testResult) return null
-		return <ResultDataView data={testResult} />
+		if (isLoading) return <div>Đang tải kết quả...</div>
+		if (error) return <div className='text-red-500'>Lỗi khi tải kết quả.</div>
+		if (!data || !data.resultData)
+			return <div>Không có kết quả xét nghiệm.</div>
+		return <ResultDataView data={data.resultData} />
 	}
 
 	if (!isOpen) return null
 
 	return (
-		<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm'>
+		<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-[20] p-4 backdrop-blur-sm'>
 			<div className='bg-white rounded-[30px] max-w-4xl w-full h-[90vh] flex flex-col shadow-2xl relative'>
 				{/* Header */}
 				<div className='flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0'>
@@ -124,10 +119,13 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 				<div className='flex-1 overflow-y-auto p-6'>{renderTestResult()}</div>
 
 				{/* Footer */}
-				{!isLoading && testResult && (
+				{!isLoading && data && data.resultData && (
 					<div className='flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0'>
 						<div className='text-sm text-gray-600'>
-							Kết quả được tạo vào: {new Date().toLocaleDateString('vi-VN')}
+							Kết quả được tạo vào:{' '}
+							{data.resultDate
+								? new Date(data.resultDate).toLocaleDateString('vi-VN')
+								: '---'}
 						</div>
 						<div className='flex gap-3'>
 							<button
@@ -150,48 +148,6 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 			</div>
 		</div>
 	)
-}
-
-// Replace generateMockTestResult with generateMockResultData
-const generateMockResultData = (): ResultData => {
-	return {
-		'Huyết áp': {
-			value: 120,
-			unit: 'mmHg',
-			referenceRange: '<140/90',
-			flag: 'normal',
-		},
-		'Nhịp tim': {
-			value: 72,
-			unit: 'bpm',
-			referenceRange: '60-100',
-			flag: 'normal',
-		},
-		'Nhiệt độ': {
-			value: 36.8,
-			unit: '°C',
-			referenceRange: '36.5-37.5',
-			flag: 'normal',
-		},
-		'Cân nặng': {
-			value: 65,
-			unit: 'kg',
-			referenceRange: 'N/A',
-			flag: 'normal',
-		},
-		'Đường huyết': {
-			value: 95,
-			unit: 'mg/dL',
-			referenceRange: '70-100',
-			flag: 'normal',
-		},
-		Cholesterol: {
-			value: 180,
-			unit: 'mg/dL',
-			referenceRange: '<200',
-			flag: 'normal',
-		},
-	}
 }
 
 export default TestResultModal
