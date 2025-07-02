@@ -71,86 +71,153 @@ const items = [
 
 export default function WhyChooseUsSection() {
 	return (
-		<section className='py-20 pt-36 bg-gradient-to-b from-white to-general relative overflow-hidden'>
-			{/* Background decoration */}
-			<div className='absolute inset-0 opacity-5'>
-				<div className='absolute top-20 left-10 w-32 h-32 bg-main rounded-full blur-3xl'></div>
-				<div className='absolute bottom-20 right-10 w-40 h-40 bg-secondary rounded-full blur-3xl'></div>
-				<div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-accent rounded-full blur-3xl'></div>
+		<section className='py-24 pt-40 bg-gradient-to-b from-white to-general relative overflow-hidden pb-40'>
+			{/* Enhanced Background decoration */}
+			<div className='absolute inset-0 opacity-10'>
+				<motion.div
+					animate={{
+						scale: [1, 1.2, 1],
+						opacity: [0.1, 0.2, 0.1],
+					}}
+					transition={{
+						duration: 8,
+						repeat: Infinity,
+						ease: 'easeInOut',
+					}}
+					className='absolute top-20 left-10 w-40 h-40 bg-main rounded-full blur-3xl'
+				></motion.div>
+				<motion.div
+					animate={{
+						scale: [1.2, 1, 1.2],
+						opacity: [0.1, 0.2, 0.1],
+					}}
+					transition={{
+						duration: 10,
+						repeat: Infinity,
+						ease: 'easeInOut',
+					}}
+					className='absolute bottom-20 right-10 w-48 h-48 bg-secondary rounded-full blur-3xl'
+				></motion.div>
+				<motion.div
+					animate={{
+						scale: [1, 1.3, 1],
+						opacity: [0.1, 0.15, 0.1],
+					}}
+					transition={{
+						duration: 12,
+						repeat: Infinity,
+						ease: 'easeInOut',
+					}}
+					className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-accent rounded-full blur-3xl'
+				></motion.div>
 			</div>
 
-			<div className='relative z-10 max-w-7xl mx-auto px-6'>
+			<div className='relative z-10 max-w-7xl mx-auto px-8'>
 				<motion.div
 					initial={{ opacity: 0, y: 50 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6 }}
-					className='text-center mb-16'
+					transition={{ duration: 0.8, ease: 'easeOut' }}
+					className='text-center mb-20'
 				>
-					<h2 className='text-4xl md:text-5xl font-bold mb-6 text-secondary'>
+					<h2 className='text-5xl md:text-6xl font-bold mb-8 text-secondary leading-tight'>
 						Vì Sao Chọn{' '}
 						<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
 							Chúng Tôi?
 						</span>
 					</h2>
-					<p className='text-lg text-gray-600 max-w-2xl mx-auto'>
+					<p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
 						Chúng tôi cam kết mang đến dịch vụ chăm sóc sức khỏe chất lượng cao
 						với những giá trị cốt lõi
 					</p>
 				</motion.div>
 
-				<div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+				<div className='grid grid-cols-1 md:grid-cols-3 gap-10'>
 					{items.map((item, i) => (
 						<motion.div
 							key={i}
-							initial={{ opacity: 0, y: 50 }}
+							initial={{ opacity: 0, y: 60 }}
 							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: i * 0.2 }}
-							whileHover={{ y: -10, scale: 1.02 }}
-							className='group relative bg-white rounded-[30px] shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden'
+							transition={{ duration: 0.8, delay: i * 0.2, ease: 'easeOut' }}
+							whileHover={{
+								y: -12,
+								scale: 1.03,
+								transition: { duration: 0.3, ease: 'easeOut' },
+							}}
+							className='group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100/50'
 						>
-							{/* Gradient overlay on hover */}
-							<div className='absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-300 from-main to-secondary'></div>
+							{/* Enhanced Gradient overlay on hover */}
+							<div className='absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-15 transition-opacity duration-500 from-main to-secondary'></div>
 
-							<div className='relative p-8'>
-								{/* Icon container */}
+							{/* Subtle border glow effect */}
+							<div className='absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
+
+							<div className='relative p-10'>
+								{/* Enhanced Icon container */}
 								<motion.div
-									whileHover={{ rotate: 360 }}
-									transition={{ duration: 0.6 }}
-									className={`w-16 h-16 rounded-[30px] bg-gradient-to-r ${item.color} flex items-center justify-center text-white mb-6 mx-auto shadow-lg`}
+									whileHover={{
+										rotate: 360,
+										scale: 1.1,
+										transition: { duration: 0.6, ease: 'easeInOut' },
+									}}
+									className={`w-20 h-20 rounded-3xl bg-gradient-to-r ${item.color} flex items-center justify-center text-white mb-8 mx-auto shadow-2xl group-hover:shadow-3xl transition-all duration-500`}
 								>
-									{item.icon}
+									<motion.div
+										whileHover={{ scale: 1.1 }}
+										transition={{ duration: 0.2 }}
+									>
+										{item.icon}
+									</motion.div>
 								</motion.div>
 
-								{/* Content */}
+								{/* Enhanced Content */}
 								<div className='text-center'>
-									<h3 className='text-xl font-bold mb-4 text-secondary group-hover:text-main transition-colors duration-300'>
+									<h3 className='text-2xl font-bold mb-6 text-secondary group-hover:text-main transition-colors duration-500 leading-tight'>
 										{item.title}
 									</h3>
-									<p className='text-gray-600 leading-relaxed'>
+									<p className='text-gray-600 leading-relaxed text-lg'>
 										{item.description}
 									</p>
 								</div>
 
-								{/* Decorative element */}
-								<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+								{/* Enhanced Decorative element */}
+								<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500'></div>
 							</div>
 						</motion.div>
 					))}
 				</div>
 
-				{/* Bottom CTA */}
+				{/* Enhanced Bottom CTA */}
 				<motion.div
-					initial={{ opacity: 0, y: 30 }}
+					initial={{ opacity: 0, y: 40 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6, delay: 0.6 }}
-					className='text-center mt-16'
+					transition={{ duration: 0.8, delay: 0.8, ease: 'easeOut' }}
+					className='text-center mt-20'
 				>
 					<motion.button
-						whileHover={{ scale: 1.05 }}
+						whileHover={{
+							scale: 1.05,
+							boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+							transition: { duration: 0.3, ease: 'easeOut' },
+						}}
 						whileTap={{ scale: 0.95 }}
-						className='px-8 py-4 bg-gradient-to-r from-main to-secondary text-white rounded-[30px] font-semibold hover:shadow-lg transition-all duration-300'
+						className='px-10 py-5 bg-gradient-to-r from-main to-secondary text-white rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
-						Tìm Hiểu Thêm
+						<span className='flex items-center justify-center gap-3'>
+							Tìm Hiểu Thêm
+							<svg
+								className='w-5 h-5'
+								fill='none'
+								stroke='currentColor'
+								viewBox='0 0 24 24'
+							>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									strokeWidth={2}
+									d='M13 7l5 5m0 0l-5 5m5-5H6'
+								/>
+							</svg>
+						</span>
 					</motion.button>
 				</motion.div>
 			</div>
