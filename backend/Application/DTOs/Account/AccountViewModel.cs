@@ -13,4 +13,5 @@ public class AccountViewModel
     public DateOnly? DateOfBirth { get; set; }
     public string? AvatarUrl { get; set; }
     public bool? IsDeleted { get; set; }
+    public string? Phone { get; set; }
 }
