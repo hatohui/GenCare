@@ -7,7 +7,7 @@ namespace Infrastructure.Services;
 public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
                                 IPurchaseRepository purchaseRepository,
                                 IPaymentHistoryRepository paymentHistoryRepository,
-                                ITestTrackerRepository testTrackerRepository) : IOrderDetailService
+                                IResultRepository resultRepository) : IOrderDetailService
 {
     public async Task DeleteOrderDetail(string orderDetailId, string accountId)
     {
@@ -35,7 +35,7 @@ public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
 
         //check if result of order detail exists?
         //if exists, block deletion
-        var resultTest = await testTrackerRepository.ViewResultAsync(orderDetail.Id);
+        var resultTest = await resultRepository.ViewResultAsync(orderDetail.Id);
         if (resultTest is not null)
             throw new AppException(400, "You are not allowed to delete this order detail because test result exists");
 
