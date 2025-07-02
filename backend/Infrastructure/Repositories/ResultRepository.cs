@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Repositories;
 
-public class TestTrackerRepository(IApplicationDbContext dbContext) : ITestTrackerRepository
+public class ResultRepository(IApplicationDbContext dbContext) : IResultRepository
 {
     public async Task<Result?> ViewResultAsync(Guid orderDetailId)
     {
@@ -27,9 +27,21 @@ public class TestTrackerRepository(IApplicationDbContext dbContext) : ITestTrack
             .ExecuteDeleteAsync() > 0;
     }
 
+    public async Task<List<Result>> ViewResultListAsync()
+    {
+        return await dbContext.Results
+            .ToListAsync();
+    }
+
     public async Task<bool> CheckResultExistsAsync(Guid orderDetailId)
     {
         return await dbContext.Results
             .AnyAsync(t => t.OrderDetailId == orderDetailId);
+    }
+
+    public async Task AddAsync(Result result)
+    {
+        await dbContext.Results.AddAsync(result);
+        await dbContext.SaveChangesAsync();
     }
 }
