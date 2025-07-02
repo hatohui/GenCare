@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.TestTracker.Request;
+﻿namespace Application.DTOs.Result.Request;
 
 public class DeleteTestResultRequest
 {

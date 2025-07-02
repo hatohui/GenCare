@@ -1,8 +1,7 @@
-﻿namespace Application.DTOs.TestTracker.Request;
+﻿namespace Application.DTOs.Result.Request;
 
 public class UpdateTestResultRequest
 {
-    public string OrderDetailId { get; set; }
     public DateTime? OrderDate { get; set; }
 
     public DateTime? SampleDate { get; set; }
@@ -11,5 +10,5 @@ public class UpdateTestResultRequest
 
     public bool? Status { get; set; }
 
-    public string? ResultData { get; set; }
+    public Dictionary<string, TestItemResult>? ResultData { get; set; }
 }

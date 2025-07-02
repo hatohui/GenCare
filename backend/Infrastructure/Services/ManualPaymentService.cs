@@ -13,7 +13,7 @@ public class ManualPaymentService(
     IOrderDetailRepository orderDetailRepository,
     IServiceRepository serviceRepository,
     IPaymentHistoryRepository paymentHistoryRepository,
-    ITestTrackerRepository testTrackerRepository
+    IResultRepository resultRepository
     ) : IManualPaymentService
 {
     private static DateTime ToUnspecified(DateTime dt)
@@ -74,7 +74,7 @@ public class ManualPaymentService(
                 UpdatedAt = ToUnspecified(DateTime.Now)
             };
 
-            await testTrackerRepository.AddAsync(result);
+            await resultRepository.AddAsync(result);
         }
         return new ConfirmPaymentByStaffResponse()
         {

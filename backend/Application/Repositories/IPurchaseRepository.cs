@@ -18,4 +18,5 @@ public interface IPurchaseRepository
     Task Update(Purchase purchase);
     Task Delete(Purchase purchase);
     Task<List<Purchase>> GetAllPurchasesAsync();
+    
 }
