@@ -37,7 +37,7 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.consultant,
 	},
 	{
-		label: 'Account Management',
+		label: 'Accounts',
 		to: '/dashboard/accounts',
 		svg: <AccountSVG />,
 		level: PermissionLevel.manager,

@@ -46,9 +46,16 @@ export const useServiceManagement = () => {
 	}
 
 	const handleRestore = (id: string, data: ServiceDTO) => {
-		if (window.confirm('Bạn có muốn khôi phục mục này không?'))
+		if (window.confirm('Bạn có muốn khôi phục mục này không?')) {
+			// Transform imageUrls from object format to string array format
+			const transformedData = {
+				...data,
+				isDeleted: false,
+				imageUrls: data.imageUrls?.map(img => img.url) || [],
+			}
+
 			updateMutation.mutate(
-				{ id, data: { ...data, isDeleted: false } },
+				{ id, data: transformedData },
 				{
 					onSuccess: () => {
 						query.refetch()
@@ -56,6 +63,7 @@ export const useServiceManagement = () => {
 					onError: () => {},
 				}
 			)
+		}
 	}
 
 	const handleUpdate = (id: string, data: any) => {

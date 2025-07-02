@@ -86,7 +86,7 @@ const AccountDetailPage = () => {
 		)
 	}
 
-	const handleAvatarUpload = (url: string) => {
+	const handleAvatarUpload = (url: string, publicId: string) => {
 		if (!account || !id) return
 		updateMutation.mutate(
 			{ id, data: { account: { avatarUrl: url } } },

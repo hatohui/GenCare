@@ -39,9 +39,17 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 	})
 
 	const [errors, setErrors] = useState<Record<string, string>>({})
+	const [uploadError, setUploadError] = useState<string>('')
 
-	const handleAvatarUpload = (url: string) => {
+	const handleAvatarUpload = (url: string, publicId: string) => {
+		console.log('🖼️ Avatar uploaded:', { url, publicId })
 		setFormData(prev => ({ ...prev, avatarUrl: url }))
+		setUploadError('')
+	}
+
+	const handleUploadError = (error: string) => {
+		console.error('❌ Avatar upload error:', error)
+		setUploadError(error)
 	}
 	const handleChange = (
 		e: React.ChangeEvent<
@@ -58,7 +66,6 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 					? Number(value)
 					: value,
 		}))
-		// Clear error when user starts typing
 		if (errors[name]) {
 			setErrors(prev => ({ ...prev, [name]: '' }))
 		}
@@ -103,7 +110,6 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 			},
 		}
 
-		// Add staff info if provided
 		if (formData.degree || formData.yearOfExperience || formData.biography) {
 			submitData.staffInfo = {
 				degree: formData.degree || undefined,
@@ -111,7 +117,6 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 				biography: formData.biography || undefined,
 			}
 		}
-
 		onSave(submitData)
 	}
 
@@ -147,10 +152,16 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 						</div>
 						<CloudinaryButton
 							onUploaded={handleAvatarUpload}
+							onError={handleUploadError}
 							uploadPreset='gencare'
 							text='Upload Avatar'
-							className='px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity text-sm shadow-md'
+							className='px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity text-sm shadow-md disabled:opacity-50'
 						/>
+						{uploadError && (
+							<div className='text-red-500 text-sm mt-2 text-center'>
+								{uploadError}
+							</div>
+						)}
 					</div>
 
 					{/* Basic Information */}

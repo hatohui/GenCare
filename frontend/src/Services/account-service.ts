@@ -125,14 +125,25 @@ const accountApi = {
 
 	updateAccount: (header: string, id: string, data: PutAccountRequest) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
+		console.log('🌐 Account Service - Sending PUT request:', {
+			url: queryUrl,
+			data: data,
+			phoneNumber: data.account?.phoneNumber,
+		})
 		return axiosInstance
 			.put<PutAccountResponse>(queryUrl, data, {
 				headers: { Authorization: header },
 			})
 			.then(res => {
-				console.log(res.data)
-
+				console.log('✅ Account Service - PUT response:', res.data)
 				return res.data
+			})
+			.catch(err => {
+				console.error(
+					'❌ Account Service - PUT error:',
+					err.response?.data || err.message
+				)
+				throw err
 			})
 	},
 

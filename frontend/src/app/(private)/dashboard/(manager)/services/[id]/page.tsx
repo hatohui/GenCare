@@ -9,7 +9,7 @@ import ReturnButton from '@/Components/ReturnButton'
 import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import { motion } from 'motion/react'
 import { useState } from 'react'
-import Image from 'next/image'
+import { CldImage } from 'next-cloudinary'
 import {
 	Service,
 	UpdateServiceApiRequest,
@@ -33,29 +33,35 @@ const ServiceDetailPage = () => {
 	} = useEditableField({
 		query: query,
 		onSave: updatedData => {
-			// Convert new image URLs to the expected format
-			const imageUrlsFormatted =
-				newImageUrls.length > 0
-					? newImageUrls.map((url, index) => ({ id: `new-${index}`, url }))
-					: updatedData.imageUrls
+			// Combine existing images with new ones, ensuring we send List<string> to backend
+			const existingImageUrls =
+				updatedData.imageUrls?.map((img: any) =>
+					typeof img === 'string' ? img : img.url
+				) || []
+			const allImageUrls = [...existingImageUrls, ...newImageUrls]
 
 			const updatedServiceDTO: UpdateServiceApiRequest = {
 				name: updatedData.name,
 				description: updatedData.description,
 				price: updatedData.price,
 				isDeleted: updatedData.isDeleted,
-				imageUrls: imageUrlsFormatted,
+				imageUrls: allImageUrls, // Send as List<string>
 			}
 
 			const result = updateServiceSchema.safeParse(updatedServiceDTO)
 
 			if (!result.success) {
+				console.error('Validation failed:', result.error)
 			} else {
 				updateServiceMutation.mutate(
 					{ id: serviceId ?? '', data: result.data },
 					{
-						onSuccess: () => {},
-						onError: () => {},
+						onSuccess: () => {
+							setNewImageUrls([]) // Clear new images after successful update
+						},
+						onError: error => {
+							console.error('Update failed:', error)
+						},
 					}
 				)
 			}
@@ -66,7 +72,8 @@ const ServiceDetailPage = () => {
 		query: query,
 	})
 
-	const handleImageUpload = (url: string) => {
+	const handleImageUpload = (url: string, publicId: string) => {
+		console.log('🖼️ Service detail image uploaded:', { url, publicId })
 		setNewImageUrls(prev => [...prev, url])
 	}
 
@@ -114,12 +121,12 @@ const ServiceDetailPage = () => {
 												key={index}
 												className='relative w-32 h-32 rounded-xl overflow-hidden shadow-md'
 											>
-												<Image
+												<CldImage
 													src={typeof img === 'string' ? img : img.url}
 													alt={`Service image ${index + 1}`}
-													fill
-													className='object-cover'
-													sizes='128px'
+													width={128}
+													height={128}
+													className='object-cover w-full h-full'
 												/>
 											</div>
 										))}
