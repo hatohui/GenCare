@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Purchase;
 using Application.DTOs.Result.Request;
 using Application.DTOs.Result.Response;
+using Domain.Entities;
 
 namespace Application.Services;
 
@@ -13,4 +14,5 @@ public interface IResultService
     Task<DeleteTestResultResponse> DeleteResultAsync(DeleteTestResultRequest request);
     Task<List<BookedServiceModel>> GetBookedServiceModelAsync(int page, int count, string? orderDetailId);
     Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync();
+    Task AddResult(Result result);
 }
