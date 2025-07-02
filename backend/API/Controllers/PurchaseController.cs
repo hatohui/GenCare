@@ -22,7 +22,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     /// <response code="200">Service booked successfully.</response>
     /// <response code="401">Unauthorized if the user is not a member.</response>
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Member}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Admin}")]
     public async Task<IActionResult> BookingServiceAsync([FromBody] BookingServiceRequest request)
     {
         // get access token from header
