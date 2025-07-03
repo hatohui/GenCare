@@ -1,9 +1,11 @@
-export interface DashboardStats {
-	totalUsers: number
+export interface DashboardStatistic {
+	totalActiveUsers: number
+	totalActiveManagers: number
+	totalActiveStaffs: number
 	totalServices: number
 	totalRevenue: number
 	totalBookings: number
-	activeConsultants: number
+	totalActiveConsultants: number
 	pendingPayments: number
 	completedPayments: number
 	testResults: number
@@ -18,36 +20,17 @@ export interface RevenueData {
 export interface UserGrowthData {
 	date: string
 	newUsers: number
-	totalUsers: number
 }
 
-export interface ServicePerformance {
-	id: string
-	name: string
-	bookings: number
-	revenue: number
-	rating: number
-}
-
-export interface RecentActivity {
-	id: string
-	type: 'booking' | 'payment' | 'test' | 'user' | 'service'
-	message: string
-	timestamp: string
-	status: 'success' | 'error' | 'warning' | 'info'
-	userId?: string
-	userName?: string
-}
-
-export interface TopServices {
+export interface TopService {
 	serviceId: string
 	serviceName: string
 	bookings: number
 	revenue: number
-	percentage: number
+	rating: number | null
 }
 
-export interface PaymentStats {
+export interface PaymentStatistic {
 	total: number
 	pending: number
 	completed: number
@@ -55,21 +38,17 @@ export interface PaymentStats {
 	monthlyRevenue: RevenueData[]
 }
 
-export interface UserStats {
+export interface UserStatistic {
 	total: number
 	active: number
-	newThisMonth: number
-	growthRate: number
 	monthlyGrowth: UserGrowthData[]
 }
 
 export interface AdminStatisticsResponse {
-	dashboardStats: DashboardStats
+	dashboardStatistic: DashboardStatistic
 	revenueData: RevenueData[]
 	userGrowth: UserGrowthData[]
-	topServices: TopServices[]
-	recentActivity: RecentActivity[]
-	paymentStats: PaymentStats
-	userStats: UserStats
-	servicePerformance: ServicePerformance[]
+	topServices: TopService[]
+	paymentStatistic: PaymentStatistic
+	userStatistic: UserStatistic
 }

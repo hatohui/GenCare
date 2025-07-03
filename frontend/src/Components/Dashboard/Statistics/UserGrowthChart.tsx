@@ -20,7 +20,76 @@ interface UserGrowthChartProps {
 	period: 'week' | 'month' | 'year'
 }
 
+// Extend UserGrowthData locally to allow optional totalUsers for chart compatibility
+interface UserGrowthChartData extends UserGrowthData {
+	totalUsers?: number
+}
+
+const formatDate = (
+	dateString: string,
+	period: UserGrowthChartProps['period']
+) => {
+	const date = new Date(dateString)
+	switch (period) {
+		case 'week':
+			return date.toLocaleDateString('en-US', { weekday: 'short' })
+		case 'month':
+			return date.toLocaleDateString('en-US', {
+				day: 'numeric',
+				month: 'short',
+			})
+		case 'year':
+			return date.toLocaleDateString('en-US', { month: 'short' })
+		default:
+			return date.toLocaleDateString('en-US')
+	}
+}
+
+type CustomTooltipProps = {
+	active?: boolean
+	payload?: any[]
+	label?: string
+	period: UserGrowthChartProps['period']
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({
+	active,
+	payload,
+	label,
+	period,
+}) => {
+	if (!active || !payload?.length) return null
+	return (
+		<div className='bg-white p-3 border border-gray-200 rounded-lg shadow-lg'>
+			<p className='text-sm font-medium text-gray-800'>
+				{formatDate(label ?? '', period)}
+			</p>
+			<p className='text-sm text-blue-600'>
+				Người dùng mới:{' '}
+				<span className='font-semibold'>{payload[0]?.value ?? 'N/A'}</span>
+			</p>
+			{payload[1]?.value !== undefined && (
+				<p className='text-sm text-green-600'>
+					Tổng người dùng:{' '}
+					<span className='font-semibold'>{payload[1].value}</span>
+				</p>
+			)}
+		</div>
+	)
+}
+
 const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
+	const chartData = data as UserGrowthChartData[]
+
+	const totalGrowth = React.useMemo(
+		() => data.reduce((sum, item) => sum + item.newUsers, 0),
+		[data]
+	)
+	const currentTotal = React.useMemo(
+		() => chartData[chartData.length - 1]?.totalUsers ?? 0,
+		[chartData]
+	)
+
 	if (!data || data.length === 0) {
 		return (
 			<div className='flex items-center justify-center h-64 bg-gray-50 rounded-[20px]'>
@@ -28,47 +97,6 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 			</div>
 		)
 	}
-
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString)
-		switch (period) {
-			case 'week':
-				return date.toLocaleDateString('en-US', { weekday: 'short' })
-			case 'month':
-				return date.toLocaleDateString('en-US', {
-					day: 'numeric',
-					month: 'short',
-				})
-			case 'year':
-				return date.toLocaleDateString('en-US', { month: 'short' })
-			default:
-				return date.toLocaleDateString('en-US')
-		}
-	}
-
-	const CustomTooltip = ({ active, payload, label }: any) => {
-		if (active && payload && payload.length) {
-			return (
-				<div className='bg-white p-3 border border-gray-200 rounded-lg shadow-lg'>
-					<p className='text-sm font-medium text-gray-800'>
-						{formatDate(label)}
-					</p>
-					<p className='text-sm text-blue-600'>
-						Người dùng mới:{' '}
-						<span className='font-semibold'>{payload[0].value}</span>
-					</p>
-					<p className='text-sm text-green-600'>
-						Tổng người dùng:{' '}
-						<span className='font-semibold'>{payload[1].value}</span>
-					</p>
-				</div>
-			)
-		}
-		return null
-	}
-
-	const totalGrowth = data.reduce((sum, item) => sum + item.newUsers, 0)
-	const currentTotal = data[data.length - 1]?.totalUsers || 0
 
 	return (
 		<motion.div
@@ -102,7 +130,7 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 						<CartesianGrid strokeDasharray='3 3' stroke='#f0f0f0' />
 						<XAxis
 							dataKey='date'
-							tickFormatter={formatDate}
+							tickFormatter={d => formatDate(d, period)}
 							tick={{ fontSize: 12, fill: '#6b7280' }}
 						/>
 						<YAxis
@@ -110,7 +138,7 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 							axisLine={false}
 							tickLine={false}
 						/>
-						<Tooltip content={<CustomTooltip />} />
+						<Tooltip content={<CustomTooltip period={period} />} />
 						<Area
 							type='monotone'
 							dataKey='newUsers'
@@ -120,15 +148,17 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 							fillOpacity={0.3}
 							strokeWidth={2}
 						/>
-						<Area
-							type='monotone'
-							dataKey='totalUsers'
-							stackId='2'
-							stroke='#10b981'
-							fill='#10b981'
-							fillOpacity={0.1}
-							strokeWidth={2}
-						/>
+						{chartData.some(d => d.totalUsers !== undefined) && (
+							<Area
+								type='monotone'
+								dataKey='totalUsers'
+								stackId='2'
+								stroke='#10b981'
+								fill='#10b981'
+								fillOpacity={0.1}
+								strokeWidth={2}
+							/>
+						)}
 					</AreaChart>
 				</ResponsiveContainer>
 			</div>

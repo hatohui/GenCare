@@ -3,6 +3,7 @@
 import { RevenueData } from '@/Interfaces/Statistics/Types/Statistics'
 import { motion } from 'motion/react'
 import React from 'react'
+import FormatCurrency from '@/Components/FormatCurrency'
 
 interface RevenueChartProps {
 	data: RevenueData[]
@@ -22,6 +23,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 	const maxBookings = Math.max(...data.map(d => d.bookings))
 
 	const formatDate = (dateString: string) => {
+		// Only format on client, fallback to raw date for SSR
+		if (typeof window === 'undefined') return dateString
 		const date = new Date(dateString)
 		switch (period) {
 			case 'week':
@@ -36,14 +39,6 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 			default:
 				return date.toLocaleDateString('en-US')
 		}
-	}
-
-	const formatCurrency = (amount: number) => {
-		return new Intl.NumberFormat('vi-VN', {
-			style: 'currency',
-			currency: 'VND',
-			minimumFractionDigits: 0,
-		}).format(amount)
 	}
 
 	return (
@@ -63,7 +58,9 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 				</div>
 				<div className='text-right'>
 					<p className='text-2xl font-bold text-main'>
-						{formatCurrency(data.reduce((sum, item) => sum + item.revenue, 0))}
+						<FormatCurrency
+							amount={data.reduce((sum, item) => sum + item.revenue, 0)}
+						/>
 					</p>
 					<p className='text-sm text-gray-600'>Tổng doanh thu</p>
 				</div>
@@ -94,7 +91,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 										{formatDate(item.date)}
 									</p>
 									<p className='text-xs font-medium text-gray-800 mt-1'>
-										{formatCurrency(item.revenue)}
+										<FormatCurrency amount={item.revenue} />
 									</p>
 								</div>
 							))}

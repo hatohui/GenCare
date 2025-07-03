@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'motion/react'
-import React, { useState } from 'react'
+import React, { useState, ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
 
 interface StatsCardProps {
 	title: string
-	value: string | number
+	value: ReactNode
 	subtitle?: string
 	icon: LucideIcon
 	trend?: {
