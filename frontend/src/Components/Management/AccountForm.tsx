@@ -16,6 +16,8 @@ import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import { CldImage } from 'next-cloudinary'
 import { toast } from 'react-hot-toast'
 import { formatDateForInput } from '@/Utils/dateTime'
+import { Department } from '@/Interfaces/Department/types/Department'
+import { Role } from '@/Interfaces/Role/types/Role'
 
 interface AccountFormProps {
 	initialData?: Account
@@ -23,6 +25,8 @@ interface AccountFormProps {
 	onCancel: () => void
 	isLoading?: boolean
 	isCreating?: boolean
+	departments?: Department[]
+	roles?: Role[]
 }
 
 export const AccountForm: React.FC<AccountFormProps> = ({
@@ -31,9 +35,14 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 	onCancel,
 	isLoading = false,
 	isCreating = false,
+	departments = [],
+	roles = [],
 }) => {
 	const [avatarUrl, setAvatarUrl] = useState(
 		(initialData as any)?.avatarUrl || ''
+	)
+	const [selectedRole, setSelectedRole] = useState(
+		initialData?.role?.name || ''
 	)
 
 	const {
@@ -57,6 +66,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 			degree: (initialData as any)?.degree || '',
 			yearOfExperience: (initialData as any)?.yearOfExperience || 0,
 			biography: (initialData as any)?.biography || '',
+			departmentId: (initialData as any)?.departmentId || '',
+			roleId: initialData?.role?.name || '',
 		},
 	})
 
@@ -82,14 +93,24 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 				dateOfBirth: data.dateOfBirth || undefined,
 				isDeleted: data.isDeleted,
 				avatarUrl: avatarUrl || undefined,
+				roleId: data.roleId || undefined,
 			},
 		}
 
-		if (data.degree || data.yearOfExperience || data.biography) {
+		if (
+			data.degree ||
+			data.yearOfExperience ||
+			data.biography ||
+			data.departmentId
+		) {
 			submitData.staffInfo = {
 				degree: data.degree || undefined,
 				yearOfExperience: data.yearOfExperience || undefined,
 				biography: data.biography || undefined,
+			}
+
+			if (data.departmentId) {
+				submitData.department = data.departmentId
 			}
 		}
 		onSave(submitData)
@@ -249,6 +270,36 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
 						<div>
 							<label
+								htmlFor='roleId'
+								className='block text-sm font-medium text-gray-700 mb-1'
+							>
+								Role
+							</label>
+							<select
+								id='roleId'
+								{...register('roleId', {
+									onChange: e => setSelectedRole(e.target.value),
+								})}
+								className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+							>
+								<option value=''>Select a role</option>
+								{roles
+									.filter(role => role.name.toLowerCase() !== 'admin')
+									.map(role => (
+										<option key={role.id} value={role.name}>
+											{role.name}
+										</option>
+									))}
+							</select>
+							{errors.roleId && (
+								<p className='mt-1 text-sm text-red-600'>
+									{errors.roleId.message}
+								</p>
+							)}
+						</div>
+
+						<div>
+							<label
 								htmlFor='dateOfBirth'
 								className='block text-sm font-medium text-gray-700 mb-1'
 							>
@@ -263,67 +314,95 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 						</div>
 					</div>
 
-					{/* Staff Information (if applicable) */}
-					<div className='border-t border-gray-200 pt-6'>
-						<h3 className='text-md font-medium text-gray-900 mb-4'>
-							Staff Information
-						</h3>
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-							<div>
-								<label
-									htmlFor='degree'
-									className='block text-sm font-medium text-gray-700 mb-1'
-								>
-									Degree
-								</label>
-								<input
-									type='text'
-									id='degree'
-									{...register('degree')}
-									className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-									placeholder='Enter degree/qualification'
-								/>
-							</div>
+					{/* Staff Information (only for members) */}
+					{selectedRole === 'member' && (
+						<div className='border-t border-gray-200 pt-6'>
+							<h3 className='text-md font-medium text-gray-900 mb-4'>
+								Staff Information
+							</h3>
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+								<div>
+									<label
+										htmlFor='degree'
+										className='block text-sm font-medium text-gray-700 mb-1'
+									>
+										Degree
+									</label>
+									<input
+										type='text'
+										id='degree'
+										{...register('degree')}
+										className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+										placeholder='Enter degree/qualification'
+									/>
+								</div>
 
-							<div>
-								<label
-									htmlFor='yearOfExperience'
-									className='block text-sm font-medium text-gray-700 mb-1'
-								>
-									Years of Experience
-								</label>
-								<input
-									type='number'
-									id='yearOfExperience'
-									{...register('yearOfExperience')}
-									min='0'
-									className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-									placeholder='Enter years of experience'
-								/>
-								{errors.yearOfExperience && (
-									<p className='mt-1 text-sm text-red-600'>
-										{errors.yearOfExperience.message}
-									</p>
-								)}
-							</div>
+								<div>
+									<label
+										htmlFor='yearOfExperience'
+										className='block text-sm font-medium text-gray-700 mb-1'
+									>
+										Years of Experience
+									</label>
+									<input
+										type='number'
+										id='yearOfExperience'
+										{...register('yearOfExperience')}
+										min='0'
+										className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+										placeholder='Enter years of experience'
+									/>
+									{errors.yearOfExperience && (
+										<p className='mt-1 text-sm text-red-600'>
+											{errors.yearOfExperience.message}
+										</p>
+									)}
+								</div>
 
-							<div className='md:col-span-2'>
-								<label
-									htmlFor='biography'
-									className='block text-sm font-medium text-gray-700 mb-1'
-								>
-									Biography
-								</label>
-								<textarea
-									id='biography'
-									{...register('biography')}
-									rows={4}
-									className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-									placeholder='Enter biography or professional summary'
-								/>
+								<div>
+									<label
+										htmlFor='departmentId'
+										className='block text-sm font-medium text-gray-700 mb-1'
+									>
+										Department
+									</label>
+									<select
+										id='departmentId'
+										{...register('departmentId')}
+										className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+									>
+										<option value=''>Select a department</option>
+										{departments.map(department => (
+											<option key={department.id} value={department.id}>
+												{department.name}
+											</option>
+										))}
+									</select>
+									{errors.departmentId && (
+										<p className='mt-1 text-sm text-red-600'>
+											{errors.departmentId.message}
+										</p>
+									)}
+								</div>
+
+								<div className='md:col-span-2'>
+									<label
+										htmlFor='biography'
+										className='block text-sm font-medium text-gray-700 mb-1'
+									>
+										Biography
+									</label>
+									<textarea
+										id='biography'
+										{...register('biography')}
+										rows={4}
+										className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+										placeholder='Enter biography or professional summary'
+									/>
+								</div>
 							</div>
 						</div>
-					</div>
+					)}
 
 					{/* Status */}
 					{!isCreating && (

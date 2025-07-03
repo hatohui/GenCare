@@ -3,6 +3,9 @@
 import React, { useState } from 'react'
 import { motion } from 'motion/react'
 import { PostAccountRequest } from '@/Interfaces/Account/Schema/account'
+import { useGetAllDepartments } from '@/Services/department-service'
+import { useGetAllRoles } from '@/Services/role-service'
+import { Department } from '@/Interfaces/Department/types/Department'
 
 interface CreateAccountFormProps {
 	onSave: (data: PostAccountRequest) => void
@@ -15,6 +18,12 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	onCancel,
 	isLoading = false,
 }) => {
+	const { data: departments } = useGetAllDepartments()
+	const { data: roles } = useGetAllRoles()
+
+	// Filter out admin role
+	const availableRoles = roles?.filter(role => role.name !== 'admin') || []
+
 	const [formData, setFormData] = useState({
 		firstName: '',
 		lastName: '',
@@ -28,8 +37,11 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 		degree: '',
 		yearOfExperience: 0,
 		biography: '',
-		department: '',
+		departmentId: '',
 	})
+
+	// Track selected role for conditional rendering
+	const [selectedRole, setSelectedRole] = useState<string>('')
 
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -48,6 +60,13 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 					? Number(value)
 					: value,
 		}))
+
+		// Update selectedRole when role changes
+		if (name === 'roleId') {
+			const selectedRoleData = availableRoles.find(role => role.id === value)
+			setSelectedRole(selectedRoleData?.name || '')
+		}
+
 		// Clear error when user starts typing
 		if (errors[name]) {
 			setErrors(prev => ({ ...prev, [name]: '' }))
@@ -86,23 +105,17 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 			newErrors.dateOfBirth = 'Date of birth is required'
 		}
 
-		// Validate staff info if any field is provided
-		const hasStaffInfo =
-			formData.degree ||
-			formData.yearOfExperience > 0 ||
-			formData.biography ||
-			formData.department
-		if (hasStaffInfo) {
+		// Validate staff info only if role is "member"
+		if (selectedRole === 'member') {
 			if (!formData.degree.trim()) {
-				newErrors.degree = 'Degree is required when providing staff information'
+				newErrors.degree = 'Degree is required for member role'
 			}
 			if (formData.yearOfExperience <= 0) {
 				newErrors.yearOfExperience =
-					'Years of experience must be greater than 0'
+					'Years of experience must be greater than 0 for member role'
 			}
-			if (!formData.department.trim()) {
-				newErrors.department =
-					'Department is required when providing staff information'
+			if (!formData.departmentId.trim()) {
+				newErrors.departmentId = 'Department is required for member role'
 			}
 		}
 
@@ -128,19 +141,14 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 			},
 		}
 
-		// Only include staffInfo if ALL required fields are present
-		const hasCompleteStaffInfo =
-			formData.degree.trim() &&
-			formData.yearOfExperience > 0 &&
-			formData.department.trim()
-
-		if (hasCompleteStaffInfo) {
+		// Only include staffInfo if role is "member"
+		if (selectedRole === 'member') {
 			submitData.staffInfo = {
 				degree: formData.degree,
 				yearOfExperience: formData.yearOfExperience,
 				biography: formData.biography || '',
 			}
-			submitData.department = formData.department // This will map to departmentId on the backend
+			submitData.department = formData.departmentId // This will map to departmentId on the backend
 		}
 
 		onSave(submitData)
@@ -311,11 +319,11 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							}`}
 						>
 							<option value=''>Select a role</option>
-							<option value='admin'>Admin</option>
-							<option value='manager'>Manager</option>
-							<option value='staff'>Staff</option>
-							<option value='consultant'>Consultant</option>
-							<option value='member'>Member</option>
+							{availableRoles.map(role => (
+								<option key={role.id} value={role.id}>
+									{role.name}
+								</option>
+							))}
 						</select>
 						{errors.roleId && (
 							<p className='mt-1 text-sm text-red-600'>{errors.roleId}</p>
@@ -379,107 +387,117 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 					</div>
 				</div>
 
-				{/* Staff Information (Optional) */}
-				<div className='border-t border-gray-200 pt-6'>
-					<h3 className='text-md font-medium text-gray-900 mb-2'>
-						Staff Information (Optional)
-					</h3>
-					<p className='text-sm text-gray-600 mb-4'>
-						If you provide staff information, all fields marked with * are
-						required.
-					</p>
-					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-						<div>
-							<label
-								htmlFor='degree'
-								className='block text-sm font-medium text-gray-700 mb-1'
-							>
-								Degree *
-							</label>
-							<input
-								type='text'
-								id='degree'
-								name='degree'
-								value={formData.degree}
-								onChange={handleChange}
-								className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-									errors.degree ? 'border-red-500' : 'border-gray-300'
-								}`}
-								placeholder='Enter degree/qualification'
-							/>
-							{errors.degree && (
-								<p className='mt-1 text-sm text-red-600'>{errors.degree}</p>
-							)}
-						</div>
+				{/* Staff Information - Only show for member role */}
+				{selectedRole === 'member' && (
+					<div className='border-t border-gray-200 pt-6'>
+						<h3 className='text-md font-medium text-gray-900 mb-2'>
+							Staff Information *
+						</h3>
+						<p className='text-sm text-gray-600 mb-4'>
+							All fields are required for member role.
+						</p>
+						<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+							<div>
+								<label
+									htmlFor='degree'
+									className='block text-sm font-medium text-gray-700 mb-1'
+								>
+									Degree *
+								</label>
+								<input
+									type='text'
+									id='degree'
+									name='degree'
+									value={formData.degree}
+									onChange={handleChange}
+									className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+										errors.degree ? 'border-red-500' : 'border-gray-300'
+									}`}
+									placeholder='Enter degree/qualification'
+								/>
+								{errors.degree && (
+									<p className='mt-1 text-sm text-red-600'>{errors.degree}</p>
+								)}
+							</div>
 
-						<div>
-							<label
-								htmlFor='yearOfExperience'
-								className='block text-sm font-medium text-gray-700 mb-1'
-							>
-								Years of Experience *
-							</label>
-							<input
-								type='number'
-								id='yearOfExperience'
-								name='yearOfExperience'
-								value={formData.yearOfExperience}
-								onChange={handleChange}
-								min='1'
-								className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-									errors.yearOfExperience ? 'border-red-500' : 'border-gray-300'
-								}`}
-								placeholder='Enter years of experience'
-							/>
-							{errors.yearOfExperience && (
-								<p className='mt-1 text-sm text-red-600'>
-									{errors.yearOfExperience}
-								</p>
-							)}
-						</div>
+							<div>
+								<label
+									htmlFor='yearOfExperience'
+									className='block text-sm font-medium text-gray-700 mb-1'
+								>
+									Years of Experience *
+								</label>
+								<input
+									type='number'
+									id='yearOfExperience'
+									name='yearOfExperience'
+									value={formData.yearOfExperience}
+									onChange={handleChange}
+									min='1'
+									className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+										errors.yearOfExperience
+											? 'border-red-500'
+											: 'border-gray-300'
+									}`}
+									placeholder='Enter years of experience'
+								/>
+								{errors.yearOfExperience && (
+									<p className='mt-1 text-sm text-red-600'>
+										{errors.yearOfExperience}
+									</p>
+								)}
+							</div>
 
-						<div>
-							<label
-								htmlFor='department'
-								className='block text-sm font-medium text-gray-700 mb-1'
-							>
-								Department *
-							</label>
-							<input
-								type='text'
-								id='department'
-								name='department'
-								value={formData.department}
-								onChange={handleChange}
-								className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-									errors.department ? 'border-red-500' : 'border-gray-300'
-								}`}
-								placeholder='Enter department ID'
-							/>
-							{errors.department && (
-								<p className='mt-1 text-sm text-red-600'>{errors.department}</p>
-							)}
-						</div>
+							<div>
+								<label
+									htmlFor='department'
+									className='block text-sm font-medium text-gray-700 mb-1'
+								>
+									Department *
+								</label>
+								<select
+									id='department'
+									name='department'
+									value={formData.departmentId}
+									onChange={handleChange}
+									className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+										errors.departmentId ? 'border-red-500' : 'border-gray-300'
+									}`}
+								>
+									<option value=''>Select a department</option>
+									{departments?.map(department => (
+										<option key={department.id} value={department.id}>
+											{department.name}
+										</option>
+									))}
+								</select>
+								{errors.departmentId && (
+									<p className='mt-1 text-sm text-red-600'>
+										{errors.departmentId}
+									</p>
+								)}
+							</div>
 
-						<div className='md:col-span-2'>
-							<label
-								htmlFor='biography'
-								className='block text-sm font-medium text-gray-700 mb-1'
-							>
-								Biography
-							</label>
-							<textarea
-								id='biography'
-								name='biography'
-								value={formData.biography}
-								onChange={handleChange}
-								rows={4}
-								className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-								placeholder='Enter biography or professional summary'
-							/>
+							<div className='md:col-span-2'>
+								<label
+									htmlFor='biography'
+									className='block text-sm font-medium text-gray-700 mb-1'
+								>
+									Biography
+								</label>
+								<textarea
+									id='biography'
+									name='biography'
+									value={formData.biography}
+									onChange={handleChange}
+									rows={4}
+									className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+									placeholder='Enter biography or professional summary'
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
+				)}
 
 				{/* Form Actions */}
 				<div className='flex justify-end gap-3 pt-6 border-t border-gray-200'>

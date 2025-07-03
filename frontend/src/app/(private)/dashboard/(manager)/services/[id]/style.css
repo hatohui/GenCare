@@ -30,7 +30,7 @@
 	}
 
 	.field-container {
-		@apply bg-gray-50 rounded-[12px] p-4 border border-gray-200 transition-all duration-200 hover:border-main/30;
+		@apply bg-gray-50 rounded-[12px] p-4 border border-gray-200 transition-all duration-200 hover:border-main hover:border-opacity-30;
 	}
 
 	.status-badge {

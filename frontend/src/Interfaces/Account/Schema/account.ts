@@ -32,6 +32,8 @@ export const accountFormSchema = z.object({
 		.min(0, 'Years of experience must be non-negative')
 		.optional(),
 	biography: z.string().optional(),
+	departmentId: z.string().optional(),
+	roleId: z.string().optional(),
 })
 
 // Create a schema for editing that makes most fields optional
@@ -66,6 +68,8 @@ export const accountEditSchema = z.object({
 		.min(0, 'Years of experience must be non-negative')
 		.optional(),
 	biography: z.string().optional(),
+	departmentId: z.string().optional(),
+	roleId: z.string().optional(),
 })
 
 export type AccountFormData = z.infer<typeof accountFormSchema>
@@ -152,7 +156,9 @@ export type DeleteAccountResponse = Required<
  * @return {StaffAccount} updated account
  */
 export type PutAccountRequest = {
-	account: Partial<Omit<Account, 'deletedAt' | 'deletedBy'>>
+	account: Partial<Omit<Account, 'deletedAt' | 'deletedBy' | 'role'>> & {
+		roleId?: string
+	}
 	staffInfo?: Partial<Omit<StaffInfo, 'accountId' | 'departmentId'>>
 	department?: string
 }

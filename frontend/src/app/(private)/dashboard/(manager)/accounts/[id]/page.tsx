@@ -8,12 +8,15 @@ import {
 	useUpdateAccount,
 	useDeleteAccount,
 } from '@/Services/account-service'
+import { useGetAllDepartments } from '@/Services/department-service'
+import { useGetAllRoles } from '@/Services/role-service'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { AccountForm } from '@/Components/Management/AccountForm'
 import { CldImage } from 'next-cloudinary'
 import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import ConfirmationModal from '@/Components/Common/ConfirmationModal'
 import { format } from 'date-fns'
+import toast from 'react-hot-toast'
 
 const ArrowLeftIcon = ({ className }: { className?: string }) => (
 	<svg
@@ -38,6 +41,7 @@ const AccountDetailPage = () => {
 	const [isEditing, setIsEditing] = useState(false)
 	const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false)
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+	const [imageLoadError, setImageLoadError] = useState(false)
 
 	const {
 		data: account,
@@ -45,6 +49,8 @@ const AccountDetailPage = () => {
 		isError,
 		refetch,
 	} = useGetAccountById(id || '')
+	const { data: departments } = useGetAllDepartments()
+	const { data: roles } = useGetAllRoles()
 	const updateMutation = useUpdateAccount()
 	const deleteMutation = useDeleteAccount()
 
@@ -89,7 +95,8 @@ const AccountDetailPage = () => {
 					refetch()
 				},
 				onError: error => {
-					console.error('Failed to update account:', error)
+					console.error('Error updating account:', error)
+					toast.error('Failed to update account')
 				},
 			}
 		)
@@ -102,10 +109,12 @@ const AccountDetailPage = () => {
 			{
 				onSuccess: () => {
 					setIsAvatarModalOpen(false)
+					setImageLoadError(false)
 					refetch()
 				},
 				onError: error => {
 					console.error('Error updating avatar:', error)
+					toast.error('Failed to update avatar')
 				},
 			}
 		)
@@ -121,13 +130,13 @@ const AccountDetailPage = () => {
 			},
 			onError: error => {
 				console.error('Failed to delete account:', error)
-				// You could show a toast notification here
+				toast.error('Failed to delete account')
 			},
 		})
 	}
 
 	const handlePaymentHistory = () => {
-		router.push(`/dashboard/payment-history?userId=${id}`)
+		router.push(`/dashboard/payments/${id}`)
 	}
 
 	return (
@@ -138,33 +147,33 @@ const AccountDetailPage = () => {
 			transition={{ duration: 0.5 }}
 		>
 			{/* Header */}
-			<div className='bg-gradient-to-r from-main to-secondary text-white shadow-lg'>
-				<div className='max-w-7xl mx-auto px-6 py-8'>
+			<div className='bg-white border-b border-gray-200 sticky top-0 z-10'>
+				<div className='max-w-7xl mx-auto px-6 py-4'>
 					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-6'>
-							<button
+						<div className='flex items-center gap-4'>
+							<motion.button
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
 								onClick={() => router.push('/dashboard/accounts')}
-								className='p-3 hover:bg-white/10 rounded-[12px] transition-colors'
+								className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
 							>
-								<ArrowLeftIcon className='w-6 h-6 text-white' />
-							</button>
-							<div className='flex-1'>
-								<h1 className='text-3xl font-bold text-white'>
-									Chi tiết tài khoản
+								<ArrowLeftIcon className='w-5 h-5 text-gray-600' />
+							</motion.button>
+							<div>
+								<h1 className='text-2xl font-bold text-gray-900'>
+									{account.firstName} {account.lastName}
 								</h1>
-								<p className='text-white/80 mt-2 text-lg'>
-									{account.firstName} {account.lastName} - {account.email}
-								</p>
+								<p className='text-gray-600 text-sm'>{account.email}</p>
 							</div>
 						</div>
-						<div className='flex items-center gap-3'>
+						<div className='flex items-center gap-2'>
 							{!isEditing ? (
 								<>
 									<motion.button
 										whileHover={{ scale: 1.02 }}
 										whileTap={{ scale: 0.98 }}
 										onClick={handlePaymentHistory}
-										className='px-6 py-3 bg-white/10 text-white rounded-[12px] hover:bg-white/20 transition-all duration-300 shadow-lg backdrop-blur-sm font-semibold'
+										className='px-4 py-2 text-main border border-main/20 rounded-lg hover:bg-main/5 transition-all duration-200 font-medium text-sm'
 									>
 										Lịch sử thanh toán
 									</motion.button>
@@ -172,7 +181,7 @@ const AccountDetailPage = () => {
 										whileHover={{ scale: 1.02 }}
 										whileTap={{ scale: 0.98 }}
 										onClick={() => setIsEditing(true)}
-										className='px-6 py-3 bg-accent text-white rounded-[12px] hover:bg-accent/90 transition-all duration-300 shadow-lg font-semibold'
+										className='px-4 py-2 bg-main text-white rounded-lg hover:bg-main/90 transition-all duration-200 font-medium text-sm'
 									>
 										Chỉnh sửa
 									</motion.button>
@@ -180,7 +189,7 @@ const AccountDetailPage = () => {
 										whileHover={{ scale: 1.02 }}
 										whileTap={{ scale: 0.98 }}
 										onClick={() => setIsDeleteModalOpen(true)}
-										className='px-6 py-3 bg-red-500 text-white rounded-[12px] hover:bg-red-600 transition-all duration-300 shadow-lg font-semibold'
+										className='px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all duration-200 font-medium text-sm'
 									>
 										Xóa
 									</motion.button>
@@ -190,7 +199,7 @@ const AccountDetailPage = () => {
 									whileHover={{ scale: 1.02 }}
 									whileTap={{ scale: 0.98 }}
 									onClick={() => setIsEditing(false)}
-									className='px-6 py-3 bg-gray-500 text-white rounded-[12px] hover:bg-gray-600 transition-all duration-300 shadow-lg font-semibold'
+									className='px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-sm'
 								>
 									Hủy
 								</motion.button>
@@ -199,89 +208,67 @@ const AccountDetailPage = () => {
 					</div>
 				</div>
 			</div>
-
-			{/* Content */}
-			<div className='max-w-7xl mx-auto px-6 py-8'>
-				{isEditing ? (
+			{/* Edit Modal */}
+			{isEditing && (
+				<div
+					className='fixed inset-0 bg-black/50 backdrop-blur-[6px] flex items-center justify-center z-50 p-4'
+					onClick={() => setIsEditing(false)}
+				>
 					<motion.div
-						className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden'
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6 }}
+						className='bg-white rounded-xl border border-gray-200 max-w-4xl w-full max-h-[90vh] overflow-hidden'
+						initial={{ opacity: 0, scale: 0.95 }}
+						animate={{ opacity: 1, scale: 1 }}
+						exit={{ opacity: 0, scale: 0.95 }}
+						transition={{ duration: 0.2 }}
+						onClick={e => e.stopPropagation()}
 					>
-						<div className='px-8 py-6 bg-gradient-to-r from-main/10 to-secondary/10 border-b border-gray-100'>
-							<h2 className='text-xl font-bold text-gray-800 flex items-center gap-3'>
-								<div className='w-10 h-10 bg-gradient-to-br from-main to-secondary rounded-[12px] flex items-center justify-center'>
-									<svg
-										className='w-5 h-5 text-white'
-										fill='none'
-										stroke='currentColor'
-										viewBox='0 0 24 24'
-									>
-										<path
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											strokeWidth={2}
-											d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
-										/>
-									</svg>
-								</div>
+						<div className='p-6 max-h-[90vh] overflow-y-auto'>
+							<h2 className='text-lg font-semibold text-gray-900 mb-6'>
 								Chỉnh sửa thông tin tài khoản
 							</h2>
-						</div>
-						<div className='p-8'>
 							<AccountForm
 								initialData={account}
 								onSave={handleSave}
 								onCancel={() => setIsEditing(false)}
 								isLoading={updateMutation.isPending}
+								departments={departments || []}
+								roles={roles || []}
 							/>
 						</div>
 					</motion.div>
-				) : (
-					<div className='space-y-8'>
+				</div>
+			)}
+
+			{/* Content */}
+			<div className='max-w-7xl mx-auto px-6 py-6'>
+				{!isEditing && (
+					<div className='space-y-6'>
 						{/* Avatar Section */}
 						<motion.div
-							className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden'
+							className='bg-white rounded-xl border border-gray-200'
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.1 }}
+							transition={{ duration: 0.4, delay: 0.1 }}
 						>
-							<div className='px-8 py-6 bg-gradient-to-r from-main/10 to-secondary/10 border-b border-gray-100'>
-								<h2 className='text-xl font-bold text-gray-800 flex items-center gap-3'>
-									<div className='w-10 h-10 bg-gradient-to-br from-main to-secondary rounded-[12px] flex items-center justify-center'>
-										<svg
-											className='w-5 h-5 text-white'
-											fill='none'
-											stroke='currentColor'
-											viewBox='0 0 24 24'
-										>
-											<path
-												strokeLinecap='round'
-												strokeLinejoin='round'
-												strokeWidth={2}
-												d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-											/>
-										</svg>
-									</div>
+							<div className='p-6'>
+								<h2 className='text-lg font-semibold text-gray-900 mb-6'>
 									Ảnh đại diện
 								</h2>
-							</div>
-							<div className='p-8'>
-								<div className='flex flex-col md:flex-row items-center gap-8'>
+								<div className='flex flex-col md:flex-row items-center gap-6'>
 									{/* Avatar */}
 									<div className='relative group'>
-										{account.avatarUrl ? (
+										{account.avatarUrl && !imageLoadError ? (
 											<CldImage
 												src={account.avatarUrl}
 												alt={`${account.firstName} ${account.lastName}`}
 												width={120}
 												height={120}
-												className='rounded-full border-4 border-gray-100 group-hover:border-main/30 transition-all duration-300 object-cover shadow-lg'
+												className='rounded-full border-2 border-gray-200 group-hover:border-main transition-all duration-200 object-cover'
+												onError={() => setImageLoadError(true)}
 											/>
 										) : (
-											<div className='w-[120px] h-[120px] rounded-full bg-gradient-to-br from-main to-secondary flex items-center justify-center border-4 border-gray-100 group-hover:border-main/30 transition-all duration-300 shadow-lg'>
-												<span className='text-white text-3xl font-bold'>
+											<div className='w-[120px] h-[120px] rounded-full bg-main flex items-center justify-center border-2 border-gray-200 group-hover:border-main transition-all duration-200'>
+												<span className='text-white text-3xl font-semibold'>
 													{account.firstName?.charAt(0) || '?'}
 													{account.lastName?.charAt(0) || ''}
 												</span>
@@ -289,13 +276,13 @@ const AccountDetailPage = () => {
 										)}
 										{/* Upload button overlay */}
 										<motion.button
-											whileHover={{ scale: 1.1 }}
-											whileTap={{ scale: 0.9 }}
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}
 											onClick={() => setIsAvatarModalOpen(true)}
-											className='absolute -bottom-2 -right-2 bg-accent text-white p-3 rounded-full shadow-lg border-3 border-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-accent/90'
+											className='absolute -bottom-1 -right-1 bg-main text-white p-2 rounded-full shadow-sm border-2 border-white opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-main/90'
 										>
 											<svg
-												className='w-5 h-5'
+												className='w-4 h-4'
 												fill='none'
 												stroke='currentColor'
 												viewBox='0 0 24 24'
@@ -318,12 +305,12 @@ const AccountDetailPage = () => {
 
 									{/* Basic Info */}
 									<div className='flex-1 text-center md:text-left'>
-										<h2 className='text-3xl font-bold text-gray-900 mb-4'>
+										<h2 className='text-2xl font-bold text-gray-900 mb-4'>
 											{account.firstName} {account.lastName}
 										</h2>
 										<div className='flex flex-col gap-3 text-gray-600 mb-6'>
 											<div className='flex items-center justify-center md:justify-start gap-3'>
-												<div className='w-8 h-8 bg-gradient-to-br from-main/20 to-secondary/20 rounded-[8px] flex items-center justify-center'>
+												<div className='w-8 h-8 bg-main/10 rounded-lg flex items-center justify-center'>
 													<svg
 														className='w-4 h-4 text-main'
 														fill='none'
@@ -341,7 +328,7 @@ const AccountDetailPage = () => {
 												<span className='font-medium'>{account.email}</span>
 											</div>
 											<div className='flex items-center justify-center md:justify-start gap-3'>
-												<div className='w-8 h-8 bg-gradient-to-br from-main/20 to-secondary/20 rounded-[8px] flex items-center justify-center'>
+												<div className='w-8 h-8 bg-main/10 rounded-lg flex items-center justify-center'>
 													<svg
 														className='w-4 h-4 text-main'
 														fill='none'
@@ -363,23 +350,23 @@ const AccountDetailPage = () => {
 										</div>
 										<div className='flex flex-wrap justify-center md:justify-start gap-3'>
 											<span
-												className={`inline-flex items-center px-4 py-2 rounded-[12px] text-sm font-bold shadow-md ${
+												className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium ${
 													account.isDeleted
-														? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-2 border-red-300'
-														: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-2 border-green-300'
+														? 'bg-red-50 text-red-700 border border-red-200'
+														: 'bg-green-50 text-green-700 border border-green-200'
 												}`}
 											>
 												<div
-													className={`w-3 h-3 rounded-full mr-2 ${
+													className={`w-2 h-2 rounded-full mr-2 ${
 														account.isDeleted ? 'bg-red-500' : 'bg-green-500'
 													}`}
 												/>
 												{account.isDeleted ? 'Đã xóa' : 'Hoạt động'}
 											</span>
-											<span className='inline-flex items-center px-4 py-2 rounded-[12px] text-sm font-bold shadow-md bg-gradient-to-r from-main/10 to-secondary/10 text-main border-2 border-main/20'>
+											<span className='inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-main/10 text-main border border-main/20'>
 												{account.role?.name || 'Không có vai trò'}
 											</span>
-											<span className='inline-flex items-center px-4 py-2 rounded-[12px] text-sm font-bold shadow-md bg-gradient-to-r from-accent/10 to-accent/20 text-accent border-2 border-accent/20'>
+											<span className='inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-accent/10 text-accent border border-accent/20'>
 												{account.gender ? 'Nam' : 'Nữ'}
 											</span>
 										</div>
@@ -388,187 +375,132 @@ const AccountDetailPage = () => {
 							</div>
 						</motion.div>
 
-						{/* Details Grid */}
-						<div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-							{/* Personal Information */}
-							<motion.div
-								className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden'
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.6, delay: 0.2 }}
-							>
-								<div className='px-8 py-6 bg-gradient-to-r from-secondary/10 to-main/10 border-b border-gray-100'>
-									<h3 className='text-lg font-bold text-gray-800 flex items-center gap-3'>
-										<div className='w-8 h-8 bg-gradient-to-br from-secondary to-main rounded-[8px] flex items-center justify-center'>
-											<svg
-												className='w-4 h-4 text-white'
-												fill='none'
-												stroke='currentColor'
-												viewBox='0 0 24 24'
-											>
-												<path
-													strokeLinecap='round'
-													strokeLinejoin='round'
-													strokeWidth={2}
-													d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-												/>
-											</svg>
-										</div>
-										Thông tin cá nhân
-									</h3>
-								</div>
-								<div className='p-8 space-y-6'>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
+						{/* Account Information */}
+						<motion.div
+							className='bg-white rounded-xl border border-gray-200'
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.4, delay: 0.2 }}
+						>
+							<div className='p-6'>
+								<h2 className='text-lg font-semibold text-gray-900 mb-6'>
+									Thông tin tài khoản
+								</h2>
+								<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+									<div>
+										<label className='block text-sm font-medium text-gray-500 mb-2'>
 											Họ
 										</label>
-										<p className='text-gray-900 font-medium text-lg'>
+										<p className='text-gray-900 font-medium'>
 											{account.firstName || 'Chưa cung cấp'}
 										</p>
 									</div>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
+									<div>
+										<label className='block text-sm font-medium text-gray-500 mb-2'>
 											Tên
 										</label>
-										<p className='text-gray-900 font-medium text-lg'>
+										<p className='text-gray-900 font-medium'>
 											{account.lastName || 'Chưa cung cấp'}
 										</p>
 									</div>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
+									<div>
+										<label className='block text-sm font-medium text-gray-500 mb-2'>
+											Email
+										</label>
+										<p className='text-gray-900 font-medium break-all'>
+											{account.email}
+										</p>
+									</div>
+									<div>
+										<label className='block text-sm font-medium text-gray-500 mb-2'>
+											Số điện thoại
+										</label>
+										<p className='text-gray-900 font-medium'>
+											{account.phoneNumber || 'Chưa cung cấp'}
+										</p>
+									</div>
+									<div>
+										<label className='block text-sm font-medium text-gray-500 mb-2'>
 											Ngày sinh
 										</label>
-										<p className='text-gray-900 font-medium text-lg'>
+										<p className='text-gray-900 font-medium'>
 											{account.dateOfBirth
 												? format(new Date(account.dateOfBirth), 'dd/MM/yyyy')
 												: 'Chưa cung cấp'}
 										</p>
 									</div>
-								</div>
-							</motion.div>
-
-							{/* Contact Information */}
-							<motion.div
-								className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden'
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.6, delay: 0.3 }}
-							>
-								<div className='px-8 py-6 bg-gradient-to-r from-main/10 to-secondary/10 border-b border-gray-100'>
-									<h3 className='text-lg font-bold text-gray-800 flex items-center gap-3'>
-										<div className='w-8 h-8 bg-gradient-to-br from-main to-secondary rounded-[8px] flex items-center justify-center'>
-											<svg
-												className='w-4 h-4 text-white'
-												fill='none'
-												stroke='currentColor'
-												viewBox='0 0 24 24'
-											>
-												<path
-													strokeLinecap='round'
-													strokeLinejoin='round'
-													strokeWidth={2}
-													d='M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
-												/>
-											</svg>
-										</div>
-										Thông tin liên hệ
-									</h3>
-								</div>
-								<div className='p-8 space-y-6'>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
-											Địa chỉ email
-										</label>
-										<p className='text-gray-900 font-medium text-lg break-all'>
-											{account.email}
-										</p>
-									</div>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
-											Số điện thoại
-										</label>
-										<p className='text-gray-900 font-medium text-lg'>
-											{account.phoneNumber || 'Chưa cung cấp'}
-										</p>
-									</div>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
+									<div>
+										<label className='block text-sm font-medium text-gray-500 mb-2'>
 											Vai trò
 										</label>
-										<p className='text-gray-900 font-medium text-lg'>
+										<p className='text-gray-900 font-medium'>
 											{account.role?.name || 'Chưa phân quyền'}
 										</p>
 									</div>
 								</div>
-							</motion.div>
+							</div>
+						</motion.div>
 
-							{/* Professional Information - Only show if staff data exists */}
-							{(account.degree ||
-								account.yearOfExperience ||
-								account.biography) && (
-								<motion.div
-									className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden lg:col-span-2'
-									initial={{ opacity: 0, y: 20 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.6, delay: 0.4 }}
-								>
-									<div className='px-8 py-6 bg-gradient-to-r from-accent/10 to-accent/20 border-b border-gray-100'>
-										<h3 className='text-lg font-bold text-gray-800 flex items-center gap-3'>
-											<div className='w-8 h-8 bg-gradient-to-br from-accent to-accent/80 rounded-[8px] flex items-center justify-center'>
-												<svg
-													className='w-4 h-4 text-white'
-													fill='none'
-													stroke='currentColor'
-													viewBox='0 0 24 24'
-												>
-													<path
-														strokeLinecap='round'
-														strokeLinejoin='round'
-														strokeWidth={2}
-														d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'
-													/>
-												</svg>
+						{/* Professional Information - Only show if staff data exists */}
+						{(account.degree ||
+							account.yearOfExperience ||
+							account.biography ||
+							(account as any).departmentName) && (
+							<motion.div
+								className='bg-white rounded-xl border border-gray-200'
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.4, delay: 0.3 }}
+							>
+								<div className='p-6'>
+									<h2 className='text-lg font-semibold text-gray-900 mb-6'>
+										Thông tin chuyên môn
+									</h2>
+									<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+										{(account as any).departmentName && (
+											<div>
+												<label className='block text-sm font-medium text-gray-500 mb-2'>
+													Khoa
+												</label>
+												<p className='text-gray-900 font-medium'>
+													{(account as any).departmentName}
+												</p>
 											</div>
-											Thông tin chuyên môn
-										</h3>
+										)}
+										{account.degree && (
+											<div>
+												<label className='block text-sm font-medium text-gray-500 mb-2'>
+													Bằng cấp
+												</label>
+												<p className='text-gray-900 font-medium'>
+													{account.degree}
+												</p>
+											</div>
+										)}
+										{account.yearOfExperience && (
+											<div>
+												<label className='block text-sm font-medium text-gray-500 mb-2'>
+													Năm kinh nghiệm
+												</label>
+												<p className='text-gray-900 font-medium'>
+													{account.yearOfExperience} năm
+												</p>
+											</div>
+										)}
+										{account.biography && (
+											<div className='md:col-span-2'>
+												<label className='block text-sm font-medium text-gray-500 mb-2'>
+													Tiểu sử
+												</label>
+												<p className='text-gray-900 leading-relaxed'>
+													{account.biography}
+												</p>
+											</div>
+										)}
 									</div>
-									<div className='p-8'>
-										<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-											{account.degree && (
-												<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-													<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
-														Bằng cấp
-													</label>
-													<p className='text-gray-900 font-medium text-lg'>
-														{account.degree}
-													</p>
-												</div>
-											)}
-											{account.yearOfExperience && (
-												<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-													<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
-														Năm kinh nghiệm
-													</label>
-													<p className='text-gray-900 font-medium text-lg'>
-														{account.yearOfExperience} năm
-													</p>
-												</div>
-											)}
-											{account.biography && (
-												<div className='md:col-span-2 bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-													<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2'>
-														Tiểu sử
-													</label>
-													<p className='text-gray-900 leading-relaxed text-lg'>
-														{account.biography}
-													</p>
-												</div>
-											)}
-										</div>
-									</div>
-								</motion.div>
-							)}
-						</div>
+								</div>
+							</motion.div>
+						)}
 					</div>
 				)}
 			</div>
@@ -588,16 +520,16 @@ const AccountDetailPage = () => {
 
 			{/* Avatar Upload Modal */}
 			{isAvatarModalOpen && (
-				<div className='fixed inset-0 bg-black/30 backdrop-blur-[6px] flex items-center justify-center z-50'>
+				<div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
 					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
+						initial={{ opacity: 0, scale: 0.95 }}
 						animate={{ opacity: 1, scale: 1 }}
-						className='bg-white rounded-[20px] p-8 shadow-2xl max-w-md w-full mx-4'
+						className='bg-white rounded-xl p-6 shadow-xl max-w-md w-full mx-4'
 					>
 						<div className='text-center mb-6'>
-							<div className='w-16 h-16 bg-gradient-to-br from-main to-secondary rounded-[16px] flex items-center justify-center mx-auto mb-4'>
+							<div className='w-12 h-12 bg-main rounded-lg flex items-center justify-center mx-auto mb-4'>
 								<svg
-									className='w-8 h-8 text-white'
+									className='w-6 h-6 text-white'
 									fill='none'
 									stroke='currentColor'
 									viewBox='0 0 24 24'
@@ -616,23 +548,25 @@ const AccountDetailPage = () => {
 									/>
 								</svg>
 							</div>
-							<h3 className='text-xl font-bold text-gray-900 mb-2'>
+							<h3 className='text-lg font-semibold text-gray-900 mb-2'>
 								Cập nhật ảnh đại diện
 							</h3>
-							<p className='text-gray-600'>Tải lên ảnh mới cho tài khoản này</p>
+							<p className='text-gray-600 text-sm'>
+								Tải lên ảnh mới cho tài khoản này
+							</p>
 						</div>
-						<div className='space-y-4'>
+						<div className='space-y-3'>
 							<CloudinaryButton
 								onUploaded={handleAvatarUpload}
 								uploadPreset='gencare'
 								text='Tải lên ảnh mới'
-								className='w-full px-6 py-4 bg-gradient-to-r from-main to-secondary hover:from-secondary hover:to-main text-white rounded-[12px] font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+								className='w-full px-4 py-2.5 bg-main hover:bg-main/90 text-white rounded-lg font-medium transition-all duration-200'
 							/>
 							<motion.button
-								whileHover={{ scale: 1.02 }}
-								whileTap={{ scale: 0.98 }}
+								whileHover={{ scale: 1.01 }}
+								whileTap={{ scale: 0.99 }}
 								onClick={() => setIsAvatarModalOpen(false)}
-								className='w-full px-6 py-4 border-2 border-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-50 transition-all duration-300 font-semibold'
+								className='w-full px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium'
 							>
 								Hủy
 							</motion.button>

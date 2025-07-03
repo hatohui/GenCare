@@ -85,6 +85,11 @@ const ItemCard = <T extends object>({
 		setIsConfirmationOpen(true)
 	}
 
+	// Check if this is an admin account (only for account modal type)
+	const isAdminAccount =
+		modalType === 'account' &&
+		(data as Account)?.role?.name?.toLowerCase() === 'admin'
+
 	const handleRestoreFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
 		setCurrentAction('restore')
@@ -166,14 +171,16 @@ const ItemCard = <T extends object>({
 							<RestoreSVG className='size-5 text-white' />
 						</div>
 					) : (
-						// Delete Button - Red for Delete
-						<div
-							className='itemCardButton bg-red-500 hover:bg-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
-							onClick={handleDeleteFunc}
-							tabIndex={1}
-						>
-							<TrashCanSVG className='size-5 text-white' />
-						</div>
+						// Delete Button - Red for Delete (only show if not admin account)
+						!isAdminAccount && (
+							<div
+								className='itemCardButton bg-red-500 hover:bg-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
+								onClick={handleDeleteFunc}
+								tabIndex={1}
+							>
+								<TrashCanSVG className='size-5 text-white' />
+							</div>
+						)
 					)}
 				</div>
 			</motion.button>
