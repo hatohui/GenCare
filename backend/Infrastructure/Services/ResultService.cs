@@ -66,6 +66,7 @@ public class ResultService(IResultRepository resultRepository,
 
         return new ViewTestResultResponse
         {
+            OrderDetailId = orderDetailId,
             OrderDate = testResult.OrderDate,
             SampleDate = testResult.SampleDate,
             ResultDate = testResult.ResultDate,
@@ -89,64 +90,87 @@ public class ResultService(IResultRepository resultRepository,
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown if the test result is not found.</exception>
     /// <exception cref="AppException">Thrown if the result date is earlier than the sample date.</exception>
-    public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId)
+   public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId)
+{
+    var testResult = await resultRepository.ViewResultAsync(orderDetailId)
+                     ?? throw new InvalidOperationException("Test result not found.");
+
+    bool isChanged = false;
+
+    var sampleDate = request.SampleDate?.ToLocalTime();
+    var resultDate = request.ResultDate?.ToLocalTime();
+
+    if (sampleDate != null && resultDate != null && resultDate < sampleDate)
+        throw new AppException(400, "Result date cannot be earlier than sample date.");
+
+    // OrderDate
+    if (request.OrderDate != null && ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate.Value))
     {
-        
-        var testResult = await resultRepository.ViewResultAsync(orderDetailId)
-                         ?? throw new InvalidOperationException("Test result not found.");
+        testResult.OrderDate = ToUnspecified(request.OrderDate.Value);
+        isChanged = true;
+    }
 
-        bool isChanged = false;
-
-        var sampleDate = request.SampleDate?.ToLocalTime();
-        var resultDate = request.ResultDate?.ToLocalTime();
-        if (sampleDate != null && resultDate != null && resultDate < sampleDate)
-            throw new AppException(400, "Result date cannot be earlier than sample date.");
-
-        if (request.OrderDate != null && ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate.Value))
+    // SampleDate
+    if (request.SampleDate != null)
+    {
+        if (!testResult.SampleDate.HasValue || ToUnspecified(testResult.SampleDate.Value) != ToUnspecified(sampleDate.Value))
         {
-            testResult.OrderDate = ToUnspecified(request.OrderDate.Value);
+            testResult.SampleDate = ToUnspecified(sampleDate.Value);
             isChanged = true;
         }
-        if (request.SampleDate != null && ToUnspecified(testResult.SampleDate.GetValueOrDefault()) != ToUnspecified(request.SampleDate.Value))
+    }
+
+    // ResultDate
+    if (request.ResultDate != null)
+    {
+        if (!testResult.ResultDate.HasValue || ToUnspecified(testResult.ResultDate.Value) != ToUnspecified(resultDate.Value))
         {
-            testResult.SampleDate = ToUnspecified(request.SampleDate.Value);
+            testResult.ResultDate = ToUnspecified(resultDate.Value);
             isChanged = true;
         }
-        if (request.ResultDate != null && ToUnspecified(testResult.ResultDate.GetValueOrDefault()) != ToUnspecified(request.ResultDate.Value))
+    }
+
+    // ResultData
+    if (request.ResultData != null)
+    {
+        var newResultDataJson = JsonConvert.SerializeObject(request.ResultData);
+        if (testResult.ResultData != newResultDataJson)
         {
-            testResult.ResultDate = ToUnspecified(request.ResultDate.Value);
+            testResult.ResultData = newResultDataJson;
             isChanged = true;
         }
-        if (request.Status != null && testResult.Status != request.Status.Value)
+    }
+
+    // Xử lý Status
+    if (request.Status != null)
+    {
+        if (request.Status == true)
+        {
+            // Muốn set TRUE thì bắt buộc phải đủ 3 trường
+            if (sampleDate == null || resultDate == null || request.ResultData == null)
+                throw new AppException(400, "To set status to true, SampleDate, ResultDate, and ResultData must be provided.");
+        }
+
+        if (testResult.Status != request.Status.Value)
         {
             testResult.Status = request.Status.Value;
             isChanged = true;
         }
-        if (request.ResultData != null)
-        {
-            // Serialize object lại thành JSON string để lưu
-            var newResultDataJson = JsonConvert.SerializeObject(request.ResultData);
-
-            if (testResult.ResultData != newResultDataJson)
-            {
-                testResult.ResultData = newResultDataJson;
-                isChanged = true;
-            }
-        }
-
-
-        if (isChanged)
-        {
-            testResult.UpdatedAt = ToUnspecified(DateTime.UtcNow);
-            await resultRepository.UpdateResultAsync(testResult);
-        }
-
-        return new UpdateTestResultResponse
-        {
-            Success = isChanged,
-            Message = isChanged ? "Updated successfully." : "No changes detected."
-        };
     }
+
+    // Final update
+    if (isChanged)
+    {
+        testResult.UpdatedAt = ToUnspecified(DateTime.UtcNow);
+        await resultRepository.UpdateResultAsync(testResult);
+    }
+
+    return new UpdateTestResultResponse
+    {
+        Success = isChanged,
+        Message = isChanged ? "Updated successfully." : "No changes detected."
+    };
+}
 
     /// <summary>
     /// Deletes a test result by OrderDetailId.
@@ -186,10 +210,12 @@ public class ResultService(IResultRepository resultRepository,
                     continue;
 
                 var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
+                var statusResult = await resultRepository.ViewResultAsync(od.Id);
                 if (service == null) continue;
 
                 result.Add(new BookedServiceModel
                 {
+                    Status = statusResult?.Status ?? false, 
                     OrderDetailId = od.Id,
                     ServiceName = service.Name,
                     FirstName = od.FirstName,
@@ -226,6 +252,7 @@ public class ResultService(IResultRepository resultRepository,
 
             responseList.Add(new ViewTestResultResponse
             {
+                OrderDetailId = testResult.OrderDetailId,
                 OrderDate = testResult.OrderDate,
                 SampleDate = testResult.SampleDate,
                 ResultDate = testResult.ResultDate,
