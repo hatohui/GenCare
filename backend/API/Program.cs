@@ -224,6 +224,7 @@ builder.Services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IManualPaymentService, ManualPaymentService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+builder.Services.AddScoped<IStatisticService, StatisticService>();
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>

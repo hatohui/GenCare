@@ -18,6 +18,12 @@ public class OrderDetailRepository(IApplicationDbContext dbContext) : IOrderDeta
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<List<OrderDetail>> GetAll()
+    {
+        return await dbContext.OrderDetails
+            .ToListAsync();
+    }
+
     public async Task<OrderDetail?> GetByIdAsync(Guid orderDetailId) 
         => await dbContext.OrderDetails.Include(od => od.Purchase).FirstOrDefaultAsync(od => od.Id == orderDetailId);
 
@@ -33,4 +39,6 @@ public class OrderDetailRepository(IApplicationDbContext dbContext) : IOrderDeta
             .Select(od => od.ServiceId)
             .Distinct()
             .ToListAsync();
+
+    
 }

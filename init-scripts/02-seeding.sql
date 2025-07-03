@@ -168,61 +168,128 @@ FROM "account" a, "department" d WHERE a.email = 'consultant17@example.com' AND 
 --   (SELECT id FROM "account" WHERE email = 'staff1@example.com'),
 --   NOW() + INTERVAL '1 day', 'booked', 'https://meeting.com/room1', NOW();
 
--- -- 11. Insert purchase
--- INSERT INTO "purchase" (account_id, created_at)
--- SELECT id, NOW() FROM "account" WHERE email = 'member1@example.com';
+-- 11. Insert purchase
+INSERT INTO "purchase" (account_id)
+SELECT id
+FROM "account"
+WHERE email IN (
+'member1@example.com',
+'member2@example.com',
+'member3@example.com',
+'member4@example.com',
+'member5@example.com',
+'member6@example.com',
+'member7@example.com',
+'member8@example.com',
+'member9@example.com',
+'member10@example.com',
+'member11@example.com',
+'member12@example.com',
+'member13@example.com',
+'member14@example.com',
+'member15@example.com',
+'member16@example.com',
+'member17@example.com',
+'member18@example.com',
+'member19@example.com',
+'member20@example.com',
+'member21@example.com',
+'member22@example.com',
+'member23@example.com',
+'member24@example.com',
+'member25@example.com',
+'member26@example.com',
+'member27@example.com',
+'member28@example.com',
+'member29@example.com'
+);
 
--- -- 12. Insert payment_history
--- INSERT INTO "payment_history" (purchase_id, transaction_id, created_at, amount, status, expired_at, payment_method)
--- SELECT
---   p.id, gen_random_uuid(), NOW(), 500.00, 'paid', NOW() + INTERVAL '7 days', 'momo'
--- FROM "purchase" p
--- LIMIT 1;
+-- 14. Insert order_detail
+  
+INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
+SELECT 
+  p.id,
+  (SELECT id FROM "service" WHERE name = 'Consultation'),
+  'David',
+  'Member',
+  '0909123456',
+  '2000-01-01',
+  TRUE
+FROM "purchase" p
+LIMIT 29;
+
+INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
+SELECT 
+  p.id,
+  (SELECT id FROM "service" WHERE name = 'Physiotherapy'),
+  'Huynh',
+  'Dong',
+  '036821920',
+  '2000-01-01',
+  TRUE
+FROM "purchase" p
+LIMIT 29;
+
+INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
+SELECT 
+  p.id,
+  (SELECT id FROM "service" WHERE name = 'Cholesterol Test'),
+  'Phat',
+  'Nguyen',
+  '0835666916',
+  '2004-03-22',
+  TRUE
+FROM "purchase" p
+LIMIT 29;
+
+-- 12. Insert payment_history
+INSERT INTO "payment_history" (purchase_id, transaction_id, created_at, amount, status, expired_at, payment_method)
+SELECT
+  p.id, gen_random_uuid(), NOW(), 200000, 'paid', NOW() + INTERVAL '7 days', 'momo'
+FROM "purchase" p
+LIMIT all;
+
+
 
 -- 13. Insert services
 INSERT INTO "service" (name, description, price, created_at, is_deleted)
 VALUES
-  ('Consultation', 'General health consultation', 200.00, NOW(), FALSE),
-  ('Blood Test', 'Basic blood analysis', 100.00, NOW(), FALSE),
-  ('X-ray', 'Radiological examination', 150.00, NOW(), FALSE),
-  ('MRI Scan', 'Magnetic resonance imaging', 500.00, NOW(), FALSE),
-  ('Ultrasound', 'Ultrasound examination', 250.00, NOW(), FALSE),
-  ('ECG', 'Electrocardiogram test', 120.00, NOW(), FALSE),
-  ('CT Scan', 'Computed tomography scan', 350.00, NOW(), FALSE),
-  ('Vaccine', 'Vaccination for various diseases', 80.00, NOW(), FALSE),
-  ('Physiotherapy', 'Physical therapy for rehabilitation', 300.00, NOW(), FALSE),
-  ('Dental Cleaning', 'Routine dental cleaning', 75.00, NOW(), FALSE),
-  ('Eye Exam', 'Comprehensive eye examination', 50.00, NOW(), FALSE),
-  ('Hearing Test', 'Audiometric examination', 90.00, NOW(), FALSE),
-  ('Cholesterol Test', 'Blood cholesterol level check', 60.00, NOW(), FALSE),
-  ('Blood Pressure Monitoring', 'Monitor blood pressure levels', 40.00, NOW(), FALSE),
-  ('Urine Test', 'Routine urine analysis', 45.00, NOW(), FALSE),
-  ('Diabetes Screening', 'Blood sugar level test', 70.00, NOW(), FALSE),
-  ('Surgery Consultation', 'Pre-surgery consultation', 150.00, NOW(), FALSE),
-  ('Dermatology', 'Skin health consultation', 200.00, NOW(), FALSE),
-  ('Psychological Counseling', 'Mental health consultation', 250.00, NOW(), FALSE),
-  ('Allergy Test', 'Test for allergies', 110.00, NOW(), FALSE),
-  ('Genetic Testing', 'Genetic disorder testing', 500.00, NOW(), FALSE),
-  ('Blood Donation', 'Donate blood for hospital use', 0.00, NOW(), FALSE),
-  ('HIV Test', 'Test for HIV infection', 90.00, NOW(), FALSE),
-  ('Pregnancy Test', 'Test to confirm pregnancy', 50.00, NOW(), FALSE),
-  ('Cancer Screening', 'General cancer screening', 300.00, NOW(), FALSE),
-  ('Liver Function Test', 'Test for liver health', 80.00, NOW(), FALSE),
-  ('Kidney Function Test', 'Test for kidney health', 80.00, NOW(), FALSE),
-  ('Mental Health Screening', 'Screening for mental health conditions', 150.00, NOW(), FALSE),
-  ('Surgical Procedure', 'Minor surgical procedures', 500.00, NOW(), FALSE),
-  ('Weight Loss Consultation', 'Consultation for weight management', 200.00, NOW(), FALSE),
-  ('Dietary Consultation', 'Nutrition and dietary advice', 120.00, NOW(), FALSE),
-  ('Smoking Cessation Counseling', 'Support for quitting smoking', 100.00, NOW(), FALSE),
-  ('Pain Management Consultation', 'Consultation for pain relief therapies', 250.00, NOW(), FALSE);
+  ('Consultation', 'General health consultation', 200000, NOW(), FALSE),
+  ('Blood Test', 'Basic blood analysis', 100000, NOW(), FALSE),
+  ('X-ray', 'Radiological examination', 150000, NOW(), FALSE),
+  ('MRI Scan', 'Magnetic resonance imaging', 500000, NOW(), FALSE),
+  ('Ultrasound', 'Ultrasound examination', 250000, NOW(), FALSE),
+  ('ECG', 'Electrocardiogram test', 120000, NOW(), FALSE),
+  ('CT Scan', 'Computed tomography scan', 350000, NOW(), FALSE),
+  ('Vaccine', 'Vaccination for various diseases', 80000, NOW(), FALSE),
+  ('Physiotherapy', 'Physical therapy for rehabilitation', 300000, NOW(), FALSE),
+  ('Dental Cleaning', 'Routine dental cleaning', 75000, NOW(), FALSE),
+  ('Eye Exam', 'Comprehensive eye examination', 50000, NOW(), FALSE),
+  ('Hearing Test', 'Audiometric examination', 90000, NOW(), FALSE),
+  ('Cholesterol Test', 'Blood cholesterol level check', 60000, NOW(), FALSE),
+  ('Blood Pressure Monitoring', 'Monitor blood pressure levels', 40000, NOW(), FALSE),
+  ('Urine Test', 'Routine urine analysis', 45000, NOW(), FALSE),
+  ('Diabetes Screening', 'Blood sugar level test', 70000, NOW(), FALSE),
+  ('Surgery Consultation', 'Pre-surgery consultation', 150000, NOW(), FALSE),
+  ('Dermatology', 'Skin health consultation', 200000, NOW(), FALSE),
+  ('Psychological Counseling', 'Mental health consultation', 250000, NOW(), FALSE),
+  ('Allergy Test', 'Test for allergies', 110000, NOW(), FALSE),
+  ('Genetic Testing', 'Genetic disorder testing', 500000, NOW(), FALSE),
+  ('Blood Donation', 'Donate blood for hospital use', 200000, NOW(), FALSE),
+  ('HIV Test', 'Test for HIV infection', 90000, NOW(), FALSE),
+  ('Pregnancy Test', 'Test to confirm pregnancy', 50000, NOW(), FALSE),
+  ('Cancer Screening', 'General cancer screening', 300000, NOW(), FALSE),
+  ('Liver Function Test', 'Test for liver health', 80000, NOW(), FALSE),
+  ('Kidney Function Test', 'Test for kidney health', 80000, NOW(), FALSE),
+  ('Mental Health Screening', 'Screening for mental health conditions', 150000, NOW(), FALSE),
+  ('Surgical Procedure', 'Minor surgical procedures', 500000, NOW(), FALSE),
+  ('Weight Loss Consultation', 'Consultation for weight management', 200000, NOW(), FALSE),
+  ('Dietary Consultation', 'Nutrition and dietary advice', 120000, NOW(), FALSE),
+  ('Smoking Cessation Counseling', 'Support for quitting smoking', 100000, NOW(), FALSE),
+  ('Pain Management Consultation', 'Consultation for pain relief therapies', 2500s00, NOW(), FALSE);
 
 
--- -- 14. Insert order_detail
--- INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
--- SELECT
---   (SELECT id FROM "purchase" LIMIT 1),
---   (SELECT id FROM "service" WHERE name = 'Consultation'),
---   'David', 'Member', '2233445566', '2000-04-04', TRUE;
+
 
 -- -- 15. Insert result
 -- INSERT INTO "result" (order_detail_id, order_date, sample_date, result_date, status, result_data, updated_at)
