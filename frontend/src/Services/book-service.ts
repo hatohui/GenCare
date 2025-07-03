@@ -152,7 +152,7 @@ export const useGetOrder = () => {
 		queryKey: ['getOrder'],
 		queryFn: () => bookingApi.GetOrder(header),
 		staleTime: 2 * 60 * 1000, // 2 minutes
-		...retryConfig,
+		retry: false, // Do not retry on error for faster feedback
 	})
 }
 

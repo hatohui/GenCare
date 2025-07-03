@@ -22,4 +22,6 @@ public interface IOrderDetailRepository
     Task<List<Guid>> GetDistinctServiceIdsByPurchaseIdAsync(Guid purchaseId);
 
     Task Delete(OrderDetail orderDetail);
+
+    Task<List<OrderDetail>> GetAll();
 }
