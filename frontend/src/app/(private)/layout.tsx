@@ -1,10 +1,19 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
 import { useAuthGuard } from '@/Hooks/Auth/useAuthGuard'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+	const [hydrated, setHydrated] = useState(false)
 	const { isUserLoading } = useAuthGuard()
+
+	useEffect(() => {
+		setHydrated(true)
+	}, [])
+
+	if (!hydrated) {
+		return null
+	}
 
 	if (isUserLoading) {
 		return (
