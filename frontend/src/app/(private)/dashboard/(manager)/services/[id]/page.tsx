@@ -10,6 +10,8 @@ import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { CldImage } from 'next-cloudinary'
+import { useDeleteMedia } from '@/Services/media-service'
+import { toast } from 'react-hot-toast'
 import {
 	Service,
 	UpdateServiceApiRequest,
@@ -21,6 +23,7 @@ const ServiceDetailPage = () => {
 	const serviceId =
 		params && typeof params.id === 'string' ? params.id : undefined
 	const updateServiceMutation = useUpdateService()
+	const deleteMediaMutation = useDeleteMedia()
 	const query = useServiceById(serviceId ?? '')
 	const [newImageUrls, setNewImageUrls] = useState<string[]>([])
 
@@ -33,7 +36,6 @@ const ServiceDetailPage = () => {
 	} = useEditableField({
 		query: query,
 		onSave: updatedData => {
-			// Combine existing images with new ones, ensuring we send List<string> to backend
 			const existingImageUrls =
 				updatedData.imageUrls?.map((img: any) =>
 					typeof img === 'string' ? img : img.url
@@ -45,19 +47,20 @@ const ServiceDetailPage = () => {
 				description: updatedData.description,
 				price: updatedData.price,
 				isDeleted: updatedData.isDeleted,
-				imageUrls: allImageUrls, // Send as List<string>
+				imageUrls: allImageUrls,
 			}
 
 			const result = updateServiceSchema.safeParse(updatedServiceDTO)
 
 			if (!result.success) {
 				console.error('Validation failed:', result.error)
+				toast.error('Validation failed. Please check your input.')
 			} else {
 				updateServiceMutation.mutate(
 					{ id: serviceId ?? '', data: result.data },
 					{
 						onSuccess: () => {
-							setNewImageUrls([]) // Clear new images after successful update
+							setNewImageUrls([])
 						},
 						onError: error => {
 							console.error('Update failed:', error)
@@ -75,6 +78,23 @@ const ServiceDetailPage = () => {
 	const handleImageUpload = (url: string, publicId: string) => {
 		console.log('🖼️ Service detail image uploaded:', { url, publicId })
 		setNewImageUrls(prev => [...prev, url])
+	}
+
+	const handleRemoveImage = (imageId: string, imageUrl: string) => {
+		if (imageId) {
+			deleteMediaMutation.mutate(imageId, {
+				onSuccess: () => {
+					toast.success('Image removed successfully')
+					query.refetch()
+				},
+				onError: () => {
+					toast.error('Failed to remove image')
+				},
+			})
+		} else {
+			setNewImageUrls(prev => prev.filter(url => url !== imageUrl))
+			toast.success('Image removed')
+		}
 	}
 
 	return queryUI ? (
@@ -135,12 +155,13 @@ const ServiceDetailPage = () => {
 						</div>
 						<div className='p-8'>
 							<div className='flex flex-col items-center space-y-8'>
+								{' '}
 								{serviceData?.imageUrls && serviceData.imageUrls.length > 0 ? (
 									<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full'>
 										{serviceData.imageUrls.map((img, index) => (
 											<motion.div
 												key={index}
-												className='relative aspect-square rounded-[16px] overflow-hidden shadow-lg border-2 border-gray-100 hover:shadow-xl hover:border-main/30 transition-all duration-300 group'
+												className='relative aspect-square rounded-[16px] overflow-hidden shadow-lg border-2 border-gray-100 hover:shadow-xl hover:border-main hover:border-opacity-30 transition-all duration-300 group'
 												whileHover={{ scale: 1.02, y: -2 }}
 												transition={{ duration: 0.2 }}
 											>
@@ -152,6 +173,54 @@ const ServiceDetailPage = () => {
 													className='object-cover w-full h-full group-hover:scale-105 transition-transform duration-300'
 												/>
 												<div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+
+												{/* Delete Button */}
+												<motion.button
+													onClick={e => {
+														e.stopPropagation()
+														const imageId =
+															typeof img === 'object' && img.id
+																? img.id
+																: undefined
+														const imageUrl =
+															typeof img === 'string' ? img : img.url
+														handleRemoveImage(imageId || '', imageUrl)
+													}}
+													className='absolute top-3 right-3 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 z-10'
+													whileHover={{ scale: 1.1 }}
+													whileTap={{ scale: 0.95 }}
+													disabled={deleteMediaMutation.isPending}
+												>
+													{deleteMediaMutation.isPending ? (
+														<svg
+															className='w-4 h-4 animate-spin'
+															fill='none'
+															stroke='currentColor'
+															viewBox='0 0 24 24'
+														>
+															<path
+																strokeLinecap='round'
+																strokeLinejoin='round'
+																strokeWidth={2}
+																d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+															/>
+														</svg>
+													) : (
+														<svg
+															className='w-4 h-4'
+															fill='none'
+															stroke='currentColor'
+															viewBox='0 0 24 24'
+														>
+															<path
+																strokeLinecap='round'
+																strokeLinejoin='round'
+																strokeWidth={2}
+																d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+															/>
+														</svg>
+													)}
+												</motion.button>
 											</motion.div>
 										))}
 									</div>
@@ -180,7 +249,6 @@ const ServiceDetailPage = () => {
 										</p>
 									</div>
 								)}
-
 								<CloudinaryButton
 									text={
 										serviceData?.imageUrls && serviceData.imageUrls.length > 0
@@ -190,7 +258,6 @@ const ServiceDetailPage = () => {
 									onUploaded={handleImageUpload}
 									className='px-8 py-4 bg-gradient-to-r from-main to-secondary hover:from-secondary hover:to-main text-white rounded-[12px] font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
 								/>
-
 								{/* Show new images that will be added */}
 								{newImageUrls.length > 0 && (
 									<div className='w-full'>
@@ -213,7 +280,7 @@ const ServiceDetailPage = () => {
 											<p className='text-base font-semibold text-accent'>
 												Hình ảnh mới sẽ được thêm:
 											</p>
-										</div>
+										</div>{' '}
 										<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
 											{newImageUrls.map((url, index) => (
 												<motion.div
@@ -233,6 +300,31 @@ const ServiceDetailPage = () => {
 														+
 													</div>
 													<div className='absolute inset-0 bg-gradient-to-t from-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+
+													{/* Delete Button for New Images */}
+													<motion.button
+														onClick={e => {
+															e.stopPropagation()
+															handleRemoveImage('', url)
+														}}
+														className='absolute top-3 left-3 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 z-10'
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.95 }}
+													>
+														<svg
+															className='w-4 h-4'
+															fill='none'
+															stroke='currentColor'
+															viewBox='0 0 24 24'
+														>
+															<path
+																strokeLinecap='round'
+																strokeLinejoin='round'
+																strokeWidth={2}
+																d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+															/>
+														</svg>
+													</motion.button>
 												</motion.div>
 											))}
 										</div>

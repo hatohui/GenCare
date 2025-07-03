@@ -25,6 +25,7 @@ const SearchBar = ({
 	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchParam(event.target.value)
 		debouncedPush(event.target.value)
+		onChange?.(event)
 	}
 
 	const createQueryString = useCallback(

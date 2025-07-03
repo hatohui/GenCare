@@ -1,4 +1,3 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	CreateScheduleRequest,
 	UpdateScheduleRequest,
@@ -7,9 +6,7 @@ import {
 } from '@/Interfaces/Schedule/Schema/schedule'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-
-const SCHEDULE_URL = `${DEFAULT_API_URL}/schedules`
+import axiosInstance from '@/Utils/axios'
 
 const scheduleApi = {
 	getAll: (header: string, startAt?: string, endAt?: string) => {
@@ -18,10 +15,10 @@ const scheduleApi = {
 		if (endAt) params.append('endAt', endAt)
 
 		const query = params.toString()
-			? `${SCHEDULE_URL}?${params.toString()}`
-			: SCHEDULE_URL
+			? `/schedules?${params.toString()}`
+			: '/schedules'
 
-		return axios
+		return axiosInstance
 			.get<ScheduleListResponse>(query, {
 				headers: { Authorization: header },
 			})
@@ -39,10 +36,10 @@ const scheduleApi = {
 		if (endAt) params.append('endAt', endAt)
 
 		const query = params.toString()
-			? `${SCHEDULE_URL}/${consultantId}?${params.toString()}`
-			: `${SCHEDULE_URL}/${consultantId}`
+			? `/schedules/${consultantId}?${params.toString()}`
+			: `/schedules/${consultantId}`
 
-		return axios
+		return axiosInstance
 			.get<ScheduleByConsultantResponse>(query, {
 				headers: { Authorization: header },
 			})
@@ -50,23 +47,23 @@ const scheduleApi = {
 	},
 
 	create: (header: string, data: CreateScheduleRequest) =>
-		axios
-			.post(SCHEDULE_URL, data, {
+		axiosInstance
+			.post('/schedules', data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.status), // Return status code (201)
 
 	update: (header: string, scheduleId: string, data: UpdateScheduleRequest) => {
-		return axios
-			.put(`${SCHEDULE_URL}/${scheduleId}`, data, {
+		return axiosInstance
+			.put(`/schedules/${scheduleId}`, data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.status) // Return status code (204)
 	},
 
 	delete: (header: string, scheduleId: string) =>
-		axios
-			.delete(`${SCHEDULE_URL}/${scheduleId}`, {
+		axiosInstance
+			.delete(`/schedules/${scheduleId}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.status), // Return status code

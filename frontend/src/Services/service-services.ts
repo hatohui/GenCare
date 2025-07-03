@@ -1,4 +1,3 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	CreateServiceApiResponse,
 	DeleteServiceApiResponse,
@@ -12,6 +11,8 @@ import { UpdateServiceApiRequest } from '@/Interfaces/Service/Types/Service'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import axiosInstance from '@/Utils/axios'
+import { DEFAULT_API_URL } from '@/Constants/API'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
@@ -54,9 +55,9 @@ const serviceApi = {
 			params.append('includeDeleted', includeDeleted.toString())
 		if (sortByAlphabetical) params.append('sortByAlphabetical', 'true')
 
-		const query = `${SERVICE_URL}/all?${params.toString()}`
+		const query = `/services/all?${params.toString()}`
 
-		return axios
+		return axiosInstance
 			.get<GetServiceByPageAdminResponse>(query, {
 				headers: { Authorization: header },
 			})
@@ -72,25 +73,25 @@ const serviceApi = {
 			.then(res => res.data),
 
 	create: (header: string, data: any) =>
-		axios
-			.post<CreateServiceApiResponse>(SERVICE_URL, data, {
+		axiosInstance
+			.post<CreateServiceApiResponse>('/services', data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data),
 
 	update: (header: string, id: string, data: UpdateServiceApiRequest) => {
-		console.log(`${SERVICE_URL}/${id}`)
+		console.log(`/services/${id}`)
 
-		return axios
-			.put<UpdateServiceApiResponse>(`${SERVICE_URL}/${id}`, data, {
+		return axiosInstance
+			.put<UpdateServiceApiResponse>(`/services/${id}`, data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
 	},
 
 	delete: (header: string, id: string) =>
-		axios
-			.delete<DeleteServiceApiResponse>(`${SERVICE_URL}/${id}`, {
+		axiosInstance
+			.delete<DeleteServiceApiResponse>(`/services/${id}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data),

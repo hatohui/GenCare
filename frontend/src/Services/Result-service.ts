@@ -1,15 +1,12 @@
-import axios from 'axios'
-import { DEFAULT_API_URL } from '@/Constants/API'
+import axiosInstance from '@/Utils/axios'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AllResultArray, Result } from '@/Interfaces/Tests/Types/Tests'
 
-const Result_URL = `${DEFAULT_API_URL}/result`
-
 const ResultAPI = {
 	GetTest: (header: string, orderDetailId: string) => {
-		return axios
-			.get<Omit<Result, 'orderDetailId'>>(`${Result_URL}/${orderDetailId}`, {
+		return axiosInstance
+			.get<Omit<Result, 'orderDetailId'>>(`/result/${orderDetailId}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
@@ -19,22 +16,22 @@ const ResultAPI = {
 		id: string,
 		data: Omit<Result, 'orderDetailId'>
 	) => {
-		return axios
-			.put(`${Result_URL}/${id}`, data, {
+		return axiosInstance
+			.put(`/result/${id}`, data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
 	},
 	DeleteTest: (header: string, id: string) => {
-		return axios
-			.delete(`${Result_URL}/${id}`, {
+		return axiosInstance
+			.delete(`/result/${id}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
 	},
 	getAllOrderDetail: (header: string) => {
-		return axios
-			.get<AllResultArray>(`${Result_URL}/all`, {
+		return axiosInstance
+			.get<AllResultArray>('/result/all', {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)

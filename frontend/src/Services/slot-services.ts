@@ -1,4 +1,3 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	CreateSlotRequest,
 	CreateSlotResponse,
@@ -8,14 +7,12 @@ import {
 } from '@/Interfaces/Slot/Schema/slot'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-
-const SLOT_URL = `${DEFAULT_API_URL}/slots`
+import axiosInstance from '@/Utils/axios'
 
 const slotApi = {
 	getAllAdmin: (header: string) => {
-		return axios
-			.get<GetSlotResponse>(SLOT_URL, {
+		return axiosInstance
+			.get<GetSlotResponse>('/slots', {
 				headers: { Authorization: header },
 			})
 			.then(res => {
@@ -25,23 +22,23 @@ const slotApi = {
 	},
 
 	create: (header: string, data: CreateSlotRequest) =>
-		axios
-			.post<CreateSlotResponse>(SLOT_URL, data, {
+		axiosInstance
+			.post<CreateSlotResponse>('/slots', data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data),
 
 	update: (header: string, id: string, data: UpdateSlotRequest) => {
-		return axios
-			.put<UpdateSlotResponse>(`${SLOT_URL}/${id}`, data, {
+		return axiosInstance
+			.put<UpdateSlotResponse>(`/slots/${id}`, data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
 	},
 
 	delete: (header: string, id: string) =>
-		axios
-			.delete<UpdateSlotResponse>(`${SLOT_URL}/${id}`, {
+		axiosInstance
+			.delete<UpdateSlotResponse>(`/slots/${id}`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data),

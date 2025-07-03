@@ -43,6 +43,7 @@ interface GeneralTestResult {
 type TestResultData = GeneralTestResult
 
 // Mock data generator (replace with your real data)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const generateMockTestResult = (): TestResultData => {
 	// Simple fake data for all service types
 	return {
@@ -110,6 +111,7 @@ const generateMockTestResult = (): TestResultData => {
 }
 
 // Component for rendering general test results
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const GeneralTestResultView = ({
 	data,
 }: {

@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { motion } from 'motion/react'
 import { CldImage } from 'next-cloudinary'
 import { toast } from 'react-hot-toast'
 import {
@@ -13,6 +12,12 @@ import {
 } from '@/Interfaces/Service/Schemas/service'
 import LoadingIcon from '../LoadingIcon'
 import { CloudinaryButton } from '../CloudinaryButton'
+import { useDeleteMedia } from '@/Services/media-service'
+
+interface ImageWithId {
+	id: string
+	url: string
+}
 
 interface ServiceFormProps {
 	initialData: ServiceDTO
@@ -27,12 +32,22 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 	onCancel,
 	isLoading = false,
 }) => {
-	const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-	const [imageUrls, setImageUrls] = useState<string[]>(
-		initialData.imageUrls?.map(img =>
-			typeof img === 'string' ? img : img.url
-		) || []
+	const deleteMediaMutation = useDeleteMedia()
+
+	// Convert initial imageUrls to ImageWithId format
+	const [existingImages] = useState<ImageWithId[]>(
+		initialData.imageUrls?.map(img => ({
+			id: typeof img === 'string' ? '' : img.id,
+			url: typeof img === 'string' ? img : img.url,
+		})) || []
 	)
+	const [newImageUrls, setNewImageUrls] = useState<string[]>([])
+	const [removedImageIds, setRemovedImageIds] = useState<string[]>([])
+
+	const displayImages = existingImages
+		.filter(img => !removedImageIds.includes(img.id))
+		.map(img => img.url)
+		.concat(newImageUrls)
 
 	const {
 		register,
@@ -49,9 +64,8 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 
 	const handleImageUpload = (url: string, publicId: string) => {
 		console.log('🖼️ Service image uploaded:', { url, publicId })
-		const newImageUrls = [...imageUrls, url]
-		setImageUrls(newImageUrls)
-		setIsImageModalOpen(false)
+		setNewImageUrls(prev => [...prev, url])
+		toast.success('Image uploaded successfully')
 	}
 
 	const handleUploadError = (error: string) => {
@@ -60,20 +74,53 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 	}
 
 	const handleRemoveImage = (index: number) => {
-		const newImageUrls = imageUrls.filter((_, i) => i !== index)
-		setImageUrls(newImageUrls)
+		const imageUrl = displayImages[index]
+
+		// Find if this is an existing image (has an ID) or new image (no ID)
+		const existingImage = existingImages.find(img => img.url === imageUrl)
+
+		if (existingImage && existingImage.id) {
+			// It's an existing image - mark for removal and delete from backend
+			setRemovedImageIds(prev => [...prev, existingImage.id])
+
+			// Optionally delete immediately from backend
+			deleteMediaMutation.mutate(existingImage.id, {
+				onSuccess: () => {
+					toast.success('Image removed successfully')
+				},
+				onError: () => {
+					toast.error('Failed to remove image')
+					// Revert the removal if backend deletion failed
+					setRemovedImageIds(prev => prev.filter(id => id !== existingImage.id))
+				},
+			})
+		} else {
+			// It's a new image - just remove from state
+			setNewImageUrls(prev => prev.filter(url => url !== imageUrl))
+			toast.success('Image removed')
+		}
 	}
 
 	const onSubmit = (data: ServiceFormSchema) => {
-		// Include the imageUrls as List<string> for the backend
+		// Only include existing images that weren't removed and new images
+		const existingImageUrls = existingImages
+			.filter(img => !removedImageIds.includes(img.id))
+			.map(img => img.url)
+		const finalImageUrls = [...existingImageUrls, ...newImageUrls]
+
 		const submitData = {
 			...data,
-			imageUrls: imageUrls, // This will be sent as List<string> to backend
+			imageUrls: finalImageUrls,
 		}
-		console.log(
-			'📤 Submitting Service Update:',
-			JSON.stringify(submitData, null, 2)
-		)
+
+		console.log('📤 Submitting Service Update:', {
+			existing: existingImages,
+			removed: removedImageIds,
+			new: newImageUrls,
+			final: finalImageUrls,
+			submitData,
+		})
+
 		onSave(submitData)
 	}
 
@@ -102,7 +149,6 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 			</div>
 
 			<form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-				{/* Service Image Section */}
 				<div className='flex flex-col items-center space-y-4 p-6 bg-gray-50 rounded-lg'>
 					<div className='text-center'>
 						<h3 className='text-lg font-medium text-gray-900 mb-2'>
@@ -112,42 +158,41 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 							Upload or manage images for this service
 						</p>
 
-						{/* Display current images if any */}
-						{imageUrls && imageUrls.length > 0 && (
+						{displayImages && displayImages.length > 0 && (
 							<div className='grid grid-cols-2 gap-2 mb-4'>
-								{imageUrls.slice(0, 4).map((imageUrl, index) => (
-									<div key={index} className='relative group w-20 h-20'>
-										<CldImage
-											src={imageUrl}
-											alt={`Service image ${index + 1}`}
-											width={80}
-											height={80}
-											className='object-cover rounded-lg border border-gray-200'
-										/>
-										{/* Remove button */}
-										<button
-											type='button'
-											onClick={() => handleRemoveImage(index)}
-											className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100'
-										>
-											×
-										</button>
-									</div>
-								))}
+								{displayImages
+									.slice(0, 4)
+									.map((imageUrl: string, index: number) => (
+										<div key={index} className='relative group w-20 h-20'>
+											<CldImage
+												src={imageUrl}
+												alt={`Service image ${index + 1}`}
+												width={80}
+												height={80}
+												className='object-cover rounded-lg border border-gray-200'
+											/>
+											<button
+												type='button'
+												onClick={() => handleRemoveImage(index)}
+												className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100'
+											>
+												×
+											</button>
+										</div>
+									))}
 							</div>
 						)}
 
-						<button
-							type='button'
-							onClick={() => setIsImageModalOpen(true)}
+						<CloudinaryButton
+							onUploaded={handleImageUpload}
+							onError={handleUploadError}
+							uploadPreset='gencare'
+							text={displayImages.length > 0 ? 'Add More Images' : 'Add Images'}
 							className='px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors'
-						>
-							{imageUrls.length > 0 ? 'Add More Images' : 'Add Images'}
-						</button>
+						/>
 					</div>
 				</div>
 
-				{/* Service Name */}
 				<div>
 					<label className='block text-sm font-medium text-gray-700 mb-2'>
 						Service Name <span className='text-red-500'>*</span>
@@ -165,7 +210,6 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 					)}
 				</div>
 
-				{/* Description */}
 				<div>
 					<label className='block text-sm font-medium text-gray-700 mb-2'>
 						Description
@@ -185,7 +229,6 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 					)}
 				</div>
 
-				{/* Price */}
 				<div>
 					<label className='block text-sm font-medium text-gray-700 mb-2'>
 						Price (VND) <span className='text-red-500'>*</span>
@@ -240,36 +283,6 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 					</button>
 				</div>
 			</form>
-
-			{/* Image Upload Modal */}
-			{isImageModalOpen && (
-				<div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						animate={{ opacity: 1, scale: 1 }}
-						className='bg-white rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4'
-					>
-						<h3 className='text-lg font-semibold text-gray-900 mb-4'>
-							Upload Service Images
-						</h3>
-						<div className='space-y-4'>
-							<CloudinaryButton
-								onUploaded={handleImageUpload}
-								onError={handleUploadError}
-								uploadPreset='gencare'
-								text='Upload New Image'
-								className='w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50'
-							/>
-							<button
-								onClick={() => setIsImageModalOpen(false)}
-								className='w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors'
-							>
-								Cancel
-							</button>
-						</div>
-					</motion.div>
-				</div>
-			)}
 		</div>
 	)
 }
