@@ -19,7 +19,7 @@ public class FeedbackController(IFeedbackService feedbackService) : ControllerBa
     /// <param name="request">The feedback creation request data.</param>
     /// <returns>A <see cref="CreatedResult"/> if the feedback is created successfully.</returns>
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Member}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Admin}")]
     public async Task<IActionResult> CreateFeedbackAsync([FromBody] FeedbackCreateRequest request)
     {
         //get access token from HttpContext
@@ -37,6 +37,8 @@ public class FeedbackController(IFeedbackService feedbackService) : ControllerBa
     /// <param name="id">The identifier of the service.</param>
     /// <returns>A list of feedbacks for the specified service.</returns>
     [HttpGet("{id}")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+
     public async Task<IActionResult> GetAllFeedbackByServiceAsync([FromRoute] string id)
     {
         //call service
