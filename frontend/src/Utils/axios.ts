@@ -8,6 +8,18 @@ const axiosInstance = axios.create({
 	withCredentials: true,
 })
 
+// Request interceptor to automatically add Authorization header
+axiosInstance.interceptors.request.use(
+	config => {
+		const token = useToken.getState().accessToken
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`
+		}
+		return config
+	},
+	error => Promise.reject(error)
+)
+
 axiosInstance.interceptors.response.use(
 	res => res,
 	async error => {

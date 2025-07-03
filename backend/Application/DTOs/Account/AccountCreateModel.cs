@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Account;
 
-public class StaffAccountCreateModel
+public class AccountCreateModel
 {
     public string Email { get; set; } = null!;
     public string RoleId { get; set; } = null!;

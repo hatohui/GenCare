@@ -1,4 +1,3 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	CreateServiceApiResponse,
 	DeleteServiceApiResponse,
@@ -9,9 +8,10 @@ import {
 	CreateServiceApiRequest,
 } from '@/Interfaces/Service/Schemas/service'
 import { UpdateServiceApiRequest } from '@/Interfaces/Service/Types/Service'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import axiosInstance from '@/Utils/axios'
+import { DEFAULT_API_URL } from '@/Constants/API'
 
 const SERVICE_URL = `${DEFAULT_API_URL}/services`
 
@@ -34,7 +34,6 @@ const serviceApi = {
 			})
 	},
 	getByPageAdmin: (
-		header: string,
 		page: number,
 		count: number,
 		orderByPrice: boolean | null,
@@ -54,16 +53,11 @@ const serviceApi = {
 			params.append('includeDeleted', includeDeleted.toString())
 		if (sortByAlphabetical) params.append('sortByAlphabetical', 'true')
 
-		const query = `${SERVICE_URL}/all?${params.toString()}`
+		const query = `/services/all?${params.toString()}`
 
-		return axios
-			.get<GetServiceByPageAdminResponse>(query, {
-				headers: { Authorization: header },
-			})
-			.then(res => {
-				console.log(res.data)
-				return res.data
-			})
+		return axiosInstance.get<GetServiceByPageAdminResponse>(query).then(res => {
+			return res.data
+		})
 	},
 
 	getById: (id: string) =>
@@ -71,28 +65,22 @@ const serviceApi = {
 			.get<GetServiceWithIdResponse>(`${SERVICE_URL}/${id}`)
 			.then(res => res.data),
 
-	create: (header: string, data: any) =>
-		axios
-			.post<CreateServiceApiResponse>(SERVICE_URL, data, {
-				headers: { Authorization: header },
-			})
+	create: (data: any) =>
+		axiosInstance
+			.post<CreateServiceApiResponse>('/services', data)
 			.then(res => res.data),
 
-	update: (header: string, id: string, data: UpdateServiceApiRequest) => {
-		console.log(`${SERVICE_URL}/${id}`)
+	update: (id: string, data: UpdateServiceApiRequest) => {
+		console.log(`/services/${id}`)
 
-		return axios
-			.put<UpdateServiceApiResponse>(`${SERVICE_URL}/${id}`, data, {
-				headers: { Authorization: header },
-			})
+		return axiosInstance
+			.put<UpdateServiceApiResponse>(`/services/${id}`, data)
 			.then(res => res.data)
 	},
 
-	delete: (header: string, id: string) =>
-		axios
-			.delete<DeleteServiceApiResponse>(`${SERVICE_URL}/${id}`, {
-				headers: { Authorization: header },
-			})
+	delete: (id: string) =>
+		axiosInstance
+			.delete<DeleteServiceApiResponse>(`/services/${id}`)
 			.then(res => res.data),
 }
 
@@ -145,8 +133,6 @@ export const useServiceByPageAdmin = (
 	orderByPrice: boolean | null,
 	sortByAlphabetical: boolean
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: [
 			'services',
@@ -159,7 +145,6 @@ export const useServiceByPageAdmin = (
 		],
 		queryFn: async () => {
 			return serviceApi.getByPageAdmin(
-				header,
 				page,
 				count,
 				orderByPrice,
@@ -169,7 +154,6 @@ export const useServiceByPageAdmin = (
 			)
 		},
 		placeholderData: keepPreviousData,
-		enabled: !!header,
 	})
 }
 
@@ -210,11 +194,8 @@ export const useServiceById = (id: string) => {
  */
 
 export const useCreateService = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (data: CreateServiceApiRequest) =>
-			serviceApi.create(header, data),
+		mutationFn: (data: CreateServiceApiRequest) => serviceApi.create(data),
 	})
 }
 /**
@@ -230,11 +211,9 @@ export const useCreateService = () => {
  */
 
 export const useUpdateService = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
 		mutationFn: ({ id, data }: { id: string; data: UpdateServiceApiRequest }) =>
-			serviceApi.update(header, id, data),
+			serviceApi.update(id, data),
 	})
 }
 
@@ -251,9 +230,7 @@ export const useUpdateService = () => {
  */
 
 export const useDeleteService = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (id: string) => serviceApi.delete(header, id),
+		mutationFn: (id: string) => serviceApi.delete(id),
 	})
 }
