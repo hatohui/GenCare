@@ -19,8 +19,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 		)
 	}
 
-	const maxRevenue = Math.max(...data.map(d => d.revenue))
-	const maxBookings = Math.max(...data.map(d => d.bookings))
+	const maxRevenue = Math.max(...data.map(d => d.revenue)) || 1
+	const maxBookings = Math.max(...data.map(d => d.bookings)) || 1
 
 	const formatDate = (dateString: string) => {
 		// Only format on client, fallback to raw date for SSR

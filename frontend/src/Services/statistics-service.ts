@@ -11,8 +11,15 @@ const statisticsApi = {
 		return axios
 			.get<AdminStatisticsResponse>(`${STATISTICS_URL}/admin`, {
 				headers: { Authorization: header },
+				timeout: 10000,
 			})
 			.then(res => res.data)
+			.catch(error => {
+				if (error.response?.status === 401) {
+					throw new Error('Unauthorized access to admin statistics')
+				}
+				throw error
+			})
 	},
 
 	getRevenueData: (

@@ -68,17 +68,25 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
 	}
 
 	const formatTime = (timestamp: string) => {
-		const date = new Date(timestamp)
-		const now = new Date()
-		const diffInMinutes = Math.floor(
-			(now.getTime() - date.getTime()) / (1000 * 60)
-		)
+		try {
+			const date = new Date(timestamp)
+			if (isNaN(date.getTime())) {
+				return 'Thời gian không hợp lệ'
+			}
+			const now = new Date()
+			const diffInMinutes = Math.floor(
+				(now.getTime() - date.getTime()) / (1000 * 60)
+			)
 
-		if (diffInMinutes < 1) return 'Vừa xong'
-		if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
-		if (diffInMinutes < 1440)
-			return `${Math.floor(diffInMinutes / 60)} giờ trước`
-		return date.toLocaleDateString('en-US')
+			if (diffInMinutes < 1) return 'Vừa xong'
+			if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
+			if (diffInMinutes < 1440)
+				return `${Math.floor(diffInMinutes / 60)} giờ trước`
+			return date.toLocaleDateString('en-US')
+		} catch (error) {
+			console.error('Error formatting time:', error)
+			return 'Thời gian không hợp lệ'
+		}
 	}
 
 	if (!activities || activities.length === 0) {
