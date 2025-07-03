@@ -12,6 +12,7 @@ import Pagination from './Pagination'
 import { useSearchParams } from 'next/navigation'
 import { Account } from '@/Interfaces/Auth/Types/Account'
 import { toast } from 'react-hot-toast'
+import ConfirmDialog from '../ConfirmationDialog'
 
 const AccountList = () => {
 	const [page, setPage] = useState<number>(1)
@@ -26,6 +27,29 @@ const AccountList = () => {
 	)
 	const updateAccountMutation = useUpdateAccount()
 
+	// Confirmation dialog states
+	const [deleteDialog, setDeleteDialog] = useState<{
+		isOpen: boolean
+		accountId: string
+		accountName: string
+	}>({
+		isOpen: false,
+		accountId: '',
+		accountName: '',
+	})
+
+	const [restoreDialog, setRestoreDialog] = useState<{
+		isOpen: boolean
+		accountId: string
+		accountName: string
+		accountData: Account | null
+	}>({
+		isOpen: false,
+		accountId: '',
+		accountName: '',
+		accountData: null,
+	})
+
 	const { isLoading, isError, isFetching, data } = query
 
 	console.log(data)
@@ -35,29 +59,73 @@ const AccountList = () => {
 	}, [search])
 
 	const handleDelete = (id: string) => {
-		accountDeleteMutate.mutate(id, {
+		// Find the account to get its name for the confirmation dialog
+		const account = data?.accounts?.find(acc => acc.id === id)
+		const accountName = account
+			? `${account.firstName} ${account.lastName}`
+			: 'this account'
+
+		setDeleteDialog({
+			isOpen: true,
+			accountId: id,
+			accountName,
+		})
+	}
+
+	const confirmDelete = () => {
+		accountDeleteMutate.mutate(deleteDialog.accountId, {
 			onSuccess: () => {
 				query.refetch()
 				toast.success('Account deleted successfully')
+				setDeleteDialog({ isOpen: false, accountId: '', accountName: '' })
 			},
 			onError: error => {
 				console.error('Failed to delete account:', error)
 				toast.error('Failed to delete account')
+				setDeleteDialog({ isOpen: false, accountId: '', accountName: '' })
 			},
 		})
 	}
 
 	const handleRestore = (id: string, data: Account) => {
+		const accountName = `${data.firstName} ${data.lastName}`
+
+		setRestoreDialog({
+			isOpen: true,
+			accountId: id,
+			accountName,
+			accountData: data,
+		})
+	}
+
+	const confirmRestore = () => {
+		if (!restoreDialog.accountData) return
+
 		updateAccountMutation.mutate(
-			{ id, data: { account: { ...data, isDeleted: false } } },
+			{
+				id: restoreDialog.accountId,
+				data: { account: { ...restoreDialog.accountData, isDeleted: false } },
+			},
 			{
 				onSuccess: () => {
 					query.refetch()
 					toast.success('Account restored successfully')
+					setRestoreDialog({
+						isOpen: false,
+						accountId: '',
+						accountName: '',
+						accountData: null,
+					})
 				},
 				onError: error => {
 					console.error('Failed to restore account:', error)
 					toast.error('Failed to restore account')
+					setRestoreDialog({
+						isOpen: false,
+						accountId: '',
+						accountName: '',
+						accountData: null,
+					})
 				},
 			}
 		)
@@ -145,6 +213,39 @@ const AccountList = () => {
 					/>
 				</div>
 			)}
+
+			{/* Delete Confirmation Dialog */}
+			<ConfirmDialog
+				isOpen={deleteDialog.isOpen}
+				title='Xác nhận xóa tài khoản'
+				message={`Bạn có chắc chắn muốn xóa tài khoản "${deleteDialog.accountName}"? Hành động này có thể được hoàn tác sau.`}
+				onConfirm={confirmDelete}
+				onCancel={() =>
+					setDeleteDialog({ isOpen: false, accountId: '', accountName: '' })
+				}
+				confirmButtonVariant='danger'
+				confirmButtonText='Xóa'
+				cancelButtonText='Hủy'
+			/>
+
+			{/* Restore Confirmation Dialog */}
+			<ConfirmDialog
+				isOpen={restoreDialog.isOpen}
+				title='Xác nhận khôi phục tài khoản'
+				message={`Bạn có chắc chắn muốn khôi phục tài khoản "${restoreDialog.accountName}"?`}
+				onConfirm={confirmRestore}
+				onCancel={() =>
+					setRestoreDialog({
+						isOpen: false,
+						accountId: '',
+						accountName: '',
+						accountData: null,
+					})
+				}
+				confirmButtonVariant='primary'
+				confirmButtonText='Khôi phục'
+				cancelButtonText='Hủy'
+			/>
 		</>
 	)
 }
