@@ -5,13 +5,17 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useState, useMemo, useCallback } from 'react'
 import FloatingLabelInput from '../Form/FloatingLabel'
 
+interface SearchBarProps {
+	className?: string
+	waitTime?: number
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
 const SearchBar = ({
 	waitTime = 1000,
 	className = '',
-}: {
-	waitTime?: number
-	className?: string
-}) => {
+	onChange,
+}: SearchBarProps) => {
 	const searchParams = useSearchParams()
 	const search = searchParams?.get('search')
 	const [searchParam, setSearchParam] = useState(search)
@@ -47,7 +51,10 @@ const SearchBar = ({
 			id='search'
 			value={searchParam ?? ''}
 			className={clsx(className ? className : '', 'font-light')}
-			onChange={handleSearch}
+			onChange={e => {
+				handleSearch(e)
+				if (onChange) onChange(e)
+			}}
 			aria-label='Search bar'
 		/>
 	)
