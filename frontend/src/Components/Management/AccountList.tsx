@@ -11,6 +11,7 @@ import {
 import Pagination from './Pagination'
 import { useSearchParams } from 'next/navigation'
 import { Account } from '@/Interfaces/Auth/Types/Account'
+import { toast } from 'react-hot-toast'
 
 const AccountList = () => {
 	const [page, setPage] = useState<number>(1)
@@ -37,8 +38,12 @@ const AccountList = () => {
 		accountDeleteMutate.mutate(id, {
 			onSuccess: () => {
 				query.refetch()
+				toast.success('Account deleted successfully')
 			},
-			onError: () => {},
+			onError: error => {
+				console.error('Failed to delete account:', error)
+				toast.error('Failed to delete account')
+			},
 		})
 	}
 
@@ -48,8 +53,12 @@ const AccountList = () => {
 			{
 				onSuccess: () => {
 					query.refetch()
+					toast.success('Account restored successfully')
 				},
-				onError: () => {},
+				onError: error => {
+					console.error('Failed to restore account:', error)
+					toast.error('Failed to restore account')
+				},
 			}
 		)
 	}

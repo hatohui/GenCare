@@ -9,6 +9,7 @@ import {
 } from '@/Services/slot-services'
 import clsx from 'clsx'
 import React, { useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 const SlotsPage = () => {
 	const deleteMutation = useDeleteSlot()
@@ -23,8 +24,12 @@ const SlotsPage = () => {
 		deleteMutation.mutate(id, {
 			onSuccess: () => {
 				query.refetch()
+				toast.success('Slot deleted successfully')
 			},
-			onError: () => {},
+			onError: error => {
+				console.error('Failed to delete slot:', error)
+				toast.error('Failed to delete slot')
+			},
 		})
 	}
 
@@ -34,8 +39,12 @@ const SlotsPage = () => {
 			{
 				onSuccess: () => {
 					query.refetch()
+					toast.success('Slot restored successfully')
 				},
-				onError: () => {},
+				onError: error => {
+					console.error('Failed to restore slot:', error)
+					toast.error('Failed to restore slot')
+				},
 			}
 		)
 	}

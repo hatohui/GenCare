@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { CreateSlotRequest } from '@/Interfaces/Slot/Schema/slot'
 import { z } from 'zod'
 import { parseISO } from 'date-fns'
+import { toast } from 'react-hot-toast'
 
 const slotSchema = z.object({
 	no: z.coerce.number().positive('Slot number must be greater than 0'),
@@ -58,6 +59,11 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 				reset()
 				onSuccess?.()
 				onClose?.()
+				toast.success('Slot created successfully')
+			},
+			onError: error => {
+				console.error('Failed to create slot:', error)
+				toast.error('Failed to create slot')
 			},
 			onSettled: () => setLoading(false),
 		})

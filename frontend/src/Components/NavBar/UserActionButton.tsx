@@ -5,6 +5,7 @@ import { UserSVG } from '../SVGs'
 import { useRouter } from 'next/navigation'
 import { useLogoutAccount } from '@/Services/auth-service'
 import useToken from '@/Hooks/Auth/useToken'
+import { toast } from 'react-hot-toast'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	const tokenStore = useToken()
@@ -17,9 +18,11 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 		logout(undefined, {
 			onSuccess: () => {
 				router.push('/login')
+				toast.success('Logged out successfully')
 			},
 			onError: () => {
 				console.error('Logout failed')
+				toast.error('Failed to logout')
 			},
 		})
 	}

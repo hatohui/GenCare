@@ -7,6 +7,7 @@ import {
 	useUpdateAccount,
 } from '@/Services/account-service'
 import { Account } from '@/Interfaces/Auth/Types/Account'
+import { toast } from 'react-hot-toast'
 
 export const useAccountManagement = () => {
 	const [page, setPage] = useState<number>(1)
@@ -32,8 +33,12 @@ export const useAccountManagement = () => {
 		accountDeleteMutate.mutate(id, {
 			onSuccess: () => {
 				query.refetch()
+				toast.success('Account deleted successfully')
 			},
-			onError: () => {},
+			onError: error => {
+				console.error('Failed to delete account:', error)
+				toast.error('Failed to delete account')
+			},
 		})
 	}
 
@@ -43,8 +48,12 @@ export const useAccountManagement = () => {
 			{
 				onSuccess: () => {
 					query.refetch()
+					toast.success('Account restored successfully')
 				},
-				onError: () => {},
+				onError: error => {
+					console.error('Failed to restore account:', error)
+					toast.error('Failed to restore account')
+				},
 			}
 		)
 	}
@@ -55,8 +64,12 @@ export const useAccountManagement = () => {
 			{
 				onSuccess: () => {
 					query.refetch()
+					toast.success('Account updated successfully')
 				},
-				onError: () => {},
+				onError: error => {
+					console.error('Failed to update account:', error)
+					toast.error('Failed to update account')
+				},
 			}
 		)
 	}

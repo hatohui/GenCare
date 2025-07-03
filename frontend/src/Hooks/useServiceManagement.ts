@@ -7,6 +7,7 @@ import {
 	useServiceByPageAdmin,
 	useUpdateService,
 } from '@/Services/service-services'
+import { toast } from 'react-hot-toast'
 
 export const useServiceManagement = () => {
 	const [currentPage, setCurrentPage] = useState(1)
@@ -39,8 +40,12 @@ export const useServiceManagement = () => {
 		deleteMutation.mutate(id, {
 			onSuccess: () => {
 				query.refetch()
+				toast.success('Service deleted successfully')
 			},
-			onError: () => {},
+			onError: error => {
+				console.error('Failed to delete service:', error)
+				toast.error('Failed to delete service')
+			},
 		})
 	}
 
@@ -57,8 +62,12 @@ export const useServiceManagement = () => {
 			{
 				onSuccess: () => {
 					query.refetch()
+					toast.success('Service restored successfully')
 				},
-				onError: () => {},
+				onError: error => {
+					console.error('Failed to restore service:', error)
+					toast.error('Failed to restore service')
+				},
 			}
 		)
 	}
@@ -69,8 +78,12 @@ export const useServiceManagement = () => {
 			{
 				onSuccess: () => {
 					query.refetch()
+					toast.success('Service updated successfully')
 				},
-				onError: () => {},
+				onError: error => {
+					console.error('Failed to update service:', error)
+					toast.error('Failed to update service')
+				},
 			}
 		)
 	}

@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { CreateAccountForm } from './CreateAccountForm'
 import { useCreateAccount } from '@/Services/account-service'
 import { PostAccountRequest } from '@/Interfaces/Account/Schema/account'
+import { toast } from 'react-hot-toast'
 
 // Simple X icon component
 const XIcon = ({ className }: { className?: string }) => (
@@ -41,9 +42,11 @@ const AddNewAccountForm: React.FC<AddNewAccountFormProps> = ({
 			onSuccess: () => {
 				onSuccess()
 				onClose()
+				toast.success('Account created successfully')
 			},
 			onError: error => {
 				console.error('Failed to create account:', error)
+				toast.error('Failed to create account')
 			},
 		})
 	}
