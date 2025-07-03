@@ -48,19 +48,15 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
     /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPost]
-    public async Task<IActionResult> CreateStaffAccountAsync(
-        [FromBody] StaffAccountCreateRequest request
+    public async Task<IActionResult> CreateAccountAsync(
+        [FromBody] AccountCreateRequest request
     )
     {
         //get access token from header
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
-        //check if access token is null or empty
-        if (string.IsNullOrEmpty(accessToken))
-            return Unauthorized("Access token is required.");
         //create
-        var result = await accountService.CreateStaffAccountAsync(request, accessToken);
-        return Created($"api/accounts/{result.Id}", result);
-        //IActionResult: Ok, BadRequest, Unauthorized, NotFound, etc.
+        await accountService.CreateAccountAsync(request, accessToken);
+        return Created();
     }
 
     [HttpGet("me")]

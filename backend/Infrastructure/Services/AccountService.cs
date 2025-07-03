@@ -356,46 +356,34 @@ public class AccountService
         };
     }
 
-    public async Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken)
+    public async Task CreateAccountAsync(AccountCreateRequest request, string accessToken)
     {
-        //check if the user has permission to create staff accounts
-        var role = JwtHelper.GetRoleFromAccessToken(accessToken);
-        if (role == null)
-            throw new AppException(401, "Invalid access token. Role not found.");
-        if (role.ToLower() != RoleNames.Admin.ToLower())
-            throw new AppException(401, "Invalid account to create staff account.");
         //get account id in access token
         var id = JwtHelper.GetAccountIdFromToken(accessToken);
-        // Check if the account already exists by email
-
-        //check in cache
-        var cacheKey = $"account:{request.AccountRequest!.Email.ToLower()}"; // using email as cache key
-        var cachedAccount = await distributedCache.GetStringAsync(cacheKey);
-        if (!string.IsNullOrEmpty(cachedAccount))
-        {
-            // If found in cache, deserialize and return
-            // convert string to Account object
-            var existingAccount = Newtonsoft.Json.JsonConvert.DeserializeObject<Account>(cachedAccount);
-
-            if (existingAccount != null)
-                throw new AppException(409, "Account with this email already exists.");
-        }
-        //check in database
+        // Check if the account already exists by emai
         var existingStaff = await accountRepo.GetByEmailAsync(request.AccountRequest!.Email);
         if (existingStaff != null)
         {
-            // store the account in cache in 10 minutes
-            // convert Account to string
-            var accountJson = Newtonsoft.Json.JsonConvert.SerializeObject(existingStaff);
-            // set cache with 10 minutes expiration
-            var cacheOptions = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            };
-            // set cache
-            await distributedCache.SetStringAsync(cacheKey, accountJson, cacheOptions);
-
             throw new AppException(409, "Account with this email already exists.");
+        }
+        //get role
+        var role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.AccountRequest.RoleId));
+        if (role == null)
+        {
+            throw new AppException(404, "Role id is invalid.");
+        }
+        if (string.Equals(role.Name, RoleNames.Member, StringComparison.OrdinalIgnoreCase) && request.StaffInfoRequest != null)
+        {
+            throw new AppException(400, "Member cannot have staff info");
+        }
+
+        bool isStaff = false;
+        if (string.Equals(role.Name, RoleNames.Staff, StringComparison.OrdinalIgnoreCase)) isStaff = true;
+        if (string.Equals(role.Name, RoleNames.Consultant, StringComparison.OrdinalIgnoreCase)) isStaff = true;
+        if (string.Equals(role.Name, RoleNames.Manager, StringComparison.OrdinalIgnoreCase)) isStaff = true;
+        if (isStaff && request.StaffInfoRequest == null)
+        {
+            throw new AppException(400, "Staff must have staff info");
         }
 
         // Create the account
@@ -410,54 +398,25 @@ public class AccountService
             DateOfBirth = request.AccountRequest.DateOfBirth,
             PasswordHash = PasswordHasher.Hash(request.AccountRequest.Password),
             //RoleId = Guid.Parse(request.AccountRequest.RoleId),
-            Role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.AccountRequest.RoleId))
-                   ?? throw new Exception("Role not found"),
+            Role = role,
             CreatedBy = id,
         };
         // add account to the database
         await accountRepo.AddAsync(newAcc);
 
-        //check if staff info in request exists
-
-        StaffInfo staffInfo = new()
+        if(request.StaffInfoRequest != null)
         {
-            Degree = request.StaffInfoRequest.Degree,
-            YearOfExperience = request.StaffInfoRequest.YearOfExperience,
-            Biography = request.StaffInfoRequest.Biography ?? string.Empty,
-            Department = await departmentRepo.GetDepartmentByIdAsync(Guid.Parse(request.StaffInfoRequest.DepartmentId)) ?? throw new Exception("Department not found"),
-            Account = newAcc,
-        };
-        //add staff info to database
-        await staffInfoRepo.AddStaffInfoAsync(staffInfo);
-        //add staff info to corresponding account
-        newAcc.StaffInfo = staffInfo;
-
-        // store the new account in cache in 10 minutes
-        await distributedCache.SetStringAsync(
-            cacheKey,
-            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc),
-            new DistributedCacheEntryOptions
+            StaffInfo staffInfo = new()
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            }
-        );
-
-        return new StaffAccountCreateResponse()
-        {
-            Id = newAcc.Id.ToString("D"),
-            Role = newAcc.Role.Name,
-            Email = newAcc.Email,
-            FirstName = newAcc.FirstName,
-            LastName = newAcc.LastName,
-            Gender = newAcc.Gender,
-            PhoneNumber = newAcc.Phone,
-            DateOfBirth = newAcc.DateOfBirth ?? default,
-            AvatarUrl = newAcc.AvatarUrl,
-            Degree = newAcc.StaffInfo.Degree,
-            YearOfExperience = newAcc.StaffInfo.YearOfExperience,
-            Biography = newAcc.StaffInfo.Biography,
-            DepartmentName = newAcc.StaffInfo.Department.Name
-        };
+                Degree = request.StaffInfoRequest.Degree,
+                YearOfExperience = request.StaffInfoRequest.YearOfExperience,
+                Biography = request.StaffInfoRequest.Biography ?? string.Empty,
+                Department = await departmentRepo.GetDepartmentByIdAsync(Guid.Parse(request.StaffInfoRequest.DepartmentId)) ?? throw new Exception("Department not found"),
+                Account = newAcc,
+            };
+            //add staff info to database
+            await staffInfoRepo.AddStaffInfoAsync(staffInfo);
+        }
     }
 
     public async Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string paramId)
