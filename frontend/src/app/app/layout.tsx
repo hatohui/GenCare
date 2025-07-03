@@ -55,7 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			return
 		}
 
-		if (data) {
+		if (data && data.id !== accountStore.data?.id) {
 			accountStore.setAccount(data)
 		}
 
