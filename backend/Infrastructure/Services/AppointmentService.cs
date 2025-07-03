@@ -6,6 +6,7 @@ using Application.Services;
 using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Services;
 
@@ -25,7 +26,32 @@ public class AppointmentService(IAccountRepository accountRepository,
         if (staff == null)
             throw new AppException(404, "staff id is invalid");
 
-        // Create Zoom meeting
+        //create appointment without Zoom meeting
+        Appointment appointment = new()
+        {
+            Member = member,
+            Staff = staff,
+            ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
+            CreatedBy = Guid.Parse(accessId),
+            Status = AppointmentStatus.Booked,
+        };
+        //save appointment
+        await appointmentRepository.Add(appointment);
+    }
+
+    public async Task<ZoomMeetingResponse> CreateAppointmentWithZoomAsync(AppointmentCreateRequest request, string accessId)
+    {
+        //find member by id
+        var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
+        //find staff by id
+        var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
+        
+        if (member == null)
+            throw new AppException(404, "member id is invalid");
+        if (staff == null)
+            throw new AppException(404, "staff id is invalid");
+
+        // Create Zoom meeting first
         var zoomRequest = new ZoomMeetingRequest
         {
             Topic = $"Consultation with {staff.FirstName} {staff.LastName}",
@@ -43,14 +69,14 @@ public class AppointmentService(IAccountRepository accountRepository,
         ZoomMeetingResponse zoomMeeting;
         try
         {
-            zoomMeeting = await zoomService.CreateMeetingAsync(zoomRequest);
+            zoomMeeting = await zoomService.CreateMeetingAsync(zoomRequest, request.MemberId, request.StaffId);
         }
         catch (Exception ex)
         {
             throw new AppException(500, $"Failed to create Zoom meeting: {ex.Message}");
         }
 
-        //create appointment
+        //create appointment with Zoom meeting details
         Appointment appointment = new()
         {
             Member = member,
@@ -60,8 +86,11 @@ public class AppointmentService(IAccountRepository accountRepository,
             CreatedBy = Guid.Parse(accessId),
             Status = AppointmentStatus.Booked,
         };
+        
         //save appointment
         await appointmentRepository.Add(appointment);
+
+        return zoomMeeting;
     }
 
     public async Task DeleteAppointmentAsync(string appointmentId, string deleteId)

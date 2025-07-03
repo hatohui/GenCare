@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Appointment.Request;
 using Application.DTOs.Appointment.Response;
+using Application.DTOs.Zoom;
 
 namespace Application.Services
 {
@@ -15,6 +16,14 @@ namespace Application.Services
         /// <param name="accessId">The identifier of the user creating the appointment.</param>
         /// <returns>A task representing the asynchronous create operation.</returns>
         Task CreateAppointmentAsync(AppointmentCreateRequest request, string accessId);
+
+        /// <summary>
+        /// Creates a new appointment with Zoom meeting integration.
+        /// </summary>
+        /// <param name="request">The appointment creation request.</param>
+        /// <param name="accessId">The identifier of the user creating the appointment.</param>
+        /// <returns>Zoom meeting details.</returns>
+        Task<ZoomMeetingResponse> CreateAppointmentWithZoomAsync(AppointmentCreateRequest request, string accessId);
 
         /// <summary>
         /// Retrieves all appointments.

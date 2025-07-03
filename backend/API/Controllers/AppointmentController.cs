@@ -14,7 +14,7 @@ namespace API.Controllers;
 /// </summary>
 [Route("api/appointments")]
 [ApiController]
-public class AppointmentController(IAppointmentService appointmentService, IZoomService zoomService) : ControllerBase
+public class AppointmentController(IAppointmentService appointmentService, IZoomService zoomService, IConfiguration configuration) : ControllerBase
 {
     /// <summary>
     /// Creates a new appointment.
@@ -50,25 +50,8 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
             //get id
             var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
             
-            // Create Zoom meeting first
-            var zoomRequest = new ZoomMeetingRequest
-            {
-                Topic = $"Consultation Appointment",
-                StartTime = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
-                Duration = 60, // 1 hour consultation
-                Timezone = "Asia/Ho_Chi_Minh",
-                Type = 2, // Scheduled meeting
-                JoinBeforeHost = true,
-                WaitingRoom = true,
-                HostVideo = true,
-                ParticipantVideo = true,
-                Audio = true
-            };
-
-            var zoomMeeting = await zoomService.CreateMeetingAsync(zoomRequest);
-
-            // Create appointment with Zoom meeting details
-            await appointmentService.CreateAppointmentAsync(request, accountId.ToString(""));
+            // Create appointment with Zoom meeting using the service
+            var zoomMeeting = await appointmentService.CreateAppointmentWithZoomAsync(request, accountId.ToString(""));
 
             // Return the Zoom meeting details
             var response = new
@@ -157,5 +140,38 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
         var accountId = JwtHelper.GetAccountIdFromToken(access);
         var response = await appointmentService.ViewAppointmentByIdAsync(id, accountId.ToString("D"));
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Test endpoint to verify Zoom API credentials and JWT token generation.
+    /// </summary>
+    /// <returns>Zoom API configuration status.</returns>
+    [HttpGet("test-zoom")]
+    [Authorize]
+    public async Task<IActionResult> TestZoomConfiguration()
+    {
+        try
+        {
+            var clientId = Environment.GetEnvironmentVariable("ZOOM_CLIENT_ID");
+            var clientSecret = Environment.GetEnvironmentVariable("ZOOM_CLIENT_SECRET");
+            var accountId = Environment.GetEnvironmentVariable("ZOOM_ACCOUNT_ID");
+
+            var response = new
+            {
+                hasClientId = !string.IsNullOrEmpty(clientId),
+                hasClientSecret = !string.IsNullOrEmpty(clientSecret),
+                hasAccountId = !string.IsNullOrEmpty(accountId),
+                clientIdPreview = clientId?.Substring(0, Math.Min(10, clientId?.Length ?? 0)) + "...",
+                clientSecretPreview = clientSecret?.Substring(0, Math.Min(10, clientSecret?.Length ?? 0)) + "...",
+                accountId = accountId,
+                message = "Check the logs for detailed OAuth token generation information"
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
 }
