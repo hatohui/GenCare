@@ -302,6 +302,21 @@ public class AccountService
         var account = await accountRepo.GetAccountByIdAsync(accountId);
         if (account == null)
             throw new AppException(404, "Account not found");
+        //create staff info model if exists
+        StaffInfoViewModel? staffInfoModel = null;
+        if (account.StaffInfo is not null)
+        {
+            //get department by id
+            var department = await departmentRepo.GetDepartmentByIdAsync(account.StaffInfo.DepartmentId);
+            staffInfoModel = new StaffInfoViewModel
+            {
+                Degree = account.StaffInfo.Degree,
+                YearOfExperience = account.StaffInfo.YearOfExperience,
+                Biography = account.StaffInfo.Biography ?? string.Empty,
+                DepartmentId = account.StaffInfo.DepartmentId.ToString("D"),
+                DepartmentName = department?.Name ?? string.Empty
+            };
+        }
         AccountViewModel rs = new()
         {
             Id = account.Id,
@@ -317,7 +332,8 @@ public class AccountService
                 Name = account.Role.Name,
                 Description = account.Role.Description
             },
-            Phone = account.Phone ?? string.Empty
+            Phone = account.Phone ?? string.Empty,
+            StaffInfo = staffInfoModel
         };
         return rs;
     }

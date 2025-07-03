@@ -150,11 +150,6 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="404">Not found. Account with the specified ID does not exist.</response>
 
     [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize(Roles = $"{RoleNames.Admin}")]
     public async Task<IActionResult> GetAccountById([FromRoute] string id)
     {
