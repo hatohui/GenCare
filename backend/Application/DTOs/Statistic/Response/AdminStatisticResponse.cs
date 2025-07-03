@@ -14,5 +14,5 @@ public class AdminStatisticResponse
     public List<TopServiceModel> TopServices { get; set; } = null!;
     public PaymentStatisticModel PaymentStatistic { get; set; } = null!;
     public UserStatisticModel UserStatistic { get; set; } = null!;
-    public List<ServicePerformanceModel> ServicePerformance { get; set; } = null!;
+    //public List<ServicePerformanceModel> ServicePerformance { get; set; } = null!;
 }

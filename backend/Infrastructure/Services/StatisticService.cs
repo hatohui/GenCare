@@ -8,13 +8,15 @@ using Application.DTOs.Statistic.Response;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Services;
 public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository,
      IAccountRepository accountRepository,
      IServiceRepository serviceRepository,
      IResultRepository resultRepository,
-     IOrderDetailRepository orderDetailRepository) : IStatisticService
+     IOrderDetailRepository orderDetailRepository,
+     IFeedbackRepository feedbackRepository) : IStatisticService
 {
     public async Task<AdminStatisticResponse> GetAdminStatistic()
     {
@@ -24,6 +26,15 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
         var serviceStatistic = await GetServiceStatistic();
         var paymentStatistic = await GetPaymentStatistic();
         var userStatistic = await GetUserStatistic();
+        return new AdminStatisticResponse
+        {
+            DashboardStatistic = dashboardStatistic,
+            RevenueData = revenueData,
+            UserGrowth = userGrowth,
+            TopServices = serviceStatistic,
+            PaymentStatistic = paymentStatistic,
+            UserStatistic = userStatistic
+        };
     }
 
     public async Task<List<RevenueDataModel>> GetPeriodRevenueAsync()
@@ -137,11 +148,14 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
         var services = await serviceRepository.GetAll();
         var paymentHistories = await paymentHistoryRepository.GetAll();
         var orderDetails = await orderDetailRepository.GetAll();
+        var feedbacks = await feedbackRepository.GetAll();
         var rs = new List<TopServiceModel>();
+
 
         services = services.Where(s => !s.IsDeleted).ToList();
         foreach (var service in services)
         {
+            double? rating = null;
             int bookings = 0;
             decimal totalRevenue = 0;
             //get total bookings for each service
@@ -159,12 +173,23 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                     totalRevenue += service.Price;
                 }
             }
+            //compute average rating for each service
+            
+            var tmpFeedbacks = feedbacks
+                .Where(f => f.ServiceId == service.Id)
+                .ToList();
+            if(tmpFeedbacks.Count > 0)
+            {
+                rating = tmpFeedbacks.Average(f => f.Rating);
+            }
+
             rs.Add(new TopServiceModel()
             {
                 ServiceId = service.Id.ToString(),
                 ServiceName = service.Name,
                 Bookings = bookings,
-                Revenue = totalRevenue
+                Revenue = totalRevenue,
+                Rating = rating
             });
         }
         
@@ -200,4 +225,5 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
             MonthlyGrowth = monthlyUserGrowth
         };
     }
+    
 }

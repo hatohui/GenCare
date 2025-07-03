@@ -16,4 +16,12 @@ public class StatisticController(IStatisticService statisticService) : Controlle
         var response = await statisticService.GetPeriodRevenueAsync();
         return Ok(response);
     }
+
+    [HttpGet("admin")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetAdminStatistic()
+    {
+        var response = await statisticService.GetAdminStatistic();
+        return Ok(response);
+    }
 }
