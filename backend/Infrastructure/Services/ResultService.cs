@@ -49,25 +49,51 @@ public class ResultService(IResultRepository resultRepository,
         var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
         if (purchase == null)
             throw new AppException(404, "Purchase not found.");
+        // Check if the purchase is paid, check only for member
+        if (role == RoleNames.Member)
+        {
+            if (purchase.AccountId != accountId)
+            {
+                throw new AppException(403, "You are not authorized to view this test result. This record belongs to another member.");
+            }
+            //if purchase is not paid and not found payment record, throw exception
+            var payment = await paymentHistoryRepository.GetById(purchase.Id);
+            if (payment == null)
+                throw new AppException(402, "No payment record found.");
 
-        //check if the account is authorized to view this test result
-        if (role == RoleNames.Member && purchase.AccountId != accountId)
-            throw new AppException(403, "You are not authorized to view this test result.");
-        //get payment history by purchase,
-        //check if payment is completed
-        var payment = await paymentHistoryRepository.GetById(purchase.Id);
-        if (payment == null)
-            throw new AppException(402, "No payment record found.");
-        if(payment.Status.Trim() != PaymentStatus.Paid.Trim())
-            throw new AppException(402,"Payment is not completed.");
+            if (payment.Status.Trim() != PaymentStatus.Paid.Trim())
+                throw new AppException(402, "Payment is not completed.");
+        }
+
         
         var testResult = await resultRepository.ViewResultAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
+        // If the test result is null, create a new one with default values
+        if (testResult == null!)
+        {
+            // If the user is not Staff or Admin, throw an exception
+            if (role != RoleNames.Staff && role != RoleNames.Admin)
+            {
+                throw new AppException(404, "Test result not found.");
+            }
 
+            testResult = new Result
+            {
+                OrderDetailId = orderDetailId,
+                OrderDate = ToUnspecified(DateTime.Now),
+                SampleDate = null,
+                ResultDate = null,
+                Status = false, // Default status
+                ResultData = null,
+                UpdatedAt = ToUnspecified(DateTime.Now)
+            };
+
+            await resultRepository.AddAsync(testResult);
+        }
         return new ViewTestResultResponse
         {
             OrderDetailId = orderDetailId,
-            OrderDate = testResult.OrderDate,
+            OrderDate = testResult!.OrderDate,
             SampleDate = testResult.SampleDate,
             ResultDate = testResult.ResultDate,
             Status = testResult.Status,
