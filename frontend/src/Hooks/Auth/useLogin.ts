@@ -39,8 +39,8 @@ export const useLogin = () => {
 	)
 
 	const loginSuccess = useCallback(
-		(data: TokenData) => {
-			tokenStore.setAccessToken(data.accessToken)
+		(data: TokenData, rememberMe?: boolean) => {
+			tokenStore.setAccessToken(data.accessToken, rememberMe)
 			setFormError('')
 			postLoginRedirect(data.accessToken)
 		},
@@ -48,12 +48,12 @@ export const useLogin = () => {
 	)
 
 	const handleLogin = useCallback(
-		(formData: LoginApi | OauthResponse) => {
+		(formData: LoginApi | OauthResponse, rememberMe?: boolean) => {
 			setIsLoggingIn(true)
 
 			if ('email' in formData && 'password' in formData) {
 				loginMutation.mutate(formData, {
-					onSuccess: loginSuccess,
+					onSuccess: data => loginSuccess(data, rememberMe),
 					onError: error => {
 						const err = error as AxiosError<ApiErrorResponse>
 						if (err.response?.status) {
@@ -66,7 +66,7 @@ export const useLogin = () => {
 				oauthMutation.mutate(
 					{ credential: formData.credential },
 					{
-						onSuccess: loginSuccess,
+						onSuccess: data => loginSuccess(data, rememberMe),
 						onError: error => {
 							console.error(error)
 							setIsLoggingIn(false)
