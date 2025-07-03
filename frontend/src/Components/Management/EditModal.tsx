@@ -57,7 +57,9 @@ export function EditModal<T extends Account | ServiceDTO>({
 						transition={{ duration: 0.2, ease: 'easeOut' }}
 						className='fixed inset-0 z-50 flex items-center justify-center px-4'
 						onKeyDown={handleEscape}
-						tabIndex={-1}
+						role='dialog'
+						aria-modal='true'
+						aria-labelledby='edit-modal-title'
 					>
 						<div
 							className='bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden'

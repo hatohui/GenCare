@@ -8,7 +8,6 @@ import {
 	CreateServiceApiRequest,
 } from '@/Interfaces/Service/Schemas/service'
 import { UpdateServiceApiRequest } from '@/Interfaces/Service/Types/Service'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import axiosInstance from '@/Utils/axios'
@@ -35,7 +34,6 @@ const serviceApi = {
 			})
 	},
 	getByPageAdmin: (
-		header: string,
 		page: number,
 		count: number,
 		orderByPrice: boolean | null,
@@ -57,14 +55,9 @@ const serviceApi = {
 
 		const query = `/services/all?${params.toString()}`
 
-		return axiosInstance
-			.get<GetServiceByPageAdminResponse>(query, {
-				headers: { Authorization: header },
-			})
-			.then(res => {
-				console.log(res.data)
-				return res.data
-			})
+		return axiosInstance.get<GetServiceByPageAdminResponse>(query).then(res => {
+			return res.data
+		})
 	},
 
 	getById: (id: string) =>
@@ -72,28 +65,22 @@ const serviceApi = {
 			.get<GetServiceWithIdResponse>(`${SERVICE_URL}/${id}`)
 			.then(res => res.data),
 
-	create: (header: string, data: any) =>
+	create: (data: any) =>
 		axiosInstance
-			.post<CreateServiceApiResponse>('/services', data, {
-				headers: { Authorization: header },
-			})
+			.post<CreateServiceApiResponse>('/services', data)
 			.then(res => res.data),
 
-	update: (header: string, id: string, data: UpdateServiceApiRequest) => {
+	update: (id: string, data: UpdateServiceApiRequest) => {
 		console.log(`/services/${id}`)
 
 		return axiosInstance
-			.put<UpdateServiceApiResponse>(`/services/${id}`, data, {
-				headers: { Authorization: header },
-			})
+			.put<UpdateServiceApiResponse>(`/services/${id}`, data)
 			.then(res => res.data)
 	},
 
-	delete: (header: string, id: string) =>
+	delete: (id: string) =>
 		axiosInstance
-			.delete<DeleteServiceApiResponse>(`/services/${id}`, {
-				headers: { Authorization: header },
-			})
+			.delete<DeleteServiceApiResponse>(`/services/${id}`)
 			.then(res => res.data),
 }
 
@@ -146,8 +133,6 @@ export const useServiceByPageAdmin = (
 	orderByPrice: boolean | null,
 	sortByAlphabetical: boolean
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: [
 			'services',
@@ -160,7 +145,6 @@ export const useServiceByPageAdmin = (
 		],
 		queryFn: async () => {
 			return serviceApi.getByPageAdmin(
-				header,
 				page,
 				count,
 				orderByPrice,
@@ -170,7 +154,6 @@ export const useServiceByPageAdmin = (
 			)
 		},
 		placeholderData: keepPreviousData,
-		enabled: !!header,
 	})
 }
 
@@ -211,11 +194,8 @@ export const useServiceById = (id: string) => {
  */
 
 export const useCreateService = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (data: CreateServiceApiRequest) =>
-			serviceApi.create(header, data),
+		mutationFn: (data: CreateServiceApiRequest) => serviceApi.create(data),
 	})
 }
 /**
@@ -231,11 +211,9 @@ export const useCreateService = () => {
  */
 
 export const useUpdateService = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
 		mutationFn: ({ id, data }: { id: string; data: UpdateServiceApiRequest }) =>
-			serviceApi.update(header, id, data),
+			serviceApi.update(id, data),
 	})
 }
 
@@ -252,9 +230,7 @@ export const useUpdateService = () => {
  */
 
 export const useDeleteService = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (id: string) => serviceApi.delete(header, id),
+		mutationFn: (id: string) => serviceApi.delete(id),
 	})
 }

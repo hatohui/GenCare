@@ -10,34 +10,27 @@ import {
 } from '@/Interfaces/Account/Schema/account'
 import { GetConsultantsResponse } from '@/Interfaces/Account/Schema/consultant'
 import axiosInstance from '@/Utils/axios'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { Role } from '@/Utils/Permissions/isAllowedRole'
 
 const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
 
 const accountApi = {
-	getMe: (header: string) => {
+	getMe: () => {
 		console.log('queried')
 
 		const queryUrl = `${ACCOUNT_URL}/me`
-		return axiosInstance
-			.get<GetAccountByIdResponse>(queryUrl, {
-				headers: { Authorization: header },
-			})
-			.then(res => {
-				return res.data
-			})
+		return axiosInstance.get<GetAccountByIdResponse>(queryUrl).then(res => {
+			return res.data
+		})
 	},
 	/**
 	 * Retrieves a paginated list of user accounts.
-	 * @param header The access token header
 	 * @param count The number of items to retrieve per page
 	 * @param page The page index
 	 * @returns A promise that resolves with a paginated list of user accounts
 	 */
 	getByPage: (
-		header: string,
 		count: number,
 		page: number,
 		search: string | null,
@@ -51,46 +44,34 @@ const accountApi = {
 		}`
 
 		return axiosInstance
-			.get<GetAccountByPageResponse>(queryUrl, {
-				headers: { Authorization: header },
-			})
+			.get<GetAccountByPageResponse>(queryUrl)
 			.then(res => res.data)
 	},
 
 	/**
 	 * Retrieves a paginated list of consultants with optional search filtering.
-	 * @param header The access token header
 	 * @param count The number of consultants per page (must be positive)
 	 * @param page The page number (starts from 1)
 	 * @param search Optional keyword to filter consultants
 	 * @returns A promise that resolves with a paginated list of consultants
 	 */
-	getConsultants: (
-		header: string,
-		count: number,
-		page: number,
-		search: string | null
-	) => {
+	getConsultants: (count: number, page: number, search: string | null) => {
 		const queryUrl = `${ACCOUNT_URL}/consultants?page=${page}&count=${count}${
 			search ? `&search=${search}` : ''
 		}`
 
 		return axiosInstance
-			.get<GetConsultantsResponse>(queryUrl, {
-				headers: { Authorization: header },
-			})
+			.get<GetConsultantsResponse>(queryUrl)
 			.then(res => res.data)
 	},
 
-	getById: (header: string, id: string) => {
+	getById: (id: string) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
-			.get<GetAccountByIdResponse>(queryUrl, {
-				headers: { Authorization: header },
-			})
+			.get<GetAccountByIdResponse>(queryUrl)
 			.then(res => res.data)
 	},
-	create: (header: string, data: PostAccountRequest) => {
+	create: (data: PostAccountRequest) => {
 		// Transform frontend structure to backend structure
 		const transformedData: any = {
 			AccountRequest: {
@@ -117,13 +98,11 @@ const accountApi = {
 		}
 
 		return axiosInstance
-			.post<PostAccountResponse>(ACCOUNT_URL, transformedData, {
-				headers: { Authorization: header },
-			})
+			.post<PostAccountResponse>(ACCOUNT_URL, transformedData)
 			.then(res => res.data)
 	},
 
-	updateAccount: (header: string, id: string, data: PutAccountRequest) => {
+	updateAccount: (id: string, data: PutAccountRequest) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		console.log('🌐 Account Service - Sending PUT request:', {
 			url: queryUrl,
@@ -131,9 +110,7 @@ const accountApi = {
 			phoneNumber: data.account?.phoneNumber,
 		})
 		return axiosInstance
-			.put<PutAccountResponse>(queryUrl, data, {
-				headers: { Authorization: header },
-			})
+			.put<PutAccountResponse>(queryUrl, data)
 			.then(res => {
 				console.log('✅ Account Service - PUT response:', res.data)
 				return res.data
@@ -147,32 +124,23 @@ const accountApi = {
 			})
 	},
 
-	delete: (header: string, id: string) => {
+	delete: (id: string) => {
 		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
-			.delete<DeleteAccountResponse>(queryUrl, {
-				headers: { Authorization: header },
-			})
+			.delete<DeleteAccountResponse>(queryUrl)
 			.then(res => res.data)
 	},
 
-	getConsultantById: (header: string, id: string) => {
+	getConsultantById: (id: string) => {
 		const queryUrl = `${ACCOUNT_URL}/consultants/${id}`
-		return axiosInstance
-			.get(queryUrl, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.data)
+		return axiosInstance.get(queryUrl).then(res => res.data)
 	},
 }
 
 export const useGetMe = () => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['me'],
-		queryFn: () => accountApi.getMe(header),
-		enabled: !!header,
+		queryFn: () => accountApi.getMe(),
 		refetchOnMount: true,
 		refetchOnWindowFocus: true,
 	})
@@ -184,13 +152,10 @@ export const useGetAccountsByPage = (
 	search: string | null,
 	role?: Role | null
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['accounts', page, count, search],
-		queryFn: () => accountApi.getByPage(header, count, page, search, role),
+		queryFn: () => accountApi.getByPage(count, page, search, role),
 		placeholderData: keepPreviousData,
-		enabled: !!header,
 	})
 }
 
@@ -199,48 +164,36 @@ export const useGetAccountsByPageStaff = (
 	page: number,
 	search: string | null
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['accounts-staff', page, count, search],
-		queryFn: () =>
-			accountApi.getByPage(header, count, page, search, 'member', true),
+		queryFn: () => accountApi.getByPage(count, page, search, 'member', true),
 		placeholderData: keepPreviousData,
-		enabled: !!header,
 	})
 }
 
 export const useGetAccountById = (id: string) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['account', id],
-		queryFn: () => accountApi.getById(header, id),
+		queryFn: () => accountApi.getById(id),
 	})
 }
 
 export const useCreateAccount = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (data: PostAccountRequest) => accountApi.create(header, data),
+		mutationFn: (data: PostAccountRequest) => accountApi.create(data),
 	})
 }
 
 export const useUpdateAccount = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
 		mutationFn: ({ id, data }: { id: string; data: PutAccountRequest }) =>
-			accountApi.updateAccount(header, id, data),
+			accountApi.updateAccount(id, data),
 	})
 }
 
 export const useDeleteAccount = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (id: string) => accountApi.delete(header, id),
+		mutationFn: (id: string) => accountApi.delete(id),
 	})
 }
 
@@ -256,12 +209,9 @@ export const useGetConsultants = (
 	page: number,
 	search: string | null
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['consultants', page, count, search],
-		queryFn: () => accountApi.getConsultants(header, count, page, search),
+		queryFn: () => accountApi.getConsultants(count, page, search),
 		placeholderData: keepPreviousData,
-		enabled: !!header,
 	})
 }

@@ -4,12 +4,11 @@ import {
 	ScheduleByConsultantResponse,
 	ScheduleListResponse,
 } from '@/Interfaces/Schedule/Schema/schedule'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 
 const scheduleApi = {
-	getAll: (header: string, startAt?: string, endAt?: string) => {
+	getAll: (startAt?: string, endAt?: string) => {
 		const params = new URLSearchParams()
 		if (startAt) params.append('startAt', startAt)
 		if (endAt) params.append('endAt', endAt)
@@ -18,19 +17,10 @@ const scheduleApi = {
 			? `/schedules?${params.toString()}`
 			: '/schedules'
 
-		return axiosInstance
-			.get<ScheduleListResponse>(query, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.data)
+		return axiosInstance.get<ScheduleListResponse>(query).then(res => res.data)
 	},
 
-	getByConsultant: (
-		header: string,
-		consultantId: string,
-		startAt?: string,
-		endAt?: string
-	) => {
+	getByConsultant: (consultantId: string, startAt?: string, endAt?: string) => {
 		const params = new URLSearchParams()
 		if (startAt) params.append('startAt', startAt)
 		if (endAt) params.append('endAt', endAt)
@@ -40,47 +30,32 @@ const scheduleApi = {
 			: `/schedules/${consultantId}`
 
 		return axiosInstance
-			.get<ScheduleByConsultantResponse>(query, {
-				headers: { Authorization: header },
-			})
+			.get<ScheduleByConsultantResponse>(query)
 			.then(res => res.data)
 	},
 
-	create: (header: string, data: CreateScheduleRequest) =>
-		axiosInstance
-			.post('/schedules', data, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.status), // Return status code (201)
+	create: (data: CreateScheduleRequest) =>
+		axiosInstance.post('/schedules', data).then(res => res.status), // Return status code (201)
 
-	update: (header: string, scheduleId: string, data: UpdateScheduleRequest) => {
+	update: (scheduleId: string, data: UpdateScheduleRequest) => {
 		return axiosInstance
-			.put(`/schedules/${scheduleId}`, data, {
-				headers: { Authorization: header },
-			})
+			.put(`/schedules/${scheduleId}`, data)
 			.then(res => res.status) // Return status code (204)
 	},
 
-	delete: (header: string, scheduleId: string) =>
-		axiosInstance
-			.delete(`/schedules/${scheduleId}`, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.status), // Return status code
+	delete: (scheduleId: string) =>
+		axiosInstance.delete(`/schedules/${scheduleId}`).then(res => res.status), // Return status code
 }
 
 /**
  * Get all schedules with optional date range
  */
 export const useAllSchedules = (startAt?: string, endAt?: string) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['schedules-all', startAt, endAt],
 		queryFn: async () => {
-			return scheduleApi.getAll(header, startAt, endAt)
+			return scheduleApi.getAll(startAt, endAt)
 		},
-		enabled: !!header,
 	})
 }
 
@@ -92,14 +67,12 @@ export const useSchedulesByConsultant = (
 	startAt?: string,
 	endAt?: string
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['schedules-consultant', consultantId, startAt, endAt],
 		queryFn: async () => {
-			return scheduleApi.getByConsultant(header, consultantId, startAt, endAt)
+			return scheduleApi.getByConsultant(consultantId, startAt, endAt)
 		},
-		enabled: !!header && !!consultantId,
+		enabled: !!consultantId,
 	})
 }
 
@@ -107,11 +80,8 @@ export const useSchedulesByConsultant = (
  * Create a new schedule
  */
 export const useCreateSchedule = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (data: CreateScheduleRequest) =>
-			scheduleApi.create(header, data),
+		mutationFn: (data: CreateScheduleRequest) => scheduleApi.create(data),
 	})
 }
 
@@ -119,8 +89,6 @@ export const useCreateSchedule = () => {
  * Update a schedule by its ID
  */
 export const useUpdateSchedule = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
 		mutationFn: ({
 			scheduleId,
@@ -128,7 +96,7 @@ export const useUpdateSchedule = () => {
 		}: {
 			scheduleId: string
 			data: UpdateScheduleRequest
-		}) => scheduleApi.update(header, scheduleId, data),
+		}) => scheduleApi.update(scheduleId, data),
 	})
 }
 
@@ -136,9 +104,7 @@ export const useUpdateSchedule = () => {
  * Delete a schedule by its ID
  */
 export const useDeleteSchedule = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: (scheduleId: string) => scheduleApi.delete(header, scheduleId),
+		mutationFn: (scheduleId: string) => scheduleApi.delete(scheduleId),
 	})
 }

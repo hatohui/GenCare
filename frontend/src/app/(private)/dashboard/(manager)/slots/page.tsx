@@ -52,7 +52,12 @@ const SlotsPage = () => {
 	return (
 		<>
 			{isAddNewOpen && (
-				<div className='h-full w-full absolute  '>
+				<div
+					className='fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center'
+					role='dialog'
+					aria-modal='true'
+					aria-labelledby='add-slot-title'
+				>
 					<AddNewSlotForm
 						className='z-20'
 						onSuccess={() => query.refetch()}
