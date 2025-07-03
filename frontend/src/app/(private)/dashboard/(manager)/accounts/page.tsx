@@ -107,7 +107,7 @@ const AccountPage = () => {
 					className='flex items-center gap-3'
 					{...getSlideAnimationProps('right', 4)}
 				>
-					<SearchBar waitTime={1000} />
+					<SearchBar waitTime={500} />
 					<AddNewButton handleAddNew={handleAddNew} />
 				</motion.div>
 			</motion.div>

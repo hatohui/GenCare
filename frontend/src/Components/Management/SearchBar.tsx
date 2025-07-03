@@ -12,7 +12,7 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({
-	waitTime = 1000,
+	waitTime = 500,
 	className = '',
 	onChange,
 }: SearchBarProps) => {
