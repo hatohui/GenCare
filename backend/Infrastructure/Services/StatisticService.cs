@@ -13,13 +13,17 @@ namespace Infrastructure.Services;
 public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository,
      IAccountRepository accountRepository,
      IServiceRepository serviceRepository,
-     IResultRepository resultRepository) : IStatisticService
+     IResultRepository resultRepository,
+     IOrderDetailRepository orderDetailRepository) : IStatisticService
 {
     public async Task<AdminStatisticResponse> GetAdminStatistic()
     {
         var dashboardStatistic = await GetDashboardStatistic();
         var revenueData = await GetDailyRevenueAsync();
-        var userGrowth = await GetUserGrowth();
+        var userGrowth = await GetDailyUserGrowth();
+        var serviceStatistic = await GetServiceStatistic();
+        var paymentStatistic = await GetPaymentStatistic();
+        var userStatistic = await GetUserStatistic();
     }
 
     public async Task<List<RevenueDataModel>> GetPeriodRevenueAsync()
@@ -98,7 +102,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .ToList();
         return response;
     }
-    private async Task<List<UserGrowthModel>> GetUserGrowth()
+    private async Task<List<UserGrowthModel>> GetDailyUserGrowth()
     {
         var accounts = await accountRepository.GetAll();
         List<UserGrowthModel> response = new();
@@ -112,5 +116,88 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .OrderByDescending(r => r.Date)
                 .ToList();
         return response;
+    }
+    private async Task<List<UserGrowthModel>> GetMonthlyUserGrowth()
+    {
+        var accounts = await accountRepository.GetAll();
+        List<UserGrowthModel> response = new();
+        response = accounts
+                .GroupBy(a => new { a.CreatedAt.Year, a.CreatedAt.Month })
+                .Select(g => new UserGrowthModel
+                {
+                    Date = new DateOnly(g.Key.Year, g.Key.Month, 1),
+                    NewUsers = g.Count(a => !a.IsDeleted && a.Role.Name == RoleNames.Member)
+                })
+                .OrderByDescending(r => r.Date)
+                .ToList();
+        return response;
+    }
+    private async Task<List<TopServiceModel>> GetServiceStatistic()
+    {
+        var services = await serviceRepository.GetAll();
+        var paymentHistories = await paymentHistoryRepository.GetAll();
+        var orderDetails = await orderDetailRepository.GetAll();
+        var rs = new List<TopServiceModel>();
+
+        services = services.Where(s => !s.IsDeleted).ToList();
+        foreach (var service in services)
+        {
+            int bookings = 0;
+            decimal totalRevenue = 0;
+            //get total bookings for each service
+            //compute the total revenue for each service
+            var tmpOrderDetails = orderDetails
+                .Where(od => od.ServiceId == service.Id)
+                .ToList();
+            //check if purchaseId of each tmpOrderDetails exist in payment histories
+            foreach (var orderDetail in tmpOrderDetails)
+            {
+                var payment = paymentHistoryRepository.GetById(orderDetail.PurchaseId);
+                if(payment is not null)
+                {
+                    bookings += 1;
+                    totalRevenue += service.Price;
+                }
+            }
+            rs.Add(new TopServiceModel()
+            {
+                ServiceId = service.Id.ToString(),
+                ServiceName = service.Name,
+                Bookings = bookings,
+                Revenue = totalRevenue
+            });
+        }
+        
+        return rs;
+    }
+    private async Task<PaymentStatisticModel> GetPaymentStatistic()
+    {
+        var paymentHistories = await paymentHistoryRepository.GetAll();
+        var total = paymentHistories.Count;
+        var pending = paymentHistories.Count(p => p.Status == PaymentStatus.Pending);
+        var completed = paymentHistories.Count(p => p.Status == PaymentStatus.Paid);
+        var failed = paymentHistories.Count(p => p.Status == PaymentStatus.Failed);
+        var monthlyRevenue = await GetPeriodRevenueAsync();
+        return new PaymentStatisticModel
+        {
+            Total = total,
+            Pending = pending,
+            Completed = completed,
+            Failed = failed,
+            MonthlyRevenue = monthlyRevenue
+        };
+    }
+    private async Task<UserStatisticModel> GetUserStatistic()
+    {
+        var accounts = await accountRepository.GetAll();
+        var totalUsers = accounts.Count(a => a.Role.Name == RoleNames.Member);
+        var activeUsers = accounts.Count(a => !a.IsDeleted && a.Role.Name == RoleNames.Member);
+        var monthlyUserGrowth = await GetMonthlyUserGrowth();
+        return new UserStatisticModel
+        {
+            Total = totalUsers,
+            Active = activeUsers,
+            MonthlyGrowth = monthlyUserGrowth
+        };
     }
 }
