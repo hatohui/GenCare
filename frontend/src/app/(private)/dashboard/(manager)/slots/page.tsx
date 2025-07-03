@@ -20,26 +20,24 @@ const SlotsPage = () => {
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 
 	const handleDelete = (id: string) => {
-		if (window.confirm('Bạn có muốn xóa slot này không?'))
-			deleteMutation.mutate(id, {
+		deleteMutation.mutate(id, {
+			onSuccess: () => {
+				query.refetch()
+			},
+			onError: () => {},
+		})
+	}
+
+	const handleRestore = (id: string) => {
+		updateMutation.mutate(
+			{ id, data: { isDeleted: false } },
+			{
 				onSuccess: () => {
 					query.refetch()
 				},
 				onError: () => {},
-			})
-	}
-
-	const handleRestore = (id: string) => {
-		if (window.confirm('Bạn có muốn khôi phục slot này không?'))
-			updateMutation.mutate(
-				{ id, data: { isDeleted: false } },
-				{
-					onSuccess: () => {
-						query.refetch()
-					},
-					onError: () => {},
-				}
-			)
+			}
+		)
 	}
 
 	return (

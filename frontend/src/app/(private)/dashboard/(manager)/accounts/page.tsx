@@ -1,22 +1,20 @@
 'use client'
 import AccountListContent from '@/Components/Management/AccountListContent'
 import AddNewButton from '@/Components/Management/AddNewButton'
+import AddNewAccountForm from '@/Components/Management/AddNewAccountForm'
 import SearchBar from '@/Components/Management/SearchBar'
 import Pagination from '@/Components/Management/Pagination'
 import clsx from 'clsx'
-import React from 'react'
+import React, { useState } from 'react'
 import AccountListHeader from '@/Components/Management/ItemCardHeader'
 import { motion } from 'motion/react'
 import { useAccountManagement } from '@/Hooks/useAccountManagement'
 
 const AccountPage = () => {
+	const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
 	const handleAddNew = () => {
-		// Navigate to account creation page or open a modal
-		// For now, let's log to console as placeholder
-		console.log('Add new account functionality to be implemented')
-		// You could navigate to a new account form:
-		// router.push('/dashboard/accounts/new')
-		// Or open a modal for creating new accounts
+		setIsAddModalOpen(true)
 	}
 
 	const {
@@ -31,7 +29,16 @@ const AccountPage = () => {
 		handleDelete,
 		handleRestore,
 		handleUpdate,
+		refetch,
 	} = useAccountManagement()
+
+	const handleAddSuccess = () => {
+		refetch()
+	}
+
+	const handleCloseModal = () => {
+		setIsAddModalOpen(false)
+	}
 
 	return (
 		<motion.section
@@ -133,6 +140,14 @@ const AccountPage = () => {
 					itemsPerPage={itemsPerPage}
 				/>
 			</motion.div>
+
+			{/* Add New Account Modal */}
+			{isAddModalOpen && (
+				<AddNewAccountForm
+					onSuccess={handleAddSuccess}
+					onClose={handleCloseModal}
+				/>
+			)}
 		</motion.section>
 	)
 }

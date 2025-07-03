@@ -1,6 +1,7 @@
 import React from 'react'
-import { GetSlotResponse } from '@/Interfaces/Slot/Schema/slot'
 import clsx from 'clsx'
+import { GetSlotResponse } from '@/Interfaces/Slot/Schema/slot'
+import { formatTimeForDisplay } from '@/Utils/dateTime'
 
 const SlotList = ({
 	data,
@@ -13,15 +14,7 @@ const SlotList = ({
 }) => {
 	const formatTime = (timeString: string | undefined) => {
 		if (!timeString) return 'N/A'
-		try {
-			const date = new Date(timeString)
-			return date.toLocaleTimeString('vi-VN', {
-				hour: '2-digit',
-				minute: '2-digit',
-			})
-		} catch {
-			return timeString
-		}
+		return formatTimeForDisplay(timeString)
 	}
 
 	return (

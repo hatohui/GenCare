@@ -8,6 +8,7 @@ import {
 	isSameMonth,
 	isToday,
 	isWithinInterval,
+	getDate,
 } from 'date-fns'
 import { getCalendarDates } from '@/Utils/Calendar/getCalendarDates'
 import { animate } from 'motion/react'
@@ -124,7 +125,7 @@ const DateGrid = ({
 									'border-transparent hover:border-transparent'
 								)}
 							>
-								{date.getDate()}
+								{getDate(date)}
 							</button>
 						</div>
 					</div>

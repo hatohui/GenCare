@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'motion/react'
 import { CldImage } from 'next-cloudinary'
+import { toast } from 'react-hot-toast'
 import {
 	ServiceDTO,
 	ServiceFormSchema,
@@ -32,13 +33,10 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 			typeof img === 'string' ? img : img.url
 		) || []
 	)
-	const [uploadError, setUploadError] = useState<string>('')
 
 	const {
 		register,
 		handleSubmit,
-		setValue,
-		watch,
 		formState: { errors },
 	} = useForm<ServiceFormSchema>({
 		resolver: zodResolver(serviceSchema),
@@ -54,12 +52,11 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 		const newImageUrls = [...imageUrls, url]
 		setImageUrls(newImageUrls)
 		setIsImageModalOpen(false)
-		setUploadError('') // Clear any previous upload errors
 	}
 
 	const handleUploadError = (error: string) => {
 		console.error('❌ Service image upload error:', error)
-		setUploadError(error)
+		toast.error(error)
 	}
 
 	const handleRemoveImage = (index: number) => {
@@ -263,9 +260,6 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 								text='Upload New Image'
 								className='w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50'
 							/>
-							{uploadError && (
-								<div className='text-red-500 text-sm'>{uploadError}</div>
-							)}
 							<button
 								onClick={() => setIsImageModalOpen(false)}
 								className='w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors'

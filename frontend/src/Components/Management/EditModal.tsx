@@ -45,7 +45,7 @@ export function EditModal<T extends Account | ServiceDTO>({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className='fixed inset-0 bg-black/50 z-40'
+						className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
 						onClick={handleOverlayClick}
 					/>
 

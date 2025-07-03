@@ -1,4 +1,11 @@
 import { z } from 'zod'
+import {
+	parseISO,
+	isValid,
+	differenceInYears,
+	isBefore,
+	isAfter,
+} from 'date-fns'
 
 // Vietnamese phone number regex (supports formats like 0912345678, +84912345678, 0912-345-678)
 const vietnamesePhoneRegex = /^(\+84|84|0)[3|5|7|8|9][0-9]{8}$/
@@ -12,14 +19,20 @@ export const personSchema = z.object({
 		.regex(vietnamesePhoneRegex, 'Số điện thoại không đúng định dạng Việt Nam'),
 	dateOfBirth: z
 		.string()
-		.refine(val => !isNaN(Date.parse(val)), {
-			message: 'Ngày sinh không hợp lệ',
-		})
 		.refine(
 			val => {
-				const birthDate = new Date(val)
-				const today = new Date()
-				const age = today.getFullYear() - birthDate.getFullYear()
+				const date = parseISO(val)
+				return isValid(date)
+			},
+			{
+				message: 'Ngày sinh không hợp lệ',
+			}
+		)
+		.refine(
+			val => {
+				const birthDate = parseISO(val)
+				if (!isValid(birthDate)) return false
+				const age = differenceInYears(new Date(), birthDate)
 				return age >= 0 && age <= 120
 			},
 			{
@@ -28,9 +41,11 @@ export const personSchema = z.object({
 		)
 		.refine(
 			val => {
-				const birthDate = new Date(val)
-				const today = new Date()
-				return birthDate <= today
+				const birthDate = parseISO(val)
+				if (!isValid(birthDate)) return false
+				return (
+					isBefore(birthDate, new Date()) || !isAfter(birthDate, new Date())
+				)
 			},
 			{
 				message: 'Ngày sinh không thể trong tương lai',

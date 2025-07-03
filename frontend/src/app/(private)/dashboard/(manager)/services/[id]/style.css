@@ -2,18 +2,42 @@
 
 @layer utilities {
 	.inactive-area {
-		@apply w-full p-2 bg-gray-100 rounded-md border-none read-only:text-gray-700 read-only:bg-gray-300 cursor-not-allowed pointer-events-none;
+		@apply w-full p-4 bg-gray-100 rounded-[12px] border-2 border-gray-200 read-only:text-gray-700 read-only:bg-gray-300 cursor-not-allowed pointer-events-none transition-all duration-200;
 	}
 
 	.table-data {
-		@apply p-2 relative grow flex-3/4;
+		@apply p-4 relative grow flex-3/4 bg-gray-50 rounded-[8px] border border-gray-200;
 	}
 
 	.table-label {
-		@apply p-2 font-semibold flex-1/4 min-w-28;
+		@apply p-4 font-bold flex-1/4 min-w-32 text-gray-700 uppercase tracking-wide text-sm;
 	}
 
 	.table-row {
-		@apply inline md:flex;
+		@apply inline md:flex gap-4 items-center;
+	}
+
+	.service-card {
+		@apply bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl;
+	}
+
+	.service-header {
+		@apply px-8 py-6 bg-gradient-to-r border-b border-gray-100;
+	}
+
+	.service-content {
+		@apply p-8;
+	}
+
+	.field-container {
+		@apply bg-gray-50 rounded-[12px] p-4 border border-gray-200 transition-all duration-200 hover:border-main/30;
+	}
+
+	.status-badge {
+		@apply inline-flex items-center px-6 py-3 rounded-[12px] text-sm font-bold shadow-md transition-all duration-200;
+	}
+
+	.gradient-button {
+		@apply px-8 py-4 bg-gradient-to-r from-main to-secondary hover:from-secondary hover:to-main text-white rounded-[12px] font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1;
 	}
 }

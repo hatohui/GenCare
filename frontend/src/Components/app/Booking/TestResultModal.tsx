@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { XMarkSVG, DownloadSVG, EyeSVG } from '@/Components/SVGs'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
+import { format as formatDateFns } from 'date-fns'
+import { vi } from 'date-fns/locale'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -93,7 +95,7 @@ const generateMockTestResult = (): TestResultData => {
 			recommendations:
 				'Duy trì lối sống lành mạnh, tập thể dục đều đặn 30 phút mỗi ngày, ăn uống cân bằng dinh dưỡng.',
 			doctor: 'Dr. Trần Thị B',
-			datePerformed: new Date().toLocaleDateString('vi-VN'),
+			datePerformed: formatDateFns(new Date(), 'dd/MM/yyyy', { locale: vi }),
 			testId: 'TEST-001',
 			patientId: 'PAT-001',
 			serviceId: 'SVC-001',

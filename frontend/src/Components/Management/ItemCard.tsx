@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
 import StatusLight, { Status } from '../StatusLight'
 import EditModal from './EditModal'
+import ConfirmationModal from '../Common/ConfirmationModal'
 import { Account } from '@/Interfaces/Auth/Types/Account'
 import { ServiceDTO } from '@/Interfaces/Service/Schemas/service'
 
@@ -46,6 +47,10 @@ const ItemCard = <T extends object>({
 	const router = useRouter()
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 	const [isUpdating, setIsUpdating] = useState(false)
+	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
+	const [currentAction, setCurrentAction] = useState<
+		'delete' | 'restore' | null
+	>(null)
 
 	if (thirdLabel instanceof Date) {
 		thirdLabel = thirdLabel.toString()
@@ -76,12 +81,24 @@ const ItemCard = <T extends object>({
 
 	const handleDeleteFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
-		handleDelete(id)
+		setCurrentAction('delete')
+		setIsConfirmationOpen(true)
 	}
 
 	const handleRestoreFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
-		handleRestore(id, data)
+		setCurrentAction('restore')
+		setIsConfirmationOpen(true)
+	}
+
+	const handleConfirmation = () => {
+		if (currentAction === 'delete') {
+			handleDelete(id)
+		} else if (currentAction === 'restore') {
+			handleRestore(id, data)
+		}
+		setIsConfirmationOpen(false)
+		setCurrentAction(null)
 	}
 
 	return (
@@ -172,6 +189,17 @@ const ItemCard = <T extends object>({
 					isLoading={isUpdating}
 				/>
 			)}
+
+			{/* Confirmation Modal */}
+			<ConfirmationModal
+				isOpen={isConfirmationOpen}
+				onClose={() => setIsConfirmationOpen(false)}
+				onConfirm={handleConfirmation}
+				confirmText={currentAction === 'delete' ? 'Delete' : 'Restore'}
+				cancelText='Cancel'
+				title={`Are you sure you want to ${currentAction} this item?`}
+				message={`This action will ${currentAction} the item. Do you want to proceed?`}
+			/>
 		</>
 	)
 }

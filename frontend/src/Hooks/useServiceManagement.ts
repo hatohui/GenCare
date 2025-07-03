@@ -36,34 +36,31 @@ export const useServiceManagement = () => {
 	const { isError, isFetching, data, isLoading } = query
 
 	const handleDelete = (id: string) => {
-		if (window.confirm('Bạn có muốn xóa mục này không?'))
-			deleteMutation.mutate(id, {
+		deleteMutation.mutate(id, {
+			onSuccess: () => {
+				query.refetch()
+			},
+			onError: () => {},
+		})
+	}
+
+	const handleRestore = (id: string, data: ServiceDTO) => {
+		// Transform imageUrls from object format to string array format
+		const transformedData = {
+			...data,
+			isDeleted: false,
+			imageUrls: data.imageUrls?.map(img => img.url) || [],
+		}
+
+		updateMutation.mutate(
+			{ id, data: transformedData },
+			{
 				onSuccess: () => {
 					query.refetch()
 				},
 				onError: () => {},
-			})
-	}
-
-	const handleRestore = (id: string, data: ServiceDTO) => {
-		if (window.confirm('Bạn có muốn khôi phục mục này không?')) {
-			// Transform imageUrls from object format to string array format
-			const transformedData = {
-				...data,
-				isDeleted: false,
-				imageUrls: data.imageUrls?.map(img => img.url) || [],
 			}
-
-			updateMutation.mutate(
-				{ id, data: transformedData },
-				{
-					onSuccess: () => {
-						query.refetch()
-					},
-					onError: () => {},
-				}
-			)
-		}
+		)
 	}
 
 	const handleUpdate = (id: string, data: any) => {

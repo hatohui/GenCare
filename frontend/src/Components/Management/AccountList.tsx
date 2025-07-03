@@ -34,28 +34,24 @@ const AccountList = () => {
 	}, [search])
 
 	const handleDelete = (id: string) => {
-		if (window.confirm('Are you sure you want to delete this account?')) {
-			accountDeleteMutate.mutate(id, {
+		accountDeleteMutate.mutate(id, {
+			onSuccess: () => {
+				query.refetch()
+			},
+			onError: () => {},
+		})
+	}
+
+	const handleRestore = (id: string, data: Account) => {
+		updateAccountMutation.mutate(
+			{ id, data: { account: { ...data, isDeleted: false } } },
+			{
 				onSuccess: () => {
 					query.refetch()
 				},
 				onError: () => {},
-			})
-		}
-	}
-
-	const handleRestore = (id: string, data: Account) => {
-		if (window.confirm('Are you sure you want to restore this account?')) {
-			updateAccountMutation.mutate(
-				{ id, data: { account: { ...data, isDeleted: false } } },
-				{
-					onSuccess: () => {
-						query.refetch()
-					},
-					onError: () => {},
-				}
-			)
-		}
+			}
+		)
 	}
 
 	return (

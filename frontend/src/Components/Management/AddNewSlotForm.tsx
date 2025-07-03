@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import { CreateSlotRequest } from '@/Interfaces/Slot/Schema/slot'
 import { z } from 'zod'
+import { parseISO } from 'date-fns'
 
 const slotSchema = z.object({
 	no: z.coerce.number().positive('Slot number must be greater than 0'),
@@ -44,11 +45,11 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 
 	const onSubmit = (data: SlotFormSchema) => {
 		setLoading(true)
-		// Convert datetime-local to ISO string
+		// Convert datetime-local to ISO string using date-fns
 		const slotData: CreateSlotRequest = {
 			no: data.no,
-			startAt: new Date(data.startAt).toISOString(),
-			endAt: new Date(data.endAt).toISOString(),
+			startAt: parseISO(data.startAt).toISOString(),
+			endAt: parseISO(data.endAt).toISOString(),
 			isDeleted: data.isDeleted,
 		}
 
@@ -66,7 +67,7 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 		<>
 			{/* Overlay */}
 			<motion.div
-				className='fixed inset-0 bg-black/40 backdrop-blur-sm z-40'
+				className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}

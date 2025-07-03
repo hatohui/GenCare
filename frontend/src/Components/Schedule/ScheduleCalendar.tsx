@@ -9,6 +9,7 @@ import { useAllSlotsAdmin } from '@/Services/slot-services'
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns'
 import AssignSlotModal from '@/Components/Schedule/AssignSlotModal'
 import toast from 'react-hot-toast'
+import { formatTimeForDisplay } from '@/Utils/dateTime'
 
 interface ScheduleCalendarProps {
 	isAdminOrManager?: boolean
@@ -56,25 +57,13 @@ const ScheduleCalendar = ({
 			?.slots.find(slot => slot.accounts.length > 0)
 	}
 
-	// Helper function to format time
-	const formatTime = (timeString: string) => {
-		try {
-			const date = new Date(timeString)
-			return date.toLocaleTimeString('en-US', {
-				hour: '2-digit',
-				minute: '2-digit',
-				hour12: false,
-			})
-		} catch {
-			return timeString
-		}
-	}
-
 	// Handle slot click
 	const handleSlotClick = (slot: any, day: Date) => {
 		if (!isAdminOrManager) return
 
-		const timeRange = `${formatTime(slot.startAt)} - ${formatTime(slot.endAt)}`
+		const timeRange = `${formatTimeForDisplay(
+			slot.startAt
+		)} - ${formatTimeForDisplay(slot.endAt)}`
 		setSelectedSlot({
 			slotId: slot.id,
 			slotNo: slot.no,
@@ -192,7 +181,8 @@ const ScheduleCalendar = ({
 								<div className='border-b border-r border-gray-300 p-3 text-center text-gray-700 font-medium bg-gray-50'>
 									<div className='text-sm'>Slot {slot.no}</div>
 									<div className='text-xs text-gray-500 mt-1'>
-										{formatTime(slot.startAt)} - {formatTime(slot.endAt)}
+										{formatTimeForDisplay(slot.startAt)} -{' '}
+										{formatTimeForDisplay(slot.endAt)}
 									</div>
 								</div>
 
