@@ -1,6 +1,7 @@
 'use client'
 
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import { UploadCloud } from 'lucide-react'
 
 /**
  * A button component that opens a Cloudinary upload widget.
@@ -43,8 +44,15 @@ export const CloudinaryButton = ({
 		}}
 	>
 		{({ open }) => (
-			<button type='button' className={className} onClick={() => open()}>
-				{text}
+			<button
+				type='button'
+				className={`flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-white font-semibold shadow hover:bg-blue-700 focus:ring-2 focus:ring-accent/50 transition ${
+					className || ''
+				}`}
+				onClick={() => open()}
+			>
+				<UploadCloud className='w-5 h-5' />
+				<span>{text}</span>
 			</button>
 		)}
 	</CldUploadWidget>

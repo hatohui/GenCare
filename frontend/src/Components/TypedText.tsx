@@ -1,27 +1,31 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
 	className,
 	...options
 }: TypedOptions & { className?: string }) => {
-	const el = useRef(null)
+	const el = useRef<HTMLSpanElement>(null)
 	const [isFirstLoad, setIsFirstLoad] = useState(true)
+
+	// Memoize defaultOptions so it doesn't change on every render
+	const defaultOptions = useMemo(
+		() => ({
+			typeSpeed: 30,
+			backSpeed: 25,
+			showCursor: false,
+			onDestroy: () => setIsFirstLoad(false),
+			onComplete: () => setIsFirstLoad(false),
+		}),
+		[]
+	)
 
 	// Reset isFirstLoad when strings change
 	React.useEffect(() => {
 		setIsFirstLoad(true)
 	}, [options.strings && options.strings.join('')])
-
-	const defaultOptions: TypedOptions = {
-		typeSpeed: 30,
-		backSpeed: 25,
-		showCursor: false,
-		onDestroy: () => setIsFirstLoad(false),
-		onComplete: () => setIsFirstLoad(false),
-	}
 
 	React.useEffect(() => {
 		if (!el.current) return
@@ -30,7 +34,13 @@ const TypedText = ({
 		return () => {
 			typed.destroy()
 		}
-	}, [defaultOptions, options])
+		// Only re-run when options or strings change
+	}, [
+		defaultOptions,
+		options.strings && options.strings.join(''),
+		options.typeSpeed,
+		options.backSpeed,
+	])
 
 	return isFirstLoad ? (
 		<span className={className} ref={el} />
