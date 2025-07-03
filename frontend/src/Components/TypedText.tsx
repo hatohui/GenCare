@@ -10,8 +10,14 @@ const TypedText = ({
 	const el = useRef<HTMLSpanElement>(null)
 	const [isFirstLoad, setIsFirstLoad] = useState(true)
 
+	// Extract strings join for dependency
+	const stringsKey = useMemo(
+		() => (options.strings ? options.strings.join('') : ''),
+		[options.strings]
+	)
+
 	// Memoize defaultOptions so it doesn't change on every render
-	const defaultOptions = useMemo(
+	const defaultOptions: TypedOptions = useMemo(
 		() => ({
 			typeSpeed: 30,
 			backSpeed: 25,
@@ -25,7 +31,7 @@ const TypedText = ({
 	// Reset isFirstLoad when strings change
 	React.useEffect(() => {
 		setIsFirstLoad(true)
-	}, [options.strings && options.strings.join('')])
+	}, [stringsKey])
 
 	React.useEffect(() => {
 		if (!el.current) return
@@ -35,12 +41,7 @@ const TypedText = ({
 			typed.destroy()
 		}
 		// Only re-run when options or strings change
-	}, [
-		defaultOptions,
-		options.strings && options.strings.join(''),
-		options.typeSpeed,
-		options.backSpeed,
-	])
+	}, [defaultOptions, stringsKey, options.typeSpeed, options.backSpeed])
 
 	return isFirstLoad ? (
 		<span className={className} ref={el} />

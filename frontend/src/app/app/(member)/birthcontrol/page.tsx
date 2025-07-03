@@ -8,6 +8,8 @@ import { useGetBirthControl } from '@/Services/birthControl-service'
 import React, { useEffect, useState } from 'react'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
+import { getMonth, getYear, format } from 'date-fns'
+import { vi } from 'date-fns/locale'
 
 const Page = () => {
 	const { data: account } = useAccountStore()
@@ -22,8 +24,9 @@ const Page = () => {
 		if (getBirthControl) setBirthControl(getBirthControl)
 	}, [getBirthControl, setBirthControl])
 
-	const [month, setMonth] = useState(new Date().getMonth())
-	const [year, setYear] = useState(new Date().getFullYear())
+	const now = new Date()
+	const [month, setMonth] = useState(getMonth(now))
+	const [year, setYear] = useState(getYear(now))
 
 	const handlePreviousMonth = () => {
 		if (month === 0) {
@@ -124,8 +127,8 @@ const Page = () => {
 									← Tháng trước
 								</button>
 								<div className='text-lg font-semibold text-gray-800 min-w-[120px] text-center'>
-									{new Date(year, month).toLocaleString('vi-VN', {
-										month: 'long',
+									{format(new Date(year, month), 'MMMM', {
+										locale: vi,
 									})}{' '}
 									{year}
 								</div>

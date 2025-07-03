@@ -120,7 +120,6 @@ jobs:
             echo "🧹 Pruning unused Docker images..."
             sudo docker images "$IMAGE" --format "{{.Repository}}:{{.Tag}}" \
               | grep -v -E "(:${SHA}|:previous)" \
-              | awk '{print $2}' \
               | xargs -r sudo docker rmi -f || true
 
             echo "✅ Deployment complete."

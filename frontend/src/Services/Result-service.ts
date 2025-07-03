@@ -1,52 +1,30 @@
-import axios from 'axios'
-import { DEFAULT_API_URL } from '@/Constants/API'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
+import axiosInstance from '@/Utils/axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AllResultArray, Result } from '@/Interfaces/Tests/Types/Tests'
 
-const Result_URL = `${DEFAULT_API_URL}/result`
-
 const ResultAPI = {
-	GetTest: (header: string, orderDetailId: string) => {
-		return axios
-			.get<Omit<Result, 'orderDetailId'>>(`${Result_URL}/${orderDetailId}`, {
-				headers: { Authorization: header },
-			})
+	GetTest: (orderDetailId: string) => {
+		return axiosInstance
+			.get<Omit<Result, 'orderDetailId'>>(`/result/${orderDetailId}`)
 			.then(res => res.data)
 	},
-	UpdateTest: (
-		header: string,
-		id: string,
-		data: Omit<Result, 'orderDetailId'>
-	) => {
-		return axios
-			.put(`${Result_URL}/${id}`, data, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.data)
+	UpdateTest: (id: string, data: Omit<Result, 'orderDetailId'>) => {
+		return axiosInstance.put(`/result/${id}`, data).then(res => res.data)
 	},
-	DeleteTest: (header: string, id: string) => {
-		return axios
-			.delete(`${Result_URL}/${id}`, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.data)
+	DeleteTest: (id: string) => {
+		return axiosInstance.delete(`/result/${id}`).then(res => res.data)
 	},
-	getAllOrderDetail: (header: string) => {
-		return axios
-			.get<AllResultArray>(`${Result_URL}/all`, {
-				headers: { Authorization: header },
-			})
+	getAllOrderDetail: () => {
+		return axiosInstance
+			.get<AllResultArray>('/result/all')
 			.then(res => res.data)
 	},
 }
 
 export const useGetAllOrderDetail = () => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['all-order-detail'],
-		queryFn: () => ResultAPI.getAllOrderDetail(header),
+		queryFn: () => ResultAPI.getAllOrderDetail(),
 	})
 }
 
@@ -54,17 +32,14 @@ export const useGetResult = (
 	orderDetailId: string,
 	options?: { enabled?: boolean }
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['result', orderDetailId],
-		queryFn: () => ResultAPI.GetTest(header, orderDetailId),
+		queryFn: () => ResultAPI.GetTest(orderDetailId),
 		enabled: options?.enabled !== false && !!orderDetailId,
 	})
 }
 
 export const useUpdateResult = () => {
-	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	return useMutation({
@@ -74,7 +49,7 @@ export const useUpdateResult = () => {
 		}: {
 			id: string
 			data: Omit<Result, 'orderDetailId'>
-		}) => ResultAPI.UpdateTest(header, id, data),
+		}) => ResultAPI.UpdateTest(id, data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['result'] })
 		},
@@ -82,9 +57,7 @@ export const useUpdateResult = () => {
 }
 
 export const useDeleteResult = () => {
-	const header = useAccessTokenHeader()
-
 	return useMutation({
-		mutationFn: ({ id }: { id: string }) => ResultAPI.DeleteTest(header, id),
+		mutationFn: ({ id }: { id: string }) => ResultAPI.DeleteTest(id),
 	})
 }

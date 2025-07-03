@@ -37,7 +37,7 @@ export function useAuthGuard(
 				router.push(`/login?error=${errorParam}`)
 			}
 		}
-	}, [token, isHydrated, accountStore, tokenStore, router])
+	}, [token, isHydrated, router, accountStore, tokenStore])
 
 	useEffect(() => {
 		if (token && user) {
@@ -48,7 +48,7 @@ export function useAuthGuard(
 				router.push('/403')
 			}
 		}
-	}, [user, token, isHydrated, accountStore, router])
+	}, [user, token, isHydrated, router, requiredRole, accountStore])
 
 	return {
 		user,
