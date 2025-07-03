@@ -6,6 +6,12 @@ namespace Infrastructure.Repositories;
 
 public class RoleRepository(IApplicationDbContext context) : IRoleRepository
 {
+    public async Task<List<Role>> GetAll()
+    {
+        return await context.Roles
+            .ToListAsync();
+    }
+
     public async Task<Role?> GetRoleByIdAsync(Guid id)
     {
         return await context.Roles
