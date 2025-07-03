@@ -11,7 +11,7 @@ public class StatisticController(IStatisticService statisticService) : Controlle
 {
     [HttpGet("revenue")]
     [Authorize(Roles = $"{RoleNames.Admin}")]
-    public async Task<IActionResult> GetPeriodRevenueAsync([FromQuery] string period)
+    public async Task<IActionResult> GetPeriodRevenueAsync()
     {
         var response = await statisticService.GetPeriodRevenueAsync();
         return Ok(response);

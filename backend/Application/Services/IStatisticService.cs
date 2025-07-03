@@ -10,4 +10,5 @@ namespace Application.Services;
 public interface IStatisticService
 {
     Task<List<RevenueDataModel>> GetPeriodRevenueAsync();
+    Task<AdminStatisticResponse> GetAdminStatistic();
 }
