@@ -168,16 +168,63 @@ FROM "account" a, "department" d WHERE a.email = 'consultant17@example.com' AND 
 --   (SELECT id FROM "account" WHERE email = 'staff1@example.com'),
 --   NOW() + INTERVAL '1 day', 'booked', 'https://meeting.com/room1', NOW();
 
--- -- 11. Insert purchase
--- INSERT INTO "purchase" (account_id, created_at)
--- SELECT id, NOW() FROM "account" WHERE email = 'member1@example.com';
+-- 11. Insert purchase
+INSERT INTO "purchase" (account_id)
+SELECT id
+FROM "account"
+WHERE email IN (
+'member1@example.com',
+'member2@example.com',
+'member3@example.com',
+'member4@example.com',
+'member5@example.com',
+'member6@example.com',
+'member7@example.com',
+'member8@example.com',
+'member9@example.com',
+'member10@example.com',
+'member11@example.com',
+'member12@example.com',
+'member13@example.com',
+'member14@example.com',
+'member15@example.com',
+'member16@example.com',
+'member17@example.com',
+'member18@example.com',
+'member19@example.com',
+'member20@example.com',
+'member21@example.com',
+'member22@example.com',
+'member23@example.com',
+'member24@example.com',
+'member25@example.com',
+'member26@example.com',
+'member27@example.com',
+'member28@example.com',
+'member29@example.com'
+);
 
--- -- 12. Insert payment_history
--- INSERT INTO "payment_history" (purchase_id, transaction_id, created_at, amount, status, expired_at, payment_method)
--- SELECT
---   p.id, gen_random_uuid(), NOW(), 500.00, 'paid', NOW() + INTERVAL '7 days', 'momo'
--- FROM "purchase" p
--- LIMIT 1;
+-- 14. Insert order_detail
+INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
+SELECT
+  (SELECT id FROM "purchase" LIMIT 1),
+  (SELECT id FROM "service" WHERE name = 'Consultation'),
+  'David', 'Member', '2233445566', '2000-04-04', TRUE;
+
+INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
+SELECT
+  (SELECT id FROM "purchase" LIMIT 1),
+  (SELECT id FROM "service" WHERE name = 'Consultation'),
+  'David', 'Member', '2233445566', '2000-04-04', TRUE;
+
+-- 12. Insert payment_history
+INSERT INTO "payment_history" (purchase_id, transaction_id, created_at, amount, status, expired_at, payment_method)
+SELECT
+  p.id, gen_random_uuid(), NOW(), 500.00, 'paid', NOW() + INTERVAL '7 days', 'momo'
+FROM "purchase" p
+LIMIT 1;
+
+
 
 -- 13. Insert services
 INSERT INTO "service" (name, description, price, created_at, is_deleted)
@@ -217,12 +264,7 @@ VALUES
   ('Pain Management Consultation', 'Consultation for pain relief therapies', 250.00, NOW(), FALSE);
 
 
--- -- 14. Insert order_detail
--- INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
--- SELECT
---   (SELECT id FROM "purchase" LIMIT 1),
---   (SELECT id FROM "service" WHERE name = 'Consultation'),
---   'David', 'Member', '2233445566', '2000-04-04', TRUE;
+
 
 -- -- 15. Insert result
 -- INSERT INTO "result" (order_detail_id, order_date, sample_date, result_date, status, result_data, updated_at)
