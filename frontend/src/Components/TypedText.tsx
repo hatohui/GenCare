@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
@@ -10,18 +10,24 @@ const TypedText = ({
 	const el = useRef(null)
 	const [isFirstLoad, setIsFirstLoad] = useState(true)
 
+	// Extract strings join for dependency
+	const stringsKey = options.strings ? options.strings.join('') : ''
+
 	// Reset isFirstLoad when strings change
 	React.useEffect(() => {
 		setIsFirstLoad(true)
-	}, [options.strings && options.strings.join('')])
+	}, [stringsKey])
 
-	const defaultOptions: TypedOptions = {
-		typeSpeed: 30,
-		backSpeed: 25,
-		showCursor: false,
-		onDestroy: () => setIsFirstLoad(false),
-		onComplete: () => setIsFirstLoad(false),
-	}
+	const defaultOptions: TypedOptions = useMemo(
+		() => ({
+			typeSpeed: 30,
+			backSpeed: 25,
+			showCursor: false,
+			onDestroy: () => setIsFirstLoad(false),
+			onComplete: () => setIsFirstLoad(false),
+		}),
+		[]
+	)
 
 	React.useEffect(() => {
 		if (!el.current) return

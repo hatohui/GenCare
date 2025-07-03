@@ -55,12 +55,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			return
 		}
 
-		if (data) {
+		if (data && data.id !== accountStore.data?.id) {
 			accountStore.setAccount(data)
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router, data])
+	}, [token, isClient, router, data, accountStore, tokenStore])
 
 	if (!isClient || isLoading) {
 		return (

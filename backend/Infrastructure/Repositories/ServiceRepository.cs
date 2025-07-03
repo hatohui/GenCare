@@ -176,4 +176,9 @@ public class ServiceRepository(IApplicationDbContext dbContext) : IServiceReposi
         return affectedRows > 0;
     }
 
+    public async Task<List<Service>> GetAll()
+    {
+        return await dbContext.Services
+            .ToListAsync();
+    }
 }

@@ -22,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="DTOs\Statistic\Response\" />
 	  <Folder Include="DTOs\Statistic\Request\" />
 	</ItemGroup>
 </Project>
