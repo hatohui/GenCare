@@ -1,8 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { XMarkSVG, DownloadSVG, EyeSVG } from '@/Components/SVGs'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
+import { format as formatDateFns } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import { ResultData } from '@/Interfaces/Tests/Types/Tests'
+import { useGetResult } from '@/Services/Result-service'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -39,6 +43,7 @@ interface GeneralTestResult {
 type TestResultData = GeneralTestResult
 
 // Mock data generator (replace with your real data)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const generateMockTestResult = (): TestResultData => {
 	// Simple fake data for all service types
 	return {
@@ -93,7 +98,7 @@ const generateMockTestResult = (): TestResultData => {
 			recommendations:
 				'Duy trì lối sống lành mạnh, tập thể dục đều đặn 30 phút mỗi ngày, ăn uống cân bằng dinh dưỡng.',
 			doctor: 'Dr. Trần Thị B',
-			datePerformed: new Date().toLocaleDateString('vi-VN'),
+			datePerformed: formatDateFns(new Date(), 'dd/MM/yyyy', { locale: vi }),
 			testId: 'TEST-001',
 			patientId: 'PAT-001',
 			serviceId: 'SVC-001',
@@ -106,6 +111,7 @@ const generateMockTestResult = (): TestResultData => {
 }
 
 // Component for rendering general test results
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const GeneralTestResultView = ({
 	data,
 }: {
@@ -140,15 +146,8 @@ const GeneralTestResultView = ({
 	return (
 		<div className='space-y-4'>
 			<h3 className='text-lg font-semibold text-main mb-4'>
-				Kết quả khám tổng quát
+				Kết quả xét nghiệm tổng quát
 			</h3>
-
-			<div className='bg-white border border-gray-200 rounded-[15px] p-4 mb-4'>
-				<div className='text-sm text-gray-600 mb-2'>
-					Bác sĩ: {data.doctor} | Ngày thực hiện: {data.datePerformed}
-				</div>
-			</div>
-
 			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
 				{data.results.map((result, index) => (
 					<div
@@ -178,21 +177,61 @@ const GeneralTestResultView = ({
 					</div>
 				))}
 			</div>
+			<div className='bg-blue-50 border border-blue-200 rounded-[15px] p-4 mb-4'>
+				<h4 className='font-medium text-blue-800 mb-2'>Tóm tắt</h4>
+				<p className='text-blue-700 text-sm'>{data.summary}</p>
+			</div>
+			<div className='bg-green-50 border border-green-200 rounded-[15px] p-4'>
+				<h4 className='font-medium text-green-800 mb-2'>Khuyến nghị</h4>
+				<p className='text-green-700 text-sm'>{data.recommendations}</p>
+			</div>
+		</div>
+	)
+}
 
-			<div className='space-y-4'>
-				<div className='bg-white border border-gray-200 rounded-[15px] p-4'>
-					<h4 className='font-medium text-gray-800 mb-2'>Tóm tắt</h4>
-					<p className='text-gray-700 text-sm leading-relaxed'>
-						{data.summary}
-					</p>
-				</div>
-
-				<div className='bg-white border border-gray-200 rounded-[15px] p-4'>
-					<h4 className='font-medium text-gray-800 mb-2'>Khuyến nghị</h4>
-					<p className='text-gray-700 text-sm leading-relaxed'>
-						{data.recommendations}
-					</p>
-				</div>
+// Component for rendering ResultData
+const ResultDataView = ({ data }: { data: ResultData }) => {
+	return (
+		<div className='space-y-4'>
+			<h3 className='text-lg font-semibold text-main mb-4'>
+				Kết quả xét nghiệm
+			</h3>
+			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
+				{Object.entries(data).map(([parameter, result], index) => (
+					<div
+						key={index}
+						className='bg-white border border-gray-200 rounded-[15px] p-4 min-h-[120px]'
+					>
+						<div className='flex justify-between items-start mb-2'>
+							<h4 className='font-medium text-gray-800 text-sm'>{parameter}</h4>
+							<span
+								className={`px-2 py-1 rounded-full text-xs font-medium ${
+									result.flag === 'normal'
+										? 'text-green-600 bg-green-50'
+										: result.flag === 'high'
+										? 'text-red-600 bg-red-50'
+										: result.flag === 'low'
+										? 'text-yellow-600 bg-yellow-50'
+										: 'text-gray-600 bg-gray-50'
+								}`}
+							>
+								{result.flag === 'normal'
+									? 'Bình thường'
+									: result.flag === 'high'
+									? 'Cao'
+									: result.flag === 'low'
+									? 'Thấp'
+									: 'Không xác định'}
+							</span>
+						</div>
+						<div className='text-xl font-bold text-main mb-1'>
+							{result.value} {result.unit}
+						</div>
+						<div className='text-xs text-gray-600'>
+							Bình thường: {result.referenceRange}
+						</div>
+					</div>
+				))}
 			</div>
 		</div>
 	)
@@ -204,25 +243,12 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	onClose,
 	bookingItem,
 }) => {
-	const [testResult, setTestResult] = useState<TestResultData | null>(null)
-	const [isLoading, setIsLoading] = useState(false)
-
-	// Load test result when modal opens
-	React.useEffect(() => {
-		if (isOpen && bookingItem) {
-			setIsLoading(true)
-			// Simulate API call
-			setTimeout(() => {
-				const result = generateMockTestResult()
-				setTestResult(result)
-				setIsLoading(false)
-			}, 1000)
-		}
-	}, [isOpen, bookingItem])
+	const orderDetailId = bookingItem?.orderDetailId || ''
+	const { data, isLoading, error } = useGetResult(orderDetailId, {
+		enabled: isOpen && !!orderDetailId,
+	})
 
 	const handleClose = () => {
-		setTestResult(null)
-		setIsLoading(false)
 		onClose()
 	}
 
@@ -237,20 +263,17 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	}
 
 	const renderTestResult = () => {
-		if (!testResult) return null
-
-		// Since we're only using general type now
-		if (testResult.type === 'general') {
-			return <GeneralTestResultView data={testResult.data} />
-		}
-
-		return <div>Không có dữ liệu kết quả</div>
+		if (isLoading) return <div>Đang tải kết quả...</div>
+		if (error) return <div className='text-red-500'>Lỗi khi tải kết quả.</div>
+		if (!data || !data.resultData)
+			return <div>Không có kết quả xét nghiệm.</div>
+		return <ResultDataView data={data.resultData} />
 	}
 
 	if (!isOpen) return null
 
 	return (
-		<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm'>
+		<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-[20] p-4 backdrop-blur-sm'>
 			<div className='bg-white rounded-[30px] max-w-4xl w-full h-[90vh] flex flex-col shadow-2xl relative'>
 				{/* Header */}
 				<div className='flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0'>
@@ -270,24 +293,16 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 				</div>
 
 				{/* Content */}
-				<div className='flex-1 overflow-y-auto p-6'>
-					{isLoading ? (
-						<div className='flex justify-center items-center py-12'>
-							<div className='text-center'>
-								<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-main mx-auto mb-4'></div>
-								<p className='text-gray-600'>Đang tải kết quả...</p>
-							</div>
-						</div>
-					) : (
-						renderTestResult()
-					)}
-				</div>
+				<div className='flex-1 overflow-y-auto p-6'>{renderTestResult()}</div>
 
 				{/* Footer */}
-				{!isLoading && testResult && (
+				{!isLoading && data && data.resultData && (
 					<div className='flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0'>
 						<div className='text-sm text-gray-600'>
-							Kết quả được tạo vào: {new Date().toLocaleDateString('vi-VN')}
+							Kết quả được tạo vào:{' '}
+							{data.resultDate
+								? new Date(data.resultDate).toLocaleDateString('vi-VN')
+								: '---'}
 						</div>
 						<div className='flex gap-3'>
 							<button

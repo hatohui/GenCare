@@ -9,6 +9,9 @@ import {
 	ServiceFormSchema,
 	serviceSchema,
 } from '@/Interfaces/Service/Schemas/service'
+import { CloudinaryButton } from '@/Components/CloudinaryButton'
+import { CldImage } from 'next-cloudinary'
+import { toast } from 'react-hot-toast'
 
 interface Props {
 	onSuccess?: () => void
@@ -18,6 +21,7 @@ interface Props {
 
 const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 	const [loading, setLoading] = useState(false)
+	const [imageUrls, setImageUrls] = useState<string[]>([])
 	const createMutation = useCreateService()
 
 	const {
@@ -34,13 +38,46 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 		},
 	})
 
+	const handleImageUpload = (url: string, publicId: string) => {
+		console.log('🖼️ Service image uploaded:', { url, publicId })
+		setImageUrls(prev => [...prev, url])
+		toast.success('Image uploaded successfully')
+	}
+
+	const handleUploadError = (error: string) => {
+		console.error('❌ Service image upload error:', error)
+		toast.error(error)
+	}
+
+	const handleRemoveImage = (index: number) => {
+		setImageUrls(prev => prev.filter((_, i) => i !== index))
+		toast.success('Image removed')
+	}
+
 	const onSubmit = (data: ServiceFormSchema) => {
 		setLoading(true)
-		createMutation.mutate(data, {
+
+		const submitData = {
+			...data,
+			imageUrls: imageUrls,
+		}
+
+		console.log(
+			'📤 Submitting Service Creation:',
+			JSON.stringify(submitData, null, 2)
+		)
+
+		createMutation.mutate(submitData as any, {
 			onSuccess: () => {
 				reset()
+				setImageUrls([])
 				onSuccess?.()
 				onClose?.()
+				toast.success('Service created successfully')
+			},
+			onError: error => {
+				console.error('Failed to create service:', error)
+				toast.error('Failed to create service')
 			},
 			onSettled: () => setLoading(false),
 		})
@@ -48,16 +85,14 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 
 	return (
 		<>
-			{/* Overlay */}
 			<motion.div
-				className='fixed inset-0 bg-black/40 backdrop-blur-sm z-40'
+				className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				onClick={onClose}
 			/>
 
-			{/* Modal */}
 			<motion.div
 				className='fixed inset-0 z-50 flex items-center justify-center px-4'
 				initial={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -72,7 +107,6 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 					)}
 					onClick={e => e.stopPropagation()}
 				>
-					{/* Close Button */}
 					<button
 						onClick={onClose}
 						className='absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold'
@@ -86,7 +120,51 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 					</h2>
 
 					<form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
-						{/* Name */}
+						<div className='flex flex-col space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+							<div className='text-center'>
+								<h3 className='text-lg font-medium text-gray-700 mb-2'>
+									Service Images
+								</h3>
+								<p className='text-sm text-gray-500 mb-4'>
+									Upload images for this service
+								</p>
+
+								{imageUrls && imageUrls.length > 0 && (
+									<div className='grid grid-cols-3 gap-2 mb-4'>
+										{imageUrls.map((imageUrl, index) => (
+											<div
+												key={index}
+												className='relative group w-full aspect-square'
+											>
+												<CldImage
+													src={imageUrl}
+													alt={`Service image ${index + 1}`}
+													width={120}
+													height={120}
+													className='object-cover rounded-lg border border-gray-200 w-full h-full'
+												/>
+												<button
+													type='button'
+													onClick={() => handleRemoveImage(index)}
+													className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100'
+												>
+													×
+												</button>
+											</div>
+										))}
+									</div>
+								)}
+
+								<CloudinaryButton
+									onUploaded={handleImageUpload}
+									onError={handleUploadError}
+									uploadPreset='gencare'
+									text={imageUrls.length > 0 ? 'Add More Images' : 'Add Images'}
+									className='px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors text-sm'
+								/>
+							</div>
+						</div>
+
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-1'>
 								Service Name
@@ -104,7 +182,6 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 							)}
 						</div>
 
-						{/* Description */}
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-1'>
 								Description
@@ -122,7 +199,6 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 							)}
 						</div>
 
-						{/* Price */}
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-1'>
 								Price

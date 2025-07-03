@@ -25,17 +25,19 @@ export function useAuthGuard(
 		const validation = isTokenValid(token)
 
 		if (!validation.valid) {
-			accountStore.removeAccount()
-			tokenStore.removeAccessToken()
+			if (accountStore.data !== null || token) {
+				accountStore.removeAccount()
+				tokenStore.removeAccessToken()
 
-			let errorParam = 'authentication_error'
-			if (validation.error === 'no_token') errorParam = 'no_session'
-			if (validation.error === 'invalid_token') errorParam = 'invalid_token'
-			if (validation.error === 'token_expired') errorParam = 'session_expired'
+				let errorParam = 'authentication_error'
+				if (validation.error === 'no_token') errorParam = 'no_session'
+				if (validation.error === 'invalid_token') errorParam = 'invalid_token'
+				if (validation.error === 'token_expired') errorParam = 'session_expired'
 
-			router.push(`/login?error=${errorParam}`)
+				router.push(`/login?error=${errorParam}`)
+			}
 		}
-	}, [token, isHydrated, accountStore, tokenStore, router])
+	}, [token, isHydrated, router, accountStore, tokenStore])
 
 	useEffect(() => {
 		if (token && user) {
@@ -46,7 +48,7 @@ export function useAuthGuard(
 				router.push('/403')
 			}
 		}
-	}, [user, token, isHydrated, accountStore, router])
+	}, [user, token, isHydrated, router, requiredRole, accountStore])
 
 	return {
 		user,

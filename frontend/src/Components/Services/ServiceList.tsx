@@ -26,8 +26,41 @@ const ServiceList = () => {
 		search
 	)
 
+	// Show loading state
+	if (isFetching) {
+		return (
+			<div className='flex items-center justify-center pt-20 min-h-96'>
+				<div className='text-center'>
+					<div className='animate-pulse text-lg font-medium text-slate-700'>
+						Đang tải dữ liệu...
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	// Show error state
+	if (isError) {
+		return (
+			<div className='flex items-center justify-center pt-20 min-h-96'>
+				<div className='text-center text-red-500 font-medium'>
+					Error fetching data.
+				</div>
+			</div>
+		)
+	}
+
+	// Show empty state
+	if (data?.services.length === 0) {
+		return (
+			<div className='flex items-center justify-center pt-20 min-h-96'>
+				<div className='text-center text-slate-500'>No data found.</div>
+			</div>
+		)
+	}
+
 	return (
-		<>
+		<div>
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-cols-max auto-rows-max'>
 				{data?.services.map((item, index) => (
 					<motion.div
@@ -43,14 +76,6 @@ const ServiceList = () => {
 						<ServiceCard service={item} />
 					</motion.div>
 				))}
-
-				{data?.services.length === 0 && (
-					<div className='w-full h-full center-all '>No data found.</div>
-				)}
-
-				{isError && (
-					<div className='w-full h-full center-all'>Error fetching data.</div>
-				)}
 			</div>
 			<div className='flex justify-center col-end-3'>
 				<Pagination
@@ -61,7 +86,7 @@ const ServiceList = () => {
 					itemsPerPage={itemsPerPage}
 				/>
 			</div>
-		</>
+		</div>
 	)
 }
 
