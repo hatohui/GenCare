@@ -2,11 +2,13 @@
 
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import dynamic from 'next/dynamic'
 // You may need to install and import a markdown editor, e.g. react-markdown-editor-lite or react-simplemde-editor
-import SimpleMDE from 'react-simplemde-editor'
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
+	ssr: false,
+})
 import 'easymde/dist/easymde.min.css'
 import FloatingLabelInput from '../Form/FloatingLabel'
-import Button from '../Button'
 import ReactMarkdown from 'react-markdown'
 import { CloudinaryButton } from '../CloudinaryButton'
 import { Pencil } from 'lucide-react'
@@ -17,7 +19,7 @@ export type BlogCreateInput = {
 	title: string
 	content: string
 	author: string
-	tagId?: string[]
+	tagTitle?: string[]
 	imageUrls?: string[]
 }
 
@@ -35,7 +37,6 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 	onImageUrlsChange,
 }) => {
 	const {
-		register,
 		handleSubmit,
 		control,
 		setValue,
@@ -46,13 +47,10 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 			title: '',
 			content: '',
 			author: '',
-			tagId: [],
+			tagTitle: [],
 			imageUrls: [],
 		},
 	})
-
-	// Tag input state for better UX
-	const tagInput = React.useRef<HTMLInputElement>(null)
 
 	// Mock tag list for autocomplete
 	const TAG_SUGGESTIONS = [
@@ -86,7 +84,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 	const filteredSuggestions = TAG_SUGGESTIONS.filter(
 		tag =>
 			tag.toLowerCase().includes(tagInputValue.toLowerCase()) &&
-			!(watch('tagId') || []).includes(tag)
+			!(watch('tagTitle') || []).includes(tag)
 	)
 
 	// Handle tag input as chips with autocomplete
@@ -99,22 +97,24 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 		if ((e.key === 'Enter' || e.key === ',') && tagInputValue.trim()) {
 			e.preventDefault()
 			const value = tagInputValue.trim()
-			if (value && !(watch('tagId') || []).includes(value)) {
-				const tags = Array.from(new Set([...(watch('tagId') || []), value]))
-				setValue('tagId', tags)
+			if (value && !(watch('tagTitle') || []).includes(value)) {
+				const tags = Array.from(new Set([...(watch('tagTitle') || []), value]))
+				setValue('tagTitle', tags)
 			}
 			setTagInputValue('')
 			setShowTagSuggestions(false)
 		} else if (e.key === 'ArrowDown') {
 			// Focus first suggestion
-			const first = document.getElementById('tag-suggestion-0')
-			if (first) first.focus()
+			if (typeof window !== 'undefined') {
+				const first = document.getElementById('tag-suggestion-0')
+				if (first) first.focus()
+			}
 		}
 	}
 
 	const handleTagSuggestionClick = (tag: string) => {
-		const tags = Array.from(new Set([...(watch('tagId') || []), tag]))
-		setValue('tagId', tags)
+		const tags = Array.from(new Set([...(watch('tagTitle') || []), tag]))
+		setValue('tagTitle', tags)
 		setTagInputValue('')
 		setShowTagSuggestions(false)
 		tagInputRef.current?.focus()
@@ -122,8 +122,8 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 
 	// Remove tag
 	const removeTag = (tag: string) => {
-		const tags = (watch('tagId') || []).filter(t => t !== tag)
-		setValue('tagId', tags)
+		const tags = (watch('tagTitle') || []).filter(t => t !== tag)
+		setValue('tagTitle', tags)
 	}
 
 	// Remove image
@@ -195,7 +195,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 					{/* CloudinaryButton for title image upload */}
 					<CloudinaryButton
 						text='Upload Title Image'
-						onUploaded={(url, _publicId) => {
+						onUploaded={url => {
 							if (onImageUrlsChange) {
 								onImageUrlsChange([...imageUrls, url])
 							}
@@ -285,7 +285,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 					Tags
 				</label>
 				<div className='flex flex-wrap gap-2 mb-2'>
-					{(watch('tagId') || []).map(tag => (
+					{(watch('tagTitle') || []).map(tag => (
 						<span
 							key={tag}
 							className='bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center shadow-sm hover:bg-blue-200 transition group'

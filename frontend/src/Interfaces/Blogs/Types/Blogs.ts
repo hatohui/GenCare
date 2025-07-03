@@ -12,7 +12,15 @@ export type Blog = {
 	deletedBy?: string
 	isDeleted: boolean
 	imageUrls?: string[]
-	tagId?: string[]
+	tagTitle?: string[]
 }
 
 export type Blogs = Blog[]
+
+export type CreateBlog = {
+	title: string
+	content: string
+	author: string
+	imageUrls?: string[]
+	tagTitle?: string[]
+}

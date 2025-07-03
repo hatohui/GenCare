@@ -39,10 +39,12 @@ export default function FloatingLabelInput({
 	const isCorrect = value !== '' && error == undefined
 
 	const handleOnClick = () => {
-		const inputElement = document.getElementById(id)
-		if (inputElement instanceof HTMLInputElement) {
-			inputElement.focus()
-			setFocused(true)
+		if (typeof window !== 'undefined') {
+			const inputElement = document.getElementById(id)
+			if (inputElement instanceof HTMLInputElement) {
+				inputElement.focus()
+				setFocused(true)
+			}
 		}
 	}
 

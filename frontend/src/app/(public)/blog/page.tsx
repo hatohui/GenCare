@@ -1,15 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { useGetBlogs } from '@/Services/Blog-service'
 import Pagination from '@/Components/Management/Pagination'
-import { usePagination } from '@/Hooks/List/usePagination'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import TypedText from '@/Components/TypedText'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import { useAccountStore } from '@/Hooks/useAccount'
-import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
+import SearchBar from '@/Components/Management/SearchBar'
+import BlogCard from '@/Components/Blogs/BlogCard'
+import { Blog } from '@/Interfaces/Blogs/Types/Blogs'
 
 // Tag suggestions (reuse from BlogForm)
 const TAG_SUGGESTIONS = [
@@ -39,16 +40,14 @@ const TAG_SUGGESTIONS = [
 const ITEMS_PER_PAGE = 6
 
 const BlogPage = () => {
-	const [search, setSearch] = useState('')
-	const [selectedTag, setSelectedTag] = useState<string | null>(null)
-	const [page, setPage] = useState(1)
 	const router = useRouter()
+	const searchParams = useSearchParams()
 	const { data: user } = useAccountStore()
 
-	// Authorization: consultant, staff, manager, admin
-	const canCreateBlog =
-		user &&
-		['consultant', 'staff', 'manager', 'admin'].includes(user.role?.name)
+	// Always derive filters from URL
+	const search = searchParams?.get('search') || ''
+	const selectedTag = searchParams?.get('tag') || null
+	const page = Number(searchParams?.get('page')) || 1
 
 	// Fetch blogs
 	const { data, isFetching } = useGetBlogs(
@@ -60,19 +59,30 @@ const BlogPage = () => {
 	const blogs = data || []
 
 	// Handlers
-	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSearch(e.target.value)
-		setPage(1)
-	}
-
 	const handleTagClick = (tag: string | null) => {
-		setSelectedTag(tag)
-		setPage(1)
+		const params = new URLSearchParams(searchParams?.toString())
+		if (tag) {
+			params.set('tag', tag)
+		} else {
+			params.delete('tag')
+		}
+		params.set('page', '1') // reset to first page on tag change
+		router.push(`/blog?${params.toString()}`)
 	}
 
-	// Pagination logic for array-only API
-	const canGoNext = blogs.length === ITEMS_PER_PAGE
-	const canGoPrev = page > 1
+	const handlePageChange: React.Dispatch<
+		React.SetStateAction<number>
+	> = value => {
+		const newPage = typeof value === 'function' ? value(page) : value
+		const params = new URLSearchParams(searchParams?.toString())
+		params.set('page', String(newPage))
+		router.push(`/blog?${params.toString()}`)
+	}
+
+	// Authorization: consultant, staff, manager, admin
+	const canCreateBlog =
+		user &&
+		['consultant', 'staff', 'manager', 'admin'].includes(user.role?.name)
 
 	return (
 		<main className='min-h-screen bg-gradient-to-b from-white to-general pt-20'>
@@ -114,31 +124,6 @@ const BlogPage = () => {
 							]}
 						/>
 					</p>
-					{/* Search Bar */}
-					<div className='max-w-md mx-auto'>
-						<div className='relative'>
-							<input
-								type='text'
-								placeholder='Tìm kiếm bài viết...'
-								value={search}
-								onChange={handleSearchChange}
-								className='w-full px-4 py-3 rounded-full text-main placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white bg-white/90 backdrop-blur-md'
-							/>
-							<svg
-								className='absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									strokeWidth={2}
-									d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-								/>
-							</svg>
-						</div>
-					</div>
 				</div>
 				<FlorageBackground />
 			</section>
@@ -174,6 +159,11 @@ const BlogPage = () => {
 				</div>
 			</section>
 
+			{/* Search Bar */}
+			<div className='max-w-md mx-auto px-6 py-7'>
+				<SearchBar className='w-full' />
+			</div>
+
 			{/* Blog List */}
 			<section className='py-16 bg-general'>
 				<div className='max-w-6xl mx-auto px-6'>
@@ -186,89 +176,20 @@ const BlogPage = () => {
 								Không có bài viết nào.
 							</div>
 						)}
-						{blogs.map((blog: any) => (
-							<article
-								key={blog.id}
-								className='bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl duration-300'
-							>
-								<div className='h-48 bg-gradient-to-br from-main to-secondary flex items-center justify-center'>
-									{blog.imageUrls && blog.imageUrls[0] ? (
-										<img
-											src={blog.imageUrls[0]}
-											alt={blog.title}
-											className='object-cover w-full h-full'
-										/>
-									) : (
-										<span className='text-white text-sm'>
-											Hình ảnh bài viết
-										</span>
-									)}
-								</div>
-								<div className='p-6'>
-									<div className='flex items-center gap-4 mb-3 flex-wrap'>
-										{blog.tagId &&
-											blog.tagId.map((tag: string) => (
-												<span
-													key={tag}
-													className='px-2 py-1 bg-accent/20 text-accent rounded-full text-xs font-medium'
-												>
-													{tag}
-												</span>
-											))}
-									</div>
-									<h3 className='text-xl font-bold mb-3 text-main line-clamp-2'>
-										{blog.title}
-									</h3>
-									<p className='text-gray-600 mb-4 text-sm line-clamp-3'>
-										{blog.content?.slice(0, 120) || ''}...
-									</p>
-									<div className='flex items-center justify-between'>
-										<div className='flex items-center gap-2'>
-											<div className='w-8 h-8 bg-general rounded-full'></div>
-											<div>
-												<p className='font-medium text-main text-sm'>
-													{blog.author}
-												</p>
-												<p className='text-xs text-gray-500'>
-													{blog.publishedAt
-														? new Date(blog.publishedAt).toLocaleDateString()
-														: ''}
-												</p>
-											</div>
-										</div>
-										<button
-											className='px-4 py-2 bg-accent text-white rounded-full text-sm font-medium hover:bg-accent/80 transition-colors'
-											onClick={() => router.push(`/blog/${blog.id}`)}
-										>
-											Đọc thêm
-										</button>
-									</div>
-								</div>
-							</article>
+						{blogs.map((blog: Blog) => (
+							<BlogCard key={blog.id} blog={blog} />
 						))}
 					</div>
 					{/* Pagination */}
-					{(canGoPrev || canGoNext) && (
-						<div className='mt-12 flex justify-center gap-4'>
-							<button
-								className='px-4 py-2 bg-accent text-white rounded-full text-sm font-medium hover:bg-accent/80 transition-colors disabled:opacity-50'
-								onClick={() => setPage(p => Math.max(1, p - 1))}
-								disabled={!canGoPrev || isFetching}
-							>
-								Trang trước
-							</button>
-							<span className='px-4 py-2 text-main font-medium'>
-								Trang {page}
-							</span>
-							<button
-								className='px-4 py-2 bg-accent text-white rounded-full text-sm font-medium hover:bg-accent/80 transition-colors disabled:opacity-50'
-								onClick={() => setPage(p => p + 1)}
-								disabled={!canGoNext || isFetching}
-							>
-								Trang sau
-							</button>
-						</div>
-					)}
+					<div className='flex justify-center'>
+						<Pagination
+							currentPage={page}
+							isFetching={isFetching}
+							setCurrentPage={handlePageChange}
+							totalCount={blogs.length}
+							itemsPerPage={ITEMS_PER_PAGE}
+						/>
+					</div>
 				</div>
 			</section>
 		</main>
