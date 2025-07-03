@@ -325,7 +325,7 @@ export const RestoreSVG = ({ className }: SVGProps) => (
 		viewBox='0 0 24 24'
 		strokeWidth={1.5}
 		stroke='currentColor'
-		className={clsx(className, 'size-6')}
+		className={clsx(className, 'size-5')}
 	>
 		<path
 			strokeLinecap='round'

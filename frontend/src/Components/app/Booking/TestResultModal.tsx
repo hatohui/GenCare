@@ -3,6 +3,8 @@
 import React from 'react'
 import { XMarkSVG, DownloadSVG, EyeSVG } from '@/Components/SVGs'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
+import { format as formatDateFns } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import { ResultData } from '@/Interfaces/Tests/Types/Tests'
 import { useGetResult } from '@/Services/Result-service'
 
@@ -10,6 +12,181 @@ interface TestResultModalProps {
 	isOpen: boolean
 	onClose: () => void
 	bookingItem: OrderDetail | null
+}
+
+// Interface for different test result types
+interface GeneralTestResult {
+	type: 'general'
+	data: {
+		results: Array<{
+			parameter: string
+			value: string | number
+			unit?: string
+			normalRange?: string
+			status: 'normal' | 'abnormal' | 'borderline'
+		}>
+		summary: string
+		recommendations: string
+		doctor: string
+		datePerformed: string
+		// Add real data fields
+		testId?: string
+		patientId?: string
+		serviceId?: string
+		labTechnician?: string
+		verifiedBy?: string
+		verifiedAt?: string
+		reportUrl?: string
+	}
+}
+
+type TestResultData = GeneralTestResult
+
+// Mock data generator (replace with your real data)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const generateMockTestResult = (): TestResultData => {
+	// Simple fake data for all service types
+	return {
+		type: 'general',
+		data: {
+			results: [
+				{
+					parameter: 'Huyết áp',
+					value: '120/80',
+					unit: 'mmHg',
+					normalRange: '<140/90',
+					status: 'normal',
+				},
+				{
+					parameter: 'Nhịp tim',
+					value: 72,
+					unit: 'bpm',
+					normalRange: '60-100',
+					status: 'normal',
+				},
+				{
+					parameter: 'Nhiệt độ',
+					value: 36.8,
+					unit: '°C',
+					normalRange: '36.5-37.5',
+					status: 'normal',
+				},
+				{
+					parameter: 'Cân nặng',
+					value: 65,
+					unit: 'kg',
+					normalRange: 'N/A',
+					status: 'normal',
+				},
+				{
+					parameter: 'Đường huyết',
+					value: 95,
+					unit: 'mg/dL',
+					normalRange: '70-100',
+					status: 'normal',
+				},
+				{
+					parameter: 'Cholesterol',
+					value: 180,
+					unit: 'mg/dL',
+					normalRange: '<200',
+					status: 'normal',
+				},
+			],
+			summary:
+				'Tất cả các chỉ số đều trong giới hạn bình thường. Sức khỏe tổng thể tốt.',
+			recommendations:
+				'Duy trì lối sống lành mạnh, tập thể dục đều đặn 30 phút mỗi ngày, ăn uống cân bằng dinh dưỡng.',
+			doctor: 'Dr. Trần Thị B',
+			datePerformed: formatDateFns(new Date(), 'dd/MM/yyyy', { locale: vi }),
+			testId: 'TEST-001',
+			patientId: 'PAT-001',
+			serviceId: 'SVC-001',
+			labTechnician: 'Tech. Nguyễn Văn C',
+			verifiedBy: 'Dr. Lê Thị D',
+			verifiedAt: new Date().toISOString(),
+			reportUrl: '/api/test-results/001/pdf',
+		},
+	}
+}
+
+// Component for rendering general test results
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const GeneralTestResultView = ({
+	data,
+}: {
+	data: GeneralTestResult['data']
+}) => {
+	const getStatusColor = (status: string) => {
+		switch (status) {
+			case 'normal':
+				return 'text-green-600 bg-green-50'
+			case 'abnormal':
+				return 'text-red-600 bg-red-50'
+			case 'borderline':
+				return 'text-yellow-600 bg-yellow-50'
+			default:
+				return 'text-gray-600 bg-gray-50'
+		}
+	}
+
+	const getStatusText = (status: string) => {
+		switch (status) {
+			case 'normal':
+				return 'Bình thường'
+			case 'abnormal':
+				return 'Bất thường'
+			case 'borderline':
+				return 'Giới hạn'
+			default:
+				return 'Không xác định'
+		}
+	}
+
+	return (
+		<div className='space-y-4'>
+			<h3 className='text-lg font-semibold text-main mb-4'>
+				Kết quả xét nghiệm tổng quát
+			</h3>
+			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
+				{data.results.map((result, index) => (
+					<div
+						key={index}
+						className='bg-white border border-gray-200 rounded-[15px] p-4 min-h-[120px]'
+					>
+						<div className='flex justify-between items-start mb-2'>
+							<h4 className='font-medium text-gray-800 text-sm'>
+								{result.parameter}
+							</h4>
+							<span
+								className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+									result.status
+								)}`}
+							>
+								{getStatusText(result.status)}
+							</span>
+						</div>
+						<div className='text-xl font-bold text-main mb-1'>
+							{result.value} {result.unit}
+						</div>
+						{result.normalRange && (
+							<div className='text-xs text-gray-600'>
+								Bình thường: {result.normalRange}
+							</div>
+						)}
+					</div>
+				))}
+			</div>
+			<div className='bg-blue-50 border border-blue-200 rounded-[15px] p-4 mb-4'>
+				<h4 className='font-medium text-blue-800 mb-2'>Tóm tắt</h4>
+				<p className='text-blue-700 text-sm'>{data.summary}</p>
+			</div>
+			<div className='bg-green-50 border border-green-200 rounded-[15px] p-4'>
+				<h4 className='font-medium text-green-800 mb-2'>Khuyến nghị</h4>
+				<p className='text-green-700 text-sm'>{data.recommendations}</p>
+			</div>
+		</div>
+	)
 }
 
 // Component for rendering ResultData

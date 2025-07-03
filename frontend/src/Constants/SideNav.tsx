@@ -2,6 +2,7 @@ import {
 	AccountSVG,
 	BookingListVSG,
 	ChatSVG,
+	ClockSVG,
 	CustomerSVG,
 	HeartSVG,
 	HomeSVG,
@@ -36,7 +37,7 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.consultant,
 	},
 	{
-		label: 'Account Management',
+		label: 'Accounts',
 		to: '/dashboard/accounts',
 		svg: <AccountSVG />,
 		level: PermissionLevel.manager,
@@ -50,6 +51,18 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 	{
 		label: 'Services',
 		to: '/dashboard/services',
+		svg: <ServiceSVG />,
+		level: PermissionLevel.manager,
+	},
+	{
+		label: 'Slots',
+		to: '/dashboard/slots',
+		svg: <ClockSVG />,
+		level: PermissionLevel.manager,
+	},
+	{
+		label: 'Schedules',
+		to: '/dashboard/schedules',
 		svg: <ServiceSVG />,
 		level: PermissionLevel.manager,
 	},
