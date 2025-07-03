@@ -1,6 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 
 const BOOKING_URL = `${DEFAULT_API_URL}/birthControl`
@@ -18,14 +18,10 @@ const birthControlApi = {
 	},
 	update: async (data: BirthControlRequest) =>
 		axiosInstance.put<BirthControlDates>(`${BOOKING_URL}`, data).then(res => {
-			console.log('start date end ate', data)
-
-			console.log(res.data)
 			return res.data
 		}),
 	create: async (data: BirthControlRequest) =>
 		axiosInstance.post<BirthControlDates>(`${BOOKING_URL}`, data).then(res => {
-			console.log(res.data)
 			return res.data
 		}),
 }
@@ -39,8 +35,13 @@ export const useGetBirthControl = (id: string) => {
 }
 
 export const useCreateBirthControl = () => {
+	const queryClient = useQueryClient()
+
 	return useMutation({
 		mutationFn: (data: BirthControlRequest) => birthControlApi.create(data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['getBirthControl'] })
+		},
 	})
 }
 
