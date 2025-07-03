@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Appointment.Request;
 using Application.DTOs.Appointment.Response;
+using Application.DTOs.Zoom;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
@@ -9,7 +10,8 @@ using Domain.Exceptions;
 namespace Infrastructure.Services;
 
 public class AppointmentService(IAccountRepository accountRepository,
-    IAppointmentRepository appointmentRepository) : IAppointmentService
+    IAppointmentRepository appointmentRepository,
+    IZoomService zoomService) : IAppointmentService
 {
     public async Task CreateAppointmentAsync(AppointmentCreateRequest request, string accessId)
     {
@@ -17,12 +19,44 @@ public class AppointmentService(IAccountRepository accountRepository,
         var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
         //find staff by id
         var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
+        
+        if (member == null)
+            throw new AppException(404, "member id is invalid");
+        if (staff == null)
+            throw new AppException(404, "staff id is invalid");
+
+        // Create Zoom meeting
+        var zoomRequest = new ZoomMeetingRequest
+        {
+            Topic = $"Consultation with {staff.FirstName} {staff.LastName}",
+            StartTime = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
+            Duration = 60, // 1 hour consultation
+            Timezone = "Asia/Ho_Chi_Minh",
+            Type = 2, // Scheduled meeting
+            JoinBeforeHost = true,
+            WaitingRoom = true,
+            HostVideo = true,
+            ParticipantVideo = true,
+            Audio = true
+        };
+
+        ZoomMeetingResponse zoomMeeting;
+        try
+        {
+            zoomMeeting = await zoomService.CreateMeetingAsync(zoomRequest);
+        }
+        catch (Exception ex)
+        {
+            throw new AppException(500, $"Failed to create Zoom meeting: {ex.Message}");
+        }
+
         //create appointment
         Appointment appointment = new()
         {
-            Member = member ?? throw new AppException(404, "member id is invalid"),
-            Staff = staff ?? throw new AppException(404, "staff id is invalid"),
+            Member = member,
+            Staff = staff,
             ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
+            JoinUrl = zoomMeeting.JoinUrl, // Save the Zoom join URL
             CreatedBy = Guid.Parse(accessId),
             Status = AppointmentStatus.Booked,
         };
