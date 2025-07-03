@@ -205,24 +205,49 @@ WHERE email IN (
 );
 
 -- 14. Insert order_detail
+  
 INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
-SELECT
-  (SELECT id FROM "purchase" LIMIT 1),
+SELECT 
+  p.id,
   (SELECT id FROM "service" WHERE name = 'Consultation'),
-  'David', 'Member', '2233445566', '2000-04-04', TRUE;
+  'David',
+  'Member',
+  '0909123456',
+  '2000-01-01',
+  TRUE
+FROM "purchase" p
+LIMIT 29;
 
 INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
-SELECT
-  (SELECT id FROM "purchase" LIMIT 1),
-  (SELECT id FROM "service" WHERE name = 'Consultation'),
-  'David', 'Member', '2233445566', '2000-04-04', TRUE;
+SELECT 
+  p.id,
+  (SELECT id FROM "service" WHERE name = 'Physiotherapy'),
+  'Huynh',
+  'Dong',
+  '036821920',
+  '2000-01-01',
+  TRUE
+FROM "purchase" p
+LIMIT 29;
+
+INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
+SELECT 
+  p.id,
+  (SELECT id FROM "service" WHERE name = 'Cholesterol Test'),
+  'Phat',
+  'Nguyen',
+  '0835666916',
+  '2004-03-22',
+  TRUE
+FROM "purchase" p
+LIMIT 29;
 
 -- 12. Insert payment_history
 INSERT INTO "payment_history" (purchase_id, transaction_id, created_at, amount, status, expired_at, payment_method)
 SELECT
-  p.id, gen_random_uuid(), NOW(), 500.00, 'paid', NOW() + INTERVAL '7 days', 'momo'
+  p.id, gen_random_uuid(), NOW(), 200000, 'paid', NOW() + INTERVAL '7 days', 'momo'
 FROM "purchase" p
-LIMIT 1;
+LIMIT all;
 
 
 
