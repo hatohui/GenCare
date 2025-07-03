@@ -238,5 +238,8 @@ public class ResultService(IResultRepository resultRepository,
         return responseList;
     }
 
-    
+    public async Task AddResult(Result result)
+    {
+        await resultRepository.AddAsync(result);
+    }
 }

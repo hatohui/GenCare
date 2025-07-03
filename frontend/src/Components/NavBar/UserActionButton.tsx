@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useLogoutAccount } from '@/Services/auth-service'
 import useToken from '@/Hooks/Auth/useToken'
 import { toast } from 'react-hot-toast'
+import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	const tokenStore = useToken()
@@ -28,21 +29,49 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	}
 
 	return tokenStore.accessToken ? (
-		<button
-			className={clsx(
-				'rounded-full px-2 py-1 duration-200 cursor-pointer select-none',
-				'text-center flex gap-2 items-center',
-				'bg-accent',
-				'shadow-md hover:shadow-lg',
-				'text-white font-medium',
-				'transition-all ease-in-out',
-				className
-			)}
-			onClick={handleLogout}
-		>
-			<label className='pointer-events-none whitespace-nowrap'>Đăng Xuất</label>
-			{onTop && <UserSVG className='size-5 text-white' />}
-		</button>
+		<div className={clsx('flex gap-2', className)}>
+			{/* Direct App/Dashboard Button */}
+			<button
+				className={clsx(
+					'rounded-full px-4 py-1 duration-200 cursor-pointer select-none',
+					'text-center flex gap-2 items-center',
+					'bg-main hover:bg-accent',
+					'shadow-md hover:shadow-lg',
+					'text-white font-medium',
+					'transition-all ease-in-out'
+				)}
+				onClick={() => {
+					const role = getRoleFromToken(tokenStore.accessToken!)
+					if (role === 'member' || role === 'consultant') {
+						router.push('/app')
+					} else {
+						router.push('/dashboard')
+					}
+				}}
+				aria-label='Đi tới ứng dụng'
+			>
+				<span className='pointer-events-none whitespace-nowrap'>
+					Đi tới ứng dụng
+				</span>
+			</button>
+			{/* Logout Button */}
+			<button
+				className={clsx(
+					'rounded-full px-2 py-1 duration-200 cursor-pointer select-none',
+					'text-center flex gap-2 items-center',
+					'bg-accent',
+					'shadow-md hover:shadow-lg',
+					'text-white font-medium',
+					'transition-all ease-in-out'
+				)}
+				onClick={handleLogout}
+			>
+				<label className='pointer-events-none whitespace-nowrap'>
+					Đăng Xuất
+				</label>
+				{onTop && <UserSVG className='size-5 text-white' />}
+			</button>
+		</div>
 	) : (
 		<MotionLink
 			id='login'

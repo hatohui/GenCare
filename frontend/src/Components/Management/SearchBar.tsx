@@ -5,13 +5,17 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useState, useMemo, useCallback } from 'react'
 import CompactFloatingInput from '../Form/CompactFloatingInput'
 
+interface SearchBarProps {
+	className?: string
+	waitTime?: number
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
 const SearchBar = ({
 	waitTime = 1000,
 	className = '',
-}: {
-	waitTime?: number
-	className?: string
-}) => {
+	onChange,
+}: SearchBarProps) => {
 	const searchParams = useSearchParams()
 	const search = searchParams?.get('search')
 	const [searchParam, setSearchParam] = useState(search)

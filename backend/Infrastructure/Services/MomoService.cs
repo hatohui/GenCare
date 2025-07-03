@@ -16,7 +16,7 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
     IServiceRepository serviceRepository,
     IPurchaseRepository purchaseRepository,
     IPaymentHistoryService paymentHistoryService,
-    ITestTrackerService testTrackerService) : IMomoService
+    IResultService resultService) : IMomoService
 {
 
     public async Task<MomoPaymentResponse> CreatePaymentAsync(string purchaseId)
@@ -149,7 +149,7 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
                         OrderDate = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                     };
-                    await testTrackerService.AddResult(result);
+                    await resultService.AddResult(result);
                 }
             }
 

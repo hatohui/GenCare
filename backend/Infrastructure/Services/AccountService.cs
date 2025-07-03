@@ -316,7 +316,8 @@ public class AccountService
             {
                 Name = account.Role.Name,
                 Description = account.Role.Description
-            }
+            },
+            Phone = account.Phone ?? string.Empty
         };
         return rs;
     }
@@ -453,10 +454,18 @@ public class AccountService
         var account = await accountRepo.GetAccountByIdAsync(targetId)
             ?? throw new AppException(404, "Account not found");
 
+        //if target account is admin
+        //403
+        if (account.Role.Name.Equals(RoleNames.Admin, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new AppException(403, "Admin account can not be updated");
+        }
+
         var isSelfUpdate = accessId == targetId;
         var isAdmin = string.Equals(role, RoleNames.Admin, StringComparison.OrdinalIgnoreCase);
         var isManager = string.Equals(role, RoleNames.Manager, StringComparison.OrdinalIgnoreCase);
 
+        //manager can update staff and consultant accounts 
         var canManagerUpdateTarget = isManager &&
             (account.Role.Name.Equals(RoleNames.Staff, StringComparison.OrdinalIgnoreCase) ||
              account.Role.Name.Equals(RoleNames.Consultant, StringComparison.OrdinalIgnoreCase));
