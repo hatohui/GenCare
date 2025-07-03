@@ -499,15 +499,21 @@ public class AccountService
         }
     }
 
-    private void UpdateAccountFields(Account a, UpdateAccountRequest request)
+    private async void UpdateAccountFields(Account a, UpdateAccountRequest request)
     {
         a.FirstName = request.Account.FirstName ?? a.FirstName;
         a.LastName = request.Account.LastName ?? a.LastName;
         a.Phone = request.Account.PhoneNumber ?? a.Phone;
+        a.Email = request.Account.Email ?? a.Email;
         a.Gender = request.Account.Gender ?? a.Gender;
         a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
         a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
         a.IsDeleted = request.Account.IsDeleted ?? a.IsDeleted;
+        if(request.Account.RoleId != null)
+        {
+            var role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.Account.RoleId));
+            a.Role = role ?? a.Role;
+        }
 
         if (request.StaffInfo != null && a.StaffInfo != null)
         {
