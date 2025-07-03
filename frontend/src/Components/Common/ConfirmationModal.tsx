@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 
 interface ConfirmationModalProps {
@@ -26,18 +26,52 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 	isDangerous = false,
 	isLoading = false,
 }) => {
+	const modalRef = useRef<HTMLDivElement>(null)
+	const firstFocusableRef = useRef<HTMLButtonElement>(null)
+
+	// Focus management and escape key handler
+	useEffect(() => {
+		if (!isOpen) return
+
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				onClose()
+			}
+		}
+
+		// Focus the first focusable element (cancel button) when modal opens
+		if (firstFocusableRef.current) {
+			firstFocusableRef.current.focus()
+		}
+
+		document.addEventListener('keydown', handleEscape)
+		return () => document.removeEventListener('keydown', handleEscape)
+	}, [isOpen, onClose])
+
 	if (!isOpen) return null
 
 	const handleConfirm = () => {
 		onConfirm()
 	}
 
+	const handleBackdropClick = (e: React.MouseEvent) => {
+		if (e.target === e.currentTarget) {
+			onClose()
+		}
+	}
+
 	return (
 		<motion.div
+			ref={modalRef}
 			className='fixed inset-0 bg-black/30 backdrop-blur-[6px] flex items-center justify-center z-50 p-4'
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
+			role='dialog'
+			aria-modal='true'
+			aria-labelledby='modal-title'
+			aria-describedby='modal-description'
+			onClick={handleBackdropClick}
 		>
 			{' '}
 			<motion.div
@@ -84,18 +118,27 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
 				{/* Content */}
 				<div className='text-center mb-8'>
-					<h3 className='text-xl font-bold text-gray-900 mb-3'>{title}</h3>
-					<p className='text-gray-600 text-lg leading-relaxed'>{message}</p>
+					<h3 id='modal-title' className='text-xl font-bold text-gray-900 mb-3'>
+						{title}
+					</h3>
+					<p
+						id='modal-description'
+						className='text-gray-600 text-lg leading-relaxed'
+					>
+						{message}
+					</p>
 				</div>
 
 				{/* Buttons */}
 				<div className='flex gap-4'>
 					<motion.button
+						ref={firstFocusableRef}
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
 						onClick={onClose}
 						disabled={isLoading}
 						className='flex-1 px-6 py-4 border-2 border-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold'
+						aria-label={`${cancelText} and close dialog`}
 					>
 						{cancelText}
 					</motion.button>
@@ -109,6 +152,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 								? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white'
 								: 'bg-gradient-to-r from-main to-secondary hover:from-secondary hover:to-main text-white'
 						}`}
+						aria-label={`${confirmText} action`}
 					>
 						{isLoading ? (
 							<div className='flex items-center justify-center gap-2'>
