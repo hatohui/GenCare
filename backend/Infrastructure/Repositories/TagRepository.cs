@@ -35,6 +35,16 @@ public class TagRepository(IApplicationDbContext dbContext) : ITagRepository
            
     }
 
+    public async Task<List<string>?> GetTagTitlesByBlogIdAsync(Guid blogId)
+    {
+        return await dbContext.BlogTags
+            .Include(bt => bt.Tag)
+            .Where(bt => bt.BlogId == blogId )
+            .Select(bt => bt.Tag.Title)
+            .Distinct()
+            .ToListAsync();
+    }
+
     public async Task<int> GetTagCount()
     {
         return await dbContext.Tags.CountAsync();
