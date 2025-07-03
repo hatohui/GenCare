@@ -15,7 +15,8 @@ import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 
 export type LoginComponentProps = {
 	handleLogin: (
-		data: { email: string; password: string } | OauthResponse
+		data: { email: string; password: string } | OauthResponse,
+		rememberMe: boolean
 	) => void
 	formError: string | null
 }
@@ -42,10 +43,13 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 				password: password.value,
 			})
 
-			handleLogin({
-				email: parsed.data?.email as string,
-				password: parsed.data?.password as string,
-			})
+			handleLogin(
+				{
+					email: parsed.data?.email as string,
+					password: parsed.data?.password as string,
+				},
+				remember.value
+			)
 		} catch (err) {
 			if (err instanceof ZodError) {
 				setErrors(
@@ -134,7 +138,7 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 				<GoogleLoginButton
 					text='signin_with'
 					className='mt-2 mx-auto'
-					handleLogin={handleLogin}
+					handleLogin={response => handleLogin(response, remember.value)}
 				/>
 			</div>
 		</motion.div>

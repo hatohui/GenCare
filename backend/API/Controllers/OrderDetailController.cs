@@ -11,7 +11,7 @@ namespace API.Controllers;
 public class OrderDetailController(IOrderDetailService orderDetailService) : ControllerBase
 {
     [HttpDelete("{id}")]
-    [Authorize(Roles = $"{RoleNames.Member}")]
+    [Authorize(Roles = $"{RoleNames.Member}, {RoleNames.Admin}")]
     public async Task<IActionResult> DeleteOrderDetail([FromRoute] string id)
     {
         //get access token from header

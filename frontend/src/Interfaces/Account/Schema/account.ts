@@ -2,6 +2,74 @@ import { Account } from '@/Interfaces/Auth/Types/Account'
 import { StaffInfo } from '../Types/StaffInfo'
 import { StaffAccount } from '../Types/StaffAccount'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
+import { z } from 'zod'
+
+//----------------------------------------
+/**
+ * Account Form Schema for creating/updating accounts
+ */
+export const accountFormSchema = z.object({
+	firstName: z
+		.string()
+		.min(1, 'First name is required')
+		.max(30, 'First name is too long'),
+	lastName: z
+		.string()
+		.min(1, 'Last name is required')
+		.max(30, 'Last name is too long'),
+	email: z.string().email('Invalid email format').min(1, 'Email is required'),
+	phoneNumber: z
+		.string()
+		.min(1, 'Phone number is required')
+		.regex(/^\+?\d{8,15}$/, 'Invalid phone number format'),
+	gender: z.boolean(),
+	dateOfBirth: z.string().optional(),
+	isDeleted: z.boolean().optional(),
+	avatarUrl: z.string().optional(),
+	degree: z.string().optional(),
+	yearOfExperience: z.coerce
+		.number()
+		.min(0, 'Years of experience must be non-negative')
+		.optional(),
+	biography: z.string().optional(),
+})
+
+// Create a schema for editing that makes most fields optional
+export const accountEditSchema = z.object({
+	firstName: z
+		.string()
+		.max(30, 'First name is too long')
+		.optional()
+		.or(z.string().min(1, 'First name cannot be empty')),
+	lastName: z
+		.string()
+		.max(30, 'Last name is too long')
+		.optional()
+		.or(z.string().min(1, 'Last name cannot be empty')),
+	email: z
+		.string()
+		.email('Invalid email format')
+		.optional()
+		.or(z.string().min(1, 'Email cannot be empty')),
+	phoneNumber: z
+		.string()
+		.regex(/^\+?\d{8,15}$/, 'Invalid phone number format')
+		.optional()
+		.or(z.string().min(1, 'Phone number cannot be empty')),
+	gender: z.boolean().optional(),
+	dateOfBirth: z.string().optional(),
+	isDeleted: z.boolean().optional(),
+	avatarUrl: z.string().optional(),
+	degree: z.string().optional(),
+	yearOfExperience: z.coerce
+		.number()
+		.min(0, 'Years of experience must be non-negative')
+		.optional(),
+	biography: z.string().optional(),
+})
+
+export type AccountFormData = z.infer<typeof accountFormSchema>
+export type AccountEditData = z.infer<typeof accountEditSchema>
 
 //----------------------------------------
 /**

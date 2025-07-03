@@ -27,4 +27,6 @@ public interface IServiceRepository
     Task<int> CountServicesAsync();
     
     Task<List<Service>> GetByIdsAsync(List<Guid> ids);
+
+    Task<List<Service>> GetAll();
 }
