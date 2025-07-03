@@ -4,8 +4,6 @@ import { UserGrowthData } from '@/Interfaces/Statistics/Types/Statistics'
 import { motion } from 'motion/react'
 import React from 'react'
 import {
-	LineChart,
-	Line,
 	XAxis,
 	YAxis,
 	CartesianGrid,

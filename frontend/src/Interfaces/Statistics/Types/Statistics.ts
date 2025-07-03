@@ -52,3 +52,12 @@ export interface AdminStatisticsResponse {
 	paymentStatistic: PaymentStatistic
 	userStatistic: UserStatistic
 }
+
+export interface RecentActivity {
+	id: string
+	type: string
+	message: string
+	timestamp: string
+	status: string
+	userName: string
+}
