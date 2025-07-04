@@ -63,28 +63,38 @@ export const CurrentTimeLine = ({
 			setCurrentTime(new Date())
 		}
 
-		// Update every 10 seconds for smoother movement
-		const interval = setInterval(updateTime, 10000)
+		// Update every 60 seconds - sufficient for time line position updates
+		const interval = setInterval(updateTime, 60000)
 		updateTime() // Initial update
 
 		return () => clearInterval(interval)
 	}, [])
 
-	// Measure table dimensions on mount and resize - only run once on mount
+	// Measure table dimensions on mount and resize - debounced to prevent excessive calls
 	useEffect(() => {
+		let measureTimeout: NodeJS.Timeout | undefined
+
 		const updateDimensions = () => {
-			const dimensions = measureTableDimensions()
-			if (dimensions) {
-				setTableDimensions(dimensions)
+			// Clear any pending measurement
+			if (measureTimeout) {
+				clearTimeout(measureTimeout)
 			}
+
+			// Debounce measurements to prevent excessive DOM queries
+			measureTimeout = setTimeout(() => {
+				const dimensions = measureTableDimensions()
+				if (dimensions) {
+					setTableDimensions(dimensions)
+				}
+			}, 200)
 		}
 
-		// Single measurement attempt with a small delay to ensure table is rendered
-		const timeoutId = setTimeout(updateDimensions, 100)
+		// Initial measurement with delay to ensure table is rendered
+		updateDimensions()
 
-		// Update on resize
+		// Update on resize with debouncing
 		const handleResize = () => {
-			setTimeout(updateDimensions, 100)
+			updateDimensions()
 		}
 
 		if (typeof window !== 'undefined') {
@@ -92,7 +102,9 @@ export const CurrentTimeLine = ({
 		}
 
 		return () => {
-			clearTimeout(timeoutId)
+			if (measureTimeout) {
+				clearTimeout(measureTimeout)
+			}
 			if (typeof window !== 'undefined') {
 				window.removeEventListener('resize', handleResize)
 			}
@@ -150,39 +162,44 @@ export const CurrentTimeLine = ({
 		isToday,
 	])
 
-	// Check if a time slot has been completely passed by current time
-	const isTimeSlotCompletelyPast = useCallback(
-		(timeSlot: string, dayDate: Date) => {
-			const now = currentTime
-			const [hours] = timeSlot.split(':').map(Number)
+	// Memoize time slot status calculations to prevent recalculating on every render
+	const timeSlotStatuses = useMemo(() => {
+		const statuses = new Map<string, boolean>()
 
-			const slotEndDate = new Date(dayDate)
-			slotEndDate.setHours(hours + 1, 0, 0, 0) // End of the time slot (next hour)
+		memoizedWeekDays.forEach(day => {
+			memoizedTimeSlots.forEach(timeSlot => {
+				const [hours] = timeSlot.split(':').map(Number)
+				const slotEndDate = new Date(day)
+				slotEndDate.setHours(hours + 1, 0, 0, 0) // End of the time slot (next hour)
 
-			const currentDate = new Date(now)
-			currentDate.setSeconds(0, 0) // Reset seconds and milliseconds
+				const currentDate = new Date(currentTime)
+				currentDate.setSeconds(0, 0) // Reset seconds and milliseconds
 
-			return currentDate >= slotEndDate // Only past if current time is past the END of the slot
-		},
-		[currentTime]
-	)
+				const isPast = currentDate >= slotEndDate
+				const key = `${day.toDateString()}-${timeSlot}`
+				statuses.set(key, isPast)
+			})
+		})
 
-	// Notify parent about time slot status changes - only when currentTime changes
+		return statuses
+	}, [currentTime, memoizedWeekDays, memoizedTimeSlots])
+
+	// Notify parent about time slot status changes - only when statuses actually change
 	useEffect(() => {
 		if (!onTimeSlotStatusChange) return
 
 		memoizedWeekDays.forEach(day => {
 			memoizedTimeSlots.forEach(timeSlot => {
-				const isPast = isTimeSlotCompletelyPast(timeSlot, day)
+				const key = `${day.toDateString()}-${timeSlot}`
+				const isPast = timeSlotStatuses.get(key) || false
 				onTimeSlotStatusChange(day, timeSlot, isPast)
 			})
 		})
 	}, [
-		currentTime,
+		timeSlotStatuses,
 		onTimeSlotStatusChange,
 		memoizedWeekDays,
 		memoizedTimeSlots,
-		isTimeSlotCompletelyPast,
 	])
 
 	const timeLineData = calculateTimeLinePosition()

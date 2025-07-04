@@ -335,7 +335,7 @@ const ConsultantList = () => {
 							</motion.div>
 						)}
 
-						<div className='relative z-10'>
+						<div className='relative z-10 flex flex-col justify-center items-center'>
 							<motion.div
 								className='w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-main to-secondary flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 shadow-lg'
 								animate={
