@@ -65,6 +65,11 @@ export const AppointmentCell = ({
 				{appointments.map((appointment, index) => {
 					const isUpcoming = isWithin60Minutes(appointment.scheduleAt)
 					const hasJoinUrl = appointment.joinUrl && !appointment.isDeleted
+					const status = (appointment.status || '')
+						.toString()
+						.trim()
+						.toLowerCase()
+					console.log('Appointment status:', appointment.status, status)
 
 					// Nếu là sắp tới hẹn và có joinUrl, click toàn bộ ô sẽ join
 					const handleCellClick = () => {
@@ -79,12 +84,11 @@ export const AppointmentCell = ({
 							className={`h-full w-full rounded-lg text-xs flex flex-col justify-between relative overflow-hidden group p-1 sm:p-2 ${
 								isUpcoming && hasJoinUrl
 									? 'bg-gradient-to-br from-blue-100 to-blue-200 cursor-pointer'
-									: appointment.status === 'confirmed' ||
-									  appointment.status === 'booked'
+									: status === 'confirmed' || status === 'booked'
 									? 'bg-gradient-to-br from-green-50 to-green-100 border border-green-200'
-									: appointment.status === 'pending'
+									: status === 'pending'
 									? 'bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200'
-									: appointment.status === 'cancelled'
+									: status === 'cancelled'
 									? 'bg-gradient-to-br from-red-50 to-red-100 border border-red-200'
 									: 'bg-gradient-to-br from-gray-100 to-gray-100 border border-gray-100'
 							}`}
@@ -144,21 +148,20 @@ export const AppointmentCell = ({
 									<div className='flex items-center justify-center'>
 										<span
 											className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full shadow-sm ${
-												appointment.status === 'confirmed' ||
-												appointment.status === 'booked'
+												status === 'confirmed' || status === 'booked'
 													? 'bg-green-500 text-white'
-													: appointment.status === 'pending'
+													: status === 'pending'
 													? 'bg-yellow-500 text-white'
-													: appointment.status === 'cancelled'
+													: status === 'cancelled'
 													? 'bg-red-500 text-white'
 													: 'bg-gray-500 text-white'
 											}`}
 										>
-											{appointment.status === 'booked'
+											{status === 'booked'
 												? '✓ Đã đặt'
-												: appointment.status === 'confirmed'
+												: status === 'confirmed'
 												? '✓ Xác nhận'
-												: appointment.status === 'pending'
+												: status === 'pending'
 												? '⏳ Chờ'
 												: '✗ Hủy'}
 										</span>

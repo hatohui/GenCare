@@ -1,6 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
 const APPOINTMENT_URL = `${DEFAULT_API_URL}/appointments`
@@ -50,6 +50,13 @@ const appointmentApi = {
 			})
 			.then(res => res.data)
 	},
+	getAppointments: (header: string) => {
+		return axios
+			.get(`${APPOINTMENT_URL}`, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
 }
 
 // Error handler utility
@@ -95,11 +102,12 @@ export const useAppointments = () => {
 }
 
 export const useCreateAppointment = () => {
+	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	return useMutation({
 		mutationFn: (data: AppointmentCreateRequest) =>
-			appointmentApi.createAppointment(data),
+			appointmentApi.createAppointment(data, header),
 		onSuccess: () => {
 			// Invalidate related queries
 			queryClient.invalidateQueries({ queryKey: ['appointments'] })
