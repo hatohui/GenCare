@@ -41,4 +41,10 @@ public interface IBlogRepository
     /// <param name="blog">The blog entity to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task Delete(Blog blog);
+    
+    Task<List<Blog>> GetListOfBlogsAsync();
+    
+    Task<List<Blog>> SearchBlogsAsync(string search);
+    
+    Task<List<Blog>> SearchBlogByTag(string tags);
 }
