@@ -3,8 +3,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 import axios, { AxiosError } from 'axios'
 
-const APPOINTMENT_URL = `${DEFAULT_API_URL}/appointments`
-
 // Retry configuration
 const retryConfig = {
 	retry: 3,
@@ -20,11 +18,10 @@ type AppointmentCreateRequest = {
 
 const appointmentApi = {
 	createAppointment: (data: AppointmentCreateRequest) => {
-		return axiosInstance.post(`${APPOINTMENT_URL}`, data).then(res => res.data)
+		return axiosInstance.post('/appointments', data).then(res => res.data)
 	},
 }
 
-// Error handler utility
 const handleApiError = (error: unknown) => {
 	if (axios.isAxiosError(error)) {
 		const axiosError = error as AxiosError
@@ -52,7 +49,6 @@ export const useCreateAppointment = () => {
 		mutationFn: (data: AppointmentCreateRequest) =>
 			appointmentApi.createAppointment(data),
 		onSuccess: () => {
-			// Invalidate related queries
 			queryClient.invalidateQueries({ queryKey: ['appointments'] })
 		},
 		onError: handleApiError,

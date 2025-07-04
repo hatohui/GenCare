@@ -1,7 +1,5 @@
 import { Account } from '@/Interfaces/Auth/Types/Account'
-import { StaffInfo } from '../Types/StaffInfo'
 import { StaffAccount } from '../Types/StaffAccount'
-import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { z } from 'zod'
 
 //----------------------------------------
@@ -20,8 +18,11 @@ export const accountFormSchema = z.object({
 	email: z.string().email('Invalid email format').min(1, 'Email is required'),
 	phoneNumber: z
 		.string()
-		.min(1, 'Phone number is required')
-		.regex(/^\+?\d{8,15}$/, 'Invalid phone number format'),
+		.optional()
+		.refine(
+			val => !val || /^\+?\d{8,15}$/.test(val),
+			'Invalid phone number format'
+		),
 	gender: z.boolean(),
 	dateOfBirth: z.string().optional(),
 	isDeleted: z.boolean().optional(),
@@ -36,28 +37,61 @@ export const accountFormSchema = z.object({
 	roleId: z.string().optional(),
 })
 
+// Schema for account creation with password fields and conditional validation
+export const createAccountSchema = z
+	.object({
+		firstName: z
+			.string()
+			.min(1, 'First name is required')
+			.max(30, 'First name is too long'),
+		lastName: z
+			.string()
+			.min(1, 'Last name is required')
+			.max(30, 'Last name is too long'),
+		email: z.string().email('Invalid email format').min(1, 'Email is required'),
+		phoneNumber: z
+			.string()
+			.optional()
+			.refine(
+				val => !val || /^\+?\d{8,15}$/.test(val),
+				'Invalid phone number format'
+			),
+		gender: z.boolean(),
+		dateOfBirth: z.string().min(1, 'Date of birth is required'),
+		password: z.string().min(6, 'Password must be at least 6 characters'),
+		confirmPassword: z.string().min(1, 'Please confirm your password'),
+		roleId: z.string().min(1, 'Role is required'),
+		degree: z.string().optional(),
+		yearOfExperience: z.coerce
+			.number()
+			.min(0, 'Years of experience must be non-negative')
+			.optional(),
+		biography: z.string().optional(),
+		departmentId: z.string().optional(),
+	})
+	.refine(data => data.password === data.confirmPassword, {
+		message: 'Passwords do not match',
+		path: ['confirmPassword'],
+	})
+
 // Create a schema for editing that makes most fields optional
 export const accountEditSchema = z.object({
 	firstName: z
 		.string()
-		.max(30, 'First name is too long')
-		.optional()
-		.or(z.string().min(1, 'First name cannot be empty')),
+		.min(1, 'First name is required')
+		.max(30, 'First name is too long'),
 	lastName: z
 		.string()
-		.max(30, 'Last name is too long')
-		.optional()
-		.or(z.string().min(1, 'Last name cannot be empty')),
-	email: z
-		.string()
-		.email('Invalid email format')
-		.optional()
-		.or(z.string().min(1, 'Email cannot be empty')),
+		.min(1, 'Last name is required')
+		.max(30, 'Last name is too long'),
+	email: z.string().email('Invalid email format').min(1, 'Email is required'),
 	phoneNumber: z
 		.string()
-		.regex(/^\+?\d{8,15}$/, 'Invalid phone number format')
 		.optional()
-		.or(z.string().min(1, 'Phone number cannot be empty')),
+		.refine(
+			val => !val || /^\+?\d{8,15}$/.test(val),
+			'Invalid phone number format'
+		),
 	gender: z.boolean().optional(),
 	dateOfBirth: z.string().optional(),
 	isDeleted: z.boolean().optional(),
@@ -74,6 +108,7 @@ export const accountEditSchema = z.object({
 
 export type AccountFormData = z.infer<typeof accountFormSchema>
 export type AccountEditData = z.infer<typeof accountEditSchema>
+export type CreateAccountFormData = z.infer<typeof createAccountSchema>
 
 //----------------------------------------
 /**
@@ -118,13 +153,27 @@ export type GetAccountByIdResponse = StaffAccount
  * @return {201} Created success status
  * @return {StaffAccount} newly created Account
  */
-export type PostAccountRequest = {
-	account: RegisterApi
-	staffInfo?: Omit<StaffInfo, 'accountId' | 'departmentId'>
-	department?: string
+export type CreateAccountRequest = {
+	account: {
+		email: string
+		roleId: string
+		firstName: string
+		lastName: string
+		avatarUrl?: string
+		gender: boolean
+		phoneNumber?: string
+		dateOfBirth?: string
+		password: string
+	}
+	staffInfo?: {
+		departmentId?: string
+		degree?: string
+		yearOfExperience?: number
+		biography?: string
+	}
 }
 
-export type PostAccountResponse = StaffAccount
+export type CreateAccountResponse = StaffAccount
 
 //------------------------------- ---------
 /**
@@ -156,11 +205,23 @@ export type DeleteAccountResponse = Required<
  * @return {StaffAccount} updated account
  */
 export type PutAccountRequest = {
-	account: Partial<Omit<Account, 'deletedAt' | 'deletedBy' | 'role'>> & {
+	account: {
+		firstName?: string
+		lastName?: string
+		phoneNumber?: string
+		email?: string
 		roleId?: string
+		gender?: boolean
+		dateOfBirth?: string
+		avatarUrl?: string
+		isDeleted?: boolean
 	}
-	staffInfo?: Partial<Omit<StaffInfo, 'accountId' | 'departmentId'>>
-	department?: string
+	staffInfo?: {
+		departmentId?: string
+		degree?: string
+		yearOfExperience?: number
+		biography?: string
+	}
 }
 
 export type PutAccountResponse = StaffAccount

@@ -8,6 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 
 const scheduleApi = {
+	// Private API - requires authentication
 	getAll: (startAt?: string, endAt?: string) => {
 		const params = new URLSearchParams()
 		if (startAt) params.append('startAt', startAt)
@@ -20,6 +21,7 @@ const scheduleApi = {
 		return axiosInstance.get<ScheduleListResponse>(query).then(res => res.data)
 	},
 
+	// Private API - requires authentication
 	getByConsultant: (consultantId: string, startAt?: string, endAt?: string) => {
 		const params = new URLSearchParams()
 		if (startAt) params.append('startAt', startAt)
@@ -34,15 +36,18 @@ const scheduleApi = {
 			.then(res => res.data)
 	},
 
+	// Private API - requires authentication
 	create: (data: CreateScheduleRequest) =>
 		axiosInstance.post('/schedules', data).then(res => res.status), // Return status code (201)
 
+	// Private API - requires authentication
 	update: (scheduleId: string, data: UpdateScheduleRequest) => {
 		return axiosInstance
 			.put(`/schedules/${scheduleId}`, data)
 			.then(res => res.status) // Return status code (204)
 	},
 
+	// Private API - requires authentication
 	delete: (scheduleId: string) =>
 		axiosInstance.delete(`/schedules/${scheduleId}`).then(res => res.status), // Return status code
 }

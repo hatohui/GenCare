@@ -52,14 +52,11 @@ const AccountList = () => {
 
 	const { isLoading, isError, isFetching, data } = query
 
-	console.log(data)
-
 	useEffect(() => {
 		setPage(1)
 	}, [search])
 
 	const handleDelete = (id: string) => {
-		// Find the account to get its name for the confirmation dialog
 		const account = data?.accounts?.find(acc => acc.id === id)
 		const accountName = account
 			? `${account.firstName} ${account.lastName}`
@@ -170,16 +167,11 @@ const AccountList = () => {
 				!isError &&
 				data?.accounts &&
 				data.accounts.length > 0 && (
-					<div
-						className='flex-1 overflow-y-scroll scroll-bar'
-						style={{
-							maskImage:
-								'linear-gradient(to bottom, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%)',
-							WebkitMaskImage:
-								'linear-gradient(to bottom, transparent 0px, black 20px, black calc(100% - 20px), transparent 100%)',
-						}}
-					>
-						<div className='flex flex-col gap-3 px-2 py-1' role='list'>
+					<div className='flex-1'>
+						<div
+							className='flex flex-col gap-3 px-2 py-1 overflow-y-scroll scroll-bar'
+							role='list'
+						>
 							{data.accounts.map((account, key) => (
 								<ItemCard<Account>
 									id={account.id}

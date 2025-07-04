@@ -1,14 +1,19 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { motion } from 'motion/react'
-import { PostAccountRequest } from '@/Interfaces/Account/Schema/account'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+	CreateAccountRequest,
+	createAccountSchema,
+	CreateAccountFormData,
+} from '@/Interfaces/Account/Schema/account'
 import { useGetAllDepartments } from '@/Services/department-service'
 import { useGetAllRoles } from '@/Services/role-service'
-import { Department } from '@/Interfaces/Department/types/Department'
 
-interface CreateAccountFormProps {
-	onSave: (data: PostAccountRequest) => void
+export interface CreateAccountFormProps {
+	onSave: (data: CreateAccountRequest) => void
 	onCancel: () => void
 	isLoading?: boolean
 }
@@ -21,134 +26,73 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 	const { data: departments } = useGetAllDepartments()
 	const { data: roles } = useGetAllRoles()
 
-	// Filter out admin role
 	const availableRoles = roles?.filter(role => role.name !== 'admin') || []
 
-	const [formData, setFormData] = useState({
-		firstName: '',
-		lastName: '',
-		email: '',
-		phoneNumber: '',
-		gender: true,
-		dateOfBirth: '',
-		password: '',
-		confirmPassword: '',
-		roleId: '', // Add role selection
-		degree: '',
-		yearOfExperience: 0,
-		biography: '',
-		departmentId: '',
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		watch,
+	} = useForm<CreateAccountFormData>({
+		resolver: zodResolver(createAccountSchema),
+		defaultValues: {
+			firstName: '',
+			lastName: '',
+			email: '',
+			phoneNumber: '',
+			gender: true,
+			dateOfBirth: '',
+			password: '',
+			confirmPassword: '',
+			roleId: '',
+			degree: '',
+			yearOfExperience: 0,
+			biography: '',
+			departmentId: '',
+		},
 	})
 
-	// Track selected role for conditional rendering
-	const [selectedRole, setSelectedRole] = useState<string>('')
+	// Watch roleId for conditional rendering
+	const watchedRoleId = watch('roleId')
+	const selectedRole =
+		availableRoles.find(role => role.id === watchedRoleId)?.name || ''
 
-	const [errors, setErrors] = useState<Record<string, string>>({})
+	const onSubmit = (data: CreateAccountFormData) => {
+		if (selectedRole !== 'member' && selectedRole !== '') {
+			const staffErrors: Record<string, string> = {}
 
-	const handleChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-		>
-	) => {
-		const { name, value, type } = e.target
-		setFormData(prev => ({
-			...prev,
-			[name]:
-				type === 'checkbox'
-					? (e.target as HTMLInputElement).checked
-					: type === 'number'
-					? Number(value)
-					: value,
-		}))
-
-		// Update selectedRole when role changes
-		if (name === 'roleId') {
-			const selectedRoleData = availableRoles.find(role => role.id === value)
-			setSelectedRole(selectedRoleData?.name || '')
-		}
-
-		// Clear error when user starts typing
-		if (errors[name]) {
-			setErrors(prev => ({ ...prev, [name]: '' }))
-		}
-	}
-
-	const validateForm = () => {
-		const newErrors: Record<string, string> = {}
-
-		if (!formData.firstName.trim()) {
-			newErrors.firstName = 'First name is required'
-		}
-		if (!formData.lastName.trim()) {
-			newErrors.lastName = 'Last name is required'
-		}
-		if (!formData.email.trim()) {
-			newErrors.email = 'Email is required'
-		} else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-			newErrors.email = 'Email is invalid'
-		}
-		if (!formData.phoneNumber.trim()) {
-			newErrors.phoneNumber = 'Phone number is required'
-		}
-		if (!formData.password.trim()) {
-			newErrors.password = 'Password is required'
-		} else if (formData.password.length < 6) {
-			newErrors.password = 'Password must be at least 6 characters'
-		}
-		if (formData.password !== formData.confirmPassword) {
-			newErrors.confirmPassword = 'Passwords do not match'
-		}
-		if (!formData.roleId.trim()) {
-			newErrors.roleId = 'Role is required'
-		}
-		if (!formData.dateOfBirth.trim()) {
-			newErrors.dateOfBirth = 'Date of birth is required'
-		}
-
-		// Validate staff info only if role is "member"
-		if (selectedRole === 'member') {
-			if (!formData.degree.trim()) {
-				newErrors.degree = 'Degree is required for member role'
+			if (!data.degree?.trim()) {
+				staffErrors.degree = 'Degree is required for staff roles'
 			}
-			if (formData.yearOfExperience <= 0) {
-				newErrors.yearOfExperience =
-					'Years of experience must be greater than 0 for member role'
+			if (!data.departmentId?.trim()) {
+				staffErrors.departmentId = 'Department is required for staff roles'
 			}
-			if (!formData.departmentId.trim()) {
-				newErrors.departmentId = 'Department is required for member role'
+			if ((data.yearOfExperience || 0) < 0) {
+				staffErrors.yearOfExperience =
+					'Years of experience must be non-negative'
 			}
 		}
 
-		setErrors(newErrors)
-		return Object.keys(newErrors).length === 0
-	}
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
-		if (!validateForm()) return
-
-		// Use current frontend type structure with manual roleId addition
 		const submitData: any = {
 			account: {
-				firstName: formData.firstName,
-				lastName: formData.lastName,
-				email: formData.email,
-				phoneNumber: formData.phoneNumber,
-				gender: formData.gender,
-				password: formData.password,
-				dateOfBirth: formData.dateOfBirth, // Always required now
-				roleId: formData.roleId, // Manually add roleId
+				firstName: data.firstName,
+				lastName: data.lastName,
+				email: data.email,
+				phoneNumber: data.phoneNumber,
+				gender: data.gender,
+				password: data.password,
+				dateOfBirth: data.dateOfBirth,
+				roleId: data.roleId,
 			},
 		}
 
-		// Only include staffInfo if role is "member"
-		if (selectedRole === 'member') {
+		if (selectedRole !== 'member') {
 			submitData.staffInfo = {
-				degree: formData.degree,
-				yearOfExperience: formData.yearOfExperience,
-				biography: formData.biography || '',
+				degree: data.degree || '',
+				yearOfExperience: data.yearOfExperience || 0,
+				biography: data.biography || '',
+				departmentId: data.departmentId || '',
 			}
-			submitData.department = formData.departmentId // This will map to departmentId on the backend
 		}
 
 		onSave(submitData)
@@ -161,7 +105,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.3 }}
 		>
-			<form onSubmit={handleSubmit} className='space-y-6'>
+			<form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
 				{/* Basic Information */}
 				<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 					<div>
@@ -174,16 +118,16 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						<input
 							type='text'
 							id='firstName'
-							name='firstName'
-							value={formData.firstName}
-							onChange={handleChange}
+							{...register('firstName')}
 							className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.firstName ? 'border-red-500' : 'border-gray-300'
 							}`}
 							placeholder='Enter first name'
 						/>
 						{errors.firstName && (
-							<p className='mt-1 text-sm text-red-600'>{errors.firstName}</p>
+							<p className='mt-1 text-sm text-red-600'>
+								{errors.firstName.message}
+							</p>
 						)}
 					</div>
 
@@ -197,16 +141,16 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						<input
 							type='text'
 							id='lastName'
-							name='lastName'
-							value={formData.lastName}
-							onChange={handleChange}
+							{...register('lastName')}
 							className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.lastName ? 'border-red-500' : 'border-gray-300'
 							}`}
 							placeholder='Enter last name'
 						/>
 						{errors.lastName && (
-							<p className='mt-1 text-sm text-red-600'>{errors.lastName}</p>
+							<p className='mt-1 text-sm text-red-600'>
+								{errors.lastName.message}
+							</p>
 						)}
 					</div>
 
@@ -220,16 +164,16 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						<input
 							type='email'
 							id='email'
-							name='email'
-							value={formData.email}
-							onChange={handleChange}
+							{...register('email')}
 							className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.email ? 'border-red-500' : 'border-gray-300'
 							}`}
 							placeholder='Enter email address'
 						/>
 						{errors.email && (
-							<p className='mt-1 text-sm text-red-600'>{errors.email}</p>
+							<p className='mt-1 text-sm text-red-600'>
+								{errors.email.message}
+							</p>
 						)}
 					</div>
 
@@ -238,21 +182,21 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							htmlFor='phoneNumber'
 							className='block text-sm font-medium text-gray-700 mb-1'
 						>
-							Phone Number *
+							Phone Number
 						</label>
 						<input
 							type='tel'
 							id='phoneNumber'
-							name='phoneNumber'
-							value={formData.phoneNumber}
-							onChange={handleChange}
+							{...register('phoneNumber')}
 							className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
 							}`}
 							placeholder='Enter phone number'
 						/>
 						{errors.phoneNumber && (
-							<p className='mt-1 text-sm text-red-600'>{errors.phoneNumber}</p>
+							<p className='mt-1 text-sm text-red-600'>
+								{errors.phoneNumber.message}
+							</p>
 						)}
 					</div>
 
@@ -265,14 +209,9 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						</label>
 						<select
 							id='gender'
-							name='gender'
-							value={formData.gender ? 'true' : 'false'}
-							onChange={e =>
-								setFormData(prev => ({
-									...prev,
-									gender: e.target.value === 'true',
-								}))
-							}
+							{...register('gender', {
+								setValueAs: v => v === 'true',
+							})}
 							className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
 						>
 							<option value='true'>Male</option>
@@ -290,15 +229,15 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						<input
 							type='date'
 							id='dateOfBirth'
-							name='dateOfBirth'
-							value={formData.dateOfBirth}
-							onChange={handleChange}
+							{...register('dateOfBirth')}
 							className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
 							}`}
 						/>
 						{errors.dateOfBirth && (
-							<p className='mt-1 text-sm text-red-600'>{errors.dateOfBirth}</p>
+							<p className='mt-1 text-sm text-red-600'>
+								{errors.dateOfBirth.message}
+							</p>
 						)}
 					</div>
 
@@ -311,9 +250,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 						</label>
 						<select
 							id='roleId'
-							name='roleId'
-							value={formData.roleId}
-							onChange={handleChange}
+							{...register('roleId')}
 							className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.roleId ? 'border-red-500' : 'border-gray-300'
 							}`}
@@ -326,7 +263,9 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							))}
 						</select>
 						{errors.roleId && (
-							<p className='mt-1 text-sm text-red-600'>{errors.roleId}</p>
+							<p className='mt-1 text-sm text-red-600'>
+								{errors.roleId.message}
+							</p>
 						)}
 					</div>
 				</div>
@@ -347,16 +286,16 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							<input
 								type='password'
 								id='password'
-								name='password'
-								value={formData.password}
-								onChange={handleChange}
+								{...register('password')}
 								className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 									errors.password ? 'border-red-500' : 'border-gray-300'
 								}`}
 								placeholder='Enter password'
 							/>
 							{errors.password && (
-								<p className='mt-1 text-sm text-red-600'>{errors.password}</p>
+								<p className='mt-1 text-sm text-red-600'>
+									{errors.password.message}
+								</p>
 							)}
 						</div>
 
@@ -370,9 +309,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							<input
 								type='password'
 								id='confirmPassword'
-								name='confirmPassword'
-								value={formData.confirmPassword}
-								onChange={handleChange}
+								{...register('confirmPassword')}
 								className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 									errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
 								}`}
@@ -380,21 +317,21 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 							/>
 							{errors.confirmPassword && (
 								<p className='mt-1 text-sm text-red-600'>
-									{errors.confirmPassword}
+									{errors.confirmPassword.message}
 								</p>
 							)}
 						</div>
 					</div>
 				</div>
 
-				{/* Staff Information - Only show for member role */}
-				{selectedRole === 'member' && (
+				{/* Staff Information - Only show for NON-member role (FIXED LOGIC) */}
+				{selectedRole !== 'member' && selectedRole !== '' && (
 					<div className='border-t border-gray-200 pt-6'>
 						<h3 className='text-md font-medium text-gray-900 mb-2'>
 							Staff Information *
 						</h3>
 						<p className='text-sm text-gray-600 mb-4'>
-							All fields are required for member role.
+							All fields are required for staff roles.
 						</p>
 						<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 							<div>
@@ -407,16 +344,16 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 								<input
 									type='text'
 									id='degree'
-									name='degree'
-									value={formData.degree}
-									onChange={handleChange}
+									{...register('degree')}
 									className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 										errors.degree ? 'border-red-500' : 'border-gray-300'
 									}`}
 									placeholder='Enter degree/qualification'
 								/>
 								{errors.degree && (
-									<p className='mt-1 text-sm text-red-600'>{errors.degree}</p>
+									<p className='mt-1 text-sm text-red-600'>
+										{errors.degree.message}
+									</p>
 								)}
 							</div>
 
@@ -430,10 +367,8 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 								<input
 									type='number'
 									id='yearOfExperience'
-									name='yearOfExperience'
-									value={formData.yearOfExperience}
-									onChange={handleChange}
-									min='1'
+									{...register('yearOfExperience')}
+									min='0'
 									className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 										errors.yearOfExperience
 											? 'border-red-500'
@@ -443,23 +378,21 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 								/>
 								{errors.yearOfExperience && (
 									<p className='mt-1 text-sm text-red-600'>
-										{errors.yearOfExperience}
+										{errors.yearOfExperience.message}
 									</p>
 								)}
 							</div>
 
 							<div>
 								<label
-									htmlFor='department'
+									htmlFor='departmentId'
 									className='block text-sm font-medium text-gray-700 mb-1'
 								>
 									Department *
 								</label>
 								<select
-									id='department'
-									name='department'
-									value={formData.departmentId}
-									onChange={handleChange}
+									id='departmentId'
+									{...register('departmentId')}
 									className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 										errors.departmentId ? 'border-red-500' : 'border-gray-300'
 									}`}
@@ -473,7 +406,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 								</select>
 								{errors.departmentId && (
 									<p className='mt-1 text-sm text-red-600'>
-										{errors.departmentId}
+										{errors.departmentId.message}
 									</p>
 								)}
 							</div>
@@ -487,9 +420,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 								</label>
 								<textarea
 									id='biography'
-									name='biography'
-									value={formData.biography}
-									onChange={handleChange}
+									{...register('biography')}
 									rows={4}
 									className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
 									placeholder='Enter biography or professional summary'
@@ -512,7 +443,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 					<button
 						type='submit'
 						disabled={isLoading}
-						className='px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+						className='px-4 py-2 text-sm font-medium text-white bg-accent border border-transparent rounded-lg hover:opacity-90 focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md'
 					>
 						{isLoading ? 'Creating...' : 'Create Account'}
 					</button>

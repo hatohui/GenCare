@@ -8,11 +8,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 import axios, { AxiosError } from 'axios'
 
-const BOOKING_URL = `${DEFAULT_API_URL}/purchases`
-const PAY_URL = `${DEFAULT_API_URL}/payments`
-const ORDER_URL = `${DEFAULT_API_URL}/orderDetails`
-const MANUAL_PAY_URL = `${DEFAULT_API_URL}/manual-payment`
-
 // Retry configuration
 const retryConfig = {
 	retry: 3,
@@ -21,25 +16,30 @@ const retryConfig = {
 }
 
 const bookingApi = {
+	// Private API - requires authentication
 	GetOrder: () => {
 		return axiosInstance
-			.get<OrderDetailResponse>(`${BOOKING_URL}`)
+			.get<OrderDetailResponse>('/purchases')
 			.then(res => res.data)
 	},
+	// Private API - requires authentication
 	BookServices: (data: any) => {
-		return axiosInstance.post(`${BOOKING_URL}`, data).then(res => res.data)
+		return axiosInstance.post('/purchases', data).then(res => res.data)
 	},
+	// Private API - requires authentication
 	MomoPay: (purchaseId: string) => {
 		return axiosInstance
-			.post<MomoServiceResponse>(`${PAY_URL}/momo?purchaseId=${purchaseId}`, {})
+			.post<MomoServiceResponse>(`/payments/momo?purchaseId=${purchaseId}`, {})
 			.then(res => {
 				console.log(res.data)
 				return res.data
 			})
 	},
+	// Private API - requires authentication
 	DeleteOrderDetail: (id: string) => {
-		return axiosInstance.delete(`${ORDER_URL}/${id}`).then(res => res.data)
+		return axiosInstance.delete(`/orderDetails/${id}`).then(res => res.data)
 	},
+	// Private API - requires authentication
 	ViewPurchaseById: (
 		id: string,
 		search: string | null,
@@ -49,14 +49,13 @@ const bookingApi = {
 		if (search) params.append('search', search)
 		if (isPaid !== null) params.append('isPaid', isPaid.toString())
 		const queryString = params.toString()
-		const url = `${BOOKING_URL}/staff/${id}${
-			queryString ? `?${queryString}` : ''
-		}`
+		const url = `/purchases/staff/${id}${queryString ? `?${queryString}` : ''}`
 
 		return axiosInstance.get<BookedServicesResponse>(url).then(res => res.data)
 	},
+	// Private API - requires authentication
 	ManualPay: (data: { purchaseId: string }) => {
-		return axiosInstance.post(`${MANUAL_PAY_URL}`, data).then(res => res.data)
+		return axiosInstance.post('/manual-payment', data).then(res => res.data)
 	},
 }
 
