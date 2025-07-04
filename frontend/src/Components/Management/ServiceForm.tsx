@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CldImage } from 'next-cloudinary'
 import { toast } from 'react-hot-toast'
 import {
-	ServiceDTO,
 	ServiceFormSchema,
 	serviceSchema,
 } from '@/Interfaces/Service/Schemas/service'

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { DeleteMediaResponse } from '@/Interfaces/Media/Types/Media'
 
 const mediaApi = {

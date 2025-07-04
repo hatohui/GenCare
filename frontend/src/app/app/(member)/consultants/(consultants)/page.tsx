@@ -164,7 +164,7 @@ const ConsultantList = () => {
 								{[...Array(3)].map((_, i) => (
 									<motion.div
 										key={i}
-										className='absolute w-2 h-2 bg-main/60 rounded-full'
+										className='absolute w-2 h-2 bg-main bg-opacity-60 rounded-full'
 										style={{
 											left: `${20 + i * 30}%`,
 											top: `${10 + i * 20}%`,

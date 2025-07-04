@@ -7,7 +7,6 @@ import StatusLight, { Status } from '../StatusLight'
 import EditModal from './EditModal'
 import ConfirmationModal from '../Common/ConfirmationModal'
 import { Account } from '@/Interfaces/Auth/Types/Account'
-import { ServiceDTO } from '@/Interfaces/Service/Schemas/service'
 
 export type ItemCardProps<T extends object> = {
 	id: string

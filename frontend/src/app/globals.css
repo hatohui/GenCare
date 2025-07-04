@@ -68,6 +68,147 @@
 	.hoverable {
 		@apply transition-all  duration-150 hover:bg-blue-500/60 hover:shadow-inner;
 	}
+
+	/* Custom scrollbar styles for appointments timetable */
+	.scrollbar-thin {
+		scrollbar-width: thin;
+		scrollbar-color: rgb(209 213 219) transparent;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+		display: block;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-track {
+		background: rgb(243 244 246);
+		border-radius: 3px;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-thumb {
+		background: rgb(209 213 219);
+		border-radius: 3px;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+		background: rgb(156 163 175);
+	}
+
+	.scrollbar-thumb-gray-300 {
+		scrollbar-color: rgb(209 213 219) transparent;
+	}
+
+	.scrollbar-track-gray-100 {
+		/* This is handled by scrollbar-thin class */
+	}
+
+	/* Fix for appointment timetable overlapping issues */
+	.appointment-timetable {
+		position: relative;
+		isolation: isolate;
+	}
+
+	.appointment-timetable table {
+		table-layout: fixed !important;
+		width: 100% !important;
+		min-width: 700px !important;
+		max-width: 100vw !important;
+		border-collapse: collapse !important;
+		border-spacing: 0 !important;
+	}
+
+	.appointment-timetable th,
+	.appointment-timetable td {
+		padding: 0 !important;
+		margin: 0 !important;
+		border: none !important;
+	}
+
+	.appointment-timetable .sticky-time-col {
+		width: 100px !important;
+		min-width: 100px !important;
+		max-width: 100px !important;
+	}
+
+	.appointment-timetable th:not(.sticky-time-col),
+	.appointment-timetable td:not(.sticky-time-col) {
+		width: calc((100% - 100px) / 7) !important;
+		min-width: 120px !important;
+		max-width: 1fr;
+	}
+
+	/* Force immediate layout rendering to prevent layout shifts */
+	.appointment-timetable table,
+	.appointment-timetable th,
+	.appointment-timetable td {
+		will-change: auto;
+		contain: layout;
+	}
+
+	.appointment-timetable .scroll-container {
+		scroll-behavior: smooth;
+		overscroll-behavior: contain;
+	}
+
+	.appointment-timetable .sticky-header {
+		position: sticky;
+		top: 0;
+		z-index: 30;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	}
+
+	.appointment-timetable .sticky-time-col {
+		position: sticky;
+		left: 0;
+		z-index: 20;
+		box-shadow: 4px 0 6px -1px rgba(0, 0, 0, 0.1);
+	}
+
+	.appointment-timetable .appointment-cell {
+		padding: 0 !important;
+		margin: 0 !important;
+		position: relative;
+		z-index: 10;
+		overflow: visible;
+	}
+
+	.appointment-timetable .appointment-cell > div {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* Ensure appointment cards don't get clipped */
+	.appointment-timetable tbody tr:hover .appointment-cell {
+		z-index: 15;
+	}
+
+	/* Mobile optimizations */
+	@media (max-width: 900px) {
+		.appointment-timetable table {
+			min-width: 600px !important;
+		}
+		.appointment-timetable th:not(.sticky-time-col),
+		.appointment-timetable td:not(.sticky-time-col) {
+			min-width: 90px !important;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.appointment-timetable table {
+			min-width: 480px !important;
+		}
+		.appointment-timetable th:not(.sticky-time-col),
+		.appointment-timetable td:not(.sticky-time-col) {
+			min-width: 60px !important;
+		}
+	}
+
+	.appointment-timetable th,
+	.appointment-timetable td,
+	.appointment-timetable .appointment-cell {
+		border-radius: 0 !important;
+	}
 }
 
 /*  */
@@ -93,7 +234,7 @@
 }
 
 .scroll-bar::-webkit-scrollbar-thumb {
-	background-color: rgba(0, 0, 0, 0.5); /* Darker thumb so it’s visible */
+	background-color: rgba(0, 0, 0, 0.5); /* Darker thumb so it's visible */
 	border-radius: 3px;
 }
 
@@ -122,4 +263,24 @@
 
 body {
 	background-color: var(--color-general);
+}
+
+@keyframes pulse-ring {
+	0% {
+		box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7),
+			0 0 0 2px rgba(251, 191, 36, 0.5);
+	}
+	70% {
+		box-shadow: 0 0 0 8px rgba(251, 191, 36, 0);
+	}
+	100% {
+		box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+	}
+}
+
+.animate-pulse-ring {
+	animation: pulse-ring 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	z-index: 20;
+	border-radius: 0.75rem !important; /* rounded-xl */
+	box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7), 0 0 0 2px rgba(251, 191, 36, 0.5);
 }

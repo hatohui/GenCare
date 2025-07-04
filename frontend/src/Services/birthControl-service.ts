@@ -1,4 +1,3 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
