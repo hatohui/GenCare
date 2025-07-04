@@ -8,8 +8,8 @@ import { Consultant } from '@/Interfaces/Account/Types/Consultant'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
 import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
-import Image from 'next/image'
 import { PaginationContext } from './layout'
+import { CldImage } from 'next-cloudinary'
 
 const PAGE_SIZE = 8
 
@@ -192,7 +192,7 @@ const ConsultantList = () => {
 									}}
 								>
 									{consultant.avatarUrl ? (
-										<Image
+										<CldImage
 											src={consultant.avatarUrl}
 											alt={fullName}
 											width={80}
