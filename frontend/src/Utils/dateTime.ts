@@ -1,3 +1,13 @@
+import {
+	parse,
+	format,
+	setHours,
+	setMinutes,
+	setSeconds,
+	setMilliseconds,
+} from 'date-fns'
+import { vi } from 'date-fns/locale'
+
 /**
  * Converts a date and time string to ISO string
  * @param date - The selected date
@@ -5,30 +15,28 @@
  * @returns ISO string
  */
 export const convertToISOString = (date: Date, timeString: string): string => {
-	// Parse the time string (e.g., "08:00 AM" or "03:30 PM")
-	const timeMatch = timeString.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
+	// Parse the time string using date-fns (24h format)
+	const timeFormat = 'HH:mm'
+	let parsedTime: Date
 
-	if (!timeMatch) {
-		throw new Error('Invalid time format. Expected format: "HH:MM AM/PM"')
+	try {
+		parsedTime = parse(timeString, timeFormat, new Date())
+	} catch (error) {
+		throw new Error('Invalid time format. Expected format: "HH:mm"')
 	}
 
-	let hours = parseInt(timeMatch[1], 10)
-	const minutes = parseInt(timeMatch[2], 10)
-	const period = timeMatch[3].toUpperCase()
+	// Get hours and minutes from parsed time
+	const hours = parsedTime.getHours()
+	const minutes = parsedTime.getMinutes()
 
-	// Convert 12-hour format to 24-hour format
-	if (period === 'PM' && hours !== 12) {
-		hours += 12
-	} else if (period === 'AM' && hours === 12) {
-		hours = 0
-	}
+	// Create a new date object with the selected date and time using date-fns
+	const appointmentDate = setMilliseconds(
+		setSeconds(setMinutes(setHours(date, hours), minutes), 0),
+		0
+	)
 
-	// Create a new date object with the selected date and time
-	const appointmentDate = new Date(date)
-	appointmentDate.setHours(hours, minutes, 0, 0)
-
-	// Return ISO string
-	return appointmentDate.toISOString()
+	// Return ISO string without timezone conversion to preserve local time
+	return format(appointmentDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 }
 
 /**
@@ -37,12 +45,7 @@ export const convertToISOString = (date: Date, timeString: string): string => {
  * @returns Formatted date string
  */
 export const formatDateForDisplay = (date: Date): string => {
-	return date.toLocaleDateString('vi-VN', {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-	})
+	return format(date, 'EEEE, d MMMM yyyy', { locale: vi })
 }
 
 /**
@@ -52,4 +55,49 @@ export const formatDateForDisplay = (date: Date): string => {
  */
 export const formatTimeForDisplay = (timeString: string): string => {
 	return timeString
+}
+
+/**
+ * Formats a date and time for display
+ * @param date - The date to format
+ * @returns Formatted date and time string
+ */
+export const formatDateTimeForDisplay = (date: Date): string => {
+	return format(date, 'EEEE, d MMMM yyyy HH:mm', { locale: vi })
+}
+
+/**
+ * Formats time in 24-hour format
+ * @param date - The date to format
+ * @returns Formatted time string (HH:mm)
+ */
+export const formatTime24Hour = (date: Date): string => {
+	return format(date, 'HH:mm')
+}
+
+/**
+ * Formats time in 12-hour format with AM/PM
+ * @param date - The date to format
+ * @returns Formatted time string (hh:mm a)
+ */
+export const formatTime12Hour = (date: Date): string => {
+	return format(date, 'hh:mm a', { locale: vi })
+}
+
+/**
+ * Format time slot in 24h format (HH:mm)
+ */
+export const formatTimeSlot24h = (date: Date) => {
+	return format(date, 'HH:mm')
+}
+
+/**
+ * Format ISO date string theo UTC, kiểu dd/MM/yyyy (KHÔNG dùng date-fns-tz)
+ */
+export const formatDateForDisplayUTC = (isoString: string) => {
+	const date = new Date(isoString)
+	const day = String(date.getUTCDate()).padStart(2, '0')
+	const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+	const year = date.getUTCFullYear()
+	return `${day}/${month}/${year}`
 }

@@ -8,18 +8,19 @@ import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
 import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
 import Image from 'next/image'
-import { useCreateAppointment } from '@/Services/appointment-service'
+import { useCreateAppointmentWithZoom } from '@/Services/appointment-service'
 import { convertToISOString, formatDateForDisplay } from '@/Utils/dateTime'
 import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'motion/react'
 
 const timeSlots = [
-	'08:00 AM',
-	'09:30 AM',
-	'11:00 AM',
-	'01:30 PM',
-	'03:00 PM',
-	'04:30 PM',
+	'08:00',
+	'10:00',
+	'12:00',
+	'14:00',
+	'16:00',
+	'18:00',
+	'20:00',
 ]
 
 const BookConsultantPage = () => {
@@ -29,11 +30,12 @@ const BookConsultantPage = () => {
 	const consultantId = params?.id as string
 	const { consultants } = useConsultantContext()
 	const consultantFromContext = consultants.find(c => c.id === consultantId)
-	const createAppointmentMutation = useCreateAppointment()
+	const createAppointmentMutation = useCreateAppointmentWithZoom()
 
 	const [selectedDate, setSelectedDate] = React.useState<Date | null>(null)
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
+	const [joinUrl, setJoinUrl] = React.useState<string | null>(null)
 
 	// Loading states
 	const isLoading = isUserLoading || createAppointmentMutation.isPending
@@ -83,25 +85,48 @@ const BookConsultantPage = () => {
 			return
 		}
 
+		if (!consultantFromContext) {
+			toast.error('Thông tin tư vấn viên không hợp lệ.')
+			return
+		}
+
 		try {
-			// Convert date and time to ISO string
 			const scheduleAt = convertToISOString(selectedDate, selectedTime)
 
-			// Prepare request data
-			const appointmentData = {
+			// Create appointment with Zoom integration
+			const result = await createAppointmentMutation.mutateAsync({
 				memberId: userData.id,
 				staffId: consultantFromContext.id,
-				scheduleAt: scheduleAt,
-			}
+				scheduleAt,
+			})
 
-			// Create appointment
-			await createAppointmentMutation.mutateAsync(appointmentData)
+			// Show success message with Zoom link
+			toast.success(
+				<>
+					Đặt lịch hẹn thành công!
+					<br />
+					<a
+						href={result.zoomMeeting.joinUrl}
+						target='_blank'
+						rel='noopener noreferrer'
+						className='underline text-blue-600'
+					>
+						Join Zoom Meeting
+					</a>
+				</>
+			)
 
-			// Show success message
-			toast.success('Đặt lịch hẹn thành công!')
-		} catch (error) {
-			// Error handling is done in the mutation
-			console.error('Appointment creation failed:', error)
+			// Store the join URL
+			setJoinUrl(result.zoomMeeting.joinUrl)
+
+			// Chuyển hướng về trang lịch hẹn mới
+			router.push('/app/appointments')
+
+			// Optionally redirect to a success page or dashboard
+			// router.push('/appointments')
+		} catch (error: any) {
+			toast.error(error.message || 'Appointment creation failed.')
+			console.error(error)
 		}
 	}
 
