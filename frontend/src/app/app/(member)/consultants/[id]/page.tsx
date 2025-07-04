@@ -35,7 +35,6 @@ const BookConsultantPage = () => {
 	const [selectedDate, setSelectedDate] = React.useState<Date | null>(null)
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
-	const [joinUrl, setJoinUrl] = React.useState<string | null>(null)
 
 	// Loading states
 	const isLoading = isUserLoading || createAppointmentMutation.isPending
@@ -116,8 +115,8 @@ const BookConsultantPage = () => {
 				</>
 			)
 
-			// Store the join URL
-			setJoinUrl(result.zoomMeeting.joinUrl)
+			// Store the join URL (commented out as it's not being used)
+			// setJoinUrl(result.zoomMeeting.joinUrl)
 
 			// Chuyển hướng về trang lịch hẹn mới
 			router.push('/app/appointments')

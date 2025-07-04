@@ -21,7 +21,7 @@ export const convertToISOString = (date: Date, timeString: string): string => {
 
 	try {
 		parsedTime = parse(timeString, timeFormat, new Date())
-	} catch (error) {
+	} catch {
 		throw new Error('Invalid time format. Expected format: "HH:mm"')
 	}
 

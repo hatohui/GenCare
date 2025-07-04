@@ -55,7 +55,7 @@ export const generateAllTimeSlots = () => {
 /**
  * Generate time slots from the appointments data (legacy - kept for compatibility)
  */
-export const generateTimeSlots = (appointments: Appointment[]) => {
+export const generateTimeSlots = () => {
 	return generateAllTimeSlots()
 }
 

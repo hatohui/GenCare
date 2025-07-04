@@ -1,11 +1,10 @@
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
-import { motion, AnimatePresence } from 'motion/react'
-import { useState, useEffect } from 'react'
+import { AnimatePresence } from 'motion/react'
+import { useEffect } from 'react'
 import { AppointmentCountdown } from './AppointmentCountdown'
 
 interface AppointmentCellProps {
 	appointments: Appointment[]
-	isPast?: boolean
 	isHighlighted?: boolean
 }
 
@@ -27,15 +26,13 @@ const isWithin60Minutes = (scheduleAt: string): boolean => {
 
 export const AppointmentCell = ({
 	appointments,
-	isPast = false,
 	isHighlighted = false,
 }: AppointmentCellProps) => {
-	const [currentTime, setCurrentTime] = useState(new Date())
-
 	// Update current time every 30 seconds for better accuracy
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setCurrentTime(new Date())
+			// This effect is used to trigger re-renders for countdown updates
+			// The actual current time is calculated in the AppointmentCountdown component
 		}, 30000) // Update every 30 seconds
 
 		return () => clearInterval(interval)
@@ -62,7 +59,7 @@ export const AppointmentCell = ({
 			}`}
 		>
 			<AnimatePresence mode='wait'>
-				{appointments.map((appointment, index) => {
+				{appointments.map(appointment => {
 					const isUpcoming = isWithin60Minutes(appointment.scheduleAt)
 					const hasJoinUrl = appointment.joinUrl && !appointment.isDeleted
 					const status = (appointment.status || '')

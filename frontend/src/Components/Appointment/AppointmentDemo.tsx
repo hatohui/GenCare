@@ -132,8 +132,8 @@ export const AppointmentDemo = () => {
 					<h3 className='font-bold text-blue-800 mb-2'>Giải thích:</h3>
 					<ul className='text-sm text-blue-700 space-y-1'>
 						<li>
-							• <strong>5 phút:</strong> Nút join màu đỏ, nhấp nháy "THAM GIA
-							NGAY"
+							• <strong>5 phút:</strong> Nút join màu đỏ, nhấp nháy &quot;THAM
+							GIA NGAY&quot;
 						</li>
 						<li>
 							• <strong>15 phút:</strong> Nút join màu đỏ với countdown timer
@@ -143,7 +143,7 @@ export const AppointmentDemo = () => {
 						</li>
 						<li>
 							• <strong>Live meeting:</strong> Đang diễn ra, nút màu đỏ với
-							"ĐANG DIỄN RA"
+							&quot;ĐANG DIỄN RA&quot;
 						</li>
 						<li>
 							• <strong>2 giờ:</strong> Chưa trong khoảng 30 phút, nút bình

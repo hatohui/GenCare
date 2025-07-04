@@ -12,7 +12,6 @@ import {
 	generateTimeSlots,
 	groupAppointmentsByDateTime,
 	filterAppointmentsForWeek,
-	formatDate,
 	formatWeekRange,
 } from '@/Utils/Appointment/timeSlotHelpers'
 
@@ -26,22 +25,16 @@ export const AppointmentsTimetable = () => {
 	const { startOfWeek, endOfWeek } = getWeekRange(currentWeek)
 
 	// Memoize weekDays to prevent recreation on every render
-	const weekDays = useMemo(
-		() => getWeekDays(startOfWeek),
-		[startOfWeek.toISOString()]
-	)
+	const weekDays = useMemo(() => getWeekDays(startOfWeek), [startOfWeek])
 
 	// Filter appointments for current week
 	const weekAppointments = useMemo(
 		() => (data ? filterAppointmentsForWeek(data, startOfWeek, endOfWeek) : []),
-		[data, startOfWeek.toISOString(), endOfWeek.toISOString()]
+		[data, startOfWeek, endOfWeek]
 	)
 
 	// Generate all time slots and group appointments - memoize to prevent recreation
-	const timeSlots = useMemo(
-		() => generateTimeSlots(weekAppointments),
-		[weekAppointments]
-	)
+	const timeSlots = useMemo(() => generateTimeSlots(), [])
 	const groupedAppointments = useMemo(
 		() => groupAppointmentsByDateTime(weekAppointments),
 		[weekAppointments]
@@ -123,9 +116,13 @@ export const AppointmentsTimetable = () => {
 	const goToFirstAppointmentWeek = useCallback(() => {
 		if (futureAppointments && futureAppointments.length > 0) {
 			// Find the earliest future appointment date
-			const earliest = futureAppointments.reduce((min, curr) => {
-				return new Date(curr.scheduleAt) < new Date(min.scheduleAt) ? curr : min
-			})
+			const earliest = futureAppointments.reduce(
+				(min: Appointment, curr: Appointment) => {
+					return new Date(curr.scheduleAt) < new Date(min.scheduleAt)
+						? curr
+						: min
+				}
+			)
 			const earliestDate = new Date(earliest.scheduleAt)
 			setCurrentWeek(earliestDate)
 
@@ -354,7 +351,7 @@ export const AppointmentsTimetable = () => {
 										Bạn có {futureAppointments.length} lịch hẹn sắp tới. Nhấn
 										nút{' '}
 										<span className='font-semibold text-green-600'>
-											"🔍 Tìm lịch"
+											&quot;🔍 Tìm lịch&quot;
 										</span>{' '}
 										để đi đến tuần có lịch hẹn đầu tiên.
 									</p>
@@ -499,7 +496,6 @@ export const AppointmentsTimetable = () => {
 												>
 													<AppointmentCell
 														appointments={appointmentsForSlot}
-														isPast={isSlotPast}
 														isHighlighted={isSlotHighlighted}
 													/>
 												</motion.td>

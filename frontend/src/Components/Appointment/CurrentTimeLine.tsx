@@ -27,11 +27,8 @@ export const CurrentTimeLine = ({
 	} | null>(null)
 
 	// Memoize the timeSlots and weekDays to prevent unnecessary re-renders
-	const memoizedTimeSlots = useMemo(() => timeSlots, [timeSlots.join(',')])
-	const memoizedWeekDays = useMemo(
-		() => weekDays,
-		[weekDays.map(d => d.toISOString()).join(',')]
-	)
+	const memoizedTimeSlots = useMemo(() => timeSlots, [timeSlots])
+	const memoizedWeekDays = useMemo(() => weekDays, [weekDays])
 
 	// Measure actual table dimensions from DOM
 	const measureTableDimensions = useCallback(() => {
@@ -102,6 +99,15 @@ export const CurrentTimeLine = ({
 		}
 	}, [measureTableDimensions]) // Only depend on the memoized function
 
+	// Check if current day
+	const isToday = useCallback(
+		(date: Date) => {
+			const today = currentTime
+			return date.toDateString() === today.toDateString()
+		},
+		[currentTime]
+	)
+
 	// Calculate position of red line - should be at exact current time position
 	const calculateTimeLinePosition = useCallback(() => {
 		const now = currentTime
@@ -136,7 +142,13 @@ export const CurrentTimeLine = ({
 				.toString()
 				.padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`,
 		}
-	}, [currentTime, tableDimensions, memoizedWeekDays, memoizedTimeSlots])
+	}, [
+		currentTime,
+		tableDimensions,
+		memoizedWeekDays,
+		memoizedTimeSlots,
+		isToday,
+	])
 
 	// Check if a time slot has been completely passed by current time
 	const isTimeSlotCompletelyPast = useCallback(
@@ -151,15 +163,6 @@ export const CurrentTimeLine = ({
 			currentDate.setSeconds(0, 0) // Reset seconds and milliseconds
 
 			return currentDate >= slotEndDate // Only past if current time is past the END of the slot
-		},
-		[currentTime]
-	)
-
-	// Check if current day
-	const isToday = useCallback(
-		(date: Date) => {
-			const today = currentTime
-			return date.toDateString() === today.toDateString()
 		},
 		[currentTime]
 	)
