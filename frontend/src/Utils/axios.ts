@@ -1,4 +1,3 @@
-// /app/lib/axios.ts
 import axios from 'axios'
 import { DEFAULT_API_URL } from '@/Constants/API'
 import useToken from '@/Hooks/Auth/useToken'
@@ -8,7 +7,6 @@ const axiosInstance = axios.create({
 	withCredentials: true,
 })
 
-// Request interceptor to automatically add Authorization header
 axiosInstance.interceptors.request.use(
 	config => {
 		const token = useToken.getState().accessToken
@@ -45,11 +43,9 @@ axiosInstance.interceptors.response.use(
 					'Authorization'
 				] = `Bearer ${data.data.accessToken}`
 
-				// Re-send the original failed request
 				return axiosInstance(originalRequest)
 			} catch (refreshError) {
-				// Optional: logout the user or redirect to login
-				window.location.href = '/login' // (if you want to force re-login)
+				window.location.href = '/login'
 				return Promise.reject(refreshError)
 			}
 		}

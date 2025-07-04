@@ -1,14 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { DeleteMediaResponse } from '@/Interfaces/Media/Types/Media'
 
-const MEDIA_URL = `${DEFAULT_API_URL}/media`
-
 const mediaApi = {
+	// Private API - requires authentication
 	deleteMedia: (id: string) => {
 		return axiosInstance
-			.delete<DeleteMediaResponse>(`${MEDIA_URL}/${id}`)
+			.delete<DeleteMediaResponse>(`/media/${id}`)
 			.then(res => res.data)
 	},
 }
