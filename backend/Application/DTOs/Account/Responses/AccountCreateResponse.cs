@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Account.Responses;
 
-public class StaffAccountCreateResponse
+public class AccountCreateResponse
 {
     public string Id { get; set; } = null!;
     public string Role { get; set; } = null!;

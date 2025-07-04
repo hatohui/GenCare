@@ -20,4 +20,5 @@ public interface IRoleRepository
     /// <param name="id">The unique identifier of the role.</param>
     /// <returns>The role if found; otherwise, null.</returns>
     Task<Role?> GetRoleByIdAsync(Guid id);
+    Task<List<Role>> GetAll();
 }

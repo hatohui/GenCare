@@ -7,7 +7,6 @@ import StatusLight, { Status } from '../StatusLight'
 import EditModal from './EditModal'
 import ConfirmationModal from '../Common/ConfirmationModal'
 import { Account } from '@/Interfaces/Auth/Types/Account'
-import { ServiceDTO } from '@/Interfaces/Service/Schemas/service'
 
 export type ItemCardProps<T extends object> = {
 	id: string
@@ -85,6 +84,11 @@ const ItemCard = <T extends object>({
 		setIsConfirmationOpen(true)
 	}
 
+	// Check if this is an admin account (only for account modal type)
+	const isAdminAccount =
+		modalType === 'account' &&
+		(data as Account)?.role?.name?.toLowerCase() === 'admin'
+
 	const handleRestoreFunc = (event: React.MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation()
 		setCurrentAction('restore')
@@ -150,27 +154,38 @@ const ItemCard = <T extends object>({
 				<div className='flex items-center justify-end flex-1/12 gap-2 py-2 pr-4'>
 					{/* Edit Button - Yellow for Edit */}
 					<div
-						className='itemCardButton bg-yellow-500 hover:bg-yellow-600 hover:shadow-[0_0_15px_rgba(234,179,8,0.7)]'
-						onClick={handleEditFunc}
-						tabIndex={1}
+						className={`itemCardButton ${
+							isAdminAccount
+								? 'bg-gray-400 cursor-not-allowed hover:bg-gray-400 hover:shadow-none'
+								: 'bg-yellow-500 hover:bg-yellow-600 hover:shadow-[0_0_15px_rgba(234,179,8,0.7)] cursor-pointer'
+						}`}
+						onClick={isAdminAccount ? undefined : handleEditFunc}
+						tabIndex={isAdminAccount ? -1 : 1}
 					>
 						<PencilSVG className='size-5 text-white' />
 					</div>
 					{isActive ? (
 						// Restore Button - Green for Restore
 						<div
-							className='itemCardButton bg-green-500 hover:bg-green-600 hover:shadow-[0_0_15px_rgba(34,197,94,0.7)]'
-							onClick={handleRestoreFunc}
-							tabIndex={1}
+							className={`itemCardButton ${
+								isAdminAccount
+									? 'bg-gray-400 cursor-not-allowed hover:bg-gray-400 hover:shadow-none'
+									: 'bg-green-500 hover:bg-green-600 hover:shadow-[0_0_15px_rgba(34,197,94,0.7)] cursor-pointer'
+							}`}
+							onClick={isAdminAccount ? undefined : handleRestoreFunc}
+							tabIndex={isAdminAccount ? -1 : 1}
 						>
 							<RestoreSVG className='size-5 text-white' />
 						</div>
 					) : (
-						// Delete Button - Red for Delete
 						<div
-							className='itemCardButton bg-red-500 hover:bg-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)]'
-							onClick={handleDeleteFunc}
-							tabIndex={1}
+							className={`itemCardButton ${
+								isAdminAccount
+									? 'bg-gray-400 cursor-not-allowed hover:bg-gray-400 hover:shadow-none'
+									: 'bg-red-500 hover:bg-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.7)] cursor-pointer'
+							}`}
+							onClick={isAdminAccount ? undefined : handleDeleteFunc}
+							tabIndex={isAdminAccount ? -1 : 1}
 						>
 							<TrashCanSVG className='size-5 text-white' />
 						</div>
@@ -181,9 +196,9 @@ const ItemCard = <T extends object>({
 			{/* Edit Modal */}
 			{enableModal && (
 				<EditModal
+					id={id}
 					isOpen={isEditModalOpen}
 					onClose={() => setIsEditModalOpen(false)}
-					data={data as Account | ServiceDTO}
 					type={modalType}
 					onSave={handleModalSave}
 					isLoading={isUpdating}
