@@ -49,12 +49,40 @@ export const formatDateForDisplay = (date: Date): string => {
 }
 
 /**
+ * Formats a date for input field (YYYY-MM-DD format)
+ * @param date - The date to format
+ * @returns Formatted date string for input fields
+ */
+export const formatDateForInput = (date: Date | string): string => {
+	if (typeof date === 'string') {
+		// If it's already a string, try to parse it first
+		const parsedDate = new Date(date)
+		return format(parsedDate, 'yyyy-MM-dd')
+	}
+	return format(date, 'yyyy-MM-dd')
+}
+
+/**
  * Formats time for display
  * @param timeString - Time string in format "HH:MM AM/PM"
  * @returns Formatted time string
  */
 export const formatTimeForDisplayLegacy = (timeString: string): string => {
 	return timeString
+}
+
+/**
+ * Formats time for display (handles both Date objects and time strings)
+ * @param time - Time as Date object or time string
+ * @returns Formatted time string
+ */
+export const formatTimeForDisplay = (time: Date | string): string => {
+	if (typeof time === 'string') {
+		// If it's a time string, return as is
+		return time
+	}
+	// If it's a Date object, format it
+	return format(time, 'HH:mm')
 }
 
 /**
