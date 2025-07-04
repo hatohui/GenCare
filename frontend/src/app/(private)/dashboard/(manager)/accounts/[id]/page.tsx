@@ -277,10 +277,10 @@ const AccountDetailPage = () => {
 												alt={`${account.firstName} ${account.lastName}`}
 												width={120}
 												height={120}
-												className='rounded-full border-4 border-gray-100 group-hover:border-main/30 transition-all duration-300 object-cover shadow-lg'
+												className='rounded-full border-4 border-gray-100 group-hover:border-main group-hover:border-opacity-30 transition-all duration-300 object-cover shadow-lg'
 											/>
 										) : (
-											<div className='w-[120px] h-[120px] rounded-full bg-gradient-to-br from-main to-secondary flex items-center justify-center border-4 border-gray-100 group-hover:border-main/30 transition-all duration-300 shadow-lg'>
+											<div className='w-[120px] h-[120px] rounded-full bg-gradient-to-br from-main to-secondary flex items-center justify-center border-4 border-gray-100 group-hover:border-main group-hover:border-opacity-30 transition-all duration-300 shadow-lg'>
 												<span className='text-white text-3xl font-bold'>
 													{account.firstName?.charAt(0) || '?'}
 													{account.lastName?.charAt(0) || ''}
