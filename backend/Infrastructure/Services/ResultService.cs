@@ -49,24 +49,51 @@ public class ResultService(IResultRepository resultRepository,
         var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
         if (purchase == null)
             throw new AppException(404, "Purchase not found.");
+        // Check if the purchase is paid, check only for member
+        if (role == RoleNames.Member)
+        {
+            if (purchase.AccountId != accountId)
+            {
+                throw new AppException(403, "You are not authorized to view this test result. This record belongs to another member.");
+            }
+            //if purchase is not paid and not found payment record, throw exception
+            var payment = await paymentHistoryRepository.GetById(purchase.Id);
+            if (payment == null)
+                throw new AppException(402, "No payment record found.");
 
-        //check if the account is authorized to view this test result
-        if (role == RoleNames.Member && purchase.AccountId != accountId)
-            throw new AppException(403, "You are not authorized to view this test result.");
-        //get payment history by purchase,
-        //check if payment is completed
-        var payment = await paymentHistoryRepository.GetById(purchase.Id);
-        if (payment == null)
-            throw new AppException(402, "No payment record found.");
-        if(payment.Status.Trim() != PaymentStatus.Paid.Trim())
-            throw new AppException(402,"Payment is not completed.");
+            if (payment.Status.Trim() != PaymentStatus.Paid.Trim())
+                throw new AppException(402, "Payment is not completed.");
+        }
+
         
         var testResult = await resultRepository.ViewResultAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
+        // If the test result is null, create a new one with default values
+        if (testResult == null!)
+        {
+            // If the user is not Staff or Admin, throw an exception
+            if (role != RoleNames.Staff && role != RoleNames.Admin)
+            {
+                throw new AppException(404, "Test result not found.");
+            }
 
+            testResult = new Result
+            {
+                OrderDetailId = orderDetailId,
+                OrderDate = ToUnspecified(DateTime.Now),
+                SampleDate = null,
+                ResultDate = null,
+                Status = false, // Default status
+                ResultData = null,
+                UpdatedAt = ToUnspecified(DateTime.Now)
+            };
+
+            await resultRepository.AddAsync(testResult);
+        }
         return new ViewTestResultResponse
         {
-            OrderDate = testResult.OrderDate,
+            OrderDetailId = orderDetailId,
+            OrderDate = testResult!.OrderDate,
             SampleDate = testResult.SampleDate,
             ResultDate = testResult.ResultDate,
             Status = testResult.Status,
@@ -91,53 +118,28 @@ public class ResultService(IResultRepository resultRepository,
     /// <exception cref="AppException">Thrown if the result date is earlier than the sample date.</exception>
     public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId)
     {
-        
         var testResult = await resultRepository.ViewResultAsync(orderDetailId)
                          ?? throw new InvalidOperationException("Test result not found.");
 
         bool isChanged = false;
 
+        // Convert and validate
         var sampleDate = request.SampleDate?.ToLocalTime();
         var resultDate = request.ResultDate?.ToLocalTime();
-        if (sampleDate != null && resultDate != null && resultDate < sampleDate)
-            throw new AppException(400, "Result date cannot be earlier than sample date.");
 
-        if (request.OrderDate != null && ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate.Value))
-        {
-            testResult.OrderDate = ToUnspecified(request.OrderDate.Value);
-            isChanged = true;
-        }
-        if (request.SampleDate != null && ToUnspecified(testResult.SampleDate.GetValueOrDefault()) != ToUnspecified(request.SampleDate.Value))
-        {
-            testResult.SampleDate = ToUnspecified(request.SampleDate.Value);
-            isChanged = true;
-        }
-        if (request.ResultDate != null && ToUnspecified(testResult.ResultDate.GetValueOrDefault()) != ToUnspecified(request.ResultDate.Value))
-        {
-            testResult.ResultDate = ToUnspecified(request.ResultDate.Value);
-            isChanged = true;
-        }
-        if (request.Status != null && testResult.Status != request.Status.Value)
-        {
-            testResult.Status = request.Status.Value;
-            isChanged = true;
-        }
-        if (request.ResultData != null)
-        {
-            // Serialize object lại thành JSON string để lưu
-            var newResultDataJson = JsonConvert.SerializeObject(request.ResultData);
+        ResultValidationHelper.ValidateDateLogic(sampleDate, resultDate, request);
 
-            if (testResult.ResultData != newResultDataJson)
-            {
-                testResult.ResultData = newResultDataJson;
-                isChanged = true;
-            }
-        }
+        // Update từng field nếu cần
+        isChanged |= ResultValidationHelper.UpdateOrderDate(request, testResult);
+        isChanged |= ResultValidationHelper.UpdateSampleDate(sampleDate, testResult);
+        isChanged |= ResultValidationHelper.UpdateResultDate(resultDate, testResult);
+        isChanged |= ResultValidationHelper.UpdateResultData(request, testResult);
+        isChanged |= ResultValidationHelper.UpdateStatus(request, testResult);
 
-
+        // Final update
         if (isChanged)
         {
-            testResult.UpdatedAt = ToUnspecified(DateTime.UtcNow);
+            testResult.UpdatedAt = ToUnspecified(DateTime.Now);
             await resultRepository.UpdateResultAsync(testResult);
         }
 
@@ -186,10 +188,12 @@ public class ResultService(IResultRepository resultRepository,
                     continue;
 
                 var service = await serviceRepository.SearchServiceByIdAsync(od.ServiceId);
+                var statusResult = await resultRepository.ViewResultAsync(od.Id);
                 if (service == null) continue;
 
                 result.Add(new BookedServiceModel
                 {
+                    Status = statusResult?.Status ?? false, 
                     OrderDetailId = od.Id,
                     ServiceName = service.Name,
                     FirstName = od.FirstName,
@@ -226,6 +230,7 @@ public class ResultService(IResultRepository resultRepository,
 
             responseList.Add(new ViewTestResultResponse
             {
+                OrderDetailId = testResult.OrderDetailId,
                 OrderDate = testResult.OrderDate,
                 SampleDate = testResult.SampleDate,
                 ResultDate = testResult.ResultDate,

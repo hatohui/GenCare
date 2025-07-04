@@ -1,7 +1,6 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
-import { GetAppointmentsResponse } from '@/Interfaces/Appointment/Schemas/appointment'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
 const APPOINTMENT_URL = `${DEFAULT_API_URL}/appointments`
@@ -34,19 +33,6 @@ type AppointmentWithZoomResponse = {
 }
 
 const appointmentApi = {
-	getAppointments: (header: string) => {
-		return axios
-			.get<GetAppointmentsResponse>(`${APPOINTMENT_URL}`, {
-				headers: { Authorization: header },
-			})
-			.then(res => {
-				// Clean up status field by trimming whitespace
-				return res.data.map(appointment => ({
-					...appointment,
-					status: appointment.status.trim(),
-				}))
-			})
-	},
 	createAppointment: (data: AppointmentCreateRequest, header: string) => {
 		return axios
 			.post(`${APPOINTMENT_URL}`, data, {
@@ -109,12 +95,11 @@ export const useAppointments = () => {
 }
 
 export const useCreateAppointment = () => {
-	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	return useMutation({
 		mutationFn: (data: AppointmentCreateRequest) =>
-			appointmentApi.createAppointment(data, header),
+			appointmentApi.createAppointment(data),
 		onSuccess: () => {
 			// Invalidate related queries
 			queryClient.invalidateQueries({ queryKey: ['appointments'] })

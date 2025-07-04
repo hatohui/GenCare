@@ -9,7 +9,7 @@ import {
 import { vi } from 'date-fns/locale'
 
 /**
- * Converts a date and time string to ISO string
+ * Converts a date and time string to ISO string using date-fns
  * @param date - The selected date
  * @param timeString - Time string in format "HH:MM AM/PM" (e.g., "08:00 AM", "03:30 PM")
  * @returns ISO string
@@ -40,7 +40,7 @@ export const convertToISOString = (date: Date, timeString: string): string => {
 }
 
 /**
- * Formats a date for display
+ * Formats a date for display using date-fns
  * @param date - The date to format
  * @returns Formatted date string
  */
@@ -53,7 +53,7 @@ export const formatDateForDisplay = (date: Date): string => {
  * @param timeString - Time string in format "HH:MM AM/PM"
  * @returns Formatted time string
  */
-export const formatTimeForDisplay = (timeString: string): string => {
+export const formatTimeForDisplayLegacy = (timeString: string): string => {
 	return timeString
 }
 

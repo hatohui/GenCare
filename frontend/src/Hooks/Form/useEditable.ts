@@ -23,8 +23,22 @@ export function useEditableField<T extends Record<string, any>>({
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		if (!localData) return
-		const { name, value } = event.target
-		setLocalData(prev => (prev ? { ...prev, [name]: value } : prev))
+		const { name, value, type } = event.target
+
+		// Handle type conversion based on input type
+		let processedValue: any = value
+		if (type === 'number') {
+			// For number inputs, handle empty string and invalid numbers gracefully
+			if (value === '') {
+				processedValue = 0 // Default to 0 for empty number fields
+			} else {
+				const numValue = Number(value)
+				// Only convert to number if it's a valid number, otherwise keep as string for validation feedback
+				processedValue = !isNaN(numValue) ? numValue : value
+			}
+		}
+
+		setLocalData(prev => (prev ? { ...prev, [name]: processedValue } : prev))
 	}
 
 	const toggleFieldEdit = (field: keyof T) => {
@@ -46,9 +60,8 @@ export function useEditableField<T extends Record<string, any>>({
 			return
 		}
 
-		const confirm = window.confirm(`Save changes to "${String(field)}"?`)
-		if (!confirm) return
-
+		// For now, auto-save without confirmation
+		// TODO: Could add confirmation logic here if needed
 		if (onSave) await onSave(localData)
 		await refetch()
 		setEditingField(null)
