@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
 
 interface CurrentTimeLineProps {
@@ -26,9 +26,20 @@ export const CurrentTimeLine = ({
 		headerHeight: number
 	} | null>(null)
 
+	// Use ref to track previous time slot status to avoid unnecessary updates
+	const previousStatusRef = useRef<Map<string, boolean>>(new Map())
+
 	// Memoize the timeSlots and weekDays to prevent unnecessary re-renders
 	const memoizedTimeSlots = useMemo(() => timeSlots, [timeSlots])
 	const memoizedWeekDays = useMemo(() => weekDays, [weekDays])
+
+	// Memoize the callback to prevent it from being recreated on every render
+	const memoizedOnTimeSlotStatusChange = useCallback(
+		(day: Date, timeSlot: string, isPast: boolean) => {
+			onTimeSlotStatusChange?.(day, timeSlot, isPast)
+		},
+		[onTimeSlotStatusChange]
+	)
 
 	// Measure actual table dimensions from DOM
 	const measureTableDimensions = useCallback(() => {
@@ -167,19 +178,35 @@ export const CurrentTimeLine = ({
 		[currentTime]
 	)
 
-	// Notify parent about time slot status changes - only when currentTime changes
+	// Notify parent about time slot status changes - optimized to prevent infinite loops
 	useEffect(() => {
-		if (!onTimeSlotStatusChange) return
+		if (!memoizedOnTimeSlotStatusChange) return
+
+		const currentStatus = new Map<string, boolean>()
+		let hasChanges = false
 
 		memoizedWeekDays.forEach(day => {
 			memoizedTimeSlots.forEach(timeSlot => {
 				const isPast = isTimeSlotCompletelyPast(timeSlot, day)
-				onTimeSlotStatusChange(day, timeSlot, isPast)
+				const key = `${day.toDateString()}-${timeSlot}`
+				currentStatus.set(key, isPast)
+
+				// Only call callback if status has changed
+				const previousStatus = previousStatusRef.current.get(key)
+				if (previousStatus !== isPast) {
+					memoizedOnTimeSlotStatusChange(day, timeSlot, isPast)
+					hasChanges = true
+				}
 			})
 		})
+
+		// Update the ref only if there were changes
+		if (hasChanges) {
+			previousStatusRef.current = currentStatus
+		}
 	}, [
 		currentTime,
-		onTimeSlotStatusChange,
+		memoizedOnTimeSlotStatusChange,
 		memoizedWeekDays,
 		memoizedTimeSlots,
 		isTimeSlotCompletelyPast,

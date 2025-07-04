@@ -48,13 +48,19 @@ export const AppointmentsTimetable = () => {
 		return `${year}-${month}-${day}`
 	}
 
-	// Handle time slot status changes from CurrentTimeLine
+	// Handle time slot status changes from CurrentTimeLine - optimized to prevent unnecessary updates
 	const handleTimeSlotStatusChange = useCallback(
 		(day: Date, timeSlot: string, isPast: boolean) => {
 			const dateKey = getLocalDateKey(day)
 			const slotKey = `${dateKey}-${timeSlot}`
 
 			setPastTimeSlots(prev => {
+				// Only update if the status actually changed
+				const currentStatus = prev.has(slotKey)
+				if (currentStatus === isPast) {
+					return prev // No change needed
+				}
+
 				const newSet = new Set(prev)
 				if (isPast) {
 					newSet.add(slotKey)
@@ -203,10 +209,9 @@ export const AppointmentsTimetable = () => {
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.3 }}
-					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
 					onClick={() => refetch()}
-					className='px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium flex items-center space-x-2'
+					className='px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transition-all duration-200 shadow-lg font-medium flex items-center space-x-2'
 				>
 					<span>🔄</span>
 					<span>Thử lại</span>
@@ -250,28 +255,25 @@ export const AppointmentsTimetable = () => {
 					className='flex flex-wrap items-center gap-2 sm:gap-3'
 				>
 					<motion.button
-						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 						onClick={goToPreviousWeek}
-						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg hover:bg-white hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium'
+						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium'
 					>
 						← <span className='hidden sm:inline'>Tuần trước</span>
 					</motion.button>
 
 					<motion.button
-						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 						onClick={goToCurrentWeek}
-						className='px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg text-xs sm:text-sm font-medium'
+						className='px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transition-all duration-200 shadow-md text-xs sm:text-sm font-medium'
 					>
 						🏠 <span className='hidden sm:inline'>Hiện tại</span>
 					</motion.button>
 
 					<motion.button
-						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 						onClick={goToNextWeek}
-						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg hover:bg-white hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium'
+						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium'
 					>
 						<span className='hidden sm:inline'>Tuần sau</span> →
 					</motion.button>
@@ -296,7 +298,6 @@ export const AppointmentsTimetable = () => {
 										: {}),
 								}}
 								exit={{ opacity: 0, scale: 0.8 }}
-								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 								onClick={goToFirstAppointmentWeek}
 								transition={{
@@ -304,10 +305,10 @@ export const AppointmentsTimetable = () => {
 									repeat: futureWeekAppointments.length === 0 ? Infinity : 0,
 									repeatType: 'reverse',
 								}}
-								className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-xs sm:text-sm font-medium ${
+								className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 shadow-md text-xs sm:text-sm font-medium ${
 									futureWeekAppointments.length === 0
-										? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 animate-pulse'
-										: 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700'
+										? 'bg-gradient-to-r from-green-500 to-green-600 text-white animate-pulse'
+										: 'bg-gradient-to-r from-green-500 to-green-600 text-white'
 								}`}
 							>
 								🔍{' '}
@@ -444,7 +445,6 @@ export const AppointmentsTimetable = () => {
 										initial={{ opacity: 0, x: -20 }}
 										animate={{ opacity: 1, x: 0 }}
 										transition={{ delay: 0.9 + index * 0.02 }}
-										whileHover={{ backgroundColor: '#fafafa' }}
 										className='border-b border-gray-200 group'
 									>
 										<motion.td

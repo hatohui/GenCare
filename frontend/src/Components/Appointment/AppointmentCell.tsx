@@ -173,10 +173,10 @@ export const AppointmentCell = ({
 										e.stopPropagation()
 										window.open(appointment.joinUrl, '_blank')
 									}}
-									className={`w-full text-white text-xs font-bold py-1.5 px-2 m-1 rounded-lg transition-all duration-200 shadow-md hover:shadow-xl flex items-center justify-center space-x-1 ${
+									className={`w-full text-white text-xs font-bold py-1.5 px-2 m-1 rounded-lg transition-all duration-200 shadow-md flex items-center justify-center space-x-1 ${
 										isUpcoming
-											? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
-											: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+											? 'bg-gradient-to-r from-red-500 to-red-600'
+											: 'bg-gradient-to-r from-blue-500 to-blue-600'
 									}`}
 								>
 									<span>{isUpcoming ? '🔔' : '🎥	'}</span>
@@ -189,8 +189,8 @@ export const AppointmentCell = ({
 								</button>
 							)}
 
-							{/* Hover overlay */}
-							<div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg'></div>
+							{/* Hover overlay - disabled */}
+							{/* <div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg'></div> */}
 						</div>
 					)
 				})}

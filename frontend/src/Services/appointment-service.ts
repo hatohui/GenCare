@@ -97,6 +97,8 @@ export const useAppointments = () => {
 		enabled: !!header,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		refetchOnWindowFocus: false,
+		refetchOnMount: false, // Prevent refetch on mount if data is fresh
+		refetchOnReconnect: false, // Prevent refetch on reconnect
 		...retryConfig,
 	})
 }
@@ -108,9 +110,11 @@ export const useCreateAppointment = () => {
 	return useMutation({
 		mutationFn: (data: AppointmentCreateRequest) =>
 			appointmentApi.createAppointment(data, header),
-		onSuccess: () => {
-			// Invalidate related queries
-			queryClient.invalidateQueries({ queryKey: ['appointments'] })
+		onSuccess: data => {
+			// Only invalidate if the mutation was successful
+			if (data && data.success !== false) {
+				queryClient.invalidateQueries({ queryKey: ['appointments'] })
+			}
 		},
 		onError: handleApiError,
 		...retryConfig,
@@ -124,8 +128,11 @@ export const useCreateAppointmentWithZoom = () => {
 	return useMutation({
 		mutationFn: (data: AppointmentCreateRequest) =>
 			appointmentApi.createAppointmentWithZoom(data, header),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['appointments'] })
+		onSuccess: data => {
+			// Only invalidate if the mutation was successful
+			if (data && data.success !== false) {
+				queryClient.invalidateQueries({ queryKey: ['appointments'] })
+			}
 		},
 		onError: handleApiError,
 		...retryConfig,
