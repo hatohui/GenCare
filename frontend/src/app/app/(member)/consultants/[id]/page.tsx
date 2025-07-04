@@ -7,11 +7,11 @@ import clsx from 'clsx'
 import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
 import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
-import Image from 'next/image'
 import { useCreateAppointmentWithZoom } from '@/Services/appointment-service'
 import { convertToISOString, formatDateForDisplay } from '@/Utils/dateTime'
 import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'motion/react'
+import { CldImage } from 'next-cloudinary'
 
 const timeSlots = [
 	'08:00',
@@ -330,7 +330,7 @@ const BookConsultantPage = () => {
 							}}
 						>
 							{consultantFromContext.avatarUrl ? (
-								<Image
+								<CldImage
 									src={consultantFromContext.avatarUrl}
 									alt={fullName}
 									width={112}
