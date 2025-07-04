@@ -49,25 +49,51 @@ public class ResultService(IResultRepository resultRepository,
         var purchase = await purchaseRepository.GetById(orderDetail.PurchaseId);
         if (purchase == null)
             throw new AppException(404, "Purchase not found.");
+        // Check if the purchase is paid, check only for member
+        if (role == RoleNames.Member)
+        {
+            if (purchase.AccountId != accountId)
+            {
+                throw new AppException(403, "You are not authorized to view this test result. This record belongs to another member.");
+            }
+            //if purchase is not paid and not found payment record, throw exception
+            var payment = await paymentHistoryRepository.GetById(purchase.Id);
+            if (payment == null)
+                throw new AppException(402, "No payment record found.");
 
-        //check if the account is authorized to view this test result
-        if (role == RoleNames.Member && purchase.AccountId != accountId)
-            throw new AppException(403, "You are not authorized to view this test result.");
-        //get payment history by purchase,
-        //check if payment is completed
-        var payment = await paymentHistoryRepository.GetById(purchase.Id);
-        if (payment == null)
-            throw new AppException(402, "No payment record found.");
-        if(payment.Status.Trim() != PaymentStatus.Paid.Trim())
-            throw new AppException(402,"Payment is not completed.");
+            if (payment.Status.Trim() != PaymentStatus.Paid.Trim())
+                throw new AppException(402, "Payment is not completed.");
+        }
+
         
         var testResult = await resultRepository.ViewResultAsync(orderDetailId) ??
                          throw new InvalidOperationException("Test result not found.");
+        // If the test result is null, create a new one with default values
+        if (testResult == null!)
+        {
+            // If the user is not Staff or Admin, throw an exception
+            if (role != RoleNames.Staff && role != RoleNames.Admin)
+            {
+                throw new AppException(404, "Test result not found.");
+            }
 
+            testResult = new Result
+            {
+                OrderDetailId = orderDetailId,
+                OrderDate = ToUnspecified(DateTime.Now),
+                SampleDate = null,
+                ResultDate = null,
+                Status = false, // Default status
+                ResultData = null,
+                UpdatedAt = ToUnspecified(DateTime.Now)
+            };
+
+            await resultRepository.AddAsync(testResult);
+        }
         return new ViewTestResultResponse
         {
             OrderDetailId = orderDetailId,
-            OrderDate = testResult.OrderDate,
+            OrderDate = testResult!.OrderDate,
             SampleDate = testResult.SampleDate,
             ResultDate = testResult.ResultDate,
             Status = testResult.Status,
@@ -90,87 +116,39 @@ public class ResultService(IResultRepository resultRepository,
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown if the test result is not found.</exception>
     /// <exception cref="AppException">Thrown if the result date is earlier than the sample date.</exception>
-   public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId)
-{
-    var testResult = await resultRepository.ViewResultAsync(orderDetailId)
-                     ?? throw new InvalidOperationException("Test result not found.");
-
-    bool isChanged = false;
-
-    var sampleDate = request.SampleDate?.ToLocalTime();
-    var resultDate = request.ResultDate?.ToLocalTime();
-
-    if (sampleDate != null && resultDate != null && resultDate < sampleDate)
-        throw new AppException(400, "Result date cannot be earlier than sample date.");
-
-    // OrderDate
-    if (request.OrderDate != null && ToUnspecified(testResult.OrderDate) != ToUnspecified(request.OrderDate.Value))
+    public async Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId)
     {
-        testResult.OrderDate = ToUnspecified(request.OrderDate.Value);
-        isChanged = true;
-    }
+        var testResult = await resultRepository.ViewResultAsync(orderDetailId)
+                         ?? throw new InvalidOperationException("Test result not found.");
 
-    // SampleDate
-    if (request.SampleDate != null)
-    {
-        if (!testResult.SampleDate.HasValue || ToUnspecified(testResult.SampleDate.Value) != ToUnspecified(sampleDate.Value))
+        bool isChanged = false;
+
+        // Convert and validate
+        var sampleDate = request.SampleDate?.ToLocalTime();
+        var resultDate = request.ResultDate?.ToLocalTime();
+
+        ResultValidationHelper.ValidateDateLogic(sampleDate, resultDate, request);
+
+        // Update từng field nếu cần
+        isChanged |= ResultValidationHelper.UpdateOrderDate(request, testResult);
+        isChanged |= ResultValidationHelper.UpdateSampleDate(sampleDate, testResult);
+        isChanged |= ResultValidationHelper.UpdateResultDate(resultDate, testResult);
+        isChanged |= ResultValidationHelper.UpdateResultData(request, testResult);
+        isChanged |= ResultValidationHelper.UpdateStatus(request, testResult);
+
+        // Final update
+        if (isChanged)
         {
-            testResult.SampleDate = ToUnspecified(sampleDate.Value);
-            isChanged = true;
-        }
-    }
-
-    // ResultDate
-    if (request.ResultDate != null)
-    {
-        if (!testResult.ResultDate.HasValue || ToUnspecified(testResult.ResultDate.Value) != ToUnspecified(resultDate.Value))
-        {
-            testResult.ResultDate = ToUnspecified(resultDate.Value);
-            isChanged = true;
-        }
-    }
-
-    // ResultData
-    if (request.ResultData != null)
-    {
-        var newResultDataJson = JsonConvert.SerializeObject(request.ResultData);
-        if (testResult.ResultData != newResultDataJson)
-        {
-            testResult.ResultData = newResultDataJson;
-            isChanged = true;
-        }
-    }
-
-    // Xử lý Status
-    if (request.Status != null)
-    {
-        if (request.Status == true)
-        {
-            // Muốn set TRUE thì bắt buộc phải đủ 3 trường
-            if (sampleDate == null || resultDate == null || request.ResultData == null)
-                throw new AppException(400, "To set status to true, SampleDate, ResultDate, and ResultData must be provided.");
+            testResult.UpdatedAt = ToUnspecified(DateTime.Now);
+            await resultRepository.UpdateResultAsync(testResult);
         }
 
-        if (testResult.Status != request.Status.Value)
+        return new UpdateTestResultResponse
         {
-            testResult.Status = request.Status.Value;
-            isChanged = true;
-        }
+            Success = isChanged,
+            Message = isChanged ? "Updated successfully." : "No changes detected."
+        };
     }
-
-    // Final update
-    if (isChanged)
-    {
-        testResult.UpdatedAt = ToUnspecified(DateTime.UtcNow);
-        await resultRepository.UpdateResultAsync(testResult);
-    }
-
-    return new UpdateTestResultResponse
-    {
-        Success = isChanged,
-        Message = isChanged ? "Updated successfully." : "No changes detected."
-    };
-}
 
     /// <summary>
     /// Deletes a test result by OrderDetailId.
