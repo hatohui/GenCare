@@ -3,9 +3,6 @@ import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
-const APPOINTMENT_URL = `${DEFAULT_API_URL}/appointments`
-
-// Retry configuration
 const retryConfig = {
 	retry: 3,
 	retryDelay: (attemptIndex: number) =>
@@ -15,7 +12,7 @@ const retryConfig = {
 type AppointmentCreateRequest = {
 	memberId: string
 	staffId: string
-	scheduleAt: string // ISO string
+	scheduleAt: string
 }
 
 type AppointmentWithZoomResponse = {
@@ -35,7 +32,7 @@ type AppointmentWithZoomResponse = {
 const appointmentApi = {
 	createAppointment: (data: AppointmentCreateRequest, header: string) => {
 		return axios
-			.post(`${APPOINTMENT_URL}`, data, {
+			.post(`${DEFAULT_API_URL}/appointments`, data, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
@@ -45,21 +42,24 @@ const appointmentApi = {
 		header: string
 	) => {
 		return axios
-			.post<AppointmentWithZoomResponse>(`${APPOINTMENT_URL}/with-zoom`, data, {
-				headers: { Authorization: header },
-			})
+			.post<AppointmentWithZoomResponse>(
+				`${DEFAULT_API_URL}/appointments/with-zoom`,
+				data,
+				{
+					headers: { Authorization: header },
+				}
+			)
 			.then(res => res.data)
 	},
 	getAppointments: (header: string) => {
 		return axios
-			.get(`${APPOINTMENT_URL}`, {
+			.get(`${DEFAULT_API_URL}/appointments`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
 	},
 }
 
-// Error handler utility
 const handleApiError = (error: unknown) => {
 	if (axios.isAxiosError(error)) {
 		const axiosError = error as AxiosError
@@ -125,7 +125,6 @@ export const useCreateAppointmentWithZoom = () => {
 		mutationFn: (data: AppointmentCreateRequest) =>
 			appointmentApi.createAppointmentWithZoom(data, header),
 		onSuccess: () => {
-			// Invalidate related queries
 			queryClient.invalidateQueries({ queryKey: ['appointments'] })
 		},
 		onError: handleApiError,

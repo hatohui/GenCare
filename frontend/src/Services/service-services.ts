@@ -13,8 +13,6 @@ import axios from 'axios'
 import axiosInstance from '@/Utils/axios'
 import { DEFAULT_API_URL } from '@/Constants/API'
 
-const SERVICE_URL = `${DEFAULT_API_URL}/services`
-
 const serviceApi = {
 	//false = sort giam dan true = sort tang dan
 	getByPage: (
@@ -23,11 +21,17 @@ const serviceApi = {
 		order: boolean | null,
 		search: string
 	) => {
+		const params = new URLSearchParams({
+			Page: page.toString(),
+			Count: count.toString(),
+		})
+
+		if (order !== null) params.append('sortByPrice', order.toString())
+		if (search) params.append('search', search)
+
 		return axios
 			.get<GetServiceByPageResponse>(
-				`${SERVICE_URL}?Page=${page}&Count=${count}` +
-					(order !== null ? `&sortByPrice=${order}` : '') +
-					(search ? `&search=${search}` : '')
+				`${DEFAULT_API_URL}/services?${params.toString()}`
 			)
 			.then(res => {
 				return res.data
@@ -62,7 +66,7 @@ const serviceApi = {
 
 	getById: (id: string) =>
 		axios
-			.get<GetServiceWithIdResponse>(`${SERVICE_URL}/${id}`)
+			.get<GetServiceWithIdResponse>(`${DEFAULT_API_URL}/services/${id}`)
 			.then(res => res.data),
 
 	create: (data: any) =>

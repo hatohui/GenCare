@@ -1,9 +1,6 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
-
-const BOOKING_URL = `${DEFAULT_API_URL}/birthControl`
 
 type BirthControlRequest = {
 	accountId: string
@@ -11,17 +8,20 @@ type BirthControlRequest = {
 }
 
 const birthControlApi = {
+	// Private API - requires authentication
 	get: async (id: string) => {
 		return axiosInstance
-			.get<BirthControlDates>(`${BOOKING_URL}/${id}`)
+			.get<BirthControlDates>(`/birthControl/${id}`)
 			.then(res => res.data)
 	},
+	// Private API - requires authentication
 	update: async (data: BirthControlRequest) =>
-		axiosInstance.put<BirthControlDates>(`${BOOKING_URL}`, data).then(res => {
+		axiosInstance.put<BirthControlDates>('/birthControl', data).then(res => {
 			return res.data
 		}),
+	// Private API - requires authentication
 	create: async (data: BirthControlRequest) =>
-		axiosInstance.post<BirthControlDates>(`${BOOKING_URL}`, data).then(res => {
+		axiosInstance.post<BirthControlDates>('/birthControl', data).then(res => {
 			return res.data
 		}),
 }

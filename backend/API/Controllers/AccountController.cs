@@ -48,9 +48,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
     /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPost]
-    public async Task<IActionResult> CreateAccountAsync(
-        [FromBody] AccountCreateRequest request
-    )
+    public async Task<IActionResult> CreateAccountAsync([FromBody] AccountCreateRequest request)
     {
         //get access token from header
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
@@ -129,7 +127,10 @@ public class AccountController(IAccountService accountService) : ControllerBase
     {
         string accessToken = AuthHelper.GetAccessToken(HttpContext);
         await accountService.UpdateAccountAsync(request, accessToken, id);
-        return Ok();
+
+        // Return the updated account data
+        var updatedAccount = await accountService.GetAccountByIdAsync(Guid.Parse(id));
+        return Ok(updatedAccount);
     }
 
     /// <summary>
@@ -163,7 +164,8 @@ public class AccountController(IAccountService accountService) : ControllerBase
     public async Task<IActionResult> GetAllConsultantInfo(
         [FromQuery] int page,
         [FromQuery] int count,
-        [FromQuery] string? search)
+        [FromQuery] string? search
+    )
     {
         var response = await accountService.GetConsultantProfile(page, count, search);
         return Ok(response);
