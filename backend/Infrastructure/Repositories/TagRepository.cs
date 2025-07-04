@@ -31,8 +31,7 @@ public class TagRepository(IApplicationDbContext dbContext) : ITagRepository
     public async Task<Tag?> GetById(Guid id)
     {
         return await dbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
-           
-           
+        
     }
 
     public async Task<List<string>?> GetTagTitlesByBlogIdAsync(Guid blogId)

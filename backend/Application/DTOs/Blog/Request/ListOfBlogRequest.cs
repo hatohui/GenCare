@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Blog.Request;
 
-public class ViewListOfBlogRequest
+public class ListOfBlogRequest
 {
     public int? Page { get; set; }
     public int? Count { get; set; }

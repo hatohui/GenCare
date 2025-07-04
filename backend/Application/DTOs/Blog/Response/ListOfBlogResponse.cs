@@ -15,5 +15,5 @@ public class ListOfBlogResponse
     public string? DeletedBy { get; set; }
     public bool IsDeleted { get; set; }
     public List<string> TagTitles { get; set; } = new List<string>();
-    public List<string> ImangeUrls { get; set; } = new List<string>();
+    public List<string> ImageUrls { get; set; } = new List<string>();
 }

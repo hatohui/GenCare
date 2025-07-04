@@ -97,7 +97,7 @@ public class BlogService(IBlogRepository blogRepository,
         await blogRepository.Update(blog);
     }
 
-    public async Task<List<ListOfBlogResponse>> GetListOfBlogsAsync(ViewListOfBlogRequest request)
+    public async Task<List<ListOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
     {
         List<Blog> blogs;
 
@@ -114,7 +114,7 @@ public class BlogService(IBlogRepository blogRepository,
         {
             blogs = await blogRepository.GetListOfBlogsAsync();
         }
-
+        
         int page = request.Page ?? 1;
         int count = request.Count ?? 10;
 
@@ -146,7 +146,7 @@ public class BlogService(IBlogRepository blogRepository,
                 DeletedBy = blog.DeletedBy?.ToString(),
                 IsDeleted = blog.IsDeleted,
                 TagTitles = tagTitles,
-                ImangeUrls = imageUrls
+                ImageUrls = imageUrls
             });
         }
 
