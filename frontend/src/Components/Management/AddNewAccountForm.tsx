@@ -4,7 +4,7 @@ import React from 'react'
 import { motion } from 'motion/react'
 import { CreateAccountForm } from './CreateAccountForm'
 import { useCreateAccount } from '@/Services/account-service'
-import { PostAccountRequest } from '@/Interfaces/Account/Schema/account'
+import { CreateAccountRequest } from '@/Interfaces/Account/Schema/account'
 import { toast } from 'react-hot-toast'
 
 // Simple X icon component
@@ -37,7 +37,7 @@ const AddNewAccountForm: React.FC<AddNewAccountFormProps> = ({
 }) => {
 	const createMutation = useCreateAccount()
 
-	const handleSave = (formData: PostAccountRequest) => {
+	const handleSave = (formData: CreateAccountRequest) => {
 		createMutation.mutate(formData, {
 			onSuccess: () => {
 				onSuccess()
@@ -57,6 +57,7 @@ const AddNewAccountForm: React.FC<AddNewAccountFormProps> = ({
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
+			onClick={onClose}
 		>
 			<motion.div
 				className='bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden'
@@ -64,6 +65,7 @@ const AddNewAccountForm: React.FC<AddNewAccountFormProps> = ({
 				animate={{ scale: 1, opacity: 1 }}
 				exit={{ scale: 0.95, opacity: 0 }}
 				transition={{ duration: 0.2 }}
+				onClick={e => e.stopPropagation()}
 			>
 				{/* Header */}
 				<div className='flex items-center justify-between p-6 border-b border-gray-200'>

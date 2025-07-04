@@ -201,9 +201,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 			),
 		},
 		// Add more fields as needed, e.g. departmentName, degree, yearOfExperience, biography
-		account.departmentName && {
+		account.staffInfo?.departmentName && {
 			label: 'Department',
-			value: account.departmentName,
+			value: account.staffInfo.departmentName,
 			icon: (
 				<svg
 					className={iconClass}
@@ -220,9 +220,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				</svg>
 			),
 		},
-		account.degree && {
+		account.staffInfo?.degree && {
 			label: 'Degree',
-			value: account.degree,
+			value: account.staffInfo.degree,
 			icon: (
 				<svg
 					className={iconClass}
@@ -239,9 +239,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				</svg>
 			),
 		},
-		account.yearOfExperience && {
+		account.staffInfo?.yearOfExperience && {
 			label: 'Years of Experience',
-			value: account.yearOfExperience,
+			value: account.staffInfo.yearOfExperience,
 			icon: (
 				<svg
 					className={iconClass}
@@ -258,9 +258,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				</svg>
 			),
 		},
-		account.biography && {
+		account.staffInfo?.biography && {
 			label: 'Biography',
-			value: account.biography,
+			value: account.staffInfo.biography,
 			icon: (
 				<svg
 					className={iconClass}

@@ -121,7 +121,7 @@ const EditableField = <T extends Record<string, any>>({
 					) : (
 						<button
 							type='button'
-							className='group relative flex items-center justify-center w-9 h-9 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200 shadow-sm hover:shadow-md'
+							className='group relative flex items-center justify-center w-9 h-9 text-gray-400 hover:text-accent hover:bg-accent/10 rounded-full transition-all duration-200 shadow-sm hover:shadow-md'
 							onClick={() => toggleFieldEdit(name)}
 						>
 							<svg

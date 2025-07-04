@@ -3,17 +3,21 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AllResultArray, Result } from '@/Interfaces/Tests/Types/Tests'
 
 const ResultAPI = {
+	// Private API - requires authentication
 	GetTest: (orderDetailId: string) => {
 		return axiosInstance
 			.get<Omit<Result, 'orderDetailId'>>(`/result/${orderDetailId}`)
 			.then(res => res.data)
 	},
+	// Private API - requires authentication
 	UpdateTest: (id: string, data: Omit<Result, 'orderDetailId'>) => {
 		return axiosInstance.put(`/result/${id}`, data).then(res => res.data)
 	},
+	// Private API - requires authentication
 	DeleteTest: (id: string) => {
 		return axiosInstance.delete(`/result/${id}`).then(res => res.data)
 	},
+	// Private API - requires authentication
 	getAllOrderDetail: () => {
 		return axiosInstance
 			.get<AllResultArray>('/result/all')

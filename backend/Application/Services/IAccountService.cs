@@ -47,7 +47,7 @@ public interface IAccountService
     /// <param name="request">The staff account creation request.</param>
     /// <param name="accessToken">The access token of the user performing the operation.</param>
     /// <returns>The response containing the created staff account information.</returns>
-    Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken);
+    Task CreateAccountAsync(AccountCreateRequest request, string accessToken);
 
     Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request);
 

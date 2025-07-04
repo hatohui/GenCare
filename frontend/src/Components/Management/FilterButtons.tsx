@@ -65,7 +65,7 @@ const FilterButtons = ({
 						'flex items-center px-3 py-2 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md',
 						button.active
 							? 'bg-main text-white shadow-main/30'
-							: 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+							: 'bg-white text-slate-700 hover:bg-slate-50'
 					)}
 				>
 					{button.label}

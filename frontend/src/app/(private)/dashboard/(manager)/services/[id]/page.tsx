@@ -5,9 +5,8 @@ import { useEditableField } from '@/Hooks/Form/useEditable'
 import { useQueryUIState } from '@/Hooks/UI/useQueryUIState'
 import { useParams } from 'next/navigation'
 import EditableField from '@/Components/Management/EditableField'
-import ReturnButton from '@/Components/ReturnButton'
 import { CloudinaryButton } from '@/Components/CloudinaryButton'
-import { motion } from 'motion/react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { CldImage } from 'next-cloudinary'
 import { useDeleteMedia } from '@/Services/media-service'
@@ -18,8 +17,25 @@ import {
 	updateServiceSchema,
 } from '@/Interfaces/Service/Types/Service'
 
+const ArrowLeftIcon = ({ className }: { className?: string }) => (
+	<svg
+		className={className}
+		fill='none'
+		stroke='currentColor'
+		viewBox='0 0 24 24'
+	>
+		<path
+			strokeLinecap='round'
+			strokeLinejoin='round'
+			strokeWidth={2}
+			d='M15 19l-7-7 7-7'
+		/>
+	</svg>
+)
+
 const ServiceDetailPage = () => {
 	const params = useParams()
+	const router = useRouter()
 	const serviceId =
 		params && typeof params.id === 'string' ? params.id : undefined
 	const updateServiceMutation = useUpdateService()
@@ -100,44 +116,238 @@ const ServiceDetailPage = () => {
 	return queryUI ? (
 		queryUI
 	) : (
-		<motion.div
-			className='min-h-screen bg-general'
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5 }}
-		>
+		<div className='min-h-screen bg-gray-50'>
 			{/* Header */}
-			<div className='bg-gradient-to-r from-main to-secondary text-white shadow-lg'>
-				<div className='max-w-7xl mx-auto px-6 py-8'>
-					<div className='flex items-center gap-6'>
-						<ReturnButton />
-						<div className='flex-1'>
-							<h1 className='text-3xl font-bold text-white'>
-								Chi tiết dịch vụ
-							</h1>
-							<p className='text-white/80 mt-2 text-lg'>
-								Quản lý thông tin và cài đặt dịch vụ
-							</p>
+			<div className='bg-white border-b border-gray-200 sticky top-0 z-10'>
+				<div className='max-w-5xl mx-auto px-6 py-4'>
+					<div className='flex items-center justify-between'>
+						<div className='flex items-center gap-4'>
+							<button
+								onClick={() => router.push('/dashboard/services')}
+								className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
+							>
+								<ArrowLeftIcon className='w-5 h-5 text-gray-600' />
+							</button>
+							<div>
+								<h1 className='text-xl font-semibold text-gray-900'>
+									{serviceData?.name || 'Service Details'}
+								</h1>
+								<p className='text-sm text-gray-500'>Service Management</p>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			{/* Content */}
-			<div className='max-w-7xl mx-auto px-6 py-8'>
-				<div className='space-y-8'>
-					{/* Service Images Section */}
-					<motion.div
-						className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden'
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.1 }}
-					>
-						<div className='px-8 py-6 bg-gradient-to-r from-main/10 to-secondary/10 border-b border-gray-100'>
-							<h2 className='text-xl font-bold text-gray-800 flex items-center gap-3'>
-								<div className='w-10 h-10 bg-gradient-to-br from-main to-secondary rounded-[12px] flex items-center justify-center'>
+			<div className='max-w-5xl mx-auto px-6 py-6'>
+				<div className='space-y-6'>
+					{/* Service Overview */}
+					<div className='bg-white rounded-xl border border-gray-200 p-6'>
+						<div className='flex flex-col md:flex-row items-start md:items-center gap-6'>
+							{/* Service Image */}
+							<div className='relative group flex-shrink-0'>
+								{serviceData?.imageUrls && serviceData.imageUrls.length > 0 ? (
+									<CldImage
+										src={
+											typeof serviceData.imageUrls[0] === 'string'
+												? serviceData.imageUrls[0]
+												: serviceData.imageUrls[0].url
+										}
+										alt={serviceData.name}
+										width={96}
+										height={96}
+										className='rounded-lg w-24 h-24 border-2 border-gray-200 object-cover'
+									/>
+								) : (
+									<div className='w-24 h-24 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-2 border-gray-200'>
+										<svg
+											className='w-8 h-8 text-white'
+											fill='none'
+											stroke='currentColor'
+											viewBox='0 0 24 24'
+										>
+											<path
+												strokeLinecap='round'
+												strokeLinejoin='round'
+												strokeWidth={2}
+												d='M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'
+											/>
+										</svg>
+									</div>
+								)}
+							</div>
+
+							{/* Service Info */}
+							<div className='flex-1 min-w-0'>
+								<h2 className='text-xl font-semibold text-gray-900 mb-2'>
+									{serviceData?.name || 'Service Name'}
+								</h2>
+								<div className='flex flex-col sm:flex-row sm:items-center gap-3 mb-4'>
+									{serviceData?.price && (
+										<div className='flex items-center gap-2 text-gray-600'>
+											<svg
+												className='w-4 h-4'
+												fill='none'
+												stroke='currentColor'
+												viewBox='0 0 24 24'
+											>
+												<path
+													strokeLinecap='round'
+													strokeLinejoin='round'
+													strokeWidth={2}
+													d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1'
+												/>
+											</svg>
+											<span className='text-sm font-medium'>
+												{new Intl.NumberFormat('vi-VN', {
+													style: 'currency',
+													currency: 'VND',
+												}).format(serviceData.price)}
+											</span>
+										</div>
+									)}
+									{serviceData?.imageUrls &&
+										serviceData.imageUrls.length > 0 && (
+											<div className='flex items-center gap-2 text-gray-600'>
+												<svg
+													className='w-4 h-4'
+													fill='none'
+													stroke='currentColor'
+													viewBox='0 0 24 24'
+												>
+													<path
+														strokeLinecap='round'
+														strokeLinejoin='round'
+														strokeWidth={2}
+														d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
+													/>
+												</svg>
+												<span className='text-sm'>
+													{serviceData.imageUrls.length} images
+												</span>
+											</div>
+										)}
+								</div>
+								<div className='flex flex-wrap gap-2'>
+									<span
+										className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md ${
+											serviceData?.isDeleted
+												? 'bg-red-50 text-red-700 border border-red-200'
+												: 'bg-green-50 text-green-700 border border-green-200'
+										}`}
+									>
+										<div
+											className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+												serviceData?.isDeleted ? 'bg-red-500' : 'bg-green-500'
+											}`}
+										/>
+										{serviceData?.isDeleted ? 'Inactive' : 'Active'}
+									</span>
+									<span className='inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md bg-blue-50 text-blue-700 border border-blue-200'>
+										Service
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Service Details */}
+					<div className='bg-white rounded-xl border border-gray-200 p-6'>
+						<h3 className='text-lg font-semibold text-gray-900 mb-4'>
+							Service Information
+						</h3>
+						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+							<div>
+								<label className='block text-sm font-medium text-gray-500 mb-1'>
+									Service Name
+								</label>
+								<EditableField<Service>
+									name='name'
+									value={serviceData?.name ?? ''}
+									onChange={handleChange}
+									editingField={editingField}
+									handleFieldSave={handleFieldSave}
+									toggleFieldEdit={toggleFieldEdit}
+									className='text-gray-900'
+								/>
+							</div>
+							<div>
+								<label className='block text-sm font-medium text-gray-500 mb-1'>
+									Price (VND)
+								</label>
+								<EditableField
+									name='price'
+									type='number'
+									value={serviceData?.price ?? 0}
+									onChange={handleChange}
+									editingField={editingField}
+									handleFieldSave={handleFieldSave}
+									toggleFieldEdit={toggleFieldEdit}
+									className='text-gray-900'
+								/>
+							</div>
+							<div className='md:col-span-2'>
+								<label className='block text-sm font-medium text-gray-500 mb-1'>
+									Description
+								</label>
+								<EditableField
+									name='description'
+									type='textarea'
+									value={serviceData?.description ?? 'No description provided'}
+									onChange={handleChange}
+									editingField={editingField}
+									handleFieldSave={handleFieldSave}
+									toggleFieldEdit={toggleFieldEdit}
+									className='text-gray-900 leading-relaxed'
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* Service Images */}
+					<div className='bg-white rounded-xl border border-gray-200 p-6'>
+						<h3 className='text-lg font-semibold text-gray-900 mb-4'>
+							Service Images
+						</h3>
+						<div className='space-y-4'>
+							{serviceData?.imageUrls && serviceData.imageUrls.length > 0 ? (
+								<div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3'>
+									{serviceData.imageUrls.map((img, index) => (
+										<div
+											key={index}
+											className='relative aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors group'
+										>
+											<CldImage
+												src={typeof img === 'string' ? img : img.url}
+												alt={`Service image ${index + 1}`}
+												width={120}
+												height={120}
+												className='object-cover w-full h-full'
+											/>
+											<button
+												onClick={e => {
+													e.stopPropagation()
+													const imageId =
+														typeof img === 'object' && img.id
+															? img.id
+															: undefined
+													const imageUrl =
+														typeof img === 'string' ? img : img.url
+													handleRemoveImage(imageId || '', imageUrl)
+												}}
+												className='absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs'
+												disabled={deleteMediaMutation.isPending}
+											>
+												×
+											</button>
+										</div>
+									))}
+								</div>
+							) : (
+								<div className='text-center py-8 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50'>
 									<svg
-										className='w-5 h-5 text-white'
+										className='w-8 h-8 text-gray-400 mx-auto mb-2'
 										fill='none'
 										stroke='currentColor'
 										viewBox='0 0 24 24'
@@ -149,323 +359,63 @@ const ServiceDetailPage = () => {
 											d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
 										/>
 									</svg>
+									<p className='text-gray-500 text-sm'>No images uploaded</p>
 								</div>
-								Hình ảnh dịch vụ
-							</h2>
-						</div>
-						<div className='p-8'>
-							<div className='flex flex-col items-center space-y-8'>
-								{' '}
-								{serviceData?.imageUrls && serviceData.imageUrls.length > 0 ? (
-									<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full'>
-										{serviceData.imageUrls.map((img, index) => (
-											<motion.div
-												key={index}
-												className='relative aspect-square rounded-[16px] overflow-hidden shadow-lg border-2 border-gray-100 hover:shadow-xl hover:border-main hover:border-opacity-30 transition-all duration-300 group'
-												whileHover={{ scale: 1.02, y: -2 }}
-												transition={{ duration: 0.2 }}
-											>
-												<CldImage
-													src={typeof img === 'string' ? img : img.url}
-													alt={`Service image ${index + 1}`}
-													width={200}
-													height={200}
-													className='object-cover w-full h-full group-hover:scale-105 transition-transform duration-300'
-												/>
-												<div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+							)}
 
-												{/* Delete Button */}
-												<motion.button
-													onClick={e => {
-														e.stopPropagation()
-														const imageId =
-															typeof img === 'object' && img.id
-																? img.id
-																: undefined
-														const imageUrl =
-															typeof img === 'string' ? img : img.url
-														handleRemoveImage(imageId || '', imageUrl)
-													}}
-													className='absolute top-3 right-3 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 z-10'
-													whileHover={{ scale: 1.1 }}
-													whileTap={{ scale: 0.95 }}
-													disabled={deleteMediaMutation.isPending}
-												>
-													{deleteMediaMutation.isPending ? (
-														<svg
-															className='w-4 h-4 animate-spin'
-															fill='none'
-															stroke='currentColor'
-															viewBox='0 0 24 24'
-														>
-															<path
-																strokeLinecap='round'
-																strokeLinejoin='round'
-																strokeWidth={2}
-																d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
-															/>
-														</svg>
-													) : (
-														<svg
-															className='w-4 h-4'
-															fill='none'
-															stroke='currentColor'
-															viewBox='0 0 24 24'
-														>
-															<path
-																strokeLinecap='round'
-																strokeLinejoin='round'
-																strokeWidth={2}
-																d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-															/>
-														</svg>
-													)}
-												</motion.button>
-											</motion.div>
-										))}
-									</div>
-								) : (
-									<div className='flex flex-col items-center justify-center py-20 border-2 border-dashed border-gray-300 rounded-[16px] w-full bg-gradient-to-br from-gray-50 to-gray-100'>
-										<div className='w-20 h-20 bg-gradient-to-br from-main/20 to-secondary/20 rounded-[16px] flex items-center justify-center mb-6'>
-											<svg
-												className='w-10 h-10 text-gray-400'
-												fill='none'
-												stroke='currentColor'
-												viewBox='0 0 24 24'
-											>
-												<path
-													strokeLinecap='round'
-													strokeLinejoin='round'
-													strokeWidth={2}
-													d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
-												/>
-											</svg>
-										</div>
-										<p className='text-gray-600 text-lg font-semibold mb-2'>
-											Chưa có hình ảnh
-										</p>
-										<p className='text-gray-400 text-sm'>
-											Tải lên hình ảnh để giới thiệu dịch vụ của bạn
-										</p>
-									</div>
-								)}
+							<div className='flex items-center gap-3'>
 								<CloudinaryButton
 									text={
 										serviceData?.imageUrls && serviceData.imageUrls.length > 0
-											? 'Thêm hình ảnh'
-											: 'Tải lên hình ảnh'
+											? 'Add More Images'
+											: 'Upload Images'
 									}
 									onUploaded={handleImageUpload}
-									className='px-8 py-4 bg-gradient-to-r from-main to-secondary hover:from-secondary hover:to-main text-white rounded-[12px] font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+									className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium'
 								/>
-								{/* Show new images that will be added */}
-								{newImageUrls.length > 0 && (
-									<div className='w-full'>
-										<div className='flex items-center gap-3 mb-6'>
-											<div className='w-8 h-8 bg-gradient-to-br from-accent/20 to-accent/30 rounded-[8px] flex items-center justify-center'>
-												<svg
-													className='w-4 h-4 text-accent'
-													fill='none'
-													stroke='currentColor'
-													viewBox='0 0 24 24'
-												>
-													<path
-														strokeLinecap='round'
-														strokeLinejoin='round'
-														strokeWidth={2}
-														d='M12 6v6m0 0v6m0-6h6m-6 0H6'
-													/>
-												</svg>
-											</div>
-											<p className='text-base font-semibold text-accent'>
-												Hình ảnh mới sẽ được thêm:
-											</p>
-										</div>{' '}
-										<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-											{newImageUrls.map((url, index) => (
-												<motion.div
-													key={index}
-													className='relative aspect-square rounded-[16px] overflow-hidden shadow-lg border-2 border-accent/30 hover:shadow-xl transition-all duration-300 group'
-													whileHover={{ scale: 1.02, y: -2 }}
-													transition={{ duration: 0.2 }}
-												>
-													<CldImage
-														src={url}
-														alt={`New image ${index + 1}`}
-														width={200}
-														height={200}
-														className='object-cover w-full h-full group-hover:scale-105 transition-transform duration-300'
-													/>
-													<div className='absolute top-3 right-3 bg-gradient-to-r from-accent to-accent/80 text-white rounded-[8px] w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg'>
-														+
-													</div>
-													<div className='absolute inset-0 bg-gradient-to-t from-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-
-													{/* Delete Button for New Images */}
-													<motion.button
-														onClick={e => {
-															e.stopPropagation()
-															handleRemoveImage('', url)
-														}}
-														className='absolute top-3 left-3 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 z-10'
-														whileHover={{ scale: 1.1 }}
-														whileTap={{ scale: 0.95 }}
-													>
-														<svg
-															className='w-4 h-4'
-															fill='none'
-															stroke='currentColor'
-															viewBox='0 0 24 24'
-														>
-															<path
-																strokeLinecap='round'
-																strokeLinejoin='round'
-																strokeWidth={2}
-																d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-															/>
-														</svg>
-													</motion.button>
-												</motion.div>
-											))}
-										</div>
-									</div>
-								)}
 							</div>
-						</div>
-					</motion.div>
 
-					{/* Service Information */}
-					<motion.div
-						className='bg-white rounded-[20px] shadow-xl border border-gray-100 overflow-hidden'
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.2 }}
-					>
-						<div className='px-8 py-6 bg-gradient-to-r from-secondary/10 to-main/10 border-b border-gray-100'>
-							<h2 className='text-xl font-bold text-gray-800 flex items-center gap-3'>
-								<div className='w-10 h-10 bg-gradient-to-br from-secondary to-main rounded-[12px] flex items-center justify-center'>
-									<svg
-										className='w-5 h-5 text-white'
-										fill='none'
-										stroke='currentColor'
-										viewBox='0 0 24 24'
-									>
-										<path
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											strokeWidth={2}
-											d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-										/>
-									</svg>
-								</div>
-								Thông tin dịch vụ
-							</h2>
-						</div>
-						<div className='p-8'>
-							<div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-								{/* Service Name */}
-								<div className='space-y-3'>
-									<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide'>
-										Tên dịch vụ
-									</label>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<EditableField<Service>
-											name='name'
-											value={serviceData?.name ?? ''}
-											onChange={handleChange}
-											editingField={editingField}
-											handleFieldSave={handleFieldSave}
-											toggleFieldEdit={toggleFieldEdit}
-											className='w-full'
-										/>
-									</div>
-								</div>
-
-								{/* Service Price */}
-								<div className='space-y-3'>
-									<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide'>
-										Giá dịch vụ (VND)
-									</label>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<EditableField
-											name='price'
-											type='number'
-											value={serviceData?.price ?? 0}
-											onChange={handleChange}
-											editingField={editingField}
-											handleFieldSave={handleFieldSave}
-											toggleFieldEdit={toggleFieldEdit}
-											className='w-full'
-										/>
-										{editingField !== 'price' && serviceData?.price && (
-											<div className='mt-3 p-3 bg-gradient-to-r from-main/10 to-secondary/10 rounded-[8px] border border-main/20'>
-												<p className='text-sm font-semibold text-gray-700'>
-													Định dạng:{' '}
-													<span className='text-main'>
-														{new Intl.NumberFormat('vi-VN', {
-															style: 'currency',
-															currency: 'VND',
-														}).format(serviceData.price)}
-													</span>
-												</p>
-											</div>
-										)}
-									</div>
-								</div>
-
-								{/* Service Description */}
-								<div className='lg:col-span-2 space-y-3'>
-									<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide'>
-										Mô tả dịch vụ
-									</label>
-									<div className='bg-gray-50 rounded-[12px] p-4 border border-gray-200'>
-										<EditableField
-											name='description'
-											type='textarea'
-											value={serviceData?.description ?? ''}
-											onChange={handleChange}
-											editingField={editingField}
-											handleFieldSave={handleFieldSave}
-											toggleFieldEdit={toggleFieldEdit}
-											className='w-full'
-										/>
-									</div>
-								</div>
-
-								{/* Service Status */}
-								{serviceData && (
-									<div className='lg:col-span-2 space-y-3'>
-										<label className='block text-sm font-bold text-gray-700 uppercase tracking-wide'>
-											Trạng thái
-										</label>
-										<div className='flex items-center space-x-4'>
+							{/* New images preview */}
+							{newImageUrls.length > 0 && (
+								<div>
+									<p className='text-sm font-medium text-blue-600 mb-3'>
+										New images to be added ({newImageUrls.length}):
+									</p>
+									<div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3'>
+										{newImageUrls.map((url, index) => (
 											<div
-												className={`inline-flex items-center px-6 py-3 rounded-[12px] text-sm font-bold shadow-md ${
-													serviceData.isDeleted
-														? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-2 border-red-300'
-														: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-2 border-green-300'
-												}`}
+												key={index}
+												className='relative aspect-square rounded-lg overflow-hidden border-2 border-blue-200 group'
 											>
-												<div
-													className={`w-3 h-3 rounded-full mr-3 shadow-sm ${
-														serviceData.isDeleted
-															? 'bg-red-500'
-															: 'bg-green-500'
-													}`}
+												<CldImage
+													src={url}
+													alt={`New image ${index + 1}`}
+													width={120}
+													height={120}
+													className='object-cover w-full h-full'
 												/>
-												{serviceData.isDeleted
-													? 'Không hoạt động'
-													: 'Đang hoạt động'}
+												<div className='absolute top-1 right-1 bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs'>
+													+
+												</div>
+												<button
+													onClick={e => {
+														e.stopPropagation()
+														handleRemoveImage('', url)
+													}}
+													className='absolute top-1 left-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs'
+												>
+													×
+												</button>
 											</div>
-										</div>
+										))}
 									</div>
-								)}
-							</div>
+								</div>
+							)}
 						</div>
-					</motion.div>
+					</div>
 				</div>
 			</div>
-		</motion.div>
+		</div>
 	)
 }
 
