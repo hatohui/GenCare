@@ -32,6 +32,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		if (!isClient) return
 
+		// If already logged out, do nothing
+		if (!token && !accountStore.data) {
+			setIsLoading(false)
+			return
+		}
+
 		const validation = isTokenValid(token)
 
 		if (!validation.valid) {
@@ -60,7 +66,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}
 
 		setIsLoading(false)
-	}, [token, isClient, router, data, accountStore, tokenStore])
+	}, [token, isClient, router, data, accountStore.data, tokenStore.accessToken])
 
 	if (!isClient || isLoading) {
 		return (
