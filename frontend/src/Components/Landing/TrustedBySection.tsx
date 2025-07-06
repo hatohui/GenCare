@@ -38,7 +38,7 @@ const items = [
 
 export default function TrustedBySection() {
 	return (
-		<section className='relative md:absolute bg-white text-center px-8 pt-4 rounded-[30px] mx-auto md:w-6xl mt-[0px] z-20 shadow-2xl border border-gray-100/50 md:right-0 md:left-0 md:-translate-y-1/2'>
+		<section className='relative md:absolute bg-white text-center px-8 pt-4 rounded-[30px] mx-auto md:max-w-6xl mt-[0px] z-20 shadow-2xl border border-gray-100/50 md:right-0 md:left-0 md:-translate-y-1/2'>
 			{/* Background decoration */}
 			<div className='absolute inset-0 opacity-5'>
 				<motion.div

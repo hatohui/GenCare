@@ -236,7 +236,10 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 								</AnimatePresence>
 							</div>
 						) : (
-							<Link href='/login' className='block px-4 py-2 text-accent'>
+							<Link
+								href='/login'
+								className='block px-4 py-2 text-accent bg-accent rounded'
+							>
 								Đăng Nhập
 							</Link>
 						)}

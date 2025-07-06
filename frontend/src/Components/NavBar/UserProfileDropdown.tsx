@@ -12,6 +12,7 @@ import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
 import { CldImage } from 'next-cloudinary'
 import FallBackUserImage from '../Profile/FallBackUserImage'
 import clsx from 'clsx'
+import MotionLink from '@/Components/MotionLink'
 
 const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 	const [isOpen, setIsOpen] = useState(false)
@@ -66,12 +67,15 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 
 	if (!tokenStore.accessToken || !user) {
 		return (
-			<button
+			<MotionLink
 				className={clsx(
-					'rounded-full px-4 py-2 duration-200 cursor-pointer select-none text-center flex gap-2 items-center',
+					'rounded-full px-4 py-2 duration-200 bg-accent text-white cursor-pointer select-none text-center flex gap-2 items-center',
 					className
 				)}
-				onClick={() => router.push('/login')}
+				href='/login'
+				role='navigation'
+				whileHover={{ scale: 0.85, filter: 'brightness(1.2) contrast(1.1)' }}
+				transition={{ duration: 0.2 }}
 			>
 				<span className='pointer-events-none'>Đăng Nhập</span>
 				<svg
@@ -88,7 +92,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 						d='M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z'
 					/>
 				</svg>
-			</button>
+			</MotionLink>
 		)
 	}
 
