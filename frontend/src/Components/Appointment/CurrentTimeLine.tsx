@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
+import { Clock } from 'lucide-react'
 
 interface CurrentTimeLineProps {
 	timeSlots: string[]
@@ -26,9 +27,23 @@ export const CurrentTimeLine = ({
 		headerHeight: number
 	} | null>(null)
 
+	// Track previous time slot states to avoid unnecessary updates
+	const previousStatesRef = useRef<Map<string, boolean>>(new Map())
+
 	// Memoize the timeSlots and weekDays to prevent unnecessary re-renders
-	const memoizedTimeSlots = useMemo(() => timeSlots, [timeSlots])
-	const memoizedWeekDays = useMemo(() => weekDays, [weekDays])
+	const memoizedTimeSlots = useMemo(
+		() => timeSlots,
+		[JSON.stringify(timeSlots)]
+	)
+	const memoizedWeekDays = useMemo(
+		() => weekDays,
+		[weekDays.map(d => d.toISOString()).join(',')]
+	)
+
+	// Clear previous states when week changes
+	useEffect(() => {
+		previousStatesRef.current.clear()
+	}, [memoizedWeekDays])
 
 	// Measure actual table dimensions from DOM
 	const measureTableDimensions = useCallback(() => {
@@ -63,8 +78,8 @@ export const CurrentTimeLine = ({
 			setCurrentTime(new Date())
 		}
 
-		// Update every 10 seconds for smoother movement
-		const interval = setInterval(updateTime, 10000)
+		// Update every 30 seconds to reduce unnecessary re-renders
+		const interval = setInterval(updateTime, 30000)
 		updateTime() // Initial update
 
 		return () => clearInterval(interval)
@@ -105,7 +120,7 @@ export const CurrentTimeLine = ({
 			const today = currentTime
 			return date.toDateString() === today.toDateString()
 		},
-		[currentTime]
+		[currentTime.getTime()] // Use timestamp to avoid object reference issues
 	)
 
 	// Calculate position of red line - should be at exact current time position
@@ -143,7 +158,7 @@ export const CurrentTimeLine = ({
 				.padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`,
 		}
 	}, [
-		currentTime,
+		currentTime.getTime(), // Use timestamp to avoid object reference issues
 		tableDimensions,
 		memoizedWeekDays,
 		memoizedTimeSlots,
@@ -156,32 +171,61 @@ export const CurrentTimeLine = ({
 			const now = currentTime
 			const [hours] = timeSlot.split(':').map(Number)
 
-			const slotEndDate = new Date(dayDate)
-			slotEndDate.setHours(hours + 1, 0, 0, 0) // End of the time slot (next hour)
+			// Check if the day is in the past
+			const dayStart = new Date(dayDate)
+			dayStart.setHours(0, 0, 0, 0)
+			const currentDayStart = new Date(now)
+			currentDayStart.setHours(0, 0, 0, 0)
 
-			const currentDate = new Date(now)
-			currentDate.setSeconds(0, 0) // Reset seconds and milliseconds
+			// If the day is in the past, all time slots are past
+			if (dayStart < currentDayStart) {
+				return true
+			}
 
-			return currentDate >= slotEndDate // Only past if current time is past the END of the slot
+			// If it's today, check if the specific time slot is past
+			if (dayStart.getTime() === currentDayStart.getTime()) {
+				const slotEndDate = new Date(dayDate)
+				slotEndDate.setHours(hours + 1, 0, 0, 0) // End of the time slot (next hour)
+
+				const currentDate = new Date(now)
+				currentDate.setSeconds(0, 0) // Reset seconds and milliseconds
+
+				return currentDate >= slotEndDate // Only past if current time is past the END of the slot
+			}
+
+			// If it's in the future, the slot is not past
+			return false
 		},
-		[currentTime]
+		[currentTime.getTime()] // Use timestamp to avoid object reference issues
 	)
 
 	// Notify parent about time slot status changes - only when currentTime changes
 	useEffect(() => {
 		if (!onTimeSlotStatusChange) return
 
-		memoizedWeekDays.forEach(day => {
-			memoizedTimeSlots.forEach(timeSlot => {
-				const isPast = isTimeSlotCompletelyPast(timeSlot, day)
-				onTimeSlotStatusChange(day, timeSlot, isPast)
+		// Check time slots for all days in the week
+		const timeoutId = setTimeout(() => {
+			memoizedWeekDays.forEach(day => {
+				memoizedTimeSlots.forEach(timeSlot => {
+					const isPast = isTimeSlotCompletelyPast(timeSlot, day)
+					const slotKey = `${day.toISOString()}-${timeSlot}`
+					const previousState = previousStatesRef.current.get(slotKey)
+
+					// Only update if the state has actually changed
+					if (previousState !== isPast) {
+						previousStatesRef.current.set(slotKey, isPast)
+						onTimeSlotStatusChange(day, timeSlot, isPast)
+					}
+				})
 			})
-		})
+		}, 1000) // Wait 1 second before updating
+
+		return () => clearTimeout(timeoutId)
 	}, [
-		currentTime,
+		currentTime.getTime(), // Use timestamp to avoid object reference issues
 		onTimeSlotStatusChange,
-		memoizedWeekDays,
 		memoizedTimeSlots,
+		memoizedWeekDays,
 		isTimeSlotCompletelyPast,
 	])
 
@@ -246,10 +290,11 @@ export const CurrentTimeLine = ({
 								backgroundColor: ['#ef4444', '#dc2626', '#ef4444'],
 							}}
 							transition={{ duration: 2, repeat: Infinity }}
-							className='absolute left-1/2 -translate-x-1/2 -top-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white'
+							className='absolute left-1/2 -translate-x-1/2 -top-4 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg border-2 border-white flex items-center gap-2'
 							title={`Thời gian hiện tại: ${timeLineData.currentTimeString}`}
 						>
-							🕐 {timeLineData.currentTimeString}
+							<Clock className='w-4 h-4' />
+							{timeLineData.currentTimeString}
 						</motion.div>
 
 						{/* Left arrow */}

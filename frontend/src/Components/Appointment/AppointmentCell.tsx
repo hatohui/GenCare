@@ -1,7 +1,7 @@
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
 import { AnimatePresence } from 'motion/react'
-import { useEffect } from 'react'
 import { AppointmentCountdown } from './AppointmentCountdown'
+import { Bell, Clock, User, Check, X, Loader2, Video } from 'lucide-react'
 
 interface AppointmentCellProps {
 	appointments: Appointment[]
@@ -28,16 +28,6 @@ export const AppointmentCell = ({
 	appointments,
 	isHighlighted = false,
 }: AppointmentCellProps) => {
-	// Update current time every 30 seconds for better accuracy
-	useEffect(() => {
-		const interval = setInterval(() => {
-			// This effect is used to trigger re-renders for countdown updates
-			// The actual current time is calculated in the AppointmentCountdown component
-		}, 30000) // Update every 30 seconds
-
-		return () => clearInterval(interval)
-	}, [])
-
 	if (appointments.length === 0) {
 		return (
 			<div
@@ -101,11 +91,11 @@ export const AppointmentCell = ({
 								{/* Upcoming Meeting Alert - Đặt lên đầu, nhỏ gọn, không che thông tin */}
 								{isUpcoming && hasJoinUrl && (
 									<div
-										className='flex items-center gap-1 mb-2 text-xs font-semibold text-blue-700 bg-blue-50 rounded px-2 py-0.5 border border-blue-200 w-fit cursor-pointer'
+										className='flex items-center gap-2 mb-2 text-xs font-semibold text-blue-700 bg-blue-50 rounded px-3 py-1 border border-blue-200 w-fit cursor-pointer'
 										title='Bấm để tham gia cuộc hẹn'
 										style={{ zIndex: 1 }}
 									>
-										<span className='text-base'>🔔</span>
+										<Bell className='w-3 h-3' />
 										<span>Sắp đến giờ hẹn, bấm để tham gia</span>
 									</div>
 								)}
@@ -121,7 +111,8 @@ export const AppointmentCell = ({
 									}`}
 									title={appointment.staffName}
 								>
-									👨‍⚕️ {appointment.staffName}
+									<User className='w-3 h-3 inline mr-2' />
+									{appointment.staffName}
 								</div>
 								{/* Time */}
 								<div
@@ -131,7 +122,7 @@ export const AppointmentCell = ({
 											: 'text-gray-600'
 									}`}
 								>
-									🕐{' '}
+									<Clock className='w-3 h-3 mr-2' />
 									{new Date(appointment.scheduleAt).toLocaleTimeString(
 										'vi-VN',
 										{
@@ -144,7 +135,7 @@ export const AppointmentCell = ({
 								{!isUpcoming && (
 									<div className='flex items-center justify-center'>
 										<span
-											className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full shadow-sm ${
+											className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full shadow-sm ${
 												status === 'confirmed' || status === 'booked'
 													? 'bg-green-500 text-white'
 													: status === 'pending'
@@ -154,13 +145,27 @@ export const AppointmentCell = ({
 													: 'bg-gray-500 text-white'
 											}`}
 										>
-											{status === 'booked'
-												? '✓ Đã đặt'
-												: status === 'confirmed'
-												? '✓ Xác nhận'
-												: status === 'pending'
-												? '⏳ Chờ'
-												: '✗ Hủy'}
+											{status === 'booked' ? (
+												<>
+													<Check className='w-3 h-3 mr-2' />
+													Đã đặt
+												</>
+											) : status === 'confirmed' ? (
+												<>
+													<Check className='w-3 h-3 mr-2' />
+													Xác nhận
+												</>
+											) : status === 'pending' ? (
+												<>
+													<Loader2 className='w-3 h-3 mr-2' />
+													Chờ
+												</>
+											) : (
+												<>
+													<X className='w-3 h-3 mr-2' />
+													Hủy
+												</>
+											)}
 										</span>
 									</div>
 								)}
@@ -173,13 +178,17 @@ export const AppointmentCell = ({
 										e.stopPropagation()
 										window.open(appointment.joinUrl, '_blank')
 									}}
-									className={`w-full text-white text-xs font-bold py-1.5 px-2 m-1 rounded-lg transition-all duration-200 shadow-md hover:shadow-xl flex items-center justify-center space-x-1 ${
+									className={`w-full text-white text-xs font-bold py-2 px-3 m-1 rounded-lg transition-all duration-200 shadow-md hover:shadow-xl flex items-center justify-center space-x-2 ${
 										isUpcoming
 											? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
 											: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
 									}`}
 								>
-									<span>{isUpcoming ? '🔔' : '🎥	'}</span>
+									{isUpcoming ? (
+										<Bell className='w-4 h-4' />
+									) : (
+										<Video className='w-4 h-4' />
+									)}
 									<span className='hidden sm:inline'>
 										{isUpcoming ? 'THAM GIA NGAY' : 'Tham gia'}
 									</span>

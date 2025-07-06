@@ -6,6 +6,7 @@ import { useAppointments } from '@/Services/appointment-service'
 import { AppointmentCell } from './AppointmentCell'
 import { CurrentTimeLine } from './CurrentTimeLine'
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
+import { Clock, Briefcase, Moon, BarChart3, TrendingUp } from 'lucide-react'
 import {
 	getWeekRange,
 	getWeekDays,
@@ -41,12 +42,12 @@ export const AppointmentsTimetable = () => {
 	)
 
 	// Helper để tạo local date key
-	const getLocalDateKey = (date: Date) => {
+	const getLocalDateKey = useCallback((date: Date) => {
 		const year = date.getFullYear()
 		const month = (date.getMonth() + 1).toString().padStart(2, '0')
 		const day = date.getDate().toString().padStart(2, '0')
 		return `${year}-${month}-${day}`
-	}
+	}, [])
 
 	// Handle time slot status changes from CurrentTimeLine
 	const handleTimeSlotStatusChange = useCallback(
@@ -64,7 +65,7 @@ export const AppointmentsTimetable = () => {
 				return newSet
 			})
 		},
-		[]
+		[getLocalDateKey]
 	)
 
 	// Check if a specific time slot is past
@@ -397,7 +398,8 @@ export const AppointmentsTimetable = () => {
 										maxWidth: '100px',
 									}}
 								>
-									⏰ <span className='hidden sm:inline'>Thời gian</span>
+									<Clock className='w-4 h-4 inline mr-2' />
+									<span className='hidden sm:inline'>Thời gian</span>
 								</motion.th>
 								{weekDays.map((day, index) => (
 									<motion.th
@@ -462,8 +464,12 @@ export const AppointmentsTimetable = () => {
 												maxWidth: '100px',
 											}}
 										>
-											<span className='flex items-center space-x-1'>
-												<span>{isWorkingHours ? '💼' : '🌙'}</span>
+											<span className='flex items-center space-x-2'>
+												{isWorkingHours ? (
+													<Briefcase className='w-4 h-4' />
+												) : (
+													<Moon className='w-4 h-4' />
+												)}
 												<span>{timeSlot}</span>
 											</span>
 										</motion.td>
@@ -523,8 +529,8 @@ export const AppointmentsTimetable = () => {
 						transition={{ delay: 1.6 }}
 						className='flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm'
 					>
-						<div className='flex items-center space-x-2'>
-							<span className='text-2xl'>📊</span>
+						<div className='flex items-center space-x-3'>
+							<BarChart3 className='w-6 h-6 text-blue-600' />
 							<span className='text-gray-700'>
 								Tuần này:{' '}
 								<span className='font-bold text-blue-600 text-lg'>
@@ -533,8 +539,8 @@ export const AppointmentsTimetable = () => {
 								lịch hẹn
 							</span>
 						</div>
-						<div className='flex items-center space-x-2'>
-							<span className='text-2xl'>📈</span>
+						<div className='flex items-center space-x-3'>
+							<TrendingUp className='w-6 h-6 text-purple-600' />
 							<span className='text-gray-700'>
 								Sắp tới:{' '}
 								<span className='font-bold text-purple-600 text-lg'>
