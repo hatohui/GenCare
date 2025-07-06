@@ -198,8 +198,8 @@ export const AppointmentCell = ({
 								</button>
 							)}
 
-							{/* Hover overlay */}
-							<div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg'></div>
+							{/* Hover overlay - disabled */}
+							{/* <div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg'></div> */}
 						</div>
 					)
 				})}

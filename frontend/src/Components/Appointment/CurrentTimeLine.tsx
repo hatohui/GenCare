@@ -199,7 +199,7 @@ export const CurrentTimeLine = ({
 		[currentTime.getTime()] // Use timestamp to avoid object reference issues
 	)
 
-	// Notify parent about time slot status changes - only when currentTime changes
+	// Notify parent about time slot status changes - optimized to prevent infinite loops
 	useEffect(() => {
 		if (!onTimeSlotStatusChange) return
 
