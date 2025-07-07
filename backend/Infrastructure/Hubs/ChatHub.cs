@@ -27,7 +27,6 @@ public class ChatHub : Hub
     {
         var httpContext = Context.GetHttpContext();
 
-        // ✅ Lấy token từ query string
         var token = httpContext?.Request.Query["access_token"].ToString();
 
         if (string.IsNullOrEmpty(token))

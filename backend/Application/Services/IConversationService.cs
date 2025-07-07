@@ -14,5 +14,8 @@ public interface IConversationService
     Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request);
 
     Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId);
+
+    Task<InitConversationResponse> InitConversationWithMessageAsync(InitConversationWithMessage request,
+        string accessToken);
 }
     

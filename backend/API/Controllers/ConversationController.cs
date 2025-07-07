@@ -12,10 +12,11 @@ namespace API.Controllers;
 public class ConversationController(IConversationService conversationService): ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateConversationRequest request)
+    public async Task<IActionResult> Create([FromBody] InitConversationWithMessage request)
     {
-        var result = await conversationService.CreateConversationAsync(request);
-        return Ok(result);        
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var response = await conversationService.InitConversationWithMessageAsync(request, token);
+        return Ok(response);
     }
     [HttpGet("all")]
     public async Task<IActionResult> ViewAllConversations()
@@ -65,9 +66,10 @@ public class ConversationController(IConversationService conversationService): C
 
         var result = await conversationService.AssignStaffToConversationAsync(conversationId, staffId);
         if (!result)
-            return BadRequest("Không thể gán nhân viên. Có thể cuộc trò chuyện đã được gán.");
+            return BadRequest("Unable to assign staff. The conversation may have already been assigned.");
 
-        return Ok(new { Success = true, Message = "Gán nhân viên thành công." });
+        return Ok(new { Success = true, Message = "Staff assigned successfully." });
+
     }
 
 
