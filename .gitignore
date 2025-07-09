@@ -415,3 +415,5 @@ yarn-error.log*
 next-env.d.ts
 .next
 frontend/.env.local
+.cursor/rules/frontend.mdc
+.cursor/rules/backend.mdc
