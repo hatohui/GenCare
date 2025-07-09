@@ -58,4 +58,11 @@ public class MediaRepository(IApplicationDbContext dbContext) : IMediaRepository
         dbContext.Media.Remove(media);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<string>> GetImageUrlsByBlogIdAsync(Guid blogId)
+    {
+        return await dbContext.Media
+            .Where(m => m.BlogId == blogId && !m.IsDeleted)
+            .Select(m => m.Url)
+            .ToListAsync();    }
 }

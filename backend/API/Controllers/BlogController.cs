@@ -18,9 +18,9 @@ public class BlogController(IBlogService blogService) : ControllerBase
     /// </summary>
     /// <returns>A list of all blogs.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetAllBlogs()
+    public async Task<IActionResult> GetAllBlogs([FromQuery] ListOfBlogRequest request)
     {
-        var blogs = await blogService.GetAllBlogsAsync();
+        var blogs = await blogService.GetListOfBlogsAsync(request);
         return Ok(blogs);
     }
 

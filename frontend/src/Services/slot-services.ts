@@ -9,6 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 
 const slotApi = {
+	// Private API - requires authentication (admin)
 	getAllAdmin: () => {
 		return axiosInstance.get<GetSlotResponse>('/slots').then(res => {
 			console.log(res.data)
@@ -16,17 +17,20 @@ const slotApi = {
 		})
 	},
 
+	// Private API - requires authentication (admin)
 	create: (data: CreateSlotRequest) =>
 		axiosInstance
 			.post<CreateSlotResponse>('/slots', data)
 			.then(res => res.data),
 
+	// Private API - requires authentication (admin)
 	update: (id: string, data: UpdateSlotRequest) => {
 		return axiosInstance
 			.put<UpdateSlotResponse>(`/slots/${id}`, data)
 			.then(res => res.data)
 	},
 
+	// Private API - requires authentication (admin)
 	delete: (id: string) =>
 		axiosInstance
 			.delete<UpdateSlotResponse>(`/slots/${id}`)

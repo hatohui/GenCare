@@ -50,6 +50,7 @@ public interface ITagRepository
     Task<bool>CheckNameTagExists(string title);
     
     Task<Tag?>GetById(Guid id);
-    
-    
+
+    Task<List<string>?> GetTagTitlesByBlogIdAsync(Guid blogId);
+
 }

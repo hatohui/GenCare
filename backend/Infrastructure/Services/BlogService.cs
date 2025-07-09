@@ -10,7 +10,8 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository,
-       ITagRepository tagRepository) : IBlogService
+       ITagRepository tagRepository,
+       IMediaRepository mediaRepository) : IBlogService
 {
     public async Task AddBlogAsync(BlogCreateRequest request, string accountId)
     {
@@ -95,6 +96,63 @@ public class BlogService(IBlogRepository blogRepository,
         blog.DeletedAt = DateTime.Now;
         await blogRepository.Update(blog);
     }
+
+    public async Task<List<ListOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
+    {
+        List<Blog> blogs;
+
+        // Ưu tiên lọc tag trước nếu có
+        if (!string.IsNullOrWhiteSpace(request.Tags))
+        {
+            blogs = await blogRepository.SearchBlogByTag(request.Tags);
+        }
+        else if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            blogs = await blogRepository.SearchBlogsAsync(request.Search);
+        }
+        else
+        {
+            blogs = await blogRepository.GetListOfBlogsAsync();
+        }
+        
+        int page = request.Page ?? 1;
+        int count = request.Count ?? 10;
+
+        var pagedBlogs = blogs
+            .OrderByDescending(b => b.CreatedAt)
+            .Skip((page - 1) * count)
+            .Take(count)
+            .ToList();
+
+        var responses = new List<ListOfBlogResponse>();
+
+        foreach (var blog in pagedBlogs)
+        {
+            var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
+            var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
+
+            responses.Add(new ListOfBlogResponse
+            {
+                Id = blog.Id.ToString(),
+                Title = blog.Title,
+                Content = blog.Content,
+                Author = blog.Author,
+                PublishedAt = blog.PublishedAt,
+                CreatedAt = blog.CreatedAt,
+                CreatedBy = blog.CreatedBy?.ToString(),
+                UpdatedAt = blog.UpdatedAt,
+                UpdatedBy = blog.UpdatedBy?.ToString(),
+                DeletedAt = blog.DeletedAt,
+                DeletedBy = blog.DeletedBy?.ToString(),
+                IsDeleted = blog.IsDeleted,
+                TagTitles = tagTitles,
+                ImageUrls = imageUrls
+            });
+        }
+
+        return responses;
+    }
+
 
     public async Task<List<AllBlogViewResponse>> GetAllBlogsAsync()
     {
