@@ -20,6 +20,7 @@ namespace Application.Services
         Task<List<BookedService>> GetBookedService(string accountId);
         
         Task<List<BookedServiceListResponse>> GetBookedServicesForStaffAsync(Guid accountId, string? search,bool? isPaid);
+        
 
     }
 }
