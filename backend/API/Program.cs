@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Application.DTOs.Payment.VNPay;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +54,19 @@ builder.Services.Configure<MomoConfig>(options =>
 });
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMomoService, MomoService>();
+
+//===================config vnpay
+builder.Services.Configure<VNPayConfig>(options =>
+{
+    options.Vnp_TmnCode = Environment.GetEnvironmentVariable("VNP_TMNCODE")
+        ?? throw new InvalidOperationException("Missing VNPay Tmn Code");
+    options.Vnp_HashSecret = Environment.GetEnvironmentVariable("VNP_HASHSECRET")
+        ?? throw new InvalidOperationException("Missing VNPay Hash Secret");
+    options.Vnp_Url = Environment.GetEnvironmentVariable("VNP_URL")
+        ?? throw new InvalidOperationException("Missing VNPay Url");
+    options.Vnp_ReturnUrl = Environment.GetEnvironmentVariable("VNP_RETURN_URL")
+        ?? throw new InvalidOperationException("Missing VNPay Return URL");
+});
 
 // Add services
 builder.Services.AddControllers();
@@ -227,6 +241,7 @@ builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IZoomService, ZoomService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
 
 
 //===========Redis Configuration===========

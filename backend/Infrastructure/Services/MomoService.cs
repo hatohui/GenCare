@@ -4,6 +4,7 @@ using Application.DTOs.Payment;
 using Application.DTOs.Payment.Momo;
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -131,7 +132,8 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             {
                 PurchaseId = orderId.ToString(),
                 TransactionId = transId.ToString(),
-                Amount = Convert.ToDecimal(amount)
+                Amount = Convert.ToDecimal(amount),
+                PaymentMethod = PaymentMethod.Momo,
             };
 
             await paymentHistoryService.CreatePaymentHistoryAsync(model);
