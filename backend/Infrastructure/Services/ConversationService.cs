@@ -113,7 +113,7 @@ public class ConversationService(IConversationRepository conversationRepository,
     public async Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId)
     {
         var convo = await conversationRepository.GetByIdAsync(conversationId);
-        if (convo == null || convo.StaffId != null)
+        if (convo is not { StaffId: null })
             return false;
 
         convo.StaffId = staffId;
@@ -125,7 +125,7 @@ public class ConversationService(IConversationRepository conversationRepository,
 
     public async Task<InitConversationResponse> InitConversationWithMessageAsync(InitConversationWithMessage request, string accessToken)
     {
-  // Extract account ID from JWT access token
+    // Extract account ID from JWT access token
     var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
 
     // 1. Create a new conversation with the provided memberId
@@ -141,7 +141,7 @@ public class ConversationService(IConversationRepository conversationRepository,
     // Save the new conversation to the database
     await conversationRepository.AddAsync(conversation);
 
-    // 2. Notify all available staff/consultants in real-time
+    //Notify all available staff/consultants in real-time
     await chatHub.Clients.Group("AvailableStaffOrConsultant").SendAsync("NewConversationCreated", new
     {
         conversationId = conversation.Id,
@@ -155,7 +155,6 @@ public class ConversationService(IConversationRepository conversationRepository,
     {
         Id = Guid.NewGuid(),
         ConversationId = conversation.Id,
-        Content = request.FirstMessage,
         CreatedAt = ToUnspecified(DateTime.Now),
         CreatedBy = accountId,
         UpdatedBy = accountId
@@ -185,7 +184,7 @@ public class ConversationService(IConversationRepository conversationRepository,
     await messageRepository.AddAsync(newMessage);
     await mediaRepository.AddListOfMediaAsync(mediaList);
 
-    // 4. Broadcast the first message in real-time to the conversation group
+    //  Broadcast the first message in real-time to the conversation group
     await chatHub.Clients.Group(conversation.Id.ToString()).SendAsync("ReceiveMessage", new
     {
         messageId = newMessage.Id,
@@ -195,7 +194,7 @@ public class ConversationService(IConversationRepository conversationRepository,
         media = mediaList.Select(m => new { m.Url, m.Type })
     });
 
-    // 5. Return a response with conversation and message information
+    //  Return a response with conversation and message information
     return new InitConversationResponse
     {
         ConversationId = conversation.Id,
