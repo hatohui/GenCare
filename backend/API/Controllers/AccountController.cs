@@ -48,19 +48,13 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="401">Unauthorized. Access token is missing or invalid.</response>
     /// <response code="400">Bad request. Invalid input data.</response>
     [HttpPost]
-    public async Task<IActionResult> CreateStaffAccountAsync(
-        [FromBody] StaffAccountCreateRequest request
-    )
+    public async Task<IActionResult> CreateAccountAsync([FromBody] AccountCreateRequest request)
     {
         //get access token from header
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
-        //check if access token is null or empty
-        if (string.IsNullOrEmpty(accessToken))
-            return Unauthorized("Access token is required.");
         //create
-        var result = await accountService.CreateStaffAccountAsync(request, accessToken);
-        return Created($"api/accounts/{result.Id}", result);
-        //IActionResult: Ok, BadRequest, Unauthorized, NotFound, etc.
+        await accountService.CreateAccountAsync(request, accessToken);
+        return Created();
     }
 
     [HttpGet("me")]
@@ -133,7 +127,10 @@ public class AccountController(IAccountService accountService) : ControllerBase
     {
         string accessToken = AuthHelper.GetAccessToken(HttpContext);
         await accountService.UpdateAccountAsync(request, accessToken, id);
-        return Ok();
+
+        // Return the updated account data
+        var updatedAccount = await accountService.GetAccountByIdAsync(Guid.Parse(id));
+        return Ok(updatedAccount);
     }
 
     /// <summary>
@@ -150,11 +147,6 @@ public class AccountController(IAccountService accountService) : ControllerBase
     /// <response code="404">Not found. Account with the specified ID does not exist.</response>
 
     [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize(Roles = $"{RoleNames.Admin}")]
     public async Task<IActionResult> GetAccountById([FromRoute] string id)
     {
@@ -172,7 +164,8 @@ public class AccountController(IAccountService accountService) : ControllerBase
     public async Task<IActionResult> GetAllConsultantInfo(
         [FromQuery] int page,
         [FromQuery] int count,
-        [FromQuery] string? search)
+        [FromQuery] string? search
+    )
     {
         var response = await accountService.GetConsultantProfile(page, count, search);
         return Ok(response);

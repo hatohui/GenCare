@@ -1,96 +1,118 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'motion/react'
-import MotionLink from '../MotionLink'
-import Image from 'next/image'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
+import { Service } from '@/Interfaces/Service/Types/Service'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
+import { CldImage } from 'next-cloudinary'
 
-export type ServiceCardProps = {
-	id: string
-	name: string
-	price: number
-	description: string
-	imageUrl?: string
+interface ServiceCardProps {
+	service: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>
 }
 
-export const ServiceCard = ({
-	name,
-	price,
-	description,
-	id,
-	imageUrl,
-}: ServiceCardProps) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 	const { accessToken } = useToken()
 	const router = useRouter()
 
-	const handleAddToCart = () => {
-		// Logic to add the service to the cart
-		if (!id || !name || !price) {
-			console.error('Invalid service data')
-			return
-		}
-		if (!accessToken) {
-			console.error('User not logged in')
-			router.push('/login')
-			return
-		}
+	const handleBookNow = () => {
+		try {
+			// Validate service data
+			if (!service.id || !service.name || !service.price) {
+				console.error('Invalid service data')
+				toast.error('Thông tin dịch vụ không hợp lệ')
+				return
+			}
 
-		router.push(`/app/booking/${id}`)
+			// Check authentication
+			if (!accessToken) {
+				toast.error('Vui lòng đăng nhập để đặt dịch vụ')
+				router.push('/login')
+				return
+			}
+
+			// Navigate to booking page
+			router.push(`/app/booking/${service.id}`)
+		} catch (error) {
+			console.error('Error navigating to booking:', error)
+			toast.error('Có lỗi xảy ra. Vui lòng thử lại.')
+		}
+	}
+
+	const handleViewDetails = () => {
+		try {
+			router.push(`/service/${service.id}`)
+		} catch (error) {
+			console.error('Error navigating to service details:', error)
+			toast.error('Có lỗi xảy ra. Vui lòng thử lại.')
+		}
 	}
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: -20, y: -10 }}
-			animate={{ opacity: 1, x: 0, y: 0 }}
-			whileHover={{ scale: 1.02 }}
-			transition={{ duration: 0.5, ease: 'easeOut' }}
-			className='bg-white rounded-2xl p-5 h-full shadow-md hover:shadow-lg transition-shadow duration-300'
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			whileHover={{ y: -5 }}
+			className='bg-white border border-gray-200 rounded-[30px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300'
 		>
-			{imageUrl ? (
-				<div className='h-[300px] bg-gray-500 animate-pulse round center-all'>
-					<motion.div
-						animate={{
-							rotate: 360,
-							transition: { repeat: Infinity, duration: 2, ease: 'linear' },
-						}}
-						className={
-							'w-[50px] h-[50px] rounded-full border-4  transform border-t-accent'
-						}
+			{/* Service Image */}
+			<div className='relative mb-4 overflow-hidden rounded-[20px]'>
+				{service.imageUrls && service.imageUrls.length > 0 ? (
+					<CldImage
+						src={service.imageUrls[0].url}
+						alt={service.name}
+						width={500}
+						height={500}
+						className='w-full h-[250px] object-cover hover:scale-105 transition-all duration-300'
 					/>
-				</div>
-			) : (
-				<Image
-					src='/images/gencarelogo.png'
-					alt='gencare-logo'
-					width={1000}
-					height={1000}
-					className='h-[300px] object-cover'
-				/>
-			)}
+				) : (
+					<div className='w-full h-[250px] bg-gradient-to-br from-main to-secondary flex items-center justify-center'>
+						<span className='text-white text-lg font-semibold'>
+							{service.name}
+						</span>
+					</div>
+				)}
 
-			<div className='pt-3'>
-				<h3 className='text-xl font-semibold mb-2'>{name}</h3>
-				<p className='text-accent mb-2'>{price.toLocaleString('vi-VN')} VND</p>
-				<p className='text-gray-600 mb-4 truncate '>{description}</p>
+				{/* Price Badge */}
+				<div className='absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg'>
+					{service.price.toLocaleString('vi-VN')} VND
+				</div>
 			</div>
-			<div className='flex items-end justify-end mb-4 gap-4'>
-				<MotionLink
-					whileTap={{ scale: 0.95 }}
-					whileHover={{ scale: 1.05 }}
-					transition={{ duration: 0.2 }}
-					className='bg-general text-black px-4 py-2 rounded-full font-medium text-sm'
-					href={`/service/${id}`}
-				>
-					Chi tiết
-				</MotionLink>
-				<button
-					onClick={handleAddToCart}
-					className='bg-accent text-white px-4 py-2 rounded-full font-medium text-sm'
-				>
-					Đặt ngay
-				</button>
+
+			{/* Service Content */}
+			<div className='p-6'>
+				<div className='flex-1 flex flex-col'>
+					<h3 className='text-xl font-bold text-main mb-2 line-clamp-2'>
+						{service.name}
+					</h3>
+					<p className='text-gray-600 mb-6 text-sm line-clamp-3 flex-1'>
+						{service.description}
+					</p>
+
+					{/* Action Buttons */}
+					<div className='flex gap-3'>
+						<button
+							onClick={handleViewDetails}
+							className='flex-1 px-4 py-2 border border-main text-main rounded-[20px] hover:bg-main hover:text-white transition-colors font-medium'
+						>
+							Xem chi tiết
+						</button>
+						<button
+							onClick={handleBookNow}
+							className='flex-1 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors font-medium'
+						>
+							Đặt ngay
+						</button>
+					</div>
+				</div>
 			</div>
+
+			{/* Hover Effect Overlay */}
+			<div className='absolute inset-0 bg-gradient-to-br from-main/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
 		</motion.div>
 	)
 }
+
+export default ServiceCard
+export { ServiceCard }

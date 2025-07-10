@@ -1,12 +1,22 @@
-// /app/lib/axios.ts
 import axios from 'axios'
 import { DEFAULT_API_URL } from '@/Constants/API'
-import useToken from '@/Hooks/useToken'
+import useToken from '@/Hooks/Auth/useToken'
 
 const axiosInstance = axios.create({
 	baseURL: DEFAULT_API_URL,
 	withCredentials: true,
 })
+
+axiosInstance.interceptors.request.use(
+	config => {
+		const token = useToken.getState().accessToken
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`
+		}
+		return config
+	},
+	error => Promise.reject(error)
+)
 
 axiosInstance.interceptors.response.use(
 	res => res,
@@ -33,11 +43,9 @@ axiosInstance.interceptors.response.use(
 					'Authorization'
 				] = `Bearer ${data.data.accessToken}`
 
-				// Re-send the original failed request
 				return axiosInstance(originalRequest)
 			} catch (refreshError) {
-				// Optional: logout the user or redirect to login
-				window.location.href = '/login' // (if you want to force re-login)
+				window.location.href = '/login'
 				return Promise.reject(refreshError)
 			}
 		}

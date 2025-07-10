@@ -26,24 +26,28 @@ export default function TestimonialsSection() {
 	return (
 		<section
 			ref={targetRef}
-			className='relative py-20 h-[500vh] flex-col items-center justify-center text-center bg-white  '
+			className='relative py-24 h-[500vh] flex-col items-center justify-center text-center bg-gradient-to-b from-white to-gray-50 pb-40'
 		>
 			<BlogSection />
 			<motion.div
 				style={{}}
-				className='sticky top-0 translate-y-12 h-screen overflow-hidden flex flex-col items-center '
+				className='sticky top-0 translate-y-12 h-screen overflow-hidden flex flex-col items-center'
 			>
 				<motion.h2
 					initial={{ opacity: 0, y: 50 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					className='text-4xl font-bold mb-12 text-secondary'
+					transition={{ duration: 0.8, ease: 'easeOut' }}
+					className='text-5xl md:text-6xl font-bold mb-16 text-secondary leading-tight'
 				>
-					Khách Hàng Nói Gì
+					Khách Hàng{' '}
+					<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
+						Nói Gì
+					</span>
 				</motion.h2>
 
-				<motion.div style={{ x }} className='flex gap-5 p-6 '>
-					<div className='min-w-[300px] flex items-end'>
-						<p className='text-lg text-gray-600 mb-12 w-[250px]'>
+				<motion.div style={{ x }} className='flex gap-8 p-8'>
+					<div className='min-w-[350px] flex items-end'>
+						<p className='text-xl text-gray-600 mb-16 w-[300px] leading-relaxed'>
 							GenCare provided exceptional service and care. The staff is
 							friendly and professional. Highly recommended!
 						</p>
@@ -51,15 +55,32 @@ export default function TestimonialsSection() {
 					{Testimonials.map((item, i) => (
 						<motion.div
 							key={i}
-							initial={{ opacity: 0, y: 50, filter: 'brightness(0.8)' }}
-							whileHover={{ scale: 1.05, filter: 'brightness(1)' }}
+							initial={{ opacity: 0, y: 60, filter: 'brightness(0.8)' }}
+							whileHover={{
+								scale: 1.08,
+								filter: 'brightness(1)',
+								y: -10,
+								transition: { duration: 0.4, ease: 'easeOut' },
+							}}
 							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.5 }}
-							className='relative bg-white w-[300px] h-[400px] rounded shadow hover:shadow-xl flex flex-col items-center justify-between overflow-hidden'
+							transition={{ duration: 0.8, delay: i * 0.1, ease: 'easeOut' }}
+							className='group relative bg-white w-[350px] h-[450px] rounded-3xl shadow-2xl hover:shadow-3xl flex flex-col items-center justify-between overflow-hidden border border-gray-100/50'
 						>
-							<p className='absolute text-3xl z-10 font-extrabold text-general top-1/12 left-1/12'>
-								{item.name}
-							</p>
+							{/* Enhanced gradient overlay */}
+							<div className='absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10'></div>
+
+							{/* Name overlay */}
+							<div className='absolute top-6 left-6 z-20'>
+								<motion.p
+									className='text-3xl font-bold text-white drop-shadow-2xl'
+									whileHover={{ scale: 1.05 }}
+									transition={{ duration: 0.3 }}
+								>
+									{item.name}
+								</motion.p>
+							</div>
+
+							{/* Background image */}
 							<motion.div
 								style={{ x: image }}
 								className='absolute w-[500px] z-0'
@@ -67,17 +88,25 @@ export default function TestimonialsSection() {
 								<Image
 									src={item.avatar}
 									alt={`Portrait of ${item.name}`}
-									className='object-cover h-[400px]'
+									className='object-cover h-[450px] rounded-3xl'
 									width={500}
 									height={500}
 								/>
 							</motion.div>
 
-							<div className='absolute h-[100px]  bottom-9'>
-								<p className='text-general text-lg z-10 bottom-0 p-6'>
+							{/* Enhanced Testimonial text overlay */}
+							<div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-8 z-10'>
+								<motion.p
+									className='text-white text-xl leading-relaxed font-medium'
+									whileHover={{ scale: 1.02 }}
+									transition={{ duration: 0.3 }}
+								>
 									&quot; {item.content} &quot;
-								</p>
+								</motion.p>
 							</div>
+
+							{/* Decorative border glow */}
+							<div className='absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
 						</motion.div>
 					))}
 				</motion.div>

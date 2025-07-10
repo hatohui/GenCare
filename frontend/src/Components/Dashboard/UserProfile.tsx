@@ -4,7 +4,7 @@ import Popup from './Popup'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { CldImage } from 'next-cloudinary'
 import { AnimatePresence, motion } from 'motion/react'
-import Image from 'next/image'
+import FallBackUserImage from '../Profile/FallBackUserImage'
 
 const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 	const [showPopUp, setShowPopUp] = useState(false)
@@ -55,12 +55,7 @@ const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 					height={30}
 				/>
 			) : (
-				<Image
-					src='/images/default_avatar.png'
-					alt='avatar'
-					width={30}
-					height={30}
-				/>
+				<FallBackUserImage />
 			)}
 
 			{!collapsed && (

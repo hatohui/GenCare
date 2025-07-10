@@ -4,71 +4,38 @@ import AddNewServiceForm from '@/Components/Management/AddNewServiceForm'
 import ItemCardHeader from '@/Components/Management/ItemCardHeader'
 import Pagination from '@/Components/Management/Pagination'
 import SearchBar from '@/Components/Management/SearchBar'
-import ServiceList from '@/Components/Management/ServiceList'
-import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
-import { ServiceDTO } from '@/Interfaces/Service/Schemas/service'
-import {
-	useDeleteService,
-	useServiceByPageAdmin,
-	useUpdateService,
-} from '@/Services/service-services'
+import ServiceListContent from '@/Components/Management/ServiceListContent'
+import FilterButtons from '@/Components/Management/FilterButtons'
+import { useServiceManagement } from '@/Hooks/useServiceManagement'
 import clsx from 'clsx'
-import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import { motion } from 'motion/react'
 
 const ServicesPage = () => {
-	const [currentPage, setCurrentPage] = useState(1)
-	const deleteMutation = useDeleteService()
-	const itemsPerPage = ITEMS_PER_PAGE_COUNT
-	const searchParams = useSearchParams()
-	const search = searchParams.get('search')
-	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
-	const [includeDeleted, setIncludeDeleted] = useState<boolean | null>(null)
-	const [sortByAlphabetical, setSortByAlphabetical] = useState<boolean>(false)
-	const updateMutation = useUpdateService()
-
-	useEffect(() => {
-		setCurrentPage(1)
-	}, [search])
-
-	const query = useServiceByPageAdmin(
-		currentPage,
-		itemsPerPage,
-		search,
-		includeDeleted,
-		orderByPrice,
-		sortByAlphabetical
-	)
-
-	const { isError, isFetching, data, isLoading } = query
 	const [isAddNewOpen, setIsAddNewOpen] = useState(false)
 
-	const pageCount = data?.totalCount
-		? Math.ceil(data.totalCount / itemsPerPage)
-		: 5
+	const {
+		services,
+		totalCount,
+		currentPage,
+		setCurrentPage,
+		itemsPerPage,
+		isLoading,
+		isError,
+		isFetching,
+		handleDelete,
+		handleRestore,
+		handleUpdate,
+		orderByPrice,
+		includeDeleted,
+		sortByAlphabetical,
+		setIncludeDeleted,
+		handlePriceSorting,
+		handleAlphabeticalSorting,
+		refetch,
+	} = useServiceManagement()
 
-	const handleDelete = (id: string) => {
-		if (window.confirm('Bạn có muốn xóa mục này không?'))
-			deleteMutation.mutate(id, {
-				onSuccess: () => {
-					query.refetch()
-				},
-				onError: () => {},
-			})
-	}
-
-	const handleRestore = (id: string, data: ServiceDTO) => {
-		if (window.confirm('Bạn có muốn khôi phục mục này không?'))
-			updateMutation.mutate(
-				{ id, data: { ...data, isDeleted: false } },
-				{
-					onSuccess: () => {
-						query.refetch()
-					},
-					onError: () => {},
-				}
-			)
-	}
+	const handleAddNew = () => setIsAddNewOpen(!isAddNewOpen)
 
 	if (isError)
 		return <div className='h-full center-all w-full text-red-500'>Error.</div>
@@ -76,143 +43,125 @@ const ServicesPage = () => {
 	return (
 		<>
 			{isAddNewOpen && (
-				<div className='h-full w-full absolute  '>
+				<div className='h-full w-full absolute'>
 					<AddNewServiceForm
 						className='z-20'
-						onSuccess={() => query.refetch()}
+						onSuccess={() => refetch()}
 						onClose={() => setIsAddNewOpen(false)}
 					/>
 				</div>
 			)}
 
-			<section
-				className={clsx(
-					'flex w-full h-full flex-col gap-4 select-none md:gap-5'
-				)}
-				aria-label='Account Management'
+			<motion.section
+				className={clsx('flex h-full flex-col px-0 py-4 min-h-0')}
+				aria-label='Service Management'
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5, ease: 'easeOut' }}
 			>
-				<div className='w-full flex gap-3 px-1'>
-					<div className='w-full'>
-						<div className='flex items-center px-5 gap-3 grow shadow-sm bg-general py-1 pt-2 round overflow-scroll'>
-							<SearchBar className='mx-2' waitTime={1000} />
-							<AddNewButton
-								handleAddNew={() => setIsAddNewOpen(!isAddNewOpen)}
-							/>
-						</div>
+				{/* Header with Search and Add Button */}
+				<motion.div
+					className='flex items-center justify-between gap-4 px-4 mb-4'
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+				>
+					<div className='flex-1'>
+						<motion.h1
+							className='text-xl font-semibold text-slate-800 mb-1'
+							initial={{ opacity: 0, x: -20 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+						>
+							Quản lý dịch vụ
+						</motion.h1>
+						<motion.p
+							className='text-xs text-text'
+							initial={{ opacity: 0, x: -20 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+						>
+							Tìm kiếm và quản lý dịch vụ của hệ thống
+						</motion.p>
 					</div>
-				</div>
+					<motion.div
+						className='flex items-center gap-3'
+						initial={{ opacity: 0, x: 20 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
+					>
+						<SearchBar waitTime={1000} />
+						<AddNewButton handleAddNew={handleAddNew} />
+					</motion.div>
+				</motion.div>
 
-				<div className='flex flex-wrap gap-3 px-1'>
-					{/* IncludeDeleted filter */}
-					<button
-						onClick={() => setIncludeDeleted(null)}
-						className={clsx(
-							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
-							includeDeleted === null
-								? 'bg-blue-600 text-white'
-								: 'bg-gray-100 text-black'
-						)}
-					>
-						Tất cả
-					</button>
-					<button
-						onClick={() => setIncludeDeleted(false)}
-						className={clsx(
-							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
-							includeDeleted === false
-								? 'bg-blue-600 text-white'
-								: 'bg-gray-100 text-black'
-						)}
-					>
-						Đang hoạt động
-					</button>
-					<button
-						onClick={() => setIncludeDeleted(true)}
-						className={clsx(
-							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
-							includeDeleted === true
-								? 'bg-blue-600 text-white'
-								: 'bg-gray-100 text-black'
-						)}
-					>
-						Ngừng hoạt động
-					</button>
-
-					{/* Price sorting toggle */}
-					<button
-						onClick={() => {
-							if (orderByPrice === null) {
-								setOrderByPrice(true)
-								setSortByAlphabetical(false)
-							} else if (orderByPrice === true) {
-								setOrderByPrice(false)
-								setSortByAlphabetical(false)
-							} else {
-								setOrderByPrice(null)
-							}
-						}}
-						className={clsx(
-							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
-							orderByPrice !== null
-								? 'bg-blue-600 text-white'
-								: 'bg-gray-100 text-black'
-						)}
-					>
-						{orderByPrice === null
-							? 'Sắp xếp giá (Tắt)'
-							: orderByPrice
-							? 'Giá tăng dần ↑'
-							: 'Giá giảm dần ↓'}
-					</button>
-
-					{/* Alphabetical sorting toggle */}
-					<button
-						onClick={() => {
-							setSortByAlphabetical(prev => {
-								const newState = !prev
-								if (newState) setOrderByPrice(null)
-								return newState
-							})
-						}}
-						className={clsx(
-							'flex items-center px-3 py-1 rounded-md shadow-sm hover:brightness-90',
-							sortByAlphabetical
-								? 'bg-blue-600 text-white'
-								: 'bg-gray-100 text-black'
-						)}
-					>
-						{sortByAlphabetical ? 'A → Z' : 'Sắp xếp ABC'}
-					</button>
-				</div>
-
-				<ItemCardHeader
-					label='Tên dịch vụ'
-					secondaryLabel='Miêu tả'
-					fourthLabel='Giá'
-					fifthLabel='Tác vụ'
+				{/* Filter Buttons */}
+				<FilterButtons
+					includeDeleted={includeDeleted}
+					orderByPrice={orderByPrice}
+					sortByAlphabetical={sortByAlphabetical}
+					setIncludeDeleted={setIncludeDeleted}
+					handlePriceSorting={handlePriceSorting}
+					handleAlphabeticalSorting={handleAlphabeticalSorting}
 				/>
 
-				{!data || isLoading || isFetching || !data.services ? (
-					<div className='h-full center-all w-full animate-pulse'>
-						Fetching data...
-					</div>
-				) : (
-					<ServiceList
-						data={data}
-						handleDelete={handleDelete}
-						handleRestore={handleRestore}
-					/>
-				)}
+				{/* Content Area */}
+				<motion.div
+					className='flex-1 flex flex-col overflow-hidden min-h-0 mt-4'
+					initial={{ opacity: 0, y: 30 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
+				>
+					{/* Table Header */}
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.5, delay: 0.5 }}
+					>
+						<ItemCardHeader
+							label='Tên dịch vụ'
+							secondaryLabel='Miêu tả'
+							thirdLabel='Giá'
+							fourthLabel=''
+							fifthLabel='Tác vụ'
+						/>
+					</motion.div>
 
-				<div className='center-all'>
+					{/* Service List */}
+					<motion.div
+						className='flex-1 min-h-0'
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.6, delay: 0.6 }}
+					>
+						<ServiceListContent
+							services={services}
+							isLoading={isLoading}
+							isError={isError}
+							isFetching={isFetching}
+							handleDelete={handleDelete}
+							handleRestore={handleRestore}
+							handleUpdate={handleUpdate}
+						/>
+					</motion.div>
+				</motion.div>
+
+				{/* Pagination - Fixed at bottom */}
+				<motion.div
+					className='center-all py-3 mt-auto'
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.5, delay: 0.8 }}
+				>
 					<Pagination
 						currentPage={currentPage}
-						totalPages={pageCount}
 						isFetching={isFetching}
 						setCurrentPage={setCurrentPage}
+						totalCount={totalCount}
+						itemsPerPage={itemsPerPage}
 					/>
-				</div>
-			</section>
+				</motion.div>
+			</motion.section>
 		</>
 	)
 }

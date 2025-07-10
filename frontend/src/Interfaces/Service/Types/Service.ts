@@ -6,9 +6,11 @@ export interface Service {
 	description: string
 	price: number
 	createdAt: Date
-	updatedAt?: Date
+	updatedAt?: Date | null
 	isDeleted: boolean
-	imageUrls?: string[]
+	deletedBy?: string | null
+	createdBy?: string | null
+	imageUrls?: Array<{ id: string; url: string }>
 }
 
 export const updateServiceSchema = z.object({
@@ -16,9 +18,9 @@ export const updateServiceSchema = z.object({
 	description: z.string().min(1, 'Description is required'),
 	price: z.coerce.number().positive('Price must be greater than 0'),
 	isDeleted: z.boolean(),
-	imageUrls: z
-		.array(z.string().url('Each image must be a valid URL'))
-		.optional(),
+	deletedBy: z.string().optional().nullable(),
+	createdBy: z.string().optional().nullable(),
+	imageUrls: z.array(z.url('Each image must be a valid URL')).optional(),
 })
 
 export type UpdateServiceApiRequest = z.infer<typeof updateServiceSchema>

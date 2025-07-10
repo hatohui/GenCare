@@ -10,4 +10,5 @@ public class PaymentHistoryModel
     public string PurchaseId { get; set; } = null!;
     public string TransactionId { get; set; } = null!;
     public decimal Amount { get; set; }
+    public string PaymentMethod { get; set; } = null!;
 }

@@ -31,18 +31,23 @@ public class ServicesService(
         
         var response = new ViewServiceForUserResponse()
         {
-            Total = totalCount,
+            TotalCount = totalCount,
             Services = new List<ServicePayLoad>()
         };
         foreach (var s in services)
         {
-            await mediaRepository.GetNewestByServiceIdAsync(s.Id);
+            var image = await mediaRepository.GetAllMediaByServiceIdAsync(s.Id);
             response.Services.Add(new ServicePayLoad()
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description ?? "",
                 Price = s.Price,
+                ImageUrls  = image?.Select(m => new MediaServiceModel()
+                {
+                    Id = m.Id,
+                    Url = m.Url
+                }).ToList() ?? new List<MediaServiceModel>(),
             });
         }
 

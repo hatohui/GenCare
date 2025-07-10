@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Appointment.Request;
 using Application.DTOs.Appointment.Response;
+using Application.DTOs.Zoom;
 
 namespace Application.Services
 {
@@ -17,10 +18,18 @@ namespace Application.Services
         Task CreateAppointmentAsync(AppointmentCreateRequest request, string accessId);
 
         /// <summary>
+        /// Creates a new appointment with Zoom meeting integration.
+        /// </summary>
+        /// <param name="request">The appointment creation request.</param>
+        /// <param name="accessId">The identifier of the user creating the appointment.</param>
+        /// <returns>Zoom meeting details.</returns>
+        Task<ZoomMeetingResponse> CreateAppointmentWithZoomAsync(AppointmentCreateRequest request, string accessId);
+
+        /// <summary>
         /// Retrieves all appointments.
         /// </summary>
         /// <returns>A list of all appointment view responses.</returns>
-        Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync();
+        Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync(string accountId);
 
         /// <summary>
         /// Updates an existing appointment.
@@ -38,5 +47,7 @@ namespace Application.Services
         /// <param name="deleteId">The identifier of the user performing the delete operation.</param>
         /// <returns>A task representing the asynchronous delete operation.</returns>
         Task DeleteAppointmentAsync(string appointmentId, string deleteId);
+
+        Task<AppointmentViewResponse> ViewAppointmentByIdAsync(string appointmentId, string accountId);
     }
 }

@@ -22,7 +22,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     /// <response code="200">Service booked successfully.</response>
     /// <response code="401">Unauthorized if the user is not a member.</response>
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Member}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Admin}")]
     public async Task<IActionResult> BookingServiceAsync([FromBody] BookingServiceRequest request)
     {
         // get access token from header
@@ -30,11 +30,11 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
 
         var response = await purchaseService.AddPurchaseAsync(request, accessToken);
-        return Created();
+        return Ok(response);
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.Member}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Admin}")]
     public async Task<IActionResult> GetBookedServiceAsync()
     {   
         //get access token
@@ -45,7 +45,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         return Ok(response);
     }
     [HttpGet("staff/{accountId}")]
-    [Authorize(Roles = $"{RoleNames.Staff}")]
+    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Admin}")]
     public async Task<IActionResult> GetBookedServicesForStaffAsync(Guid accountId, [FromQuery] string? search,[FromQuery] bool? isPaid)
     {
         var response = await purchaseService.GetBookedServicesForStaffAsync(accountId, search,isPaid);

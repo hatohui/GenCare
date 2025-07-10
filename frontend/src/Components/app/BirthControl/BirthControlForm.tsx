@@ -1,27 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import {
 	useCreateBirthControl,
 	useUpdateBirthControl,
 } from '@/Services/birthControl-service'
+import { useBirthControl } from '@/Hooks/useBirthControl'
+import SingleDateCalendar from '@/Components/Scheduling/Calendar/Calendar'
+import { isSameDay } from 'date-fns'
+import { toast } from 'react-hot-toast'
+import LoadingIcon from '@/Components/LoadingIcon'
 
 const birthControlSchema = z.object({
 	accountID: z.string().min(1, 'Account ID is required'),
-	dateRange: z
-		.tuple([
-			z.date().refine(val => !isNaN(val.getTime()), {
-				message: 'Invalid start date',
-			}),
-			z.union([z.date(), z.null()]), // <-- Allow endDate to be null
-		])
-		.refine(([start, end]) => !end || start <= end, {
-			message: 'Start date must be before end date',
-			path: ['dateRange'],
-		}),
+	startDate: z.date({
+		required_error: 'Vui lòng chọn ngày bắt đầu chu kỳ',
+		invalid_type_error: 'Ngày không hợp lệ',
+	}),
 })
 
 type BirthControlFormData = z.infer<typeof birthControlSchema>
@@ -31,93 +27,128 @@ interface BirthControlFormProps {
 }
 
 const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
-	const CreateBirthControl = useCreateBirthControl()
+	const { setBirthControl } = useBirthControl()
+	const createBirthControl = useCreateBirthControl()
 	const updateBirthControl = useUpdateBirthControl()
+
+	const [startDate, setStartDate] = useState<Date | null>(null)
+	const [isSaving, setIsSaving] = useState(false)
+	const lastSavedDateRef = useRef<Date | null>(null)
 
 	const {
 		register,
-		handleSubmit,
 		setValue,
-		watch,
 		formState: { errors },
 	} = useForm<BirthControlFormData>({
 		resolver: zodResolver(birthControlSchema),
 		defaultValues: {
 			accountID,
-			dateRange: [undefined as any, undefined as any],
 		},
 	})
 
-	const onSubmit = (data: BirthControlFormData) => {
-		const [startDate, endDate] = data.dateRange
+	// Handle async save operation
+	const handleSaveDate = useCallback(
+		async (date: Date) => {
+			setIsSaving(true)
+			setValue('startDate', date)
 
-		CreateBirthControl.mutate(
-			{
-				accountId: accountID,
-				startDate: startDate.toISOString(),
-				endDate: endDate?.toISOString(),
-			},
-			{
-				onSuccess: () => {},
-				onError: () => {
-					updateBirthControl.mutate({
+			try {
+				// Try to create first
+				const result = await createBirthControl.mutateAsync({
+					accountId: accountID,
+					startDate: date.toISOString(),
+				})
+
+				// Update local state with the new data
+				setBirthControl(result)
+				toast.success(`Đã lưu ngày: ${date.toLocaleDateString('vi-VN')}`)
+			} catch (error) {
+				// If create fails, try to update
+				try {
+					const result = await updateBirthControl.mutateAsync({
 						accountId: accountID,
-						startDate: startDate.toISOString(),
-						endDate: endDate?.toISOString(),
+						startDate: date.toISOString(),
 					})
-				},
-			}
-		)
 
-		console.log('Form submitted:', data)
-	}
+					// Update local state with the updated data
+					setBirthControl(result)
+					toast.success(`Đã cập nhật ngày: ${date.toLocaleDateString('vi-VN')}`)
+				} catch (updateError) {
+					console.error('Both create and update failed:', error, updateError)
+					toast.error('Không thể lưu thông tin. Vui lòng thử lại sau.')
+				}
+			} finally {
+				setIsSaving(false)
+			}
+		},
+		[
+			accountID,
+			setValue,
+			createBirthControl,
+			updateBirthControl,
+			setBirthControl,
+		]
+	)
+
+	// Auto-save when date changes (only if different from last saved)
+	useEffect(() => {
+		if (
+			startDate &&
+			!isSaving &&
+			(!lastSavedDateRef.current ||
+				!isSameDay(startDate, lastSavedDateRef.current))
+		) {
+			handleSaveDate(startDate)
+			lastSavedDateRef.current = startDate
+		}
+	}, [startDate, isSaving, handleSaveDate])
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-			<input type='hidden' {...register('accountID')} />
+		<div className='bg-white p-6 rounded-[30px] shadow-sm border border-gray-200'>
+			<div className='space-y-6'>
+				<input type='hidden' {...register('accountID')} />
 
-			<div>
-				<label htmlFor='dateRange' className='block mb-2'>
-					Birth Control Date
-				</label>
-				<DatePicker
-					selectsRange
-					startDate={watch('dateRange')?.[0]}
-					endDate={watch('dateRange')?.[1]}
-					onChange={dates => setValue('dateRange', dates as [Date, Date])}
-					dateFormat='yyyy-MM-dd'
-					placeholderText='Select date range'
-					isClearable
-					className='w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-					calendarClassName='rounded-xl shadow-lg bg-white p-4 border border-gray-200'
-					popperClassName='z-50'
-					dayClassName={date => {
-						const today = new Date()
-						const isToday =
-							date.getDate() === today.getDate() &&
-							date.getMonth() === today.getMonth() &&
-							date.getFullYear() === today.getFullYear()
+				{/* Header */}
+				<div className='text-center'>
+					<h2 className='text-2xl font-bold text-main mb-2'>Theo Dõi Chu Kỳ</h2>
+					<p className='text-gray-600 text-sm'>
+						Chọn ngày bắt đầu chu kỳ kinh nguyệt của bạn
+					</p>
+				</div>
 
-						return `rounded-full w-10 h-10 flex items-center justify-center transition-all
-      ${
-				isToday
-					? 'border border-blue-500 text-blue-600 font-semibold'
-					: 'hover:bg-blue-100'
-			}`
-					}}
-				/>
-				{errors.dateRange && (
-					<p className='text-red-500'>{errors.dateRange.message as string}</p>
-				)}
+				{/* Date Selection */}
+				<div className='space-y-4'>
+					<label className='block text-sm font-medium text-gray-700'>
+						Ngày bắt đầu chu kỳ
+					</label>
+					<div className='relative'>
+						<SingleDateCalendar
+							selectedDate={startDate}
+							setSelectedDate={setStartDate}
+						/>
+						{isSaving && (
+							<div className='absolute inset-0 bg-white/80 flex items-center justify-center rounded-[15px]'>
+								<div className='flex items-center gap-2 text-main'>
+									<LoadingIcon className='size-4' />
+									<span className='text-sm'>Đang lưu...</span>
+								</div>
+							</div>
+						)}
+					</div>
+					{errors.startDate && (
+						<p className='text-red-500 text-sm mt-1'>
+							{errors.startDate.message}
+						</p>
+					)}
+				</div>
+
+				{/* Info */}
+				<div className='text-xs text-gray-500 text-center'>
+					<p>Thông tin sẽ được lưu tự động khi bạn chọn ngày</p>
+					<p>Bạn có thể cập nhật bất cứ lúc nào</p>
+				</div>
 			</div>
-
-			<button
-				type='submit'
-				className='bg-accent text-white p-2 rounded-full hover:bg-rose-500 duration-300'
-			>
-				Submit
-			</button>
-		</form>
+		</div>
 	)
 }
 

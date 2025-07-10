@@ -2,6 +2,7 @@
 
 namespace Application.DTOs.Account;
 
+
 public class AccountViewModel
 {
     public Guid Id { get; set; }
@@ -13,4 +14,6 @@ public class AccountViewModel
     public DateOnly? DateOfBirth { get; set; }
     public string? AvatarUrl { get; set; }
     public bool? IsDeleted { get; set; }
+    public string? Phone { get; set; }
+    public StaffInfoViewModel? StaffInfo { get; set; }    
 }

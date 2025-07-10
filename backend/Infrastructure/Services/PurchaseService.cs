@@ -57,22 +57,11 @@ public class PurchaseService(
             purchase.OrderDetails.Add(ordDetail);
         }
 
-        ////create paymentHistory for purchase
-        //var paymentHistory = new PaymentHistory
-        //{
-        //    Purchase = purchase,
-        //    TransactionId = Guid.NewGuid(),
-        //    Amount = totalPrice,
-        //    CreatedAt = DateTime.Now,
-        //    PaymentMethod = ,
-        //    Status = PaymentHistoryStatus.Pending
-        //};
-        //purchase.PaymentHistory = paymentHistory;
         await purchaseRepository.AddAsync(purchase);
 
         return new BookingServiceResponse
         {
-            message = "Booking successful"
+            PurchaseId = purchase.Id.ToString("D"),
         };
     }
 

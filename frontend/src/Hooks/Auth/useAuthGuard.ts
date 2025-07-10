@@ -8,7 +8,7 @@ import {
 } from '@/Utils/Permissions/isAllowedRole'
 import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 import { useGetMe } from '@/Services/account-service'
-import useToken from '../useToken'
+import useToken from './useToken'
 
 export function useAuthGuard(
 	requiredRole: PermissionLevel = PermissionLevel.staff
@@ -25,27 +25,30 @@ export function useAuthGuard(
 		const validation = isTokenValid(token)
 
 		if (!validation.valid) {
-			accountStore.removeAccount()
-			tokenStore.removeAccessToken()
+			if (accountStore.data !== null || token) {
+				accountStore.removeAccount()
+				tokenStore.removeAccessToken()
 
-			let errorParam = 'authentication_error'
-			if (validation.error === 'no_token') errorParam = 'no_session'
-			if (validation.error === 'invalid_token') errorParam = 'invalid_token'
-			if (validation.error === 'token_expired') errorParam = 'session_expired'
+				let errorParam = 'authentication_error'
+				if (validation.error === 'no_token') errorParam = 'no_session'
+				if (validation.error === 'invalid_token') errorParam = 'invalid_token'
+				if (validation.error === 'token_expired') errorParam = 'session_expired'
 
-			router.push(`/login?error=${errorParam}`)
+				router.push(`/login?error=${errorParam}`)
+			}
 		}
-	}, [token, isHydrated])
+	}, [token, isHydrated, router, accountStore, tokenStore])
 
 	useEffect(() => {
 		if (token && user) {
-			accountStore.setAccount(user)
-
+			if (accountStore.data !== user) {
+				accountStore.setAccount(user)
+			}
 			if (!isAllowedRole(user.role.name, requiredRole)) {
 				router.push('/403')
 			}
 		}
-	}, [user, token, isHydrated])
+	}, [user, token, isHydrated, router, requiredRole, accountStore])
 
 	return {
 		user,

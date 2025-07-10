@@ -17,6 +17,6 @@ public interface IPurchaseRepository
     Task<Purchase?> GetById(Guid id);
     Task Update(Purchase purchase);
     Task Delete(Purchase purchase);
+    Task<List<Purchase>> GetAllPurchasesAsync();
     
-    Task <List<Purchase>> GetAllAsync();
 }

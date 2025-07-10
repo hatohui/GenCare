@@ -58,7 +58,7 @@ public class ConversationService(IConversationRepository conversationRepository,
         { 
             ConversationId = conversation.Id,
             MemberId = conversation.MemberId,
-            StaffId = conversation.StaffId,
+            //StaffId = conversation.StaffId,
             StartAt = conversation.StartAt,
             Status = conversation.Status,
            
@@ -84,7 +84,7 @@ public class ConversationService(IConversationRepository conversationRepository,
             {
                 ConversationId = c.Id,
                 MemberId = c.MemberId,
-                StaffId = c.StaffId,
+               // StaffId = c.StaffId,
                 StartAt = c.StartAt,
                 Status = c.Status
             }).ToList()

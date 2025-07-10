@@ -13,6 +13,6 @@ public interface IPaymentHistoryRepository
     Task<PaymentHistory?> GetById(Guid id);
     Task Update(PaymentHistory paymentHistory);
     Task Delete(PaymentHistory paymentHistory);
+    Task<HashSet<Guid>> GetPaidPurchaseIdsAsync(IEnumerable<Purchase> purchases);
     
-    Task<PaymentHistory?> ConfirmPayment(PaymentHistory paymentHistory);
 }
