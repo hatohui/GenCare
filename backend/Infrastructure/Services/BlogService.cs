@@ -10,8 +10,8 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository,
-       ITagRepository tagRepository,
-       IMediaRepository mediaRepository) : IBlogService
+                       ITagRepository tagRepository,
+                       IMediaRepository mediaRepository) : IBlogService
 {
     public async Task AddBlogAsync(BlogCreateRequest request, string accountId)
     {
@@ -100,24 +100,25 @@ public class BlogService(IBlogRepository blogRepository,
     public async Task<List<ModelOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
     {
         List<Blog> blogs;
-
-        // Ưu tiên lọc tag trước nếu có
+        //check if request has tags or search query
         if (!string.IsNullOrWhiteSpace(request.Tags))
         {
             blogs = await blogRepository.SearchBlogByTag(request.Tags);
         }
+        // check if request has search query search
         else if (!string.IsNullOrWhiteSpace(request.Search))
         {
             blogs = await blogRepository.SearchBlogsAsync(request.Search);
         }
+        //if no tags or search query, get all blogs
         else
         {
             blogs = await blogRepository.GetListOfBlogsAsync();
         }
-        
+        //if pagination is not provided, default to page 1 and count 10
         int page = request.Page ?? 1;
         int count = request.Count ?? 10;
-
+        //pagination logic
         var pagedBlogs = blogs
             .OrderByDescending(b => b.CreatedAt)
             .Skip((page - 1) * count)
