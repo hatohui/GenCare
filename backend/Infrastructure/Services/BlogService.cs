@@ -97,7 +97,7 @@ public class BlogService(IBlogRepository blogRepository,
         await blogRepository.Update(blog);
     }
 
-    public async Task<List<ListOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
+    public async Task<List<ModelOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
     {
         List<Blog> blogs;
 
@@ -124,14 +124,14 @@ public class BlogService(IBlogRepository blogRepository,
             .Take(count)
             .ToList();
 
-        var responses = new List<ListOfBlogResponse>();
+        var responses = new List<ModelOfBlogResponse>();
 
         foreach (var blog in pagedBlogs)
         {
             var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
             var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
 
-            responses.Add(new ListOfBlogResponse
+            responses.Add(new ModelOfBlogResponse
             {
                 Id = blog.Id.ToString(),
                 Title = blog.Title,
@@ -151,6 +151,39 @@ public class BlogService(IBlogRepository blogRepository,
         }
 
         return responses;
+    }
+
+    public async Task<ModelOfBlogResponse> GetBlogByIdAsync(string blogId)
+    {
+        //get blog by id
+        var blog = await blogRepository.GetById(blogId);
+        if (blog == null)
+        {
+            throw new AppException(404, "Blog is not found");
+        }
+
+        //get tag titles by blog id
+        var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
+        //get image urls by blog id
+        var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
+
+        return new ModelOfBlogResponse()
+        {
+            Id = blog.Id.ToString("D"),
+            Title = blog.Title,
+            Content = blog.Content,
+            Author = blog.Author,
+            CreatedAt = blog.CreatedAt,
+            PublishedAt = blog.PublishedAt,
+            CreatedBy = blog.CreatedBy?.ToString("D"),
+            UpdatedAt = blog.UpdatedAt,
+            UpdatedBy = blog.UpdatedBy?.ToString("D"),
+            DeletedAt = blog.DeletedAt,
+            DeletedBy = blog.DeletedBy?.ToString("D"),
+            IsDeleted = blog.IsDeleted,
+            TagTitles = tagTitles,
+            ImageUrls = imageUrls
+        };
     }
 
 
