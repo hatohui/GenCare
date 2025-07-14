@@ -5,29 +5,27 @@ namespace Infrastructure.Repositories;
 public class ReminderRepository(IApplicationDbContext context) : IReminderRepository
 {
 
-    public async Task<List<UnpaidPurchaseInfo>> GetUnpaidPurchasesOverDaysAsync(int days)
+    public async Task<List<UnpaidPurchaseInfo>> GetUnpaidPurchasesOverDaysAsync(int days, DateTime now)
     {
-        var deadline = DateTime.Now.AddDays(-days);
+        var deadline = now.AddDays(-days);
 
-        var result = await context.Purchases
-            .Where(purchase =>
-                purchase.CreatedAt <= deadline &&
-                !purchase.IsDeleted &&
-                !context.PaymentHistories.Any(ph => ph.PurchaseId == purchase.Id && ph.Status == "paid")
-            )
-            .Join(
-                context.Accounts,
-                purchase => purchase.AccountId,
-                account => account.Id,
-                (purchase, account) => new UnpaidPurchaseInfo
-                {
-                    PurchaseId = purchase.Id,
-                    Email = account.Email,
-                    FirstName = account.FirstName,
-                    CreatedAt = purchase.CreatedAt
-                }
-            )
-            .ToListAsync();
+        var result = await (
+            from purchase in context.Purchases
+            join account in context.Accounts on purchase.AccountId equals account.Id
+            join payment in context.PaymentHistories.Where(ph => ph.Status == "paid")
+                on purchase.Id equals payment.PurchaseId into paymentGroup
+            from payment in paymentGroup.DefaultIfEmpty()
+            where purchase.CreatedAt <= deadline
+                  && !purchase.IsDeleted
+                  && payment == null
+            select new UnpaidPurchaseInfo
+            {
+                PurchaseId = purchase.Id,
+                Email = account.Email,
+                FirstName = account.FirstName,
+                CreatedAt = purchase.CreatedAt
+            }
+        ).ToListAsync();
 
         return result;
     }

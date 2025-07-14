@@ -7,7 +7,7 @@ public class ReminderService(IReminderRepository reminderRepository, IEmailServi
 
     public async Task SendUnpaidPurchaseRemindersAsync()
     {
-        var purchases = await reminderRepository.GetUnpaidPurchasesOverDaysAsync(3);
+        var purchases = await reminderRepository.GetUnpaidPurchasesOverDaysAsync(3, DateTime.Now);
         foreach (var purchase in purchases)
         {
             var subject = "Nhắc nhở thanh toán đơn hàng";

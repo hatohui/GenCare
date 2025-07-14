@@ -8,6 +8,9 @@
         /// <param name="days">
         /// The number of days to check; purchases created before the current time minus this value will be considered.
         /// </param>
+        /// <param name="now">
+        /// The current date and time to use as the reference point for calculations. This allows for testability and injection of the current time.
+        /// </param>
         /// <returns>
         /// A task representing the asynchronous operation, containing a list of <see cref="UnpaidPurchaseInfo"/>
         /// for purchases older than the specified number of days with no successful payments.
@@ -16,7 +19,7 @@
         /// This method performs a join between the Purchases and Accounts tables, and checks that there is 
         /// no associated payment in the PaymentHistories table with a status of "paid".
         /// </remarks>
-        Task<List<UnpaidPurchaseInfo>> GetUnpaidPurchasesOverDaysAsync(int days);
+        Task<List<UnpaidPurchaseInfo>> GetUnpaidPurchasesOverDaysAsync(int days, DateTime now);
 
     }
 
