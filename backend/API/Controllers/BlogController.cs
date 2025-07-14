@@ -79,4 +79,17 @@ public class BlogController(IBlogService blogService) : ControllerBase
         await blogService.DeleteBlogAsync(id, accountId.ToString("D"));
         return NoContent(); //204
     }
+    /// <summary>
+    /// Retrieves a blog entry by its unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the blog to retrieve.</param>
+    /// <returns>The blog entry with the specified ID.</returns>
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetBlogById([FromRoute] string id)
+    {
+        var blog = await blogService.GetBlogByIdAsync(id);
+        
+        return Ok(blog);
+    }
 }

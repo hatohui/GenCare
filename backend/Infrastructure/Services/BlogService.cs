@@ -10,8 +10,8 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository,
-       ITagRepository tagRepository,
-       IMediaRepository mediaRepository) : IBlogService
+                       ITagRepository tagRepository,
+                       IMediaRepository mediaRepository) : IBlogService
 {
     public async Task AddBlogAsync(BlogCreateRequest request, string accountId)
     {
@@ -97,41 +97,42 @@ public class BlogService(IBlogRepository blogRepository,
         await blogRepository.Update(blog);
     }
 
-    public async Task<List<ListOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
+    public async Task<List<ModelOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request)
     {
         List<Blog> blogs;
-
-        // Ưu tiên lọc tag trước nếu có
+        //check if request has tags or search query
         if (!string.IsNullOrWhiteSpace(request.Tags))
         {
             blogs = await blogRepository.SearchBlogByTag(request.Tags);
         }
+        // check if request has search query search
         else if (!string.IsNullOrWhiteSpace(request.Search))
         {
             blogs = await blogRepository.SearchBlogsAsync(request.Search);
         }
+        //if no tags or search query, get all blogs
         else
         {
             blogs = await blogRepository.GetListOfBlogsAsync();
         }
-        
+        //if pagination is not provided, default to page 1 and count 10
         int page = request.Page ?? 1;
         int count = request.Count ?? 10;
-
+        //pagination logic
         var pagedBlogs = blogs
             .OrderByDescending(b => b.CreatedAt)
             .Skip((page - 1) * count)
             .Take(count)
             .ToList();
 
-        var responses = new List<ListOfBlogResponse>();
+        var responses = new List<ModelOfBlogResponse>();
 
         foreach (var blog in pagedBlogs)
         {
             var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
             var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
 
-            responses.Add(new ListOfBlogResponse
+            responses.Add(new ModelOfBlogResponse
             {
                 Id = blog.Id.ToString(),
                 Title = blog.Title,
@@ -151,6 +152,39 @@ public class BlogService(IBlogRepository blogRepository,
         }
 
         return responses;
+    }
+
+    public async Task<ModelOfBlogResponse> GetBlogByIdAsync(string blogId)
+    {
+        //get blog by id
+        var blog = await blogRepository.GetById(blogId);
+        if (blog == null)
+        {
+            throw new AppException(404, "Blog is not found");
+        }
+
+        //get tag titles by blog id
+        var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
+        //get image urls by blog id
+        var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
+
+        return new ModelOfBlogResponse()
+        {
+            Id = blog.Id.ToString("D"),
+            Title = blog.Title,
+            Content = blog.Content,
+            Author = blog.Author,
+            CreatedAt = blog.CreatedAt,
+            PublishedAt = blog.PublishedAt,
+            CreatedBy = blog.CreatedBy?.ToString("D"),
+            UpdatedAt = blog.UpdatedAt,
+            UpdatedBy = blog.UpdatedBy?.ToString("D"),
+            DeletedAt = blog.DeletedAt,
+            DeletedBy = blog.DeletedBy?.ToString("D"),
+            IsDeleted = blog.IsDeleted,
+            TagTitles = tagTitles,
+            ImageUrls = imageUrls
+        };
     }
 
 
