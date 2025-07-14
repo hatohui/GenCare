@@ -55,6 +55,9 @@ public class VNPayService(IOptions<VNPayConfig> VNPayConfig,
         vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + purchaseId);
         vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
         vnpay.AddRequestData("vnp_ReturnUrl", vnp_ReturnUrl);
+
+        //tạo mới 1 mã payid để gửi cho vnpay và lưu mã đó cho payment_history
+        Guid tmp = new();
         vnpay.AddRequestData("vnp_TxnRef", purchaseId); // Mã tham chiếu của giao dịch tại hệ 
         //thống của merchant.Mã này là duy nhất dùng để phân biệt các đơn hàng gửi sang VNPAY.Không được
         //        trùng lặp trong ngày

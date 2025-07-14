@@ -536,6 +536,9 @@ public class GenCareDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.PaymentMethod)
                 .HasMaxLength(10)
                 .HasColumnName("payment_method");
+            entity.Property(e => e.PayId)
+                .HasMaxLength(255)
+                .HasColumnName("pay_id");
 
             entity.HasOne(d => d.Purchase).WithOne(p => p.PaymentHistory)
                 .HasForeignKey<PaymentHistory>(d => d.PurchaseId)
