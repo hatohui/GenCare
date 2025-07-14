@@ -29,12 +29,21 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             throw new AppException(404, "Purchase not found");
         }
         //calculate total amount
-        decimal amount = 0;
-        foreach (var orderDetail in purchase.OrderDetails)
+        var paymentHis = await paymentHistoryService.GetPaymentHistoryById(purchase.Id);
+        //calculate total amount
+        if (paymentHis == null)
         {
-            var service = await serviceRepository.SearchServiceByIdAsync(orderDetail.ServiceId);
-            if (service != null) amount += service.Price;
+            throw new AppException(404, $"Payment history of {purchase.Id} not found");
         }
+        decimal amount = paymentHis.Amount;
+        int amountTmp = (int)amount;
+
+        //tạo mới 1 mã payid để gửi cho vnpay và lưu mã đó cho payment_history
+        Guid payId = Guid.NewGuid();
+        string strPayId = payId.ToString("D");
+        paymentHis.PayId = payId;
+        await paymentHistoryService.UpdatePaymentHistoryAsync(paymentHis);
+
         var orderInfo = $"Payment for purchase {purchase.Id.ToString("D")}";
         var returnUrl = momoConfig.Value.ReturnUrl;
         var notifyUrl = momoConfig.Value.NotifyUrl;
@@ -48,7 +57,7 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             $"&amount={amount.ToString("F0")}" +
             $"&extraData={extraData}" +
             $"&ipnUrl={notifyUrl}" +
-            $"&orderId={purchaseId}" +
+            $"&orderId={strPayId}" +
             $"&orderInfo={orderInfo}" +
             $"&partnerCode={momoConfig.Value.PartnerCode}" +
             $"&redirectUrl={returnUrl}" +
@@ -62,8 +71,8 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         {
             partnerCode = momoConfig.Value.PartnerCode,
             requestId = requestId!,
-            amount = Convert.ToInt64(amount), // Convert to string with no decimal places
-            orderId = purchaseId,
+            amount = amountTmp.ToString(), // Convert to string with no decimal places
+            orderId = strPayId,
             orderInfo = orderInfo!,
             redirectUrl = returnUrl!,
             ipnUrl = notifyUrl!,
@@ -128,18 +137,33 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         if (signature == checkSignature)
         {
             //xử lý db
-            PaymentHistoryModel model = new() 
-            {
-                PurchaseId = orderId.ToString(),
-                TransactionId = transId.ToString(),
-                Amount = Convert.ToDecimal(amount),
-                PaymentMethod = PaymentMethod.Momo,
-            };
+            //PaymentHistoryModel model = new() 
+            //{
+            //    PurchaseId = orderId.ToString(),
+            //    TransactionId = transId.ToString(),
+            //    Amount = Convert.ToDecimal(amount),
+            //    PaymentMethod = PaymentMethod.Momo,
+            //};
 
-            await paymentHistoryService.CreatePaymentHistoryAsync(model);
+            //
+
+            Guid payIdTmp = Guid.Parse(orderId);
+            var paymentHistory = await paymentHistoryService.GetPaymentHistoryByPayId(payIdTmp);
+            //xử lý db
+            if (paymentHistory == null)
+            {
+                throw new AppException(404, $"Payment history with PayId {orderId} not found");
+            }
+            paymentHistory.TransactionId = transId.ToString();
+            paymentHistory.Status = PaymentStatus.Paid;
+            paymentHistory.PaymentMethod = PaymentMethod.Momo;
+            //
+            //await paymentHistoryService.CreatePaymentHistoryAsync(model);
+
+            await paymentHistoryService.UpdatePaymentHistoryAsync(paymentHistory);
             //create test result for all order details
             //get purchase by id
-            var purchase = await purchaseRepository.GetById(Guid.Parse(orderId));
+            var purchase = await purchaseRepository.GetById(paymentHistory.PurchaseId);
             var orderDetails = purchase?.OrderDetails;
             if (orderDetails != null)
             {

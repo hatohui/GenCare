@@ -11,4 +11,10 @@ public interface IPaymentHistoryService
 {
     Task CreatePaymentHistoryAsync(PaymentHistoryModel paymentHistory);
     Task<List<PaymentHistory>> GetAllPaymentHistoriesAsync();
+
+    Task<PaymentHistory?> GetPaymentHistoryById(Guid purchaseId);
+
+    Task UpdatePaymentHistoryAsync(PaymentHistory paymentHistory);
+
+    Task<PaymentHistory?> GetPaymentHistoryByPayId(Guid payId);
 }
