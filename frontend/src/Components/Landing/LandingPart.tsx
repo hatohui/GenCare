@@ -62,9 +62,9 @@ const LandingPart = () => {
 		<div className='relative min-h-screen w-full overflow-hidden'>
 			<section className='relative h-screen w-full grid xl:gap-8 grid-cols-1 lg:grid-cols-2 pb-40'>
 				{/* page */}
-				<div className='backdrop-blur-md lg:backdrop-blur-none flex flex-col gap-6 pt-[20%] text-shadow-2xs lg:col-span-1 sm:px-[5%] lg:pl-[15%] md:px-[5%] xl:pl-[20%] xl:pr-[15%] 2xl:pt-[20%] 2xl:pr-[10%]'>
+				<div className='backdrop-blur-md lg:backdrop-blur-none flex flex-col pt-[20%] text-shadow-2xs lg:col-span-1 sm:px-[5%] lg:pl-[15%] md:px-[5%] xl:pl-[20%] xl:pr-[15%] 2xl:pt-[20%] 2xl:pr-[10%] w-full'>
 					<motion.h3
-						className='font-semibold px-6 pb-2 text-secondary text-center lg:text-left text-lg tracking-wide'
+						className='font-semibold px-6 pb-2 text-secondary text-center lg:text-left text-sm tracking-wide'
 						{...animateStyle}
 					>
 						<span className='ml-1 bg-gradient-to-r from-secondary to-main bg-clip-text text-transparent'>
@@ -73,7 +73,7 @@ const LandingPart = () => {
 					</motion.h3>
 
 					<motion.h1
-						className='text-center lg:text-left p-6 text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold xl:font-extrabold leading-tight'
+						className='text-center lg:text-left p-6 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold xl:font-extrabold leading-tight'
 						{...animateStyle}
 					>
 						{!typing ? (
@@ -99,7 +99,7 @@ const LandingPart = () => {
 					</motion.h1>
 
 					<motion.p
-						className='text-lg text-center lg:text-left text-shadow-2xs text-muted-foreground px-6 xl:pr-48 leading-relaxed'
+						className='text-sm text-center lg:text-left text-shadow-2xs text-muted-foreground px-6 xl:pr-48 leading-relaxed'
 						{...animateStyle}
 						transition={{ delay: 1.5 }}
 					>
@@ -109,7 +109,7 @@ const LandingPart = () => {
 
 					<div className='flex justify-center lg:justify-start w-full mt-8 mb-16'>
 						<AnimatedLink
-							className='px-8 py-5 bg-gradient-to-r from-accent to-accent/80 border-2 border-white/60 shadow-2xl hover:shadow-[0_0_32px_8px_rgba(16,185,129,0.25)] hover:border-accent/80 focus:outline-none focus:ring-4 focus:ring-accent/30 rounded-full font-bold text-lg text-white transition-all duration-300 flex items-center gap-3 backdrop-blur-xl hover:scale-105 active:scale-95'
+							className='px-6 py-4 bg-gradient-to-r from-accent to-accent/80 border-2 border-white/60 shadow-2xl hover:shadow-[0_0_32px_8px_rgba(16,185,129,0.25)] hover:border-accent/80 focus:outline-none focus:ring-4 focus:ring-accent/30 rounded-full font-bold text-sm text-white transition-all duration-300 flex items-center gap-3 backdrop-blur-xl hover:scale-105 active:scale-95'
 							href='/register'
 							style={{ zIndex: 10 }}
 							{...buttonVariants}
