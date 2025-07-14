@@ -7,7 +7,7 @@ import MobileButton from './MobileButton'
 import Logo from './NavLogo'
 import MobileMenu from './MobileMenu'
 import NavButtons from './NavButtons'
-import UserActionButton from './UserActionButton'
+import UserProfileDropdown from './UserProfileDropdown'
 
 export type NavComponentProps = { className?: string; onTop: boolean }
 
@@ -41,7 +41,7 @@ const NavBar = () => {
 			<AnimatePresence>
 				{showNav && (
 					<motion.header
-						className='fixed top-0 mt-[1%] left-1/2 overflow-clip -translate-x-1/2 px-4 py-2 rounded-full w-[98%] md:w-[90dvw] z-40 backdrop-blur-md'
+						className='fixed top-0 mt-[1%] left-1/2 overflow-visible -translate-x-1/2 px-4 py-2 rounded-full w-[98%] md:w-[90dvw] z-40 backdrop-blur-md'
 						initial='hidden'
 						animate={onTop ? 'onTop' : 'visible'}
 						exit='exit'
@@ -117,7 +117,7 @@ const NavBar = () => {
 								aria-label='Navigation menu'
 							/>
 							<div role='group' aria-label='User actions'>
-								<UserActionButton
+								<UserProfileDropdown
 									className='hidden md:flex'
 									onTop={onTop}
 									aria-label='User actions'

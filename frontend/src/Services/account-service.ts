@@ -10,6 +10,8 @@ import { GetConsultantsResponse } from '@/Interfaces/Account/Schema/consultant'
 import axiosInstance from '@/Utils/axios'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { Role } from '@/Utils/Permissions/isAllowedRole'
+import useToken from '@/Hooks/Auth/useToken'
+import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 
 const accountApi = {
 	getMe: () => {
@@ -252,11 +254,15 @@ const accountApi = {
 }
 
 export const useGetMe = () => {
+	const tokenStore = useToken()
+
 	return useQuery({
 		queryKey: ['me'],
 		queryFn: () => accountApi.getMe(),
 		refetchOnMount: true,
 		refetchOnWindowFocus: true,
+		enabled:
+			!!tokenStore.accessToken && isTokenValid(tokenStore.accessToken).valid,
 	})
 }
 

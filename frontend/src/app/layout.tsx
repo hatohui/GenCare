@@ -6,6 +6,7 @@ import Script from 'next/script'
 import TanstackProvider from '@/Components/Providers/TanstackProvider'
 import LoadingPage from '@/Components/Loading'
 import { Toaster } from 'react-hot-toast'
+import UserDataLoader from '@/Components/UserDataLoader'
 
 const inter = Inter({
 	variable: '--font-inter',
@@ -63,7 +64,10 @@ export default function RootLayout({
 			</head>
 			<body className={`${inter.variable} ${geistMono.variable} antialiased `}>
 				<Suspense fallback={<LoadingPage />}>
-					<TanstackProvider>{children}</TanstackProvider>
+					<TanstackProvider>
+						<UserDataLoader />
+						{children}
+					</TanstackProvider>
 				</Suspense>
 				<Toaster
 					position='top-right'

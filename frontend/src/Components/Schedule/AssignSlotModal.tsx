@@ -84,7 +84,7 @@ const AssignSlotModal = ({
 		<>
 			{/* Overlay */}
 			<motion.div
-				className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
+				className='fixed inset-0 bg-black/40 backdrop-blur-md z-40'
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
@@ -100,7 +100,7 @@ const AssignSlotModal = ({
 				transition={{ duration: 0.2, ease: 'easeOut' }}
 			>
 				<div
-					className='relative bg-white w-full max-w-md rounded-xl p-6 shadow-2xl border border-gray-200 max-h-[80vh] overflow-hidden flex flex-col'
+					className='relative bg-white w-full max-w-md rounded-xl shadow-lg border border-gray-200 max-h-[80vh] overflow-hidden flex flex-col'
 					onClick={e => e.stopPropagation()}
 				>
 					{/* Close Button */}
