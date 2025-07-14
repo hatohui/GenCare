@@ -17,8 +17,8 @@ const TestResultEditModal: React.FC<TestResultEditModalProps> = ({
 	if (!isOpen || !orderDetailId) return null
 
 	return (
-		<div className='fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4'>
-			<div className='bg-white rounded-[30px] w-[80%] shadow-2xl relative max-h-[95vh] overflow-y-auto'>
+		<div className='fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-[9999] p-4'>
+			<div className='bg-white rounded-xl shadow-lg border border-gray-200 w-[80%] relative max-h-[95vh] overflow-y-auto'>
 				<button
 					onClick={onClose}
 					className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors text-2xl font-bold z-10'
