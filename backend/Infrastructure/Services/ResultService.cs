@@ -169,7 +169,7 @@ public class ResultService(IResultRepository resultRepository,
         };
     }
 
-    public async Task<List<BookedServiceModel>> GetBookedServiceModelAsync(int page, int count, string? orderDetailId)
+    public async Task<BookedServiceForTestResponse> GetBookedServiceModelAsync(int page, int count, string? orderDetailId)
     {
         var purchases = await purchaseRepository.GetAllPurchasesAsync();
         var paidPurchaseIds = await paymentHistoryRepository.GetPaidPurchaseIdsAsync(purchases);
@@ -205,12 +205,13 @@ public class ResultService(IResultRepository resultRepository,
                 });
             }
         }
+        var ordered = result.OrderByDescending(x => x.CreatedAt).ToList();
 
-        return result
-            .OrderByDescending(x => x.CreatedAt)
-            .Skip((page - 1) * count)
-            .Take(count)
-            .ToList();
+        return new BookedServiceForTestResponse()
+        {
+            TotalCount = ordered.Count,
+            Result = ordered.Skip((page - 1) * count).Take(count).ToList()
+        };
     }
 
     public async Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync()

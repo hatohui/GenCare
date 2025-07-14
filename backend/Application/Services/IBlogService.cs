@@ -36,6 +36,8 @@ namespace Application.Services
         /// <param name="accountId">The ID of the account performing the deletion.</param>
         Task DeleteBlogAsync(string blogId, string accountId);
         
-        Task<List<ListOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request);
+        Task<List<ModelOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request);
+        
+        Task<ModelOfBlogResponse> GetBlogByIdAsync(string blogId);
     }
 }

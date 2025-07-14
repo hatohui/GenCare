@@ -1,4 +1,5 @@
 import { useState, useEffect, memo } from 'react'
+import { Circle, Timer } from 'lucide-react'
 
 interface AppointmentCountdownProps {
 	scheduleAt: string
@@ -51,11 +52,15 @@ const AppointmentCountdownComponent = ({
 
 	return (
 		<div
-			className={`text-xs font-bold px-2 py-1 rounded-full text-center ${
+			className={`text-xs font-bold px-3 py-1.5 rounded-full text-center flex items-center justify-center gap-2 ${
 				isLive ? 'bg-red-600 text-white' : 'bg-orange-500 text-white'
 			}`}
 		>
-			{isLive ? '🔴 ' : '⏱️ '}
+			{isLive ? (
+				<Circle className='w-3 h-3 fill-current' />
+			) : (
+				<Timer className='w-3 h-3' />
+			)}
 			{timeLeft}
 		</div>
 	)

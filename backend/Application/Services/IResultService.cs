@@ -12,7 +12,7 @@ public interface IResultService
     Task<UpdateTestResultResponse> UpdateResultAsync(UpdateTestResultRequest request, Guid orderDetailId);
 
     Task<DeleteTestResultResponse> DeleteResultAsync(DeleteTestResultRequest request);
-    Task<List<BookedServiceModel>> GetBookedServiceModelAsync(int page, int count, string? orderDetailId);
+    Task<BookedServiceForTestResponse> GetBookedServiceModelAsync(int page, int count, string? orderDetailId);
     Task<List<ViewTestResultResponse>> ViewAllResultForStaffAsync();
     Task AddResult(Result result);
 }

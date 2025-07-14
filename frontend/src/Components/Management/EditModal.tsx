@@ -43,7 +43,7 @@ export function EditModal({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
+						className='fixed inset-0 bg-black/40 backdrop-blur-md z-40'
 					/>
 
 					{/* Modal */}
@@ -60,7 +60,7 @@ export function EditModal({
 						aria-labelledby='edit-modal-title'
 					>
 						<div
-							className='rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
+							className='bg-white rounded-xl shadow-lg border border-gray-200 max-w-2xl w-full max-h-[90vh] overflow-hidden'
 							onClick={e => e.stopPropagation()}
 						>
 							<div className='overflow-y-auto max-h-[90vh] scroll-bar'>

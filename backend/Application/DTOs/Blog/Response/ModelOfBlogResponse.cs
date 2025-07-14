@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Blog.Response;
 
-public class ListOfBlogResponse
+public class ModelOfBlogResponse
 {
     public string Id { get; set; } = null!;
     public string Title { get; set; } = null!;
