@@ -92,10 +92,10 @@ public class PurchaseService(
         foreach (var purchase in purchases)
         {
             //check if payment history of this purchase exists
-            var paid = true;
+            var paid = false;
             var paymentHistory = await paymentHistoryRepository.GetById(purchase.Id);
-            if (paymentHistory == null)
-                paid = false;
+            if (paymentHistory!.Status.ToLower() == PaymentStatus.Paid.ToLower())
+                paid = true;
             //get order details of this purchase
             var orderDetails = purchase.OrderDetails;
             foreach (var orderDetail in orderDetails)
