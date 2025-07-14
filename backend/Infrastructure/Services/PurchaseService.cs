@@ -70,9 +70,6 @@ public class PurchaseService(
         purchase.PaymentHistory = payHis;
         await purchaseRepository.AddAsync(purchase);
 
-        
-
-
         return new BookingServiceResponse
         {
             PurchaseId = purchase.Id.ToString("D"),
