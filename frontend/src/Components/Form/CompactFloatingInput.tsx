@@ -48,8 +48,8 @@ const CompactFloatingInput: React.FC<CompactFloatingInputProps> = ({
 					'w-full px-3 py-2 text-sm border border-white round',
 					'bg-gradient-to-r from-white to-general backdrop-blur-sm',
 					'transition-all duration-200 ease-in-out',
-					'focus:outline-none focus:ring-2 focus:ring-main/30 focus:border-main',
-					'hover:border-secondary/50',
+					'focus:outline-none focus:ring-2 focus:ring-main focus:ring-opacity-30 focus:border-main',
+					'hover:border-secondary hover:border-opacity-50',
 					'placeholder-transparent',
 					disabled && 'bg-gray-50 cursor-not-allowed opacity-60',
 					'peer'

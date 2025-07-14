@@ -2,28 +2,26 @@
 
 import React from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Account } from '@/Interfaces/Auth/Types/Account'
-import { ServiceDTO } from '@/Interfaces/Service/Schemas/service'
 import { AccountForm } from './AccountForm'
 import { ServiceForm } from './ServiceForm'
 
-interface EditModalProps<T> {
+interface EditModalProps {
+	id: string
 	isOpen: boolean
 	onClose: () => void
-	data: T
 	type: 'account' | 'service'
 	onSave: (data: any) => void
 	isLoading?: boolean
 }
 
-export function EditModal<T extends Account | ServiceDTO>({
+export function EditModal({
+	id,
 	isOpen,
 	onClose,
-	data,
 	type,
 	onSave,
 	isLoading = false,
-}: EditModalProps<T>) {
+}: EditModalProps) {
 	const handleEscape = (e: React.KeyboardEvent) => {
 		if (e.key === 'Escape') {
 			onClose()
@@ -45,8 +43,7 @@ export function EditModal<T extends Account | ServiceDTO>({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
-						onClick={handleOverlayClick}
+						className='fixed inset-0 bg-black/40 backdrop-blur-md z-40'
 					/>
 
 					{/* Modal */}
@@ -57,18 +54,19 @@ export function EditModal<T extends Account | ServiceDTO>({
 						transition={{ duration: 0.2, ease: 'easeOut' }}
 						className='fixed inset-0 z-50 flex items-center justify-center px-4'
 						onKeyDown={handleEscape}
+						onClick={handleOverlayClick}
 						role='dialog'
 						aria-modal='true'
 						aria-labelledby='edit-modal-title'
 					>
 						<div
-							className='bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
+							className='bg-white rounded-xl shadow-lg border border-gray-200 max-w-2xl w-full max-h-[90vh] overflow-hidden'
 							onClick={e => e.stopPropagation()}
 						>
-							<div className='overflow-y-auto max-h-[90vh] p-6'>
+							<div className='overflow-y-auto max-h-[90vh] scroll-bar'>
 								{type === 'account' && (
 									<AccountForm
-										initialData={data as Account}
+										id={id}
 										onSave={onSave}
 										onCancel={onClose}
 										isLoading={isLoading}
@@ -76,7 +74,7 @@ export function EditModal<T extends Account | ServiceDTO>({
 								)}
 								{type === 'service' && (
 									<ServiceForm
-										initialData={data as ServiceDTO}
+										id={id}
 										onSave={onSave}
 										onCancel={onClose}
 										isLoading={isLoading}

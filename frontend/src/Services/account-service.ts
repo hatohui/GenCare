@@ -1,27 +1,53 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	DeleteAccountResponse,
 	GetAccountByIdResponse,
 	GetAccountByPageResponse,
-	PostAccountRequest,
-	PostAccountResponse,
+	CreateAccountRequest,
+	CreateAccountResponse,
 	PutAccountRequest,
-	PutAccountResponse,
 } from '@/Interfaces/Account/Schema/account'
 import { GetConsultantsResponse } from '@/Interfaces/Account/Schema/consultant'
 import axiosInstance from '@/Utils/axios'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { Role } from '@/Utils/Permissions/isAllowedRole'
-
-const ACCOUNT_URL = `${DEFAULT_API_URL}/accounts`
+import useToken from '@/Hooks/Auth/useToken'
+import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 
 const accountApi = {
 	getMe: () => {
 		console.log('queried')
 
-		const queryUrl = `${ACCOUNT_URL}/me`
-		return axiosInstance.get<GetAccountByIdResponse>(queryUrl).then(res => {
-			return res.data
+		return axiosInstance.get<any>('/accounts/me').then(res => {
+			// Transform backend ProfileViewModel to frontend StaffAccount format
+			const backendData = res.data
+			const transformedData: GetAccountByIdResponse = {
+				id: backendData.id,
+				email: backendData.email,
+				firstName: backendData.firstName,
+				lastName: backendData.lastName,
+				gender: backendData.gender,
+				phoneNumber: backendData.phoneNumber,
+				dateOfBirth: backendData.dateOfBirth,
+				avatarUrl: backendData.avatarUrl,
+				isDeleted: backendData.isDeleted,
+				deletedAt: backendData.deletedAt,
+				deletedBy: backendData.deletedBy,
+				role: backendData.role,
+				staffInfo:
+					backendData.degree ||
+					backendData.yearOfExperience ||
+					backendData.biography ||
+					backendData.departmentName
+						? {
+								departmentId: '', // Backend ProfileViewModel doesn't include this, will need to fetch separately
+								degree: backendData.degree,
+								yearOfExperience: backendData.yearOfExperience,
+								biography: backendData.biography,
+								departmentName: backendData.departmentName || '', // Now backend includes this
+						  }
+						: undefined,
+			}
+			return transformedData
 		})
 	},
 	/**
@@ -37,14 +63,18 @@ const accountApi = {
 		role?: Role | null,
 		active?: boolean | null
 	) => {
-		const queryUrl = `${ACCOUNT_URL}?page=${page}&count=${count}${
-			search ? `&search=${search}` : ''
-		}${role ? `&role=${role}` : ''}${
-			active !== null && active !== undefined ? `&active=${active}` : ''
-		}`
+		const params = new URLSearchParams({
+			page: page.toString(),
+			count: count.toString(),
+		})
+
+		if (search) params.append('search', search)
+		if (role) params.append('role', role)
+		if (active !== null && active !== undefined)
+			params.append('active', active.toString())
 
 		return axiosInstance
-			.get<GetAccountByPageResponse>(queryUrl)
+			.get<GetAccountByPageResponse>(`/accounts?${params.toString()}`)
 			.then(res => res.data)
 	},
 
@@ -56,22 +86,62 @@ const accountApi = {
 	 * @returns A promise that resolves with a paginated list of consultants
 	 */
 	getConsultants: (count: number, page: number, search: string | null) => {
-		const queryUrl = `${ACCOUNT_URL}/consultants?page=${page}&count=${count}${
-			search ? `&search=${search}` : ''
-		}`
+		const params = new URLSearchParams({
+			page: page.toString(),
+			count: count.toString(),
+		})
+
+		if (search) params.append('search', search)
 
 		return axiosInstance
-			.get<GetConsultantsResponse>(queryUrl)
+			.get<GetConsultantsResponse>(`/accounts/consultants?${params.toString()}`)
 			.then(res => res.data)
 	},
 
 	getById: (id: string) => {
-		const queryUrl = `${ACCOUNT_URL}/${id}`
-		return axiosInstance
-			.get<GetAccountByIdResponse>(queryUrl)
-			.then(res => res.data)
+		return axiosInstance.get<any>(`/accounts/${id}`).then(res => {
+			// Transform backend AccountViewModel to frontend StaffAccount format
+			const backendData = res.data
+			console.log('🔧 Account Service - Backend response:', backendData)
+			if (backendData.staffInfo) {
+				console.log(
+					'🔧 Account Service - Backend staff info:',
+					backendData.staffInfo
+				)
+				console.log(
+					'🔧 Account Service - Backend department ID:',
+					backendData.staffInfo.departmentId
+				)
+			}
+
+			const transformedData: GetAccountByIdResponse = {
+				id: backendData.id,
+				email: backendData.email,
+				firstName: backendData.firstName,
+				lastName: backendData.lastName,
+				gender: backendData.gender,
+				phoneNumber: backendData.phone, // Note: backend uses 'phone', frontend expects 'phoneNumber'
+				dateOfBirth: backendData.dateOfBirth,
+				avatarUrl: backendData.avatarUrl,
+				isDeleted: backendData.isDeleted,
+				deletedAt: backendData.deletedAt,
+				deletedBy: backendData.deletedBy,
+				role: backendData.role,
+				staffInfo: backendData.staffInfo
+					? {
+							departmentId: backendData.staffInfo.departmentId,
+							degree: backendData.staffInfo.degree,
+							yearOfExperience: backendData.staffInfo.yearOfExperience,
+							biography: backendData.staffInfo.biography,
+							departmentName: backendData.staffInfo.departmentName,
+					  }
+					: undefined,
+			}
+			console.log('🔧 Account Service - Transformed data:', transformedData)
+			return transformedData
+		})
 	},
-	create: (data: PostAccountRequest) => {
+	create: (data: CreateAccountRequest) => {
 		// Transform frontend structure to backend structure
 		const transformedData: any = {
 			AccountRequest: {
@@ -88,32 +158,78 @@ const accountApi = {
 		}
 
 		// Only add StaffInfoRequest if all required fields are present
-		if (data.staffInfo && data.department) {
+		if (data.staffInfo && data.staffInfo.departmentId) {
 			transformedData.StaffInfoRequest = {
 				degree: data.staffInfo.degree,
 				yearOfExperience: data.staffInfo.yearOfExperience,
 				biography: data.staffInfo.biography || '',
-				departmentId: data.department, // Map department to departmentId
+				departmentId: data.staffInfo.departmentId, // Use departmentId from staffInfo
 			}
 		}
 
-		return axiosInstance
-			.post<PostAccountResponse>(ACCOUNT_URL, transformedData)
-			.then(res => res.data)
+		return axiosInstance.post<any>('/accounts', transformedData).then(res => {
+			// Transform backend StaffAccountCreateResponse to frontend StaffAccount format
+			const backendData = res.data
+			const transformedResponse: CreateAccountResponse = {
+				id: backendData.id,
+				email: backendData.email,
+				firstName: backendData.firstName,
+				lastName: backendData.lastName,
+				gender: backendData.gender,
+				phoneNumber: backendData.phoneNumber,
+				dateOfBirth: backendData.dateOfBirth,
+				avatarUrl: backendData.avatarUrl,
+				isDeleted: false, // New accounts are not deleted
+				role: { name: backendData.role, description: '' }, // Backend only returns role name
+				staffInfo: {
+					departmentId: '', // Backend doesn't return this in create response
+					degree: backendData.degree,
+					yearOfExperience: backendData.yearOfExperience,
+					biography: backendData.biography,
+					departmentName: backendData.departmentName,
+				},
+			}
+			return transformedResponse
+		})
 	},
 
 	updateAccount: (id: string, data: PutAccountRequest) => {
-		const queryUrl = `${ACCOUNT_URL}/${id}`
+		// Transform frontend request to match backend UpdateAccountRequest structure
+		const transformedData = {
+			Account: {
+				FirstName: data.account?.firstName,
+				LastName: data.account?.lastName,
+				PhoneNumber: data.account?.phoneNumber || null, // Convert empty string to null
+				Email: data.account?.email,
+				RoleId: data.account?.roleId,
+				Gender: data.account?.gender,
+				DateOfBirth: data.account?.dateOfBirth
+					? new Date(data.account.dateOfBirth).toISOString().split('T')[0]
+					: null,
+				AvatarUrl: data.account?.avatarUrl,
+				IsDeleted: data.account?.isDeleted,
+			},
+			StaffInfo: data.staffInfo
+				? {
+						DepartmentId: data.staffInfo.departmentId,
+						Degree: data.staffInfo.degree,
+						YearOfExperience: data.staffInfo.yearOfExperience,
+						Biography: data.staffInfo.biography,
+				  }
+				: null,
+		}
+
 		console.log('🌐 Account Service - Sending PUT request:', {
-			url: queryUrl,
-			data: data,
-			phoneNumber: data.account?.phoneNumber,
+			url: `/accounts/${id}`,
+			originalData: data,
+			transformedData: transformedData,
 		})
+
 		return axiosInstance
-			.put<PutAccountResponse>(queryUrl, data)
+			.put<any>(`/accounts/${id}`, transformedData)
 			.then(res => {
 				console.log('✅ Account Service - PUT response:', res.data)
-				return res.data
+				return res.data || {}
 			})
 			.catch(err => {
 				console.error(
@@ -125,24 +241,28 @@ const accountApi = {
 	},
 
 	delete: (id: string) => {
-		const queryUrl = `${ACCOUNT_URL}/${id}`
 		return axiosInstance
-			.delete<DeleteAccountResponse>(queryUrl)
+			.delete<DeleteAccountResponse>(`/accounts/${id}`)
 			.then(res => res.data)
 	},
 
 	getConsultantById: (id: string) => {
-		const queryUrl = `${ACCOUNT_URL}/consultants/${id}`
-		return axiosInstance.get(queryUrl).then(res => res.data)
+		return axiosInstance
+			.get(`/accounts/consultants/${id}`)
+			.then(res => res.data)
 	},
 }
 
 export const useGetMe = () => {
+	const tokenStore = useToken()
+
 	return useQuery({
 		queryKey: ['me'],
 		queryFn: () => accountApi.getMe(),
 		refetchOnMount: true,
 		refetchOnWindowFocus: true,
+		enabled:
+			!!tokenStore.accessToken && isTokenValid(tokenStore.accessToken).valid,
 	})
 }
 
@@ -180,7 +300,7 @@ export const useGetAccountById = (id: string) => {
 
 export const useCreateAccount = () => {
 	return useMutation({
-		mutationFn: (data: PostAccountRequest) => accountApi.create(data),
+		mutationFn: (data: CreateAccountRequest) => accountApi.create(data),
 	})
 }
 

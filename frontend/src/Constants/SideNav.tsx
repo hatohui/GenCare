@@ -1,6 +1,7 @@
 import {
 	AccountSVG,
 	BookingListVSG,
+	CalendarSVG,
 	ChatSVG,
 	ClockSVG,
 	CustomerSVG,
@@ -35,12 +36,6 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		to: '/dashboard/statistics',
 		svg: <ServiceSVG />,
 		level: PermissionLevel.admin,
-	},
-	{
-		label: 'Invoices',
-		to: '/dashboard/invoices',
-		svg: <MoneySVG />,
-		level: PermissionLevel.consultant,
 	},
 	{
 		label: 'Accounts',
@@ -109,6 +104,12 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.member,
 	},
 	{
+		label: 'Appointments',
+		to: '/app/appointments',
+		svg: <CalendarSVG />,
+		level: PermissionLevel.member,
+	},
+	{
 		label: 'Payments',
 		to: '/dashboard/payments',
 		svg: <MoneySVG />,
@@ -118,6 +119,12 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		label: 'Test Results',
 		to: '/dashboard/tests',
 		svg: <AccountSVG />,
+		level: PermissionLevel.staff,
+	},
+	{
+		label: 'Appointments',
+		to: '/dashboard/appointments',
+		svg: <CalendarSVG />,
 		level: PermissionLevel.staff,
 	},
 	{

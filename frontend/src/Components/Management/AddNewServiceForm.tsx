@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useCreateService } from '@/Services/service-services'
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import clsx from 'clsx'
 import {
 	ServiceFormSchema,
@@ -203,12 +203,19 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 							<label className='block text-sm font-medium text-gray-700 mb-1'>
 								Price
 							</label>
-							<input
-								{...register('price', { valueAsNumber: true })}
-								type='number'
-								className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-								placeholder='Enter price'
-							/>
+							<div className='relative'>
+								<input
+									{...register('price', { valueAsNumber: true })}
+									type='number'
+									min='0'
+									step='1000'
+									className='w-full pl-4 pr-12 py-2 rounded-md border border-gray-300 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+									placeholder='Enter price'
+								/>
+								<div className='absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none'>
+									<span className='text-gray-500 text-sm font-medium'>VND</span>
+								</div>
+							</div>
 							{errors.price && (
 								<p className='text-sm text-red-500 mt-1'>
 									{errors.price.message}
@@ -218,7 +225,7 @@ const AddNewServiceForm = ({ onSuccess, onClose, className }: Props) => {
 
 						<button
 							type='submit'
-							className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition disabled:opacity-60 disabled:cursor-not-allowed'
+							className='w-full bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-md transition disabled:opacity-60 disabled:cursor-not-allowed'
 							disabled={loading}
 						>
 							{loading ? 'Creating...' : 'Create Service'}

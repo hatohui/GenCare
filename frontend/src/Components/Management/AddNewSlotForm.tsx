@@ -73,7 +73,7 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 		<>
 			{/* Overlay */}
 			<motion.div
-				className='fixed inset-0 bg-black/30 backdrop-blur-[6px] z-40'
+				className='fixed inset-0 bg-black/40 backdrop-blur-md z-40'
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
@@ -90,7 +90,7 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 			>
 				<div
 					className={clsx(
-						'relative bg-white w-full max-w-md rounded-xl p-6 shadow-2xl border border-gray-200',
+						'relative bg-white w-full max-w-md rounded-xl shadow-lg border border-gray-200',
 						className
 					)}
 					onClick={e => e.stopPropagation()}
@@ -162,7 +162,7 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 
 						<button
 							type='submit'
-							className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition disabled:opacity-60 disabled:cursor-not-allowed'
+							className='w-full bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-md transition disabled:opacity-60 disabled:cursor-not-allowed'
 							disabled={loading}
 						>
 							{loading ? 'Creating...' : 'Create Slot'}

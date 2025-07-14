@@ -18,9 +18,9 @@ public class BlogController(IBlogService blogService) : ControllerBase
     /// </summary>
     /// <returns>A list of all blogs.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetAllBlogs()
+    public async Task<IActionResult> GetAllBlogs([FromQuery] ListOfBlogRequest request)
     {
-        var blogs = await blogService.GetAllBlogsAsync();
+        var blogs = await blogService.GetListOfBlogsAsync(request);
         return Ok(blogs);
     }
 
@@ -78,5 +78,18 @@ public class BlogController(IBlogService blogService) : ControllerBase
         var accountId = JwtHelper.GetAccountIdFromToken(access);
         await blogService.DeleteBlogAsync(id, accountId.ToString("D"));
         return NoContent(); //204
+    }
+    /// <summary>
+    /// Retrieves a blog entry by its unique identifier.
+    /// </summary>
+    /// <param name="id">The ID of the blog to retrieve.</param>
+    /// <returns>The blog entry with the specified ID.</returns>
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetBlogById([FromRoute] string id)
+    {
+        var blog = await blogService.GetBlogByIdAsync(id);
+        
+        return Ok(blog);
     }
 }

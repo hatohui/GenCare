@@ -1,9 +1,6 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
-
-const BOOKING_URL = `${DEFAULT_API_URL}/birthControl`
 
 type BirthControlRequest = {
 	accountId: string
@@ -11,21 +8,20 @@ type BirthControlRequest = {
 }
 
 const birthControlApi = {
+	// Private API - requires authentication
 	get: async (id: string) => {
 		return axiosInstance
-			.get<BirthControlDates>(`${BOOKING_URL}/${id}`)
+			.get<BirthControlDates>(`/birthControl/${id}`)
 			.then(res => res.data)
 	},
+	// Private API - requires authentication
 	update: async (data: BirthControlRequest) =>
-		axiosInstance.put<BirthControlDates>(`${BOOKING_URL}`, data).then(res => {
-			console.log('start date end ate', data)
-
-			console.log(res.data)
+		axiosInstance.put<BirthControlDates>('/birthControl', data).then(res => {
 			return res.data
 		}),
+	// Private API - requires authentication
 	create: async (data: BirthControlRequest) =>
-		axiosInstance.post<BirthControlDates>(`${BOOKING_URL}`, data).then(res => {
-			console.log(res.data)
+		axiosInstance.post<BirthControlDates>('/birthControl', data).then(res => {
 			return res.data
 		}),
 }
@@ -39,8 +35,13 @@ export const useGetBirthControl = (id: string) => {
 }
 
 export const useCreateBirthControl = () => {
+	const queryClient = useQueryClient()
+
 	return useMutation({
 		mutationFn: (data: BirthControlRequest) => birthControlApi.create(data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['getBirthControl'] })
+		},
 	})
 }
 

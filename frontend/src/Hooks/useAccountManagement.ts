@@ -7,6 +7,7 @@ import {
 	useUpdateAccount,
 } from '@/Services/account-service'
 import { Account } from '@/Interfaces/Auth/Types/Account'
+import { PutAccountRequest } from '@/Interfaces/Account/Schema/account'
 import { toast } from 'react-hot-toast'
 
 export const useAccountManagement = () => {
@@ -58,9 +59,9 @@ export const useAccountManagement = () => {
 		)
 	}
 
-	const handleUpdate = (id: string, data: any) => {
+	const handleUpdate = (id: string, data: PutAccountRequest) => {
 		updateAccountMutation.mutate(
-			{ id, data: { account: data } },
+			{ id, data },
 			{
 				onSuccess: () => {
 					query.refetch()
