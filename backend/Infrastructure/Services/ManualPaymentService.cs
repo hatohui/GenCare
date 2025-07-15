@@ -47,18 +47,26 @@ public class ManualPaymentService(
         //calculate total amount
         var totalAmount = orderDetails.Sum(od => servicePriceDict[od.ServiceId]);
 
-        var payment = new PaymentHistory()
-        {
-            PurchaseId = purchase.Id,
-            CreatedAt = ToUnspecified(DateTime.Now),
-            TransactionId = CreateRandomTransaction.GenerateRandomString(10),
-            Amount = totalAmount,
-            Status = PaymentStatus.Paid,
-            PaymentMethod = PaymentMethod.Cash,
-            ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
-            
-        };
-        await paymentHistoryRepository.Add(payment);
+        // var payment = new PaymentHistory()
+        // {
+        //     PurchaseId = purchase.Id,
+        //     CreatedAt = ToUnspecified(DateTime.Now),
+        //     TransactionId = CreateRandomTransaction.GenerateRandomString(10),
+        //     Amount = totalAmount,
+        //     Status = PaymentStatus.Paid,
+        //     PaymentMethod = PaymentMethod.Cash,
+        //     ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7)),
+        //     
+        // };
+        // await paymentHistoryRepository.Add(payment);
+        //change flow set status of payment to paid not create payment history
+        existingPayment!.Status = PaymentStatus.Paid;
+        existingPayment.TransactionId = CreateRandomTransaction.GenerateRandomString(10);
+        existingPayment.Amount = totalAmount;
+        existingPayment.ExpiredAt = ToUnspecified(DateTime.Now.AddDays(7));
+        existingPayment.PaymentMethod = PaymentMethod.Cash;
+        
+        await paymentHistoryRepository.UpdateAsync(existingPayment);
         // Create result for each order detail
         foreach (var orderDetail in orderDetails)
         {
