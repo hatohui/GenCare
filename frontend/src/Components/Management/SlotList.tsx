@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { GetSlotResponse } from '@/Interfaces/Slot/Schema/slot'
-import { formatTimeForDisplay } from '@/Utils/dateTime'
+import { format } from 'date-fns'
 
 const SlotList = ({
 	data,
@@ -14,11 +14,15 @@ const SlotList = ({
 }) => {
 	const formatTime = (timeString: string | undefined) => {
 		if (!timeString) return 'N/A'
-		return formatTimeForDisplay(timeString)
+		try {
+			return format(new Date(timeString), 'HH:mm dd/MM/yyyy')
+		} catch (error) {
+			return 'Invalid date'
+		}
 	}
 
 	return (
-		<div className='flex-1 overflow-x-auto'>
+		<div className='flex-1 overflow-x-auto px-1'>
 			<table className='min-w-full bg-white border border-gray-200 rounded-lg shadow-sm'>
 				<thead className='bg-gray-50 border-b border-gray-200'>
 					<tr>
@@ -40,14 +44,14 @@ const SlotList = ({
 					</tr>
 				</thead>
 				<tbody className='bg-white divide-y divide-gray-200'>
-					{data.data.slots && data.data.slots.length === 0 ? (
+					{!data?.slots || data.slots.length === 0 ? (
 						<tr>
 							<td colSpan={5} className='px-6 py-12 text-center text-gray-500'>
 								Không có dữ liệu
 							</td>
 						</tr>
 					) : (
-						data?.data.slots.map(slot => (
+						data.slots.map(slot => (
 							<tr
 								key={slot.id}
 								className='hover:bg-gray-50 transition-colors duration-150'
