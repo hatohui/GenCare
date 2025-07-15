@@ -1,6 +1,4 @@
 import React, { ChangeEvent } from 'react'
-import { CheckSVG } from './CRUDSVG'
-import { PencilSVG } from '../SVGs'
 import clsx from 'clsx'
 
 export type EditableFieldProps<T extends Record<string, any>> = {
@@ -28,14 +26,37 @@ const EditableField = <T extends Record<string, any>>({
 }: EditableFieldProps<T>) => {
 	const isEditing = editingField === name
 
+	// Handle value display and input value based on type
+	const getDisplayValue = () => {
+		if (type === 'number' && !isEditing && typeof value === 'number') {
+			return value.toLocaleString()
+		}
+		return String(value)
+	}
+
+	const getInputValue = () => {
+		return String(value)
+	}
+
+	// Determine the actual input type to render
+	const getInputType = () => {
+		if (!isEditing) return 'text' // Always text when not editing
+		return type === 'number' ? 'number' : 'text'
+	}
+
 	const baseClass = clsx(
-		'p-2 w-full rounded-md border-none truncate ring-1 ring-blue-500 focus:ring-blue-500 read-only:bg-gray-300 read-only:ring-transparent',
+		'w-full px-4 py-3 border rounded-lg transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+		{
+			'bg-gray-50 border-gray-200 text-gray-700 cursor-pointer hover:bg-gray-100':
+				!isEditing,
+			'bg-white border-gray-300 shadow-sm': isEditing,
+		},
 		className
 	)
 
 	const controlPositionClass = clsx(
-		'absolute right-2',
-		type === 'textarea' && 'top-2'
+		'absolute right-3',
+		type === 'textarea' ? 'top-3' : 'top-1/2 -translate-y-1/2'
 	)
 
 	return (
@@ -44,24 +65,32 @@ const EditableField = <T extends Record<string, any>>({
 				{type === 'textarea' ? (
 					<textarea
 						name={String(name)}
-						value={value as string}
+						value={getInputValue()}
 						onChange={onChange}
 						readOnly={!isEditing}
 						className={clsx(
 							baseClass,
-							'min-h-[10rem] h-auto resize-none text-wrap overflow-y-scroll scroll-bar bg-gray-100'
+							'min-h-[140px] resize-none pr-12 leading-relaxed'
 						)}
 						aria-label={String(name)}
+						placeholder={isEditing ? 'Enter description...' : ''}
 					/>
 				) : (
 					<input
-						type={type}
+						type={getInputType()}
 						name={String(name)}
-						value={String(value)} // ✅ ensures value is string
+						value={isEditing ? getInputValue() : getDisplayValue()}
 						onChange={onChange}
 						readOnly={!isEditing}
-						className={clsx(baseClass, 'bg-gray-100')}
+						className={clsx(baseClass, 'pr-12')}
 						aria-label={String(name)}
+						placeholder={isEditing ? `Enter ${String(name)}...` : ''}
+						{...(type === 'number' &&
+							isEditing && {
+								step: 'any',
+								min: '0',
+								inputMode: 'numeric',
+							})}
 					/>
 				)}
 
@@ -69,29 +98,57 @@ const EditableField = <T extends Record<string, any>>({
 					{isEditing ? (
 						<button
 							type='button'
-							className='group relative flex items-center justify-center hover:text-green-500 hover:scale-105 transition duration-150'
+							className='group relative flex items-center justify-center w-9 h-9 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-full transition-all duration-200 shadow-sm hover:shadow-md'
 							onClick={() => handleFieldSave(name)}
 						>
-							<CheckSVG />
-							<span className='absolute bottom-full mb-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap'>
-								Save
+							<svg
+								className='w-5 h-5'
+								fill='none'
+								stroke='currentColor'
+								viewBox='0 0 24 24'
+							>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									strokeWidth={2}
+									d='M5 13l4 4L19 7'
+								/>
+							</svg>
+							<span className='absolute bottom-full mb-2 px-3 py-1 text-xs text-white bg-gray-800 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10'>
+								Save Changes
 							</span>
 						</button>
 					) : (
 						<button
 							type='button'
-							className='group relative flex items-center justify-center hover:text-blue-500 hover:scale-105 transition duration-150'
+							className='group relative flex items-center justify-center w-9 h-9 text-gray-400 hover:text-accent hover:bg-accent/10 rounded-full transition-all duration-200 shadow-sm hover:shadow-md'
 							onClick={() => toggleFieldEdit(name)}
 						>
-							<PencilSVG />
-							<span className='absolute bottom-full mb-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap'>
-								Edit
+							<svg
+								className='w-5 h-5'
+								fill='none'
+								stroke='currentColor'
+								viewBox='0 0 24 24'
+							>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									strokeWidth={2}
+									d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
+								/>
+							</svg>
+							<span className='absolute bottom-full mb-2 px-3 py-1 text-xs text-white bg-gray-800 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10'>
+								Edit Field
 							</span>
 						</button>
 					)}
 				</div>
 			</div>
-			{error && <p className='mt-1 text-sm text-red-500'>{error}</p>}
+			{error && (
+				<div className='mt-2 p-3 bg-red-50 border border-red-200 rounded-lg'>
+					<p className='text-sm text-red-600 font-medium'>{error}</p>
+				</div>
+			)}
 		</>
 	)
 }

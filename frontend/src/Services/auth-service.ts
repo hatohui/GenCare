@@ -6,21 +6,18 @@ import { OauthAPI } from '@/Interfaces/Auth/Schema/oauth'
 import { RegisterApi } from '@/Interfaces/Auth/Schema/register'
 import { TokenData } from '@/Interfaces/Auth/Schema/token'
 import axiosInstance from '@/Utils/axios'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-
-const AUTH_URL = `${DEFAULT_API_URL}/auth`
 
 const authApi = {
 	register: (data: RegisterApi) => {
 		return axios
-			.post<TokenData>(`${AUTH_URL}/register`, data)
+			.post<TokenData>(`${DEFAULT_API_URL}/auth/register`, data)
 			.then(res => res.data)
 	},
 	login: (data: LoginApi) => {
 		return axios
-			.post<TokenData>(`${AUTH_URL}/login`, data, {
+			.post<TokenData>(`${DEFAULT_API_URL}/auth/login`, data, {
 				withCredentials: true,
 			})
 			.then(res => {
@@ -30,7 +27,7 @@ const authApi = {
 	Oauth: (data: OauthAPI) => {
 		return axiosInstance
 			.post<TokenData>(
-				`${AUTH_URL}/google`,
+				'/auth/google',
 				{
 					credential: data.credential,
 				},
@@ -40,19 +37,13 @@ const authApi = {
 			)
 			.then(res => res.data)
 	},
-	logout: (header: string | undefined, logoutHandler: () => void) => {
-		if (!header || header?.endsWith('undefined')) {
-			logoutHandler()
-			return Promise.resolve()
-		}
-
+	logout: (logoutHandler: () => void) => {
 		return axiosInstance
 			.post(
-				`${AUTH_URL}/logout`,
+				'/auth/logout',
 				{},
 				{
 					withCredentials: true,
-					headers: { Authorization: header },
 				}
 			)
 			.then(res => {
@@ -86,7 +77,6 @@ export const useOauthAccount = () => {
 export const useLogoutAccount = () => {
 	const tokenStore = useToken()
 	const accountStore = useAccountStore()
-	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	const handleLogout = () => {
@@ -96,6 +86,6 @@ export const useLogoutAccount = () => {
 	}
 
 	return useMutation({
-		mutationFn: () => authApi.logout(header, handleLogout),
+		mutationFn: () => authApi.logout(handleLogout),
 	})
 }

@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Conversation.Request;
 using Application.DTOs.Conversation.Response;
+using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -7,14 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/conversation")]
+[Route("api/conversations")]
 public class ConversationController(IConversationService conversationService): ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateConversationRequest request)
+    public async Task<IActionResult> Create([FromBody] InitConversationWithMessage request)
     {
-        var result = await conversationService.CreateConversationAsync(request);
-        return Ok(result);        
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var response = await conversationService.InitConversationWithMessageAsync(request, token);
+        return Ok(response);
     }
     [HttpGet("all")]
     public async Task<IActionResult> ViewAllConversations()
@@ -48,7 +50,7 @@ public class ConversationController(IConversationService conversationService): C
         return BadRequest(response);
     }
 
-    [HttpGet("view")]
+    [HttpGet]
     public async Task<IActionResult> ViewConversation([FromQuery] ViewConversationRequest request)
     {
         var response = await conversationService.ViewConversationAsync(request);
@@ -56,4 +58,19 @@ public class ConversationController(IConversationService conversationService): C
             return Ok(response);
         return NotFound(new { Message = "Conversation not found." });
     }
+    [HttpPost("assign/{conversationId}")]
+    public async Task<IActionResult> AssignStaffToConversation(Guid conversationId)
+    {
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var staffId = JwtHelper.GetAccountIdFromToken(token);
+
+        var result = await conversationService.AssignStaffToConversationAsync(conversationId, staffId);
+        if (!result)
+            return BadRequest("Unable to assign staff. The conversation may have already been assigned.");
+
+        return Ok(new { Success = true, Message = "Staff assigned successfully." });
+
+    }
+
+
 }

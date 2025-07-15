@@ -55,12 +55,12 @@ public class TestTrackerController(IResultService resultService) : ControllerBas
     public async Task<IActionResult> GetAllBookedOrders(
         [FromQuery] int? page,
         [FromQuery] int? count,
-        [FromQuery] string? orderDetailId)
+        [FromQuery] string? search)
     {
         var currentPage = page.GetValueOrDefault(1);
         var pageSize = count.GetValueOrDefault(10);
 
-        var result = await resultService.GetBookedServiceModelAsync(currentPage, pageSize, orderDetailId);
+        var result = await resultService.GetBookedServiceModelAsync(currentPage, pageSize, search);
         return Ok(result);
     }
 

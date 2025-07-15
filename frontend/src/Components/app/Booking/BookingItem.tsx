@@ -9,6 +9,8 @@ import { useMomoPay, useDeleteOrderDetail } from '@/Services/book-service'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
 import ConfirmDialog from '@/Components/ConfirmationDialog'
+import { parseISO, isValid, format as formatDateFns } from 'date-fns'
+import { vi } from 'date-fns/locale'
 
 interface BookingItemProps {
 	booking: OrderDetail
@@ -27,15 +29,11 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 
 	const formatDate = (date: Date | string) => {
 		try {
-			const dateObj = date instanceof Date ? date : new Date(date)
-			if (isNaN(dateObj.getTime())) {
+			const dateObj = date instanceof Date ? date : parseISO(date)
+			if (!isValid(dateObj)) {
 				return 'Ngày không hợp lệ'
 			}
-			return dateObj.toLocaleDateString('vi-VN', {
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric',
-			})
+			return formatDateFns(dateObj, 'EEEE, dd MMMM yyyy', { locale: vi })
 		} catch (error) {
 			console.error('Error formatting date:', error)
 			return 'Ngày không hợp lệ'

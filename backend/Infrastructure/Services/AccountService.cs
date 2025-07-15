@@ -17,8 +17,7 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Infrastructure.Services;
 
-public class AccountService
-(
+public class AccountService(
     IAccountRepository accountRepo,
     IRefreshTokenRepository refTokenRepo,
     IRoleRepository roleRepo,
@@ -52,7 +51,7 @@ public class AccountService
             DateOfBirth = request.DateOfBirth,
             Phone = request.PhoneNumber,
             RoleId = role.Id,
-            Role = role
+            Role = role,
         };
         //add user to database
         await accountRepo.AddAsync(user);
@@ -64,7 +63,7 @@ public class AccountService
         {
             AccountId = user.Id,
             Token = refToken,
-            ExpiresAt = refExpiration
+            ExpiresAt = refExpiration,
         };
         //add refresh token to database
         await refTokenRepo.AddAsync(rf);
@@ -75,7 +74,7 @@ public class AccountService
         {
             RefreshToken = rf.Token,
             AccessToken = accToken,
-            AccessTokenExpiration = accExpiration
+            AccessTokenExpiration = accExpiration,
         };
     }
 
@@ -93,7 +92,9 @@ public class AccountService
 
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         var isDevelopment = environment == "Development";
-        var schemaHost = isDevelopment ? "http://localhost:3000" : Environment.GetEnvironmentVariable("APP_URL");
+        var schemaHost = isDevelopment
+            ? "http://localhost:3000"
+            : Environment.GetEnvironmentVariable("APP_URL");
 
         //create reset password URL
         var encodedToken = WebUtility.UrlEncode(resetPwdToken);
@@ -101,7 +102,8 @@ public class AccountService
         var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
         //var callbackUrl = $"{schemaHost}/reset-password?email={encodedEmail}&token={encodedToken}";
 
-        var msg = $@"
+        var msg =
+            $@"
 <html>
 <body>
     <p>Dear user,</p>
@@ -118,16 +120,9 @@ public class AccountService
 </html>
 ";
         //send email with reset password link
-        await emailService.SendEmailAsync(
-            request.Email!,
-            "Reset Password",
-            msg
-        );
+        await emailService.SendEmailAsync(request.Email!, "Reset Password", msg);
         //return reponse
-        return new ForgotPasswordResponse
-        {
-            CallbackUrl = callbackUrl
-        };
+        return new ForgotPasswordResponse { CallbackUrl = callbackUrl };
     }
 
     public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
@@ -140,7 +135,9 @@ public class AccountService
             throw new Exception("Invalid reset password token");
         }
         //get user by email
-        var user = accountRepo.GetByEmailAsync(request.Email!) ?? throw new Exception("email in reset passsword token is invalid");
+        var user =
+            accountRepo.GetByEmailAsync(request.Email!)
+            ?? throw new Exception("email in reset passsword token is invalid");
         //check userId of token and email in request
         if (!Equals(userId, user.Result!.Id))
         {
@@ -151,7 +148,7 @@ public class AccountService
         await accountRepo.UpdateAccount(user.Result);
         return new ResetPasswordResponse
         {
-            msg = "Password reset successfully. You can now login with your new password."
+            msg = "Password reset successfully. You can now login with your new password.",
         };
     }
 
@@ -172,24 +169,29 @@ public class AccountService
 
     public async Task<(string AccessToken, string RefreshToken)> LoginAsync(AccountLoginRequest req)
     {
-        var user = await accountRepo
-                       .GetAccountByEmailPasswordAsync(req.Email, req.Password)
-                   ?? throw new InvalidCredentialsException();
-        if (user.IsDeleted) throw new AppException(401, "Account is deleted");
+        var user =
+            await accountRepo.GetAccountByEmailPasswordAsync(req.Email, req.Password)
+            ?? throw new InvalidCredentialsException();
+        if (user.IsDeleted)
+            throw new AppException(401, "Account is deleted");
         var (accessToken, _) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, _) = JwtHelper.GenerateRefreshToken(user.Id);
 
-        await refTokenRepo.AddAsync(new RefreshToken
-        {
-            AccountId = user.Id,
-            Token = refreshToken,
-            ExpiresAt = DateTime.Now.AddDays(7)
-        });
+        await refTokenRepo.AddAsync(
+            new RefreshToken
+            {
+                AccountId = user.Id,
+                Token = refreshToken,
+                ExpiresAt = DateTime.Now.AddDays(7),
+            }
+        );
 
         return (accessToken, refreshToken);
     }
 
-    public async Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefresh)
+    public async Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(
+        string oldRefresh
+    )
     {
         // 1) Xác thực chữ ký / hạn dùng
         var principal = JwtHelper.ValidateToken(oldRefresh); // nếu lỗi -> JwtHelper tự throw
@@ -208,8 +210,9 @@ public class AccountService
         }
 
         // 4) Lấy user
-        var user = await accountRepo.GetAccountByIdAsync(stored.AccountId)
-                   ?? throw new AppException(404, "User not found");
+        var user =
+            await accountRepo.GetAccountByIdAsync(stored.AccountId)
+            ?? throw new AppException(404, "User not found");
 
         // 5) Phát hành token mới (dùng DateTime.Now)
         var (newAccess, _) = JwtHelper.GenerateAccessToken(user);
@@ -219,23 +222,28 @@ public class AccountService
         stored.IsRevoked = true;
         await refTokenRepo.UpdateAsync(stored);
 
-        await refTokenRepo.AddAsync(new RefreshToken
-        {
-            AccountId = user.Id,
-            Token = newRefresh,
-            ExpiresAt = newRefreshExp
-        });
+        await refTokenRepo.AddAsync(
+            new RefreshToken
+            {
+                AccountId = user.Id,
+                Token = newRefresh,
+                ExpiresAt = newRefreshExp,
+            }
+        );
 
         return (newAccess, newRefresh);
     }
 
-    public async Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload)
+    public async Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(
+        GoogleJsonWebSignature.Payload payload
+    )
     {
         var user = await accountRepo.GetByEmailAsync(payload.Email);
         if (user is null)
         {
-            var role = await roleRepo.GetRoleByNameAsync("Member")
-                       ?? throw new Exception("Role 'Member' not found");
+            var role =
+                await roleRepo.GetRoleByNameAsync("Member")
+                ?? throw new Exception("Role 'Member' not found");
 
             user = new Account
             {
@@ -247,53 +255,62 @@ public class AccountService
                 RoleId = role.Id,
                 Role = role,
                 Gender = true,
-                IsDeleted = false
+                IsDeleted = false,
             };
 
             await accountRepo.AddAsync(user);
         }
-        if (user.IsDeleted) throw new AppException(401, "Account is deleted");
+        if (user.IsDeleted)
+            throw new AppException(401, "Account is deleted");
         var (accessToken, accessExpiration) = JwtHelper.GenerateAccessToken(user);
         var (refreshToken, refreshExpiration) = JwtHelper.GenerateRefreshToken(user.Id);
         RefreshToken rf = new()
         {
             AccountId = user.Id,
             Token = refreshToken,
-            ExpiresAt = refreshExpiration
+            ExpiresAt = refreshExpiration,
         };
         await refTokenRepo.AddAsync(rf);
 
         return (accessToken, refreshToken);
     }
 
-    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(GetAccountByPageRequest request)
+    public async Task<GetAccountByPageResponse> GetAccountsByPageAsync(
+        GetAccountByPageRequest request
+    )
     {
         // Correct paging logic: (Page - 1) * Count
         var skip = (request.Page - 1) * request.Count;
 
         // Now passing the correct skip value and other filters to the repository
-        var accounts = await accountRepo.GetAccountsByPageAsync(skip, request.Count, request.Search, request.Role, request.Active);
-        var totalCount = await accountRepo.GetTotalAccountCountAsync(request.Search, request.Role, request.Active);
+        var accounts = await accountRepo.GetAccountsByPageAsync(
+            skip,
+            request.Count,
+            request.Search,
+            request.Role,
+            request.Active
+        );
+        var totalCount = await accountRepo.GetTotalAccountCountAsync(
+            request.Search,
+            request.Role,
+            request.Active
+        );
 
         return new GetAccountByPageResponse
         {
             Accounts = accounts.ConvertAll(a => new AccountViewModel
             {
                 Id = a.Id,
-                Role = new RoleViewModel
-                {
-                    Name = a.Role.Name,
-                    Description = a.Role.Description
-                },
+                Role = new RoleViewModel { Name = a.Role.Name, Description = a.Role.Description },
                 Email = a.Email,
                 FirstName = a.FirstName ?? string.Empty,
                 LastName = a.LastName ?? string.Empty,
                 Gender = a.Gender,
                 DateOfBirth = a.DateOfBirth,
                 AvatarUrl = a.AvatarUrl,
-                IsDeleted = a.IsDeleted
+                IsDeleted = a.IsDeleted,
             }),
-            TotalCount = totalCount
+            TotalCount = totalCount,
         };
     }
 
@@ -302,6 +319,23 @@ public class AccountService
         var account = await accountRepo.GetAccountByIdAsync(accountId);
         if (account == null)
             throw new AppException(404, "Account not found");
+        //create staff info model if exists
+        StaffInfoViewModel? staffInfoModel = null;
+        if (account.StaffInfo is not null)
+        {
+            //get department by id
+            var department = await departmentRepo.GetDepartmentByIdAsync(
+                account.StaffInfo.DepartmentId
+            );
+            staffInfoModel = new StaffInfoViewModel
+            {
+                Degree = account.StaffInfo.Degree,
+                YearOfExperience = account.StaffInfo.YearOfExperience,
+                Biography = account.StaffInfo.Biography ?? string.Empty,
+                DepartmentId = account.StaffInfo.DepartmentId.ToString("D"),
+                DepartmentName = department?.Name ?? string.Empty,
+            };
+        }
         AccountViewModel rs = new()
         {
             Id = account.Id,
@@ -315,21 +349,28 @@ public class AccountService
             Role = new RoleViewModel
             {
                 Name = account.Role.Name,
-                Description = account.Role.Description
+                Description = account.Role.Description,
             },
-            Phone = account.Phone ?? string.Empty
+            Phone = account.Phone ?? string.Empty,
+            StaffInfo = staffInfoModel,
         };
         return rs;
     }
 
-    public async Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken)
+    public async Task<DeleteAccountResponse> DeleteAccountAsync(
+        DeleteAccountRequest request,
+        string accessToken
+    )
     {
         var role = JwtHelper.GetRoleFromToken(accessToken);
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
-        if (role != RoleNames.Admin) throw new AppException(403, "UNAUTHORIZED");
-        if (request.Id == Guid.Empty) throw new AppException(400, "Guid cannot be empty.");
+        if (role != RoleNames.Admin)
+            throw new AppException(403, "UNAUTHORIZED");
+        if (request.Id == Guid.Empty)
+            throw new AppException(400, "Guid cannot be empty.");
         var account = await accountRepo.DeleteAccountByAccountId(request.Id);
-        if (account == null) throw new AppException(401, "Account not found,delete failed.");
+        if (account == null)
+            throw new AppException(401, "Account not found,delete failed.");
 
         return new DeleteAccountResponse()
         {
@@ -340,46 +381,40 @@ public class AccountService
         };
     }
 
-    public async Task<StaffAccountCreateResponse> CreateStaffAccountAsync(StaffAccountCreateRequest request, string accessToken)
+    public async Task CreateAccountAsync(AccountCreateRequest request, string accessToken)
     {
-        //check if the user has permission to create staff accounts
-        var role = JwtHelper.GetRoleFromAccessToken(accessToken);
-        if (role == null)
-            throw new AppException(401, "Invalid access token. Role not found.");
-        if (role.ToLower() != RoleNames.Admin.ToLower())
-            throw new AppException(401, "Invalid account to create staff account.");
         //get account id in access token
         var id = JwtHelper.GetAccountIdFromToken(accessToken);
-        // Check if the account already exists by email
-
-        //check in cache
-        var cacheKey = $"account:{request.AccountRequest!.Email.ToLower()}"; // using email as cache key
-        var cachedAccount = await distributedCache.GetStringAsync(cacheKey);
-        if (!string.IsNullOrEmpty(cachedAccount))
-        {
-            // If found in cache, deserialize and return
-            // convert string to Account object
-            var existingAccount = Newtonsoft.Json.JsonConvert.DeserializeObject<Account>(cachedAccount);
-
-            if (existingAccount != null)
-                throw new AppException(409, "Account with this email already exists.");
-        }
-        //check in database
+        // Check if the account already exists by emai
         var existingStaff = await accountRepo.GetByEmailAsync(request.AccountRequest!.Email);
         if (existingStaff != null)
         {
-            // store the account in cache in 10 minutes
-            // convert Account to string
-            var accountJson = Newtonsoft.Json.JsonConvert.SerializeObject(existingStaff);
-            // set cache with 10 minutes expiration
-            var cacheOptions = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            };
-            // set cache
-            await distributedCache.SetStringAsync(cacheKey, accountJson, cacheOptions);
-
             throw new AppException(409, "Account with this email already exists.");
+        }
+        //get role
+        var role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.AccountRequest.RoleId));
+        if (role == null)
+        {
+            throw new AppException(404, "Role id is invalid.");
+        }
+        if (
+            string.Equals(role.Name, RoleNames.Member, StringComparison.OrdinalIgnoreCase)
+            && request.StaffInfoRequest != null
+        )
+        {
+            throw new AppException(400, "Member cannot have staff info");
+        }
+
+        bool isStaff = false;
+        if (string.Equals(role.Name, RoleNames.Staff, StringComparison.OrdinalIgnoreCase))
+            isStaff = true;
+        if (string.Equals(role.Name, RoleNames.Consultant, StringComparison.OrdinalIgnoreCase))
+            isStaff = true;
+        if (string.Equals(role.Name, RoleNames.Manager, StringComparison.OrdinalIgnoreCase))
+            isStaff = true;
+        if (isStaff && request.StaffInfoRequest == null)
+        {
+            throw new AppException(400, "Staff must have staff info");
         }
 
         // Create the account
@@ -394,64 +429,44 @@ public class AccountService
             DateOfBirth = request.AccountRequest.DateOfBirth,
             PasswordHash = PasswordHasher.Hash(request.AccountRequest.Password),
             //RoleId = Guid.Parse(request.AccountRequest.RoleId),
-            Role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.AccountRequest.RoleId))
-                   ?? throw new Exception("Role not found"),
+            Role = role,
             CreatedBy = id,
         };
         // add account to the database
         await accountRepo.AddAsync(newAcc);
 
-        //check if staff info in request exists
-
-        StaffInfo staffInfo = new()
+        if (request.StaffInfoRequest != null)
         {
-            Degree = request.StaffInfoRequest.Degree,
-            YearOfExperience = request.StaffInfoRequest.YearOfExperience,
-            Biography = request.StaffInfoRequest.Biography ?? string.Empty,
-            Department = await departmentRepo.GetDepartmentByIdAsync(Guid.Parse(request.StaffInfoRequest.DepartmentId)) ?? throw new Exception("Department not found"),
-            Account = newAcc,
-        };
-        //add staff info to database
-        await staffInfoRepo.AddStaffInfoAsync(staffInfo);
-        //add staff info to corresponding account
-        newAcc.StaffInfo = staffInfo;
-
-        // store the new account in cache in 10 minutes
-        await distributedCache.SetStringAsync(
-            cacheKey,
-            Newtonsoft.Json.JsonConvert.SerializeObject(newAcc),
-            new DistributedCacheEntryOptions
+            StaffInfo staffInfo = new()
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            }
-        );
-
-        return new StaffAccountCreateResponse()
-        {
-            Id = newAcc.Id.ToString("D"),
-            Role = newAcc.Role.Name,
-            Email = newAcc.Email,
-            FirstName = newAcc.FirstName,
-            LastName = newAcc.LastName,
-            Gender = newAcc.Gender,
-            PhoneNumber = newAcc.Phone,
-            DateOfBirth = newAcc.DateOfBirth ?? default,
-            AvatarUrl = newAcc.AvatarUrl,
-            Degree = newAcc.StaffInfo.Degree,
-            YearOfExperience = newAcc.StaffInfo.YearOfExperience,
-            Biography = newAcc.StaffInfo.Biography,
-            DepartmentName = newAcc.StaffInfo.Department.Name
-        };
+                Degree = request.StaffInfoRequest.Degree,
+                YearOfExperience = request.StaffInfoRequest.YearOfExperience,
+                Biography = request.StaffInfoRequest.Biography ?? string.Empty,
+                Department =
+                    await departmentRepo.GetDepartmentByIdAsync(
+                        Guid.Parse(request.StaffInfoRequest.DepartmentId)
+                    ) ?? throw new Exception("Department not found"),
+                Account = newAcc,
+            };
+            //add staff info to database
+            await staffInfoRepo.AddStaffInfoAsync(staffInfo);
+        }
     }
 
-    public async Task UpdateAccountAsync(UpdateAccountRequest request, string accessToken, string paramId)
+    public async Task UpdateAccountAsync(
+        UpdateAccountRequest request,
+        string accessToken,
+        string paramId
+    )
     {
-        var role = JwtHelper.GetRoleFromAccessToken(accessToken)
+        var role =
+            JwtHelper.GetRoleFromAccessToken(accessToken)
             ?? throw new AppException(400, "Role is not found in access token");
         var accessId = JwtHelper.GetAccountIdFromToken(accessToken);
         var targetId = Guid.Parse(paramId);
 
-        var account = await accountRepo.GetAccountByIdAsync(targetId)
+        var account =
+            await accountRepo.GetAccountByIdAsync(targetId)
             ?? throw new AppException(404, "Account not found");
 
         //if target account is admin
@@ -465,14 +480,20 @@ public class AccountService
         var isAdmin = string.Equals(role, RoleNames.Admin, StringComparison.OrdinalIgnoreCase);
         var isManager = string.Equals(role, RoleNames.Manager, StringComparison.OrdinalIgnoreCase);
 
-        //manager can update staff and consultant accounts 
-        var canManagerUpdateTarget = isManager &&
-            (account.Role.Name.Equals(RoleNames.Staff, StringComparison.OrdinalIgnoreCase) ||
-             account.Role.Name.Equals(RoleNames.Consultant, StringComparison.OrdinalIgnoreCase));
+        //manager can update staff and consultant accounts
+        var canManagerUpdateTarget =
+            isManager
+            && (
+                account.Role.Name.Equals(RoleNames.Staff, StringComparison.OrdinalIgnoreCase)
+                || account.Role.Name.Equals(
+                    RoleNames.Consultant,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
 
         if (isSelfUpdate || isAdmin || canManagerUpdateTarget)
         {
-            UpdateAccountFields(account, request);
+            await UpdateAccountFields(account, request);
             account.UpdatedAt = DateTime.Now;
             account.UpdatedBy = accessId;
             await accountRepo.UpdateAccount(account);
@@ -483,24 +504,73 @@ public class AccountService
         }
     }
 
-    private void UpdateAccountFields(Account a, UpdateAccountRequest request)
+    private async Task UpdateAccountFields(Account a, UpdateAccountRequest request)
     {
+        Console.WriteLine(
+            $"🔄 UpdateAccountFields - Before update: RoleId={a.RoleId}, Role={a.Role?.Name}"
+        );
+        Console.WriteLine($"🔄 UpdateAccountFields - Request RoleId={request.Account.RoleId}");
+
         a.FirstName = request.Account.FirstName ?? a.FirstName;
         a.LastName = request.Account.LastName ?? a.LastName;
         a.Phone = request.Account.PhoneNumber ?? a.Phone;
+        a.Email = request.Account.Email ?? a.Email;
         a.Gender = request.Account.Gender ?? a.Gender;
         a.DateOfBirth = request.Account.DateOfBirth ?? a.DateOfBirth;
         a.AvatarUrl = request.Account.AvatarUrl ?? a.AvatarUrl;
         a.IsDeleted = request.Account.IsDeleted ?? a.IsDeleted;
+        if (request.Account.RoleId != null)
+        {
+            Console.WriteLine(
+                $"🔄 UpdateAccountFields - Processing RoleId update: {request.Account.RoleId}"
+            );
+            var role = await roleRepo.GetRoleByIdAsync(Guid.Parse(request.Account.RoleId));
+            if (role != null)
+            {
+                Console.WriteLine(
+                    $"🔄 UpdateAccountFields - Found role: {role.Name} (ID: {role.Id})"
+                );
+                a.RoleId = role.Id; // Update the foreign key
+                a.Role = role; // Update the navigation property
+                Console.WriteLine(
+                    $"🔄 UpdateAccountFields - Updated account RoleId to: {a.RoleId}"
+                );
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"❌ UpdateAccountFields - Role not found for ID: {request.Account.RoleId}"
+                );
+            }
+        }
+        else
+        {
+            Console.WriteLine($"🔄 UpdateAccountFields - No RoleId in request");
+        }
+
+        Console.WriteLine(
+            $"🔄 UpdateAccountFields - After update: RoleId={a.RoleId}, Role={a.Role?.Name}"
+        );
 
         if (request.StaffInfo != null && a.StaffInfo != null)
         {
+            Console.WriteLine(
+                $"🔄 UpdateAccountFields - StaffInfo received: {request.StaffInfo.DepartmentId}"
+            );
+            Console.WriteLine(
+                $"🔄 UpdateAccountFields - Current StaffInfo DepartmentId: {a.StaffInfo.DepartmentId}"
+            );
+
             if (!string.IsNullOrEmpty(request.StaffInfo.DepartmentId))
             {
                 a.StaffInfo.DepartmentId = Guid.Parse(request.StaffInfo.DepartmentId);
+                Console.WriteLine(
+                    $"🔄 UpdateAccountFields - Updated DepartmentId to: {a.StaffInfo.DepartmentId}"
+                );
             }
             a.StaffInfo.Degree = request.StaffInfo.Degree ?? a.StaffInfo.Degree;
-            a.StaffInfo.YearOfExperience = request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
+            a.StaffInfo.YearOfExperience =
+                request.StaffInfo.YearOfExperience ?? a.StaffInfo.YearOfExperience;
             a.StaffInfo.Biography = request.StaffInfo.Biography ?? a.StaffInfo.Biography;
         }
     }
@@ -535,33 +605,34 @@ public class AccountService
             DateOfBirth = account.DateOfBirth,
             AvatarUrl = account.AvatarUrl,
             IsDeleted = account.IsDeleted,
-            Role = new RoleViewModel
-            {
-                Name = role.Name,
-                Description = role.Description
-            },
+            Role = new RoleViewModel { Name = role.Name, Description = role.Description },
             Degree = staffInfo?.Degree,
             YearOfExperience = staffInfo?.YearOfExperience,
             Biography = staffInfo?.Biography,
-            PhoneNumber = account.Phone
+            PhoneNumber = account.Phone,
         };
 
         return profile;
     }
 
-    public async Task<ConsultantInfoGetResponse> GetConsultantProfile(int page, int count, string? search)
+    public async Task<ConsultantInfoGetResponse> GetConsultantProfile(
+        int page,
+        int count,
+        string? search
+    )
     {
         //get all account
         var accounts = await accountRepo.GetAll();
         //filter by role is Consultant and has staff info and isDeleted = false
         var consultants = accounts
-            .Where(a => !a.IsDeleted && a.Role.Name.ToLower() == RoleNames.Consultant.ToLower() && a.StaffInfo is not null)
+            .Where(a =>
+                !a.IsDeleted
+                && a.Role.Name.ToLower() == RoleNames.Consultant.ToLower()
+                && a.StaffInfo is not null
+            )
             .ToList();
         //sort by alphabetical order by first name and last name
-        consultants = consultants
-            .OrderBy(a => a.FirstName)
-            .ThenBy(a => a.LastName)
-            .ToList();
+        consultants = consultants.OrderBy(a => a.FirstName).ThenBy(a => a.LastName).ToList();
         //filter by search(firstName, lastName, biography)
         if (search is not null)
         {
@@ -572,9 +643,11 @@ public class AccountService
                 ////get staff info of consultant
                 var staff_info = await staffInfoRepo.GetStaffInfoByAccountIdAsync(consultant.Id);
                 //flag = staff_info?.Biography?.ToLower()?.Contains(search) ?? flag;
-                if ((staff_info?.Biography?.ToLower()?.Contains(search) ?? false) || 
-                    (consultant.FirstName?.ToLower()?.Contains(search) ?? false) ||
-                    (consultant.LastName?.ToLower()?.Contains(search) ?? false))
+                if (
+                    (staff_info?.Biography?.ToLower()?.Contains(search) ?? false)
+                    || (consultant.FirstName?.ToLower()?.Contains(search) ?? false)
+                    || (consultant.LastName?.ToLower()?.Contains(search) ?? false)
+                )
                 {
                     tmp.Add(consultant);
                 }
@@ -585,40 +658,44 @@ public class AccountService
         var totalCount = consultants.Count;
 
         //pagination
-        if (page < 1) page = 1;
-        if (count < 1) count = 10;
-        consultants = consultants.Skip((page - 1) * count)
-                                 .Take(count)
-                                 .ToList();
+        if (page < 1)
+            page = 1;
+        if (count < 1)
+            count = 10;
+        consultants = consultants.Skip((page - 1) * count).Take(count).ToList();
 
         //create a list to hold consultant information models
         List<ConsultantInfoModel> consultantInfoModels = new();
         foreach (var consultant in consultants)
         {
             //get department of consultant
-            var department = await departmentRepo.GetDepartmentByIdAsync(consultant.StaffInfo!.DepartmentId);
+            var department = await departmentRepo.GetDepartmentByIdAsync(
+                consultant.StaffInfo!.DepartmentId
+            );
             //add consultant information model
-            consultantInfoModels.Add(new ConsultantInfoModel()
-            {
-                Id = consultant.Id.ToString("D"),
-                Role = consultant.Role.Name,
-                Email = consultant.Email,
-                FirstName = consultant.FirstName,
-                LastName = consultant.LastName,
-                Gender = consultant.Gender,
-                PhoneNumber = consultant.Phone,
-                DateOfBirth = consultant.DateOfBirth,
-                AvatarUrl = consultant.AvatarUrl,
-                Degree = consultant.StaffInfo?.Degree ?? string.Empty,
-                YearOfExperience = consultant.StaffInfo?.YearOfExperience ?? 0,
-                Biography = consultant.StaffInfo?.Biography,
-                Department = department?.Name ?? string.Empty
-            });
+            consultantInfoModels.Add(
+                new ConsultantInfoModel()
+                {
+                    Id = consultant.Id.ToString("D"),
+                    Role = consultant.Role.Name,
+                    Email = consultant.Email,
+                    FirstName = consultant.FirstName,
+                    LastName = consultant.LastName,
+                    Gender = consultant.Gender,
+                    PhoneNumber = consultant.Phone,
+                    DateOfBirth = consultant.DateOfBirth,
+                    AvatarUrl = consultant.AvatarUrl,
+                    Degree = consultant.StaffInfo?.Degree ?? string.Empty,
+                    YearOfExperience = consultant.StaffInfo?.YearOfExperience ?? 0,
+                    Biography = consultant.StaffInfo?.Biography,
+                    Department = department?.Name ?? string.Empty,
+                }
+            );
         }
         ConsultantInfoGetResponse response = new()
         {
             TotalCount = totalCount,
-            Consultants = consultantInfoModels
+            Consultants = consultantInfoModels,
         };
         return response;
     }

@@ -7,20 +7,26 @@ import { PlusSVG } from '../SVGs'
 const AddNewButton = ({ handleAddNew }: { handleAddNew: () => void }) => {
 	return (
 		<motion.button
-			className='round z-50 max-h-16 py-2 drop-shadow-smt cursor-pointer flex center-all gap-2 border px-3'
+			className='round bg-accent text-white shadow-lg border-0 py-2.5 px-8 cursor-pointer flex center-all gap-2 font-medium text-sm min-w-[90px] hover:shadow-xl'
 			tabIndex={0}
 			whileHover={{
-				backgroundColor: 'var(--color-accent)',
-				color: 'var(--color-general)',
+				scale: 1.05,
+				boxShadow: '0 8px 20px rgba(254, 107, 106, 0.4)',
 			}}
-			transition={{ duration: 0.2 }}
+			whileTap={{ scale: 0.95 }}
+			transition={{ duration: 0.2, ease: 'easeInOut' }}
 			onClick={handleAddNew}
+			aria-label='Thêm tài khoản mới'
 		>
-			<span className='pointer-events-none'>
+			<motion.span
+				className='pointer-events-none'
+				whileHover={{ rotate: 90 }}
+				transition={{ duration: 0.3 }}
+			>
 				<PlusSVG />
-			</span>
-			<span className='whitespace-nowrap pointer-events-none hidden md:block'>
-				Tạo
+			</motion.span>
+			<span className='whitespace-nowrap pointer-events-none hidden sm:block'>
+				Thêm mới
 			</span>
 		</motion.button>
 	)

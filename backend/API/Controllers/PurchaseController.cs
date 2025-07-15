@@ -34,7 +34,7 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.Member}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Admin}")]
     public async Task<IActionResult> GetBookedServiceAsync()
     {   
         //get access token
@@ -45,11 +45,13 @@ public class PurchaseController(IPurchaseService purchaseService) : ControllerBa
         return Ok(response);
     }
     [HttpGet("staff/{accountId}")]
-    [Authorize(Roles = $"{RoleNames.Staff}")]
+    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Admin}")]
     public async Task<IActionResult> GetBookedServicesForStaffAsync(Guid accountId, [FromQuery] string? search,[FromQuery] bool? isPaid)
     {
         var response = await purchaseService.GetBookedServicesForStaffAsync(accountId, search,isPaid);
         return Ok(response);
     }
     
+   
+
 }

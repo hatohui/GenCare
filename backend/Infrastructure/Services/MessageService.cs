@@ -131,7 +131,7 @@ public class MessageService(IMessageRepository messageRepository,
         var conversation = await conversationRepository.GetByIdAsync(message.ConversationId);
         if (conversation == null || (conversation.MemberId != accountId && conversation.StaffId != accountId))
             throw new AppException(403, "You are not allowed to delete this message.");
-        // Chỉ cho người tạo tin nhắn được xóa
+        // Check if the user is the creator of the message, user can only delete their own messages
         if (message.CreatedBy != accountId)
             throw new AppException(403, "Not authorized to delete this message");
 
@@ -141,7 +141,7 @@ public class MessageService(IMessageRepository messageRepository,
 
         await messageRepository.UpdateAsync(message);
 
-        // Gửi thông báo SignalR để xóa real-time bên client
+        // Broadcast the deletion to the conversation group via SignalR
         await chatHub.Clients.Group(message.ConversationId.ToString())
             .SendAsync("DeleteMessage", new { messageId = message.Id });
 

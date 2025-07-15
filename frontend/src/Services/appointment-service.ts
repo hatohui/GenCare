@@ -1,11 +1,8 @@
 import { DEFAULT_API_URL } from '@/Constants/API'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
-const APPOINTMENT_URL = `${DEFAULT_API_URL}/appointments`
-
-// Retry configuration
 const retryConfig = {
 	retry: 3,
 	retryDelay: (attemptIndex: number) =>
@@ -15,20 +12,54 @@ const retryConfig = {
 type AppointmentCreateRequest = {
 	memberId: string
 	staffId: string
-	scheduleAt: string // ISO string
+	scheduleAt: string
+}
+
+type AppointmentWithZoomResponse = {
+	success: boolean
+	message: string
+	zoomMeeting: {
+		meetingId: number
+		topic: string
+		startTime: string
+		duration: number
+		joinUrl: string
+		startUrl: string
+		password: string
+	}
 }
 
 const appointmentApi = {
 	createAppointment: (data: AppointmentCreateRequest, header: string) => {
 		return axios
-			.post(`${APPOINTMENT_URL}`, data, {
+			.post(`${DEFAULT_API_URL}/appointments`, data, {
+				headers: { Authorization: header },
+			})
+			.then(res => res.data)
+	},
+	createAppointmentWithZoom: (
+		data: AppointmentCreateRequest,
+		header: string
+	) => {
+		return axios
+			.post<AppointmentWithZoomResponse>(
+				`${DEFAULT_API_URL}/appointments/with-zoom`,
+				data,
+				{
+					headers: { Authorization: header },
+				}
+			)
+			.then(res => res.data)
+	},
+	getAppointments: (header: string) => {
+		return axios
+			.get(`${DEFAULT_API_URL}/appointments`, {
 				headers: { Authorization: header },
 			})
 			.then(res => res.data)
 	},
 }
 
-// Error handler utility
 const handleApiError = (error: unknown) => {
 	if (axios.isAxiosError(error)) {
 		const axiosError = error as AxiosError
@@ -49,6 +80,29 @@ const handleApiError = (error: unknown) => {
 	throw new Error('Đã xảy ra lỗi kết nối. Vui lòng kiểm tra kết nối mạng.')
 }
 
+/**
+ * Fetch all appointments for the authenticated user.
+ *
+ * This hook uses the `useQuery` hook from `react-query` to fetch all appointments.
+ * The hook will only fetch the data if the user has a valid access token.
+ *
+ * @returns The appointments data with loading, error, and refetch capabilities.
+ */
+export const useAppointments = () => {
+	const header = useAccessTokenHeader()
+
+	return useQuery({
+		queryKey: ['appointments'],
+		queryFn: () => appointmentApi.getAppointments(header),
+		enabled: !!header,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		refetchOnWindowFocus: false,
+		refetchOnMount: false, // Prevent refetch on mount if data is fresh
+		refetchOnReconnect: false, // Prevent refetch on reconnect
+		...retryConfig,
+	})
+}
+
 export const useCreateAppointment = () => {
 	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
@@ -56,9 +110,29 @@ export const useCreateAppointment = () => {
 	return useMutation({
 		mutationFn: (data: AppointmentCreateRequest) =>
 			appointmentApi.createAppointment(data, header),
-		onSuccess: () => {
-			// Invalidate related queries
-			queryClient.invalidateQueries({ queryKey: ['appointments'] })
+		onSuccess: data => {
+			// Only invalidate if the mutation was successful
+			if (data && data.success !== false) {
+				queryClient.invalidateQueries({ queryKey: ['appointments'] })
+			}
+		},
+		onError: handleApiError,
+		...retryConfig,
+	})
+}
+
+export const useCreateAppointmentWithZoom = () => {
+	const header = useAccessTokenHeader()
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (data: AppointmentCreateRequest) =>
+			appointmentApi.createAppointmentWithZoom(data, header),
+		onSuccess: data => {
+			// Only invalidate if the mutation was successful
+			if (data && data.success !== false) {
+				queryClient.invalidateQueries({ queryKey: ['appointments'] })
+			}
 		},
 		onError: handleApiError,
 		...retryConfig,

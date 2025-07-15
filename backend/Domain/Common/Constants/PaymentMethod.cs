@@ -11,4 +11,5 @@ public static class PaymentMethod
     public const string Cash = "cash";
     public const string Bank = "bank";
     public const string Momo = "momo";
+    public const string VNPay = "vnpay";
 }

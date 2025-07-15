@@ -11,6 +11,7 @@ import {
 	differenceInDays,
 	addDays as addToDate,
 	isValid,
+	getMonth,
 } from 'date-fns'
 import { motion } from 'framer-motion'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
@@ -100,7 +101,7 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 
 		for (let i = 0; i < 7; i++) {
 			const day = currentDay
-			const isCurrentMonth = day.getMonth() === month
+			const isCurrentMonth = getMonth(day) === month
 			const label = format(day, 'd')
 
 			// Default background and title for the day
