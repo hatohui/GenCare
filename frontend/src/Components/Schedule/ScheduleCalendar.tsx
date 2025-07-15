@@ -39,7 +39,7 @@ const ScheduleCalendar = ({
 	)
 	const createScheduleMutation = useCreateSchedule()
 
-	const slots = slotsQuery.data?.data?.slots || []
+	const slots = slotsQuery.data?.slots || []
 	const schedules = schedulesQuery.data || []
 
 	// Generate week days
