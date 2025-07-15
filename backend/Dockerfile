@@ -5,7 +5,6 @@ WORKDIR /src
 
 # Copy NuGet.Config and .sln first
 COPY NuGet.Config ./
-COPY backend.sln ./
 
 # Copy only .csproj files first for layer caching
 COPY API/API.csproj ./API/
@@ -14,7 +13,7 @@ COPY Domain/Domain.csproj ./Domain/
 COPY Infrastructure/Infrastructure.csproj ./Infrastructure/
 
 # Restore dependencies at the solution level with detailed output
-RUN dotnet restore backend.sln --packages /src/.nuget/packages --verbosity detailed
+RUN dotnet restore API/API.csproj --packages /src/.nuget/packages --verbosity detailed
 
 # Copy the rest of the source code, excluding the packages directory if needed
 COPY . .
