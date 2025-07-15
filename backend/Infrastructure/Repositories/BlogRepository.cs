@@ -18,6 +18,33 @@ public class BlogRepository(IApplicationDbContext dbContext) : IBlogRepository
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<List<Blog>> GetListOfBlogsAsync()
+        => await dbContext.Blogs.Where(b => !b.IsDeleted).ToListAsync();
+
+    public async Task<List<Blog>> SearchBlogsAsync(string search)
+    {
+        return await dbContext.Blogs
+            .Where(b => !b.IsDeleted && 
+                        (b.Title.Contains(search) || 
+                         b.Content.Contains(search) || 
+                         b.Author.Contains(search)))
+            .ToListAsync();
+        
+    }
+
+   
+
+    public async Task<List<Blog>> SearchBlogByTag(string tag)
+    {
+        var tagFilter = tag.Trim().ToLower();
+
+        return await dbContext.Blogs
+            .Where(b => !b.IsDeleted &&
+                        b.BlogTags.Any(bt => bt.Tag.Title.ToLower() == tagFilter))
+            .ToListAsync();
+    }
+
+
     public async Task<List<Blog>> GetAll()
     {
         return await dbContext.Blogs

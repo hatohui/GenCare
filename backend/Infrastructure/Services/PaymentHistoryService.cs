@@ -25,7 +25,7 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
             Amount = model.Amount,
             ExpiredAt = null, // Assuming no expiration for the payment history
             Status = PaymentStatus.Paid,
-            PaymentMethod = PaymentMethod.Momo
+            PaymentMethod = model.PaymentMethod
         };
         await paymentHistoryRepository.Add(payment);
     }
@@ -33,5 +33,21 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
     public async Task<List<PaymentHistory>> GetAllPaymentHistoriesAsync()
     {
         return await paymentHistoryRepository.GetAll();
+    }
+
+    public async Task<PaymentHistory?> GetPaymentHistoryById(Guid purchaseId)
+    {
+        return await paymentHistoryRepository.GetById(purchaseId);
+    }
+
+    public async Task<PaymentHistory?> GetPaymentHistoryByPayId(Guid payId)
+    {
+        var list = await paymentHistoryRepository.GetAll();
+        return list.FirstOrDefault(ph => Guid.Equals(ph.PayId, payId));
+    }
+
+    public async Task UpdatePaymentHistoryAsync(PaymentHistory paymentHistory)
+    {
+        await paymentHistoryRepository.Update(paymentHistory);
     }
 }

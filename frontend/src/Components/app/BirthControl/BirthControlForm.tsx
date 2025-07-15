@@ -8,6 +8,7 @@ import {
 } from '@/Services/birthControl-service'
 import { useBirthControl } from '@/Hooks/useBirthControl'
 import SingleDateCalendar from '@/Components/Scheduling/Calendar/Calendar'
+import { isSameDay } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
 
@@ -95,7 +96,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 			startDate &&
 			!isSaving &&
 			(!lastSavedDateRef.current ||
-				startDate.getTime() !== lastSavedDateRef.current.getTime())
+				!isSameDay(startDate, lastSavedDateRef.current))
 		) {
 			handleSaveDate(startDate)
 			lastSavedDateRef.current = startDate

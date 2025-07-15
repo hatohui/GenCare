@@ -20,14 +20,7 @@ export const updateServiceSchema = z.object({
 	isDeleted: z.boolean(),
 	deletedBy: z.string().optional().nullable(),
 	createdBy: z.string().optional().nullable(),
-	imageUrls: z
-		.array(
-			z.object({
-				id: z.string(),
-				url: z.url('Each image must be a valid URL'),
-			})
-		)
-		.optional(),
+	imageUrls: z.array(z.url('Each image must be a valid URL')).optional(),
 })
 
 export type UpdateServiceApiRequest = z.infer<typeof updateServiceSchema>

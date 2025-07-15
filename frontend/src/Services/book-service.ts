@@ -1,17 +1,11 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	BookedServicesResponse,
 	OrderDetailResponse,
 } from '@/Interfaces/Payment/Types/BookService'
 import { MomoServiceResponse } from '@/Interfaces/Payment/Types/MomoService'
-import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import axiosInstance from '@/Utils/axios'
 import axios, { AxiosError } from 'axios'
-
-const BOOKING_URL = `${DEFAULT_API_URL}/purchases`
-const PAY_URL = `${DEFAULT_API_URL}/payments`
-const ORDER_URL = `${DEFAULT_API_URL}/orderDetails`
-const MANUAL_PAY_URL = `${DEFAULT_API_URL}/manual-payment`
 
 // Retry configuration
 const retryConfig = {
@@ -21,39 +15,31 @@ const retryConfig = {
 }
 
 const bookingApi = {
-	GetOrder: (header: string) => {
-		return axios
-			.get<OrderDetailResponse>(`${BOOKING_URL}`, {
-				headers: { Authorization: header },
-			})
+	// Private API - requires authentication
+	GetOrder: () => {
+		return axiosInstance
+			.get<OrderDetailResponse>('/purchases')
 			.then(res => res.data)
 	},
-	BookServices: (data: any, header: string) => {
-		return axios
-			.post(`${BOOKING_URL}`, data, { headers: { Authorization: header } })
-			.then(res => res.data)
+	// Private API - requires authentication
+	BookServices: (data: any) => {
+		return axiosInstance.post('/purchases', data).then(res => res.data)
 	},
-	MomoPay: (header: string, purchaseId: string) => {
-		return axios
-			.post<MomoServiceResponse>(
-				`${PAY_URL}/momo?purchaseId=${purchaseId}`,
-				{},
-				{
-					headers: { Authorization: header },
-				}
-			)
+	// Private API - requires authentication
+	MomoPay: (purchaseId: string) => {
+		return axiosInstance
+			.post<MomoServiceResponse>(`/payments/momo?purchaseId=${purchaseId}`, {})
 			.then(res => {
 				console.log(res.data)
 				return res.data
 			})
 	},
-	DeleteOrderDetail: (header: string, id: string) => {
-		return axios
-			.delete(`${ORDER_URL}/${id}`, { headers: { Authorization: header } })
-			.then(res => res.data)
+	// Private API - requires authentication
+	DeleteOrderDetail: (id: string) => {
+		return axiosInstance.delete(`/orderDetails/${id}`).then(res => res.data)
 	},
+	// Private API - requires authentication
 	ViewPurchaseById: (
-		header: string,
 		id: string,
 		search: string | null,
 		isPaid: boolean | null
@@ -62,20 +48,13 @@ const bookingApi = {
 		if (search) params.append('search', search)
 		if (isPaid !== null) params.append('isPaid', isPaid.toString())
 		const queryString = params.toString()
-		const url = `${BOOKING_URL}/staff/${id}${
-			queryString ? `?${queryString}` : ''
-		}`
+		const url = `/purchases/staff/${id}${queryString ? `?${queryString}` : ''}`
 
-		return axios
-			.get<BookedServicesResponse>(url, {
-				headers: { Authorization: header },
-			})
-			.then(res => res.data)
+		return axiosInstance.get<BookedServicesResponse>(url).then(res => res.data)
 	},
-	ManualPay: (data: { purchaseId: string }, header: string) => {
-		return axios
-			.post(`${MANUAL_PAY_URL}`, data, { headers: { Authorization: header } })
-			.then(res => res.data)
+	// Private API - requires authentication
+	ManualPay: (data: { purchaseId: string }) => {
+		return axiosInstance.post('/manual-payment', data).then(res => res.data)
 	},
 }
 
@@ -101,12 +80,10 @@ const handleApiError = (error: unknown) => {
 }
 
 export const useManualPay = () => {
-	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	return useMutation({
-		mutationFn: (data: { purchaseId: string }) =>
-			bookingApi.ManualPay(data, header),
+		mutationFn: (data: { purchaseId: string }) => bookingApi.ManualPay(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['viewPurchaseById'] })
 		},
@@ -120,22 +97,19 @@ export const useViewPurchaseById = (
 	search: string | null,
 	isPaid: boolean | null
 ) => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['viewPurchaseById', id, search, isPaid],
-		queryFn: () => bookingApi.ViewPurchaseById(header, id, search, isPaid),
+		queryFn: () => bookingApi.ViewPurchaseById(id, search, isPaid),
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		...retryConfig,
 	})
 }
 
 export const useBookServices = () => {
-	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	return useMutation({
-		mutationFn: (data: any) => bookingApi.BookServices(data, header),
+		mutationFn: (data: any) => bookingApi.BookServices(data),
 		onSuccess: () => {
 			// Optimistically update the booking list
 			queryClient.invalidateQueries({ queryKey: ['getOrder'] })
@@ -146,31 +120,27 @@ export const useBookServices = () => {
 }
 
 export const useGetOrder = () => {
-	const header = useAccessTokenHeader()
-
 	return useQuery({
 		queryKey: ['getOrder'],
-		queryFn: () => bookingApi.GetOrder(header),
+		queryFn: () => bookingApi.GetOrder(),
 		staleTime: 2 * 60 * 1000, // 2 minutes
-		...retryConfig,
+		retry: false, // Do not retry on error for faster feedback
 	})
 }
 
 export const useMomoPay = () => {
-	const header = useAccessTokenHeader()
 	return useMutation({
-		mutationFn: (purchaseId: string) => bookingApi.MomoPay(header, purchaseId),
+		mutationFn: (purchaseId: string) => bookingApi.MomoPay(purchaseId),
 		onError: handleApiError,
 		...retryConfig,
 	})
 }
 
 export const useDeleteOrderDetail = (id: string) => {
-	const header = useAccessTokenHeader()
 	const queryClient = useQueryClient()
 
 	return useMutation({
-		mutationFn: () => bookingApi.DeleteOrderDetail(header, id),
+		mutationFn: () => bookingApi.DeleteOrderDetail(id),
 		onSuccess: () => {
 			// Optimistically update the booking list
 			queryClient.invalidateQueries({ queryKey: ['getOrder'] })

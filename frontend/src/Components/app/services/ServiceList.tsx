@@ -143,17 +143,16 @@ const ServiceList = () => {
 			</div>
 
 			{/* Pagination */}
-			{pageCount > 1 && (
-				<div className='flex justify-center pt-8'>
-					<Pagination
-						currentPage={page}
-						isFetching={isFetching}
-						setCurrentPage={setPage}
-						totalCount={data?.totalCount ?? 0}
-						itemsPerPage={itemsPerPage}
-					/>
-				</div>
-			)}
+
+			<div className='flex justify-center pt-8'>
+				<Pagination
+					currentPage={page}
+					isFetching={isFetching}
+					setCurrentPage={setPage}
+					totalCount={data?.totalCount || 0}
+					itemsPerPage={itemsPerPage}
+				/>
+			</div>
 
 			{/* Loading overlay for subsequent fetches */}
 			{isFetching && data && (

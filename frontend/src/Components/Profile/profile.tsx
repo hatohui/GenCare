@@ -5,6 +5,7 @@ import ProfileForm from './profileForm'
 import { useUpdateAccount } from '@/Services/account-service'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { CloudinaryButton } from '../CloudinaryButton'
+import { toast } from 'react-hot-toast'
 
 const iconClass = 'inline-block w-5 h-5 mr-2 text-main opacity-80'
 
@@ -22,10 +23,11 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				onSuccess: () => {
 					setAccount({ ...account, ...formData })
 					setIsModalOpen(false)
-					console.log('Profile updated successfully')
+					toast.success('Profile updated successfully')
 				},
 				onError: error => {
 					console.error('Error updating profile:', error)
+					toast.error('Failed to update profile')
 				},
 			}
 		)
@@ -41,10 +43,12 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 					setAccount({ ...account, avatarUrl: url })
 					setIsAvatarModalOpen(false)
 					setIsAvatarLoading(false)
+					toast.success('Avatar updated successfully')
 				},
 				onError: error => {
 					console.error('Error updating avatar:', error)
 					setIsAvatarLoading(false)
+					toast.error('Failed to update avatar')
 				},
 			}
 		)
@@ -197,9 +201,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 			),
 		},
 		// Add more fields as needed, e.g. departmentName, degree, yearOfExperience, biography
-		account.departmentName && {
+		account.staffInfo?.departmentName && {
 			label: 'Department',
-			value: account.departmentName,
+			value: account.staffInfo.departmentName,
 			icon: (
 				<svg
 					className={iconClass}
@@ -216,9 +220,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				</svg>
 			),
 		},
-		account.degree && {
+		account.staffInfo?.degree && {
 			label: 'Degree',
-			value: account.degree,
+			value: account.staffInfo.degree,
 			icon: (
 				<svg
 					className={iconClass}
@@ -235,9 +239,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				</svg>
 			),
 		},
-		account.yearOfExperience && {
+		account.staffInfo?.yearOfExperience && {
 			label: 'Years of Experience',
-			value: account.yearOfExperience,
+			value: account.staffInfo.yearOfExperience,
 			icon: (
 				<svg
 					className={iconClass}
@@ -254,9 +258,9 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 				</svg>
 			),
 		},
-		account.biography && {
+		account.staffInfo?.biography && {
 			label: 'Biography',
-			value: account.biography,
+			value: account.staffInfo.biography,
 			icon: (
 				<svg
 					className={iconClass}

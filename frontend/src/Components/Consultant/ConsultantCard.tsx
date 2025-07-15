@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react'
 import { Consultant } from '@/Interfaces/Account/Types/Consultant'
-import Image from 'next/image'
+import { CldImage } from 'next-cloudinary'
 
 interface ConsultantCardProps {
 	consultant: Consultant
@@ -45,7 +45,7 @@ export const ConsultantCard = ({
 			<div className='flex items-center gap-4 mb-4'>
 				<div className='relative'>
 					{consultant.avatarUrl ? (
-						<Image
+						<CldImage
 							src={consultant.avatarUrl}
 							alt={fullName}
 							width={64}

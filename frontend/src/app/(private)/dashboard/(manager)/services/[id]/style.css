@@ -1,19 +1,27 @@
 @import 'tailwindcss';
 
 @layer utilities {
-	.inactive-area {
-		@apply w-full p-2 bg-gray-100 rounded-md border-none read-only:text-gray-700 read-only:bg-gray-300 cursor-not-allowed pointer-events-none;
+	.service-card {
+		@apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-md;
 	}
 
-	.table-data {
-		@apply p-2 relative grow flex-3/4;
+	.service-header {
+		@apply px-6 py-5 border-b border-gray-100;
 	}
 
-	.table-label {
-		@apply p-2 font-semibold flex-1/4 min-w-28;
+	.service-content {
+		@apply p-6;
 	}
 
-	.table-row {
-		@apply inline md:flex;
+	.field-container {
+		@apply w-full px-3 py-2.5 border border-gray-200 bg-gray-50 rounded-lg transition-all duration-200 hover:border-main;
+	}
+
+	.status-badge {
+		@apply inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200;
+	}
+
+	.action-button {
+		@apply px-6 py-2.5 text-sm font-medium text-white bg-accent hover:bg-accent/90 rounded-lg transition-colors shadow-sm hover:shadow-md;
 	}
 }

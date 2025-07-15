@@ -1,5 +1,7 @@
 ﻿using Application.DTOs.BirthControl.Request;
 using Application.Services;
+using Domain.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
@@ -8,6 +10,7 @@ namespace API.Controllers;
 public class BirthControlController(IBirthControlService birthControlService) : ControllerBase
 {
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> ViewBirthControlById(Guid id)
     {
         var result = await birthControlService.ViewBirthControlAsync(id);
@@ -31,6 +34,7 @@ public class BirthControlController(IBirthControlService birthControlService) : 
     
     
     [HttpDelete("{Id}")]
+    [Authorize]
     public async Task<IActionResult> RemoveBirthControl(Guid Id)
     {
         var removed = await birthControlService.RemoveBirthControlAsync(Id);
@@ -43,6 +47,7 @@ public class BirthControlController(IBirthControlService birthControlService) : 
     
     
     [HttpPut]
+    [Authorize]
     public async Task<IActionResult> UpdateBirthControl([FromBody] UpdateBirthControlRequest request)
     {
         var updated = await birthControlService.UpdateBirthControlAsync(request);

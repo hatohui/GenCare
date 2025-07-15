@@ -18,4 +18,6 @@ public interface IMediaRepository
     
     Task<Media?> GetByIdAsync(Guid id);
     Task DeleteAsync(Media media);
+    Task<List<string>>GetImageUrlsByBlogIdAsync(Guid blogId);
+
 }

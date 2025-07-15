@@ -3,5 +3,5 @@
 public class CreateConversationRequest
 {
     public Guid MemberId { get; set; }
-    public Guid StaffId { get; set; }
+    
 }

@@ -5,6 +5,8 @@ import { UserSVG } from '../SVGs'
 import { useRouter } from 'next/navigation'
 import { useLogoutAccount } from '@/Services/auth-service'
 import useToken from '@/Hooks/Auth/useToken'
+import { toast } from 'react-hot-toast'
+import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	const tokenStore = useToken()
@@ -17,56 +19,68 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 		logout(undefined, {
 			onSuccess: () => {
 				router.push('/login')
+				toast.success('Logged out successfully')
 			},
 			onError: () => {
 				console.error('Logout failed')
+				toast.error('Failed to logout')
 			},
 		})
 	}
 
 	return tokenStore.accessToken ? (
-		<button
-			className={clsx(
-				'rounded-full px-2 py-1 duration-200 cursor-pointer select-none',
-				'text-center flex gap-2 items-center',
-				'bg-accent',
-				'shadow-md hover:shadow-lg',
-				'text-white font-medium',
-				'transition-all ease-in-out',
-				className
-			)}
-			onClick={handleLogout}
-		>
-			<label className='pointer-events-none whitespace-nowrap'>Đăng Xuất</label>
-			{onTop && <UserSVG className='size-5 text-white' />}
-		</button>
+		<div className={clsx('flex gap-2', className)}>
+			{/* Direct App/Dashboard Button */}
+			<button
+				className={clsx(
+					'rounded-full px-4 py-1 duration-200 cursor-pointer select-none',
+					'text-center flex gap-2 items-center',
+					'bg-main hover:bg-accent',
+					'shadow-md hover:shadow-lg',
+					'text-white font-medium',
+					'transition-all ease-in-out'
+				)}
+				onClick={() => {
+					const role = getRoleFromToken(tokenStore.accessToken!)
+					if (role === 'member' || role === 'consultant') {
+						router.push('/app')
+					} else {
+						router.push('/dashboard')
+					}
+				}}
+				aria-label='Đi tới ứng dụng'
+			>
+				<span className='pointer-events-none whitespace-nowrap'>
+					Đi tới ứng dụng
+				</span>
+			</button>
+			{/* Logout Button */}
+			<button
+				className={clsx(
+					'rounded-full px-2 py-1 duration-200 cursor-pointer select-none',
+					'text-center flex gap-2 items-center',
+					'bg-accent',
+					'shadow-md hover:shadow-lg',
+					'text-white font-medium',
+					'transition-all ease-in-out'
+				)}
+				onClick={handleLogout}
+			>
+				<label className='pointer-events-none whitespace-nowrap'>
+					Đăng Xuất
+				</label>
+				{onTop && <UserSVG className='size-5 text-white' />}
+			</button>
+		</div>
 	) : (
 		<MotionLink
 			id='login'
 			className={clsx(
-				'rounded-full px-4 py-2 duration-200 cursor-pointer select-none text-center flex gap-2 items-center',
+				'rounded-full px-4 py-2 duration-200 cursor-pointer select-none text-center flex gap-2 items-center bg-accent text-white',
 				className
 			)}
 			href='/login'
 			role='navigation'
-			animate={onTop ? 'onTop' : 'animate'}
-			variants={{
-				animate: {
-					filter: 'brightness(1)',
-					scale: 0.8,
-					fontWeight: 'var(--font-weight-bold)',
-					backgroundColor: 'transparent',
-					color: 'var(--color-accent)',
-				},
-				onTop: {
-					filter: 'brightness(1) contrast(1.2)',
-					scale: 0.8,
-					color: 'white',
-					fontWeight: 'var(--font-weight-bold)',
-					backgroundColor: 'var(--color-accent)',
-					textShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
-				},
-			}}
 			whileHover={{ scale: 0.85, filter: 'brightness(1.2) contrast(1.1)' }}
 			transition={{ duration: 0.2 }}
 		>

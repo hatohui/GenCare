@@ -17,13 +17,13 @@ const ItemCardHeader = ({
 }: ItemCardHeaderProps) => {
 	return (
 		<div
-			className='mx-2 bg-gradient-to-r from-white h-fit to-general overflow-hidden text-slate font-semibold px-4 py-2 flex justify-between drop-shadow-sm transition-colors duration-300 items-center relative round'
+			className='bg-gradient-to-r from-white h-fit to-general overflow-hidden text-slate font-semibold px-4 py-3 mx-4 flex justify-between drop-shadow-sm transition-colors duration-300 items-center relative round'
 			aria-label={`Table's Category`}
 		>
 			<div className='absolute inset-0 opacity-30 asfaltBackground pointer-events-none' />
 
 			<div className='flex items-center gap-3 flex-3/12'>
-				<p className='text-sm text-slate-900 px-5'>{label}</p>
+				<p className='text-sm text-slate-900'>{label}</p>
 			</div>
 
 			<div className='hidden flex-3/12 text-sm text-slate-900 sm:flex'>
