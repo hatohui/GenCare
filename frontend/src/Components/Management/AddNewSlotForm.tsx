@@ -7,13 +7,23 @@ import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import { CreateSlotRequest } from '@/Interfaces/Slot/Schema/slot'
 import { z } from 'zod'
-import { parseISO } from 'date-fns'
 import { toast } from 'react-hot-toast'
 
+// Define fixed time slots from 8am to 10pm (every 2 hours)
+// Each slot has a fixed number: 8am-10am: 1, 10am-12pm: 2, etc.
+const TIME_SLOTS = [
+	{ value: '08:00', label: 'Slot 1: 8:00 AM - 10:00 AM', no: 1 },
+	{ value: '10:00', label: 'Slot 2: 10:00 AM - 12:00 PM', no: 2 },
+	{ value: '12:00', label: 'Slot 3: 12:00 PM - 2:00 PM', no: 3 },
+	{ value: '14:00', label: 'Slot 4: 2:00 PM - 4:00 PM', no: 4 },
+	{ value: '16:00', label: 'Slot 5: 4:00 PM - 6:00 PM', no: 5 },
+	{ value: '18:00', label: 'Slot 6: 6:00 PM - 8:00 PM', no: 6 },
+	{ value: '20:00', label: 'Slot 7: 8:00 PM - 10:00 PM', no: 7 },
+]
+
 const slotSchema = z.object({
-	no: z.coerce.number().positive('Slot number must be greater than 0'),
-	startAt: z.string().min(1, 'Start time is required'),
-	endAt: z.string().min(1, 'End time is required'),
+	date: z.string().min(1, 'Date is required'),
+	timeSlot: z.string().min(1, 'Time slot is required'),
 	isDeleted: z.boolean(),
 })
 
@@ -37,20 +47,40 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 	} = useForm<SlotFormSchema>({
 		resolver: zodResolver(slotSchema),
 		defaultValues: {
-			no: 1,
-			startAt: '',
-			endAt: '',
+			date: '',
+			timeSlot: '',
 			isDeleted: false,
 		},
 	})
 
 	const onSubmit = (data: SlotFormSchema) => {
 		setLoading(true)
-		// Convert datetime-local to ISO string using date-fns
+
+		// Find the selected time slot
+		const selectedTimeSlot = TIME_SLOTS.find(
+			slot => slot.value === data.timeSlot
+		)
+		if (!selectedTimeSlot) {
+			toast.error('Please select a valid time slot')
+			setLoading(false)
+			return
+		}
+
+		// Create start and end times by combining date with time slot
+		const [startHour, startMinute] = data.timeSlot.split(':').map(Number)
+		const endHour = startHour + 2
+
+		// Create Date objects for precise time handling
+		const startDate = new Date(data.date)
+		startDate.setHours(startHour, startMinute, 0, 0)
+
+		const endDate = new Date(data.date)
+		endDate.setHours(endHour, 0, 0, 0)
+
 		const slotData: CreateSlotRequest = {
-			no: data.no,
-			startAt: parseISO(data.startAt).toISOString(),
-			endAt: parseISO(data.endAt).toISOString(),
+			no: selectedTimeSlot.no, // Auto-assign slot number based on time slot
+			startTime: startDate.toISOString(),
+			endTime: endDate.toISOString(),
 			isDeleted: data.isDeleted,
 		}
 
@@ -73,7 +103,7 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 		<>
 			{/* Overlay */}
 			<motion.div
-				className='fixed inset-0 bg-black/40 backdrop-blur-md z-40'
+				className='fixed inset-0 bg-black/10 backdrop-blur-md z-40'
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
@@ -90,7 +120,7 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 			>
 				<div
 					className={clsx(
-						'relative bg-white w-full max-w-md rounded-xl shadow-lg border border-gray-200',
+						'relative bg-white w-full p-4 max-w-md rounded-xl shadow-lg border border-gray-200',
 						className
 					)}
 					onClick={e => e.stopPropagation()}
@@ -109,53 +139,42 @@ const AddNewSlotForm = ({ onSuccess, onClose, className }: Props) => {
 					</h2>
 
 					<form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
-						{/* Slot Number */}
+						{/* Date */}
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-1'>
-								Slot Number
+								Date
 							</label>
 							<input
-								{...register('no', { valueAsNumber: true })}
-								type='number'
-								min='1'
-								className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-								placeholder='Enter slot number'
-							/>
-							{errors.no && (
-								<p className='text-sm text-red-500 mt-1'>{errors.no.message}</p>
-							)}
-						</div>
-
-						{/* Start Time */}
-						<div>
-							<label className='block text-sm font-medium text-gray-700 mb-1'>
-								Start Time
-							</label>
-							<input
-								{...register('startAt')}
-								type='datetime-local'
+								{...register('date')}
+								type='date'
 								className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
 							/>
-							{errors.startAt && (
+							{errors.date && (
 								<p className='text-sm text-red-500 mt-1'>
-									{errors.startAt.message}
+									{errors.date.message}
 								</p>
 							)}
 						</div>
 
-						{/* End Time */}
+						{/* Time Slot */}
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-1'>
-								End Time
+								Time Slot
 							</label>
-							<input
-								{...register('endAt')}
-								type='datetime-local'
+							<select
+								{...register('timeSlot')}
 								className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-							/>
-							{errors.endAt && (
+							>
+								<option value=''>Select a time slot</option>
+								{TIME_SLOTS.map(slot => (
+									<option key={slot.value} value={slot.value}>
+										{slot.label}
+									</option>
+								))}
+							</select>
+							{errors.timeSlot && (
 								<p className='text-sm text-red-500 mt-1'>
-									{errors.endAt.message}
+									{errors.timeSlot.message}
 								</p>
 							)}
 						</div>

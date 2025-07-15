@@ -11,10 +11,7 @@ import axiosInstance from '@/Utils/axios'
 const slotApi = {
 	// Private API - requires authentication (admin)
 	getAllAdmin: () => {
-		return axiosInstance.get<GetSlotResponse>('/slots').then(res => {
-			console.log(res.data)
-			return res.data
-		})
+		return axiosInstance.get<GetSlotResponse>('/slots').then(res => res.data)
 	},
 
 	// Private API - requires authentication (admin)

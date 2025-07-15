@@ -83,7 +83,7 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
     /// </summary>
     /// <returns>A list of all appointments.</returns>
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Member},{RoleNames.Staff}")]
+       [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Member},{RoleNames.Staff},{RoleNames.Consultant}")]
     public async Task<IActionResult> ViewAllAppointment()
     {
         //get access token
