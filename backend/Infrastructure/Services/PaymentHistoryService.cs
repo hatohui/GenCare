@@ -48,6 +48,6 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
 
     public async Task UpdatePaymentHistoryAsync(PaymentHistory paymentHistory)
     {
-        await paymentHistoryRepository.Update(paymentHistory);
+        await paymentHistoryRepository.UpdateAsync(paymentHistory);
     }
 }
