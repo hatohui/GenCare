@@ -41,8 +41,8 @@ public class ChatHub : Hub
     {
         var httpContext = Context.GetHttpContext();
 
-        var token = httpContext?.Request.Query["access_token"].ToString();
-
+        var token = AuthHelper.GetAccessToken(httpContext);
+        
         if (string.IsNullOrEmpty(token))
             throw new AppException(401, "Missing or invalid access token.");
 
