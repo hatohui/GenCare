@@ -1,24 +1,51 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useAppointments } from '@/Services/appointment-service'
-import { AppointmentCell } from './AppointmentCell'
-import { CurrentTimeLine } from './CurrentTimeLine'
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
-import { Clock, Briefcase, Moon, BarChart3, TrendingUp } from 'lucide-react'
+import { useAppointments } from '@/Services/appointment-service'
 import {
-	getWeekRange,
-	getWeekDays,
-	generateTimeSlots,
-	groupAppointmentsByDateTime,
 	filterAppointmentsForWeek,
 	formatWeekRange,
+	generateTimeSlots,
+	getWeekDays,
+	getWeekRange,
+	groupAppointmentsByDateTime,
 } from '@/Utils/Appointment/timeSlotHelpers'
+import { BarChart3, Briefcase, Clock, Moon, TrendingUp } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AppointmentCell } from './AppointmentCell'
+import { CurrentTimeLine } from './CurrentTimeLine'
 
-export const AppointmentsTimetable = () => {
-	const [currentWeek, setCurrentWeek] = useState(new Date())
+export interface AppointmentsTimetableProps {
+	appointments?: Appointment[]
+}
+
+// Custom hook that only fetches when needed
+const useConditionalAppointments = (shouldFetch: boolean) => {
 	const { data, isLoading, error, refetch } = useAppointments()
+
+	if (!shouldFetch) {
+		return {
+			data: undefined,
+			isLoading: false,
+			error: undefined,
+			refetch: () => {},
+		}
+	}
+
+	return { data, isLoading, error, refetch }
+}
+
+export const AppointmentsTimetable = ({
+	appointments,
+}: AppointmentsTimetableProps = {}) => {
+	const [currentWeek, setCurrentWeek] = useState(new Date())
+
+	// Only fetch appointments if not provided as props
+	const shouldFetch = !appointments
+	const { data, isLoading, error, refetch } =
+		useConditionalAppointments(shouldFetch)
+
 	const [pastTimeSlots, setPastTimeSlots] = useState<Set<string>>(new Set())
 	const [highlightedSlot, setHighlightedSlot] = useState<string | null>(null)
 	const cellRefs = useRef<{ [key: string]: HTMLTableCellElement | null }>({})
@@ -28,10 +55,17 @@ export const AppointmentsTimetable = () => {
 	// Memoize weekDays to prevent recreation on every render
 	const weekDays = useMemo(() => getWeekDays(startOfWeek), [startOfWeek])
 
+	// Use filtered appointments if provided, else use fetched data
+	const baseAppointments = appointments ?? data ?? []
+	const isUsingProvidedData = !!appointments
+
 	// Filter appointments for current week
 	const weekAppointments = useMemo(
-		() => (data ? filterAppointmentsForWeek(data, startOfWeek, endOfWeek) : []),
-		[data, startOfWeek, endOfWeek]
+		() =>
+			baseAppointments
+				? filterAppointmentsForWeek(baseAppointments, startOfWeek, endOfWeek)
+				: [],
+		[baseAppointments, startOfWeek, endOfWeek]
 	)
 
 	// Generate all time slots and group appointments - memoize to prevent recreation
@@ -96,8 +130,9 @@ export const AppointmentsTimetable = () => {
 
 	// Filter to get only future appointments
 	const futureAppointments = useMemo(
-		() => (data ? data.filter(isAppointmentInFuture) : []),
-		[data, isAppointmentInFuture]
+		() =>
+			baseAppointments ? baseAppointments.filter(isAppointmentInFuture) : [],
+		[baseAppointments, isAppointmentInFuture]
 	)
 	const futureWeekAppointments = useMemo(
 		() => weekAppointments.filter(isAppointmentInFuture),
@@ -152,7 +187,7 @@ export const AppointmentsTimetable = () => {
 		}
 	}, [highlightedSlot])
 
-	if (isLoading) {
+	if (!isUsingProvidedData && isLoading) {
 		return (
 			<motion.div
 				initial={{ opacity: 0 }}
@@ -182,7 +217,7 @@ export const AppointmentsTimetable = () => {
 		)
 	}
 
-	if (error) {
+	if (!isUsingProvidedData && error) {
 		return (
 			<motion.div
 				initial={{ opacity: 0, scale: 0.9 }}
@@ -241,7 +276,7 @@ export const AppointmentsTimetable = () => {
 					transition={{ delay: 0.2 }}
 				>
 					<h1 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-						📅 Lịch hẹn của tôi
+						{isUsingProvidedData ? '📅 Lịch hẹn tư vấn' : '📅 Lịch hẹn của tôi'}
 					</h1>
 					<p className='text-gray-600 mt-1 text-sm sm:text-base'>
 						Tuần {formatWeekRange(startOfWeek, endOfWeek)}

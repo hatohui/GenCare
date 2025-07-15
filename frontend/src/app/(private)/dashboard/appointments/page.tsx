@@ -1,15 +1,34 @@
+'use client'
 import { AppointmentsTimetable } from '@/Components/Appointment/AppointmentsTimetable'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-	title: 'Lịch hẹn - GenCare',
-	description: 'Xem và quản lý lịch hẹn của bạn',
-}
+import useToken from '@/Hooks/Auth/useToken'
+import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
+import { useAppointments } from '@/Services/appointment-service'
+import { decodeToken } from '@/Utils/Auth/decodeToken'
+import { useMemo } from 'react'
 
 const AppointmentsPage = () => {
+	const { accessToken } = useToken()
+	const userId = useMemo(() => {
+		if (!accessToken) return null
+		const decoded = decodeToken(accessToken)
+		return decoded?.account?.id || null
+	}, [accessToken])
+
+	const { data: allAppointments, isLoading, error } = useAppointments()
+
+	// Filter: chỉ lấy appointment của user hiện tại (có thể là staffId hoặc memberId)
+	const myAppointments = useMemo<Appointment[]>(
+		() =>
+			allAppointments?.filter(
+				(a: Appointment) =>
+					(a.staffId === userId || a.memberId === userId) && !a.isDeleted
+			) || [],
+		[allAppointments, userId]
+	)
+
 	return (
 		<div className='container mx-auto px-4 py-6'>
-			<AppointmentsTimetable />
+			<AppointmentsTimetable appointments={myAppointments} />
 		</div>
 	)
 }
