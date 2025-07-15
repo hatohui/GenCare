@@ -6,7 +6,9 @@ obj/
 *.user
 *.suo
 *.userosscache
-
+Test/
+test/
+*.Tests/
 # VS & IDE settings
 .vs/
 .vscode/

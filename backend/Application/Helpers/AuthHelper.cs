@@ -14,10 +14,16 @@ public static class AuthHelper
         if (httpContext == null)
             return string.Empty;
 
-        var authHeader = httpContext.Request.Headers["Authorization"].ToString();
-        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-            return string.Empty;
+        var authHeaders = httpContext.Request.Headers["Authorization"];
 
-        return authHeader.Replace("Bearer ", string.Empty).Trim();
+        foreach (var headerValue in authHeaders)
+        {
+            if (!string.IsNullOrWhiteSpace(headerValue) && headerValue.StartsWith("Bearer "))
+            {
+                var token = headerValue.Substring("Bearer ".Length).Trim();
+                return token;
+            }
+        }
+        return string.Empty;
     }
 }
