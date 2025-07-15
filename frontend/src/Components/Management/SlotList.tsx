@@ -17,6 +17,7 @@ const SlotList = ({
 		try {
 			return format(new Date(timeString), 'HH:mm dd/MM/yyyy')
 		} catch (error) {
+			console.log(error)
 			return 'Invalid date'
 		}
 	}

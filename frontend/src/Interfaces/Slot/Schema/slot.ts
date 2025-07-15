@@ -1,5 +1,3 @@
-import { Slot } from '../Types/Slot'
-
 export type CreateSlotRequest = {
 	no: number
 	startTime: string
