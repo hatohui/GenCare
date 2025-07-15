@@ -155,6 +155,7 @@ public class ConversationService(IConversationRepository conversationRepository,
     {
         Id = Guid.NewGuid(),
         ConversationId = conversation.Id,
+        Content = "Text message", // Default content for the first message
         CreatedAt = ToUnspecified(DateTime.Now),
         CreatedBy = accountId,
         UpdatedBy = accountId
