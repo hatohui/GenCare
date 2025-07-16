@@ -1,9 +1,10 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Payment.Momo;
+using Application.DTOs.Payment.VNPay;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
@@ -22,11 +23,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Application.DTOs.Payment.VNPay;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
-
+IronPdf.License.LicenseKey = "IRONSUITE.PHAMANHKIET.DEV.GMAIL.COM.25060-1546486873-K4GYA-5EXQUJLP3C3I-VVXLZL6EEY5U-OYAH4ZZOS7A3-VO2D3XJEKYTQ-DIBGIHQBCRLF-6Y5UGFIJBS2Q-CBETNL-THR7RQFESBOQEA-DEPLOYMENT.TRIAL-XYEJVN.TRIAL.EXPIRES.15.AUG.2025";
 //=============connect momo api===================== //
 builder.Services.Configure<MomoConfig>(options =>
 {
@@ -243,6 +243,7 @@ builder.Services.AddScoped<IZoomService, ZoomService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IVNPayService, VNPayService>();
+builder.Services.AddScoped<IOrderDetailPdfService, OrderDetailPdfService>();
 
 
 //===========Redis Configuration===========
