@@ -3,6 +3,7 @@
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary'
 import { useState } from 'react'
 import { UploadCloud } from 'lucide-react'
+import React from 'react'
 
 /**
  * A button component that opens a Cloudinary upload widget.
@@ -29,6 +30,24 @@ export const CloudinaryButton = ({
 }) => {
 	const [isUploading, setIsUploading] = useState(false)
 
+	// Timeout fallback to prevent stuck uploading state
+	React.useEffect(() => {
+		let timeoutId: NodeJS.Timeout
+
+		if (isUploading) {
+			timeoutId = setTimeout(() => {
+				console.warn('CloudinaryButton: Upload timeout, resetting state')
+				setIsUploading(false)
+			}, 30000) // 30 seconds timeout
+		}
+
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId)
+			}
+		}
+	}, [isUploading])
+
 	return (
 		<CldUploadWidget
 			options={{
@@ -40,7 +59,12 @@ export const CloudinaryButton = ({
 			signatureEndpoint='/api/sign-image'
 			uploadPreset={uploadPreset}
 			onOpen={() => {
+				console.log('CloudinaryButton: Widget opened')
 				setIsUploading(true)
+			}}
+			onClose={() => {
+				console.log('CloudinaryButton: Widget closed')
+				setIsUploading(false)
 			}}
 			onSuccess={(result: CloudinaryUploadWidgetResults) => {
 				const info = result.info as {
