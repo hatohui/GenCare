@@ -18,9 +18,14 @@ const handler: NextApiHandler<GoogleAiResponse> = async (req, res) => {
 	try {
 		switch (req.method) {
 			case 'POST':
+				// Create a chat session with the system prompt + conversation history
+				console.log('Received history:', history)
+
 				const chat = createChatSession(history)
 
-				const response = await chat.sendMessage({ message })
+				// Send the current user message
+				// The sendMessage method expects a string parameter
+				const response = await chat.sendMessage(message)
 
 				if (!response || !response.text)
 					return res.status(404).json({ error: 'No response message' })
@@ -30,8 +35,11 @@ const handler: NextApiHandler<GoogleAiResponse> = async (req, res) => {
 				return res.status(405).json({ error: 'Method not allowed' })
 		}
 	} catch (error) {
-		console.log(error)
-		return res.status(500).json({ message: 'Internal server error' })
+		console.error('Chat API Error:', error)
+		return res.status(500).json({
+			error: 'Internal server error',
+			details: error instanceof Error ? error.message : 'Unknown error',
+		})
 	}
 }
 

@@ -185,6 +185,14 @@ const en: Record<string, string> = {
 	'chat.thinking': 'Thinking...',
 	'chat.message': 'Message',
 	'chat.send': 'Send',
+	'chat.widget.title': 'GenCare Assistant',
+	'chat.widget.subtitle': 'How can I help you today?',
+	'chat.widget.placeholder': 'Type your message here...',
+	'chat.widget.minimize': 'Minimize chat',
+	'chat.widget.maximize': 'Open chat',
+	'chat.widget.close': 'Close chat',
+	'chat.widget.welcome':
+		"Hello! I'm here to help you with your health questions and guide you through GenCare's services. What would you like to know?",
 
 	// Consultants
 	'consultant.details': 'Consultant Details',

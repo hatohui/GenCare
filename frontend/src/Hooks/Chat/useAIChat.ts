@@ -34,11 +34,14 @@ export const useAiChat = () => {
 			parts: [{ text: inputValue }],
 		}
 
+		// Add user message to history immediately for UI
 		setHistory(prev => [...prev, userMessage])
 
 		const query: GeminiQuery = {
 			message: inputValue,
-			history,
+			// Send the current history (before adding the current message)
+			// This ensures we don't duplicate the current message in the API call
+			history: history,
 		}
 
 		mutation.mutate(query)

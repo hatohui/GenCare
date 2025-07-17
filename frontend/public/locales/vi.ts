@@ -273,6 +273,14 @@ const vi: Record<string, string> = {
 	'chat.thinking': 'Đang suy nghĩ...',
 	'chat.message': 'Tin nhắn',
 	'chat.send': 'Gửi',
+	'chat.widget.title': 'Trợ lý GenCare',
+	'chat.widget.subtitle': 'Hôm nay tôi có thể giúp gì cho bạn?',
+	'chat.widget.placeholder': 'Nhập tin nhắn của bạn tại đây...',
+	'chat.widget.minimize': 'Thu nhỏ chat',
+	'chat.widget.maximize': 'Mở chat',
+	'chat.widget.close': 'Đóng chat',
+	'chat.widget.welcome':
+		'Xin chào! Tôi ở đây để giúp bạn với các câu hỏi về sức khỏe và hướng dẫn bạn sử dụng các dịch vụ của GenCare. Bạn muốn biết điều gì?',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',

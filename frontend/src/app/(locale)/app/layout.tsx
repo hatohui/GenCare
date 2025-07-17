@@ -8,6 +8,7 @@ import { useGetMe } from '@/Services/account-service'
 import { isTokenValid } from '@/Utils/Auth/isTokenValid'
 import BackgroundCircles from '@/Components/BackgroundCircles'
 import { useLocale } from '@/Hooks/useLocale'
+import PopupChatWidget from '@/Components/Chat/PopupChatWidget'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [isClient, setIsClient] = useState(false)
@@ -93,6 +94,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			<main className='flex-1 p-7 h-full scroll-smooth overflow-scroll relative z-10'>
 				{children}
 			</main>
+			{/* Popup Chat Widget */}
+			<PopupChatWidget />
 		</div>
 	)
 }
