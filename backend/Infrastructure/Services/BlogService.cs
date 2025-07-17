@@ -132,7 +132,7 @@ public class BlogService(IBlogRepository blogRepository,
         {
             var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
             var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
-            //var likes = await commentRepository.GetLikesCountByBlogIdAsync(blog.Id);
+            var likes = await commentRepository.GetLikesCountByBlogIdAsync(blog.Id);
             var comments = await commentRepository.GetCommentsCountByBlogIdAsync(blog.Id);
             responses.Add(new ModelOfBlogResponse
             {
@@ -150,7 +150,8 @@ public class BlogService(IBlogRepository blogRepository,
                 IsDeleted = blog.IsDeleted,
                 TagTitles = tagTitles!,
                 ImageUrls = imageUrls,
-                Comments = comments
+                Comments = comments,
+                Likes = likes
             });
         }
 
