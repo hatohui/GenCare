@@ -12,6 +12,7 @@ import SubmitButton from './SubmitButton'
 import Logo from '../Logo'
 import Link from 'next/link'
 import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
+import { useLocale } from '@/Hooks/useLocale'
 
 export type LoginComponentProps = {
 	handleLogin: (
@@ -27,6 +28,7 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 	const { reset: resetRemember, ...remember } = useInput(false, 'checkbox')
 	const [showPassword, setShowPassword] = useState(false)
 	const [errors, setErrors] = useState<Record<string, string>>({})
+	const { t } = useLocale()
 
 	const resetCredentials = () => {
 		resetEmail()
@@ -76,19 +78,19 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 				<div className='center-all flex-col gap-3'>
 					<Logo className='w-12 drop-shadow-md' />
 					<div className='text-xl font-medium mb-4 drop-shadow-md'>
-						ĐĂNG NHẬP VÀO TÀI KHOẢN
+						{t('auth.login')}
 					</div>
 				</div>
 				<FloatingLabelInput
 					className='mt-4'
-					label='Email'
+					label={t('common.email')}
 					id='email'
 					autocomplete='username'
 					{...email}
 				/>
 				<div className='relative mt-2'>
 					<FloatingLabelInput
-						label='Password'
+						label={t('common.password')}
 						id='password'
 						autocomplete='password'
 						{...password}
@@ -107,14 +109,16 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 					<div>
 						<label className='flex items-center gap-2'>
 							<input name='agreeToTerms' {...remember} className={`w-4 h-4`} />
-							<span className='select-none color-text'>Remember me</span>
+							<span className='select-none color-text'>
+								{t('auth.rememberMe')}
+							</span>
 						</label>
 					</div>
 					<Link
 						href='/forgot-password'
 						className='select-none underline text-blue-400 hover:text-blue-600 cursor-pointer transition-colors duration-200'
 					>
-						Forgot Password?
+						{t('auth.forgotPassword')}
 					</Link>
 				</div>
 
@@ -123,14 +127,14 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 				)}
 
 				<SubmitButton
-					label='Đăng Nhập'
+					label={t('auth.login')}
 					buttonClass='bg-main drop-shadow-lg text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent	 '
 				/>
 			</form>
 
 			<div className='w-full flex items-center gap-2 max-w-90 my-4'>
 				<div className='h-[1px] flex-1 bg-gray-300'></div>
-				<span className='text-gray-500 text-sm px-2'>Hoặc</span>
+				<span className='text-gray-500 text-sm px-2'>{t('auth.or')}</span>
 				<div className='h-[1px] flex-1 bg-gray-300'></div>
 			</div>
 

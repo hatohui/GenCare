@@ -8,6 +8,8 @@ import Logo from './NavLogo'
 import MobileMenu from './MobileMenu'
 import NavButtons from './NavButtons'
 import UserProfileDropdown from './UserProfileDropdown'
+import LanguageSwitcher from '../LanguageSwitcher'
+import { useLocale } from '@/Hooks/useLocale'
 
 export type NavComponentProps = { className?: string; onTop: boolean }
 
@@ -16,6 +18,7 @@ const NavBar = () => {
 	const [isOpened, setOpened] = useState(false)
 	const [onTop, setOnTop] = useState(true)
 	const lastScrollY = useRef(0)
+	const { t } = useLocale()
 
 	useEffect(() => {
 		function handleScroll() {
@@ -86,7 +89,7 @@ const NavBar = () => {
 							},
 						}}
 						role='banner'
-						aria-label='Main navigation'
+						aria-label={t('nav.mainNavigation')}
 						itemScope
 						itemType='http://schema.org/SiteNavigationElement'
 					>
@@ -108,28 +111,31 @@ const NavBar = () => {
 							className='flex items-center justify-between'
 							key='navbar'
 							role='navigation'
-							aria-label='Primary navigation'
+							aria-label={t('nav.primaryNavigation')}
 						>
 							<Logo onTop={onTop} />
 							<NavButtons
 								className='hidden md:flex'
 								onTop={onTop}
-								aria-label='Navigation menu'
+								aria-label={t('nav.navigationMenu')}
 							/>
-							<div role='group' aria-label='User actions'>
-								<UserProfileDropdown
-									className='hidden md:flex'
-									onTop={onTop}
-									aria-label='User actions'
-								/>
-								<MobileButton
-									className='block md:hidden inset-0'
-									onTop={onTop}
-									isOpened={isOpened}
-									setOpened={setOpened}
-									aria-label='Mobile menu'
-									aria-expanded={isOpened}
-								/>
+							<div role='group' aria-label={t('nav.userActions')}>
+								<div className='flex items-center'>
+									<LanguageSwitcher className='hidden md:block mr-2' />
+									<UserProfileDropdown
+										className='hidden md:flex'
+										onTop={onTop}
+										aria-label={t('nav.userActions')}
+									/>
+									<MobileButton
+										className='block md:hidden inset-0'
+										onTop={onTop}
+										isOpened={isOpened}
+										setOpened={setOpened}
+										aria-label={t('nav.mobileMenu')}
+										aria-expanded={isOpened}
+									/>
+								</div>
 							</div>
 						</nav>
 					</motion.header>
