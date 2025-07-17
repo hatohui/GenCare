@@ -15,7 +15,6 @@ import LoadingIcon from '@/Components/LoadingIcon'
 import ConfirmDialog from '@/Components/ConfirmationDialog'
 import { parseISO, isValid, format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
-import { useRouter } from 'next/navigation'
 
 interface BookingItemProps {
 	booking: OrderDetail
@@ -24,7 +23,6 @@ interface BookingItemProps {
 const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [showConfirm, setShowConfirm] = useState(false)
-	const router = useRouter()
 
 	// Debug: Log the booking data to check purchaseId
 	console.log('BookingItem - booking data:', booking)
@@ -95,7 +93,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 				booking.purchaseId
 			)
 
-			const result = await vnpayPayMutation.mutateAsync(booking.purchaseId, {
+			await vnpayPayMutation.mutateAsync(booking.purchaseId, {
 				onSuccess: data => {
 					// Redirect to VNPay payment URL
 					if (data) {
