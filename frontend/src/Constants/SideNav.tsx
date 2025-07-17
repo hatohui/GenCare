@@ -10,7 +10,6 @@ import {
 	MessageCircle,
 	ClipboardList,
 	UserCheck,
-	PieChart,
 	BookOpen,
 	TestTube,
 } from 'lucide-react'
