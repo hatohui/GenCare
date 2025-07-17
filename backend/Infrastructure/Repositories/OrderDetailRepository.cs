@@ -24,21 +24,28 @@ public class OrderDetailRepository(IApplicationDbContext dbContext) : IOrderDeta
             .ToListAsync();
     }
 
-    public async Task<OrderDetail?> GetByIdAsync(Guid orderDetailId) 
+    public async Task<OrderDetail?> GetByIdAsync(Guid orderDetailId)
         => await dbContext.OrderDetails.Include(od => od.Purchase).FirstOrDefaultAsync(od => od.Id == orderDetailId);
 
     public async Task<List<OrderDetail>> GetByPurchaseIdAsync(Guid purchaseId)
     {
         return await dbContext.OrderDetails
-            .Where(od => od.PurchaseId == purchaseId )
+            .Where(od => od.PurchaseId == purchaseId)
             .ToListAsync();
     }
     public async Task<List<Guid>> GetDistinctServiceIdsByPurchaseIdAsync(Guid purchaseId)
-        =>await dbContext.OrderDetails
+        => await dbContext.OrderDetails
             .Where(od => od.PurchaseId == purchaseId)
             .Select(od => od.ServiceId)
             .Distinct()
             .ToListAsync();
 
-    
+    public async Task<OrderDetail?> GetOrderDetailWithResultAsync(Guid orderDetailId, CancellationToken cancellationToken = default)
+    {
+        var data = await dbContext.OrderDetails
+            .Where(od => od.Id == orderDetailId)
+            .Include(o => o.Result)
+            .FirstOrDefaultAsync(cancellationToken);
+        return data;
+    }
 }
