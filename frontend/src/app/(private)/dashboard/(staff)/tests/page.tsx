@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useGetAllOrderDetail, useGetResult } from '@/Services/Result-service'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
@@ -8,9 +8,30 @@ import { ResultData } from '@/Interfaces/Tests/Types/Tests'
 import TestResultEditModal from '@/Components/staff/TestResultEditModal'
 import StatusBadge from '@/Components/Lab/StatusBadge'
 import { EyeSVG, PencilSVG } from '@/Components/SVGs'
+import Pagination from '@/Components/Management/Pagination'
+import SearchBar from '@/Components/Management/SearchBar'
+import { useSearchParams } from 'next/navigation'
+import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
 
 const Page = () => {
-	const { data, isLoading, isError } = useGetAllOrderDetail()
+	const searchParams = useSearchParams()
+	const [page, setPage] = useState<number>(1)
+	const itemsPerPage = ITEMS_PER_PAGE_COUNT
+
+	// Get search from URL params
+	const search = searchParams?.get('search') || ''
+
+	// Reset to first page when search changes
+	useEffect(() => {
+		setPage(1)
+	}, [search])
+
+	const { data, isLoading, isError, isFetching } = useGetAllOrderDetail(
+		page,
+		itemsPerPage,
+		search || undefined
+	)
+
 	const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
 	const [modalOpen, setModalOpen] = useState(false)
 	const [editOrderId, setEditOrderId] = useState<string | null>(null)
@@ -49,6 +70,27 @@ const Page = () => {
 				</p>
 			</motion.div>
 
+			{/* Search Bar */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className='mb-6'
+			>
+				<div className='flex flex-col sm:flex-row gap-4 items-center justify-between'>
+					<SearchBar className='flex-1 max-w-md' waitTime={500} />
+					<div className='text-sm text-gray-600'>
+						{data && (
+							<span>
+								Hiển thị {(page - 1) * itemsPerPage + 1} -{' '}
+								{Math.min(page * itemsPerPage, data.totalCount || 0)} trong tổng
+								số {data.totalCount || 0} kết quả
+							</span>
+						)}
+					</div>
+				</div>
+			</motion.div>
+
 			{/* Orders Table */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
@@ -78,8 +120,8 @@ const Page = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{data && data.length > 0 ? (
-									data.map((order: any) => (
+								{data && data.result.length > 0 ? (
+									data.result.map((order: any) => (
 										<tr
 											key={order.orderDetailId}
 											className='border-b hover:bg-blue-50 transition cursor-pointer'
@@ -148,73 +190,246 @@ const Page = () => {
 				)}
 			</motion.div>
 
+			{/* Pagination */}
+			{data && data.totalCount > 0 && (
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.2 }}
+					className='flex justify-center mt-8'
+				>
+					<Pagination
+						currentPage={page}
+						isFetching={isFetching}
+						setCurrentPage={setPage}
+						totalCount={data.totalCount}
+						itemsPerPage={itemsPerPage}
+					/>
+				</motion.div>
+			)}
+
 			{/* Modal for Result */}
 			{modalOpen && (
-				<div
-					className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'
 					onClick={handleCloseModal}
 				>
-					<div
-						className='bg-white rounded-xl shadow-lg p-6 min-w-[320px] max-w-[90vw] relative'
+					<motion.div
+						initial={{ scale: 0.9, opacity: 0, y: 20 }}
+						animate={{ scale: 1, opacity: 1, y: 0 }}
+						transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+						className='bg-white rounded-2xl shadow-2xl min-w-[400px] max-w-[90vw] max-h-[85vh] overflow-hidden relative'
 						onClick={e => e.stopPropagation()}
 					>
-						<button
-							className='absolute top-2 right-2 text-gray-400 hover:text-main'
-							onClick={handleCloseModal}
-						>
-							&times;
-						</button>
-						{isResultLoading ? (
-							<div className='flex justify-center items-center min-h-[120px]'>
-								<LoadingIcon className='size-6' />
-							</div>
-						) : isResultError ? (
-							<div className='text-center text-red-500'>
-								Không thể tải kết quả.
-							</div>
-						) : resultData ? (
-							<div>
-								<h2 className='text-lg font-semibold text-main mb-2'>
-									Kết quả xét nghiệm
-								</h2>
-								{resultData.resultData ? (
-									<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
-										{Object.entries(resultData.resultData as ResultData).map(
-											([parameter, result], index) => (
-												<div
-													key={index}
-													className='bg-gray-100 rounded p-2 text-xs overflow-x-auto'
-												>
-													<div className='font-bold'>{parameter}</div>
-													<div>
-														Giá trị: {result.value} {result.unit}
+						{/* Header */}
+						<div className='bg-gradient-to-r from-main to-secondary px-6 py-4 text-white relative'>
+							<h2 className='text-xl font-bold flex items-center gap-2'>
+								<EyeSVG className='size-5' />
+								Kết quả xét nghiệm
+							</h2>
+							<button
+								className='absolute top-3 right-4 text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/20'
+								onClick={handleCloseModal}
+							>
+								<svg
+									className='size-6'
+									fill='none'
+									stroke='currentColor'
+									viewBox='0 0 24 24'
+								>
+									<path
+										strokeLinecap='round'
+										strokeLinejoin='round'
+										strokeWidth={2}
+										d='M6 18L18 6M6 6l12 12'
+									/>
+								</svg>
+							</button>
+						</div>
+
+						{/* Content */}
+						<div className='p-6 overflow-y-auto max-h-[calc(85vh-120px)]'>
+							{isResultLoading ? (
+								<div className='flex flex-col justify-center items-center min-h-[200px] gap-4'>
+									<LoadingIcon className='size-8 text-main' />
+									<p className='text-gray-600 font-medium'>
+										Đang tải kết quả...
+									</p>
+								</div>
+							) : isResultError ? (
+								<div className='flex flex-col justify-center items-center min-h-[200px] gap-4'>
+									<div className='size-16 bg-red-100 rounded-full flex items-center justify-center'>
+										<svg
+											className='size-8 text-red-500'
+											fill='none'
+											stroke='currentColor'
+											viewBox='0 0 24 24'
+										>
+											<path
+												strokeLinecap='round'
+												strokeLinejoin='round'
+												strokeWidth={2}
+												d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
+											/>
+										</svg>
+									</div>
+									<div className='text-center'>
+										<h3 className='text-lg font-semibold text-red-600 mb-2'>
+											Lỗi tải dữ liệu
+										</h3>
+										<p className='text-gray-600'>
+											Không thể tải kết quả xét nghiệm. Vui lòng thử lại sau.
+										</p>
+									</div>
+								</div>
+							) : resultData ? (
+								<div>
+									{resultData.resultData ? (
+										<div className='space-y-6'>
+											{/* Summary Card */}
+											<div className='bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100'>
+												<div className='flex items-center gap-3 mb-3'>
+													<div className='size-10 bg-blue-500 rounded-full flex items-center justify-center'>
+														<svg
+															className='size-5 text-white'
+															fill='none'
+															stroke='currentColor'
+															viewBox='0 0 24 24'
+														>
+															<path
+																strokeLinecap='round'
+																strokeLinejoin='round'
+																strokeWidth={2}
+																d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+															/>
+														</svg>
 													</div>
-													<div>Khoảng tham chiếu: {result.referenceRange}</div>
 													<div>
-														Trạng thái:{' '}
-														{result.flag === 'normal'
-															? 'Bình thường'
-															: result.flag === 'high'
-															? 'Cao'
-															: 'Thấp'}
+														<h3 className='font-semibold text-gray-800'>
+															Tổng quan kết quả
+														</h3>
+														<p className='text-sm text-gray-600'>
+															{
+																Object.keys(resultData.resultData as ResultData)
+																	.length
+															}{' '}
+															thông số xét nghiệm
+														</p>
 													</div>
 												</div>
-											)
-										)}
+											</div>
+
+											{/* Results Grid */}
+											<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+												{Object.entries(
+													resultData.resultData as ResultData
+												).map(([parameter, result], index) => (
+													<div
+														key={index}
+														className='bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow group'
+													>
+														<div className='flex items-start justify-between mb-3'>
+															<h4 className='font-semibold text-gray-800 text-sm group-hover:text-main transition-colors'>
+																{parameter}
+															</h4>
+															<div
+																className={`px-2 py-1 rounded-full text-xs font-medium ${
+																	result.flag === 'normal'
+																		? 'bg-green-100 text-green-700'
+																		: result.flag === 'high'
+																		? 'bg-orange-100 text-orange-700'
+																		: 'bg-red-100 text-red-700'
+																}`}
+															>
+																{result.flag === 'normal'
+																	? 'Bình thường'
+																	: result.flag === 'high'
+																	? 'Cao'
+																	: 'Thấp'}
+															</div>
+														</div>
+
+														<div className='space-y-2 text-sm'>
+															<div className='flex justify-between items-center'>
+																<span className='text-gray-600'>Giá trị:</span>
+																<span className='font-semibold text-gray-800'>
+																	{result.value} {result.unit}
+																</span>
+															</div>
+															<div className='flex justify-between items-center'>
+																<span className='text-gray-600'>
+																	Tham chiếu:
+																</span>
+																<span className='text-gray-700 font-mono text-xs'>
+																	{result.referenceRange}
+																</span>
+															</div>
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									) : (
+										<div className='flex flex-col justify-center items-center min-h-[200px] gap-4'>
+											<div className='size-16 bg-gray-100 rounded-full flex items-center justify-center'>
+												<svg
+													className='size-8 text-gray-400'
+													fill='none'
+													stroke='currentColor'
+													viewBox='0 0 24 24'
+												>
+													<path
+														strokeLinecap='round'
+														strokeLinejoin='round'
+														strokeWidth={2}
+														d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+													/>
+												</svg>
+											</div>
+											<div className='text-center'>
+												<h3 className='text-lg font-semibold text-gray-600 mb-2'>
+													Chưa có dữ liệu
+												</h3>
+												<p className='text-gray-500'>
+													Kết quả xét nghiệm chưa được cập nhật.
+												</p>
+											</div>
+										</div>
+									)}
+								</div>
+							) : (
+								<div className='flex flex-col justify-center items-center min-h-[200px] gap-4'>
+									<div className='size-16 bg-gray-100 rounded-full flex items-center justify-center'>
+										<svg
+											className='size-8 text-gray-400'
+											fill='none'
+											stroke='currentColor'
+											viewBox='0 0 24 24'
+										>
+											<path
+												strokeLinecap='round'
+												strokeLinejoin='round'
+												strokeWidth={2}
+												d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+											/>
+										</svg>
 									</div>
-								) : (
-									<div className='text-center text-gray-400 mb-6'>
-										Chưa có dữ liệu kết quả xét nghiệm.
+									<div className='text-center'>
+										<h3 className='text-lg font-semibold text-gray-600 mb-2'>
+											Không có dữ liệu
+										</h3>
+										<p className='text-gray-500'>
+											Không tìm thấy kết quả xét nghiệm.
+										</p>
 									</div>
-								)}
-							</div>
-						) : (
-							<div className='text-center text-gray-400'>
-								Không có dữ liệu kết quả.
-							</div>
-						)}
-					</div>
-				</div>
+								</div>
+							)}
+						</div>
+					</motion.div>
+				</motion.div>
 			)}
 
 			{/* Edit Result Modal */}
