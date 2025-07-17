@@ -9,18 +9,24 @@ import {
 	formSchema,
 	FormSchema,
 } from '@/Interfaces/Payment/schema/BookService'
-import { useBookServices, useMomoPay } from '@/Services/book-service'
+import {
+	useBookServices,
+	useMomoPay,
+	useVnpayPay,
+} from '@/Services/book-service'
 import { TrashCanSVG } from '@/Components/SVGs'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { toast } from 'react-hot-toast'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
 	const updateBooking = useBookServices()
 	const router = useRouter()
-	const [paymentMethod, setPaymentMethod] = useState<'momo' | 'later'>('later')
+	const [paymentMethod, setPaymentMethod] = useState<
+		'momo' | 'vnpay' | 'later'
+	>('later')
 	const [showPaymentOptions, setShowPaymentOptions] = useState(false)
 
 	const {
@@ -50,14 +56,15 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	})
 
 	const momoPayMutation = useMomoPay()
+	const vnpayPayMutation = useVnpayPay()
 
 	const onSubmit = async (formData: FormSchema) => {
 		try {
 			const result = await updateBooking.mutateAsync({
 				OrderDetails: formData.people,
 			})
+			const purchaseId = result.purchaseId || result.id
 			if (paymentMethod === 'momo') {
-				const purchaseId = result.purchaseId || result.id
 				if (!purchaseId) {
 					toast.error('Không tìm thấy thông tin đặt dịch vụ')
 					return
@@ -73,6 +80,23 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 				} catch (error) {
 					console.error('MoMo payment failed:', error)
 					toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
+				}
+			} else if (paymentMethod === 'vnpay') {
+				if (!purchaseId) {
+					toast.error('Không tìm thấy thông tin đặt dịch vụ')
+					return
+				}
+				await new Promise(res => setTimeout(res, 800))
+				try {
+					const vnpayResult = await vnpayPayMutation.mutateAsync(purchaseId)
+					if (vnpayResult.payUrl) {
+						window.location.href = vnpayResult.payUrl
+					} else {
+						toast.error('Không thể tạo liên kết thanh toán')
+					}
+				} catch (error) {
+					console.error('VNPay payment failed:', error)
+					toast.error('Thanh toán VNPay thất bại. Vui lòng thử lại.')
 				}
 			} else {
 				toast.success('Đặt dịch vụ thành công! Bạn có thể thanh toán sau.')
@@ -207,6 +231,22 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 								<input
 									type='radio'
 									name='paymentMethod'
+									value='vnpay'
+									checked={paymentMethod === 'vnpay'}
+									onChange={() => setPaymentMethod('vnpay')}
+									className='text-main focus:ring-main'
+								/>
+								<div className='flex items-center space-x-2'>
+									<div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center'>
+										<span className='text-white font-bold text-sm'>V</span>
+									</div>
+									<span className='font-medium'>Thanh toán ngay với VNPay</span>
+								</div>
+							</label>
+							<label className='flex items-center space-x-3 cursor-pointer'>
+								<input
+									type='radio'
+									name='paymentMethod'
 									value='later'
 									checked={paymentMethod === 'later'}
 									onChange={() => setPaymentMethod('later')}
@@ -224,6 +264,14 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							<div className='mt-3 p-3 bg-pink-50 border border-pink-200 rounded-[15px]'>
 								<p className='text-sm text-pink-700'>
 									Bạn sẽ được chuyển đến trang thanh toán MoMo sau khi xác nhận
+									đặt dịch vụ.
+								</p>
+							</div>
+						)}
+						{paymentMethod === 'vnpay' && (
+							<div className='mt-3 p-3 bg-blue-50 border border-blue-200 rounded-[15px]'>
+								<p className='text-sm text-blue-700'>
+									Bạn sẽ được chuyển đến trang thanh toán VNPay sau khi xác nhận
 									đặt dịch vụ.
 								</p>
 							</div>
@@ -404,14 +452,25 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					<div className='text-center pt-6'>
 						<button
 							type='submit'
-							disabled={isSubmitting || updateBooking.isPending}
+							disabled={
+								isSubmitting ||
+								updateBooking.isPending ||
+								momoPayMutation.isPending ||
+								vnpayPayMutation.isPending
+							}
 							className={`px-8 py-4 rounded-[30px] text-lg font-semibold text-white transition-all ${
-								isSubmitting || updateBooking.isPending
+								isSubmitting ||
+								updateBooking.isPending ||
+								momoPayMutation.isPending ||
+								vnpayPayMutation.isPending
 									? 'bg-gray-400 cursor-not-allowed'
 									: 'bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl'
 							}`}
 						>
-							{isSubmitting || updateBooking.isPending ? (
+							{isSubmitting ||
+							updateBooking.isPending ||
+							momoPayMutation.isPending ||
+							vnpayPayMutation.isPending ? (
 								<div className='flex items-center justify-center'>
 									<LoadingIcon className='size-5 mr-2' />
 									Đang xử lý...

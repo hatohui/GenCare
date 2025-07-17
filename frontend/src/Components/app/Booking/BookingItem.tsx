@@ -5,7 +5,11 @@ import { motion } from 'motion/react'
 import { OrderDetail } from '@/Interfaces/Payment/Types/BookService'
 import { EyeSVG, DownloadSVG } from '@/Components/SVGs'
 import TestResultModal from './TestResultModal'
-import { useMomoPay, useDeleteOrderDetail } from '@/Services/book-service'
+import {
+	useMomoPay,
+	useVnpayPay,
+	useDeleteOrderDetail,
+} from '@/Services/book-service'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
 import ConfirmDialog from '@/Components/ConfirmationDialog'
@@ -25,6 +29,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	console.log('BookingItem - purchaseId:', booking.purchaseId)
 
 	const momoPayMutation = useMomoPay()
+	const vnpayPayMutation = useVnpayPay()
 	const deleteMutation = useDeleteOrderDetail(booking.orderDetailId)
 
 	const formatDate = (date: Date | string) => {
@@ -72,6 +77,38 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 		} catch (error) {
 			console.error('MoMo payment failed:', error)
 			toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
+		}
+	}
+
+	const handleVnpayPayment = async () => {
+		// Check if purchaseId exists
+		if (!booking.purchaseId) {
+			toast.error('Không tìm thấy thông tin đặt dịch vụ')
+			return
+		}
+
+		try {
+			console.log(
+				'Attempting VNPay payment with purchaseId:',
+				booking.purchaseId
+			)
+
+			await vnpayPayMutation.mutateAsync(booking.purchaseId, {
+				onSuccess: data => {
+					// Redirect to VNPay payment URL
+					if (data) {
+						window.location.href = data
+					} else {
+						toast.error('Không thể tạo liên kết thanh toán')
+					}
+				},
+				onError: error => {
+					console.error('VNPay payment failed:', error)
+				},
+			})
+		} catch (error) {
+			console.error('VNPay payment failed:', error)
+			toast.error('Thanh toán VNPay thất bại. Vui lòng thử lại.')
 		}
 	}
 
@@ -149,13 +186,15 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 								</button>
 							</>
 						) : (
-							// Show payment button for unpaid services
+							// Show payment buttons for unpaid services
 							<>
 								<button
 									onClick={handleMomoPayment}
-									disabled={momoPayMutation.isPending}
+									disabled={
+										momoPayMutation.isPending || vnpayPayMutation.isPending
+									}
 									className={`flex items-center gap-2 px-4 py-2 rounded-[20px] transition-colors ${
-										momoPayMutation.isPending
+										momoPayMutation.isPending || vnpayPayMutation.isPending
 											? 'bg-gray-400 cursor-not-allowed'
 											: 'bg-pink-500 hover:bg-pink-600 text-white'
 									}`}
@@ -170,6 +209,28 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									{momoPayMutation.isPending
 										? 'Đang xử lý...'
 										: 'Thanh toán MoMo'}
+								</button>
+								<button
+									onClick={handleVnpayPayment}
+									disabled={
+										momoPayMutation.isPending || vnpayPayMutation.isPending
+									}
+									className={`flex items-center gap-2 px-4 py-2 rounded-[20px] transition-colors ${
+										momoPayMutation.isPending || vnpayPayMutation.isPending
+											? 'bg-gray-400 cursor-not-allowed'
+											: 'bg-blue-600 hover:bg-blue-700 text-white'
+									}`}
+								>
+									{vnpayPayMutation.isPending ? (
+										<LoadingIcon className='size-4' />
+									) : (
+										<div className='w-4 h-4 bg-white rounded-full flex items-center justify-center'>
+											<span className='text-blue-600 font-bold text-xs'>V</span>
+										</div>
+									)}
+									{vnpayPayMutation.isPending
+										? 'Đang xử lý...'
+										: 'Thanh toán VNPay'}
 								</button>
 								<button
 									onClick={handleDelete}
