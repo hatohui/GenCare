@@ -14,7 +14,6 @@ import { toast } from 'react-hot-toast'
 const SlotsPage = () => {
 	const deleteMutation = useDeleteSlot()
 	const updateMutation = useUpdateSlot()
-
 	const query = useAllSlotsAdmin()
 
 	const { isError, isFetching, data, isLoading } = query
@@ -53,7 +52,7 @@ const SlotsPage = () => {
 		<>
 			{isAddNewOpen && (
 				<div
-					className='fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center'
+					className='fixed inset-0 z-10 center-all'
 					role='dialog'
 					aria-modal='true'
 					aria-labelledby='add-slot-title'
@@ -75,9 +74,11 @@ const SlotsPage = () => {
 				<div className='w-full flex gap-3 px-1'>
 					<div className='w-full'>
 						<div className='flex items-center justify-between px-5 gap-3 grow shadow-sm bg-general py-3 rounded overflow-hidden'>
-							<h1 className='text-xl font-semibold text-gray-800'>
-								Slot Management
-							</h1>
+							<div>
+								<h1 className='text-xl font-semibold text-gray-800'>
+									Slot Management
+								</h1>
+							</div>
 							<AddNewButton
 								handleAddNew={() => setIsAddNewOpen(!isAddNewOpen)}
 							/>
@@ -86,7 +87,7 @@ const SlotsPage = () => {
 				</div>
 
 				{isLoading || isFetching ? (
-					<div className='h-full center-all w-full animate-pulse'>
+					<div className='h-full center-all w-full px-1 animate-pulse'>
 						<div className='text-center'>
 							<div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
 							<p className='text-gray-600'>Loading slots...</p>
@@ -109,8 +110,8 @@ const SlotsPage = () => {
 							</button>
 						</div>
 					</div>
-				) : !data?.data?.slots || data.data.slots.length === 0 ? (
-					<div className='h-full center-all w-full'>
+				) : !data?.slots || data.slots.length === 0 ? (
+					<div className='h-full center-all w-full px-1'>
 						<div className='text-center text-gray-500'>
 							<div className='mb-4'>
 								<svg
