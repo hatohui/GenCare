@@ -348,6 +348,7 @@ const vi: Record<string, string> = {
 	'auth.resetPassword.retryIn': 'Thử lại sau {seconds}s',
 	'auth.resetPassword.success':
 		'Đặt lại mật khẩu thành công. Bạn sẽ được chuyển hướng đến trang đăng nhập.',
+	'auth.verifyingUser': 'Đang xác minh người dùng...',
 
 	// Navigation
 	'nav.home': 'Trang chủ',

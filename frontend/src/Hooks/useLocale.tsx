@@ -18,32 +18,14 @@ interface LocaleContextType {
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined)
 
-// Get initial locale from localStorage or default to 'vi'
-const getInitialLocale = (): Locale => {
-	if (typeof window === 'undefined') {
-		return 'en' // Default to English for server-side rendering to avoid hydration mismatches
-	}
-
-	try {
-		const savedLocale = localStorage.getItem('locale') as Locale
-		return savedLocale === 'en' ? 'en' : 'vi'
-	} catch (e) {
-		// In case of any issues with localStorage
-		return 'en'
-	}
-}
-
 export const LocaleProvider: React.FC<{ children: ReactNode }> = ({
 	children,
 }) => {
-	// Always initialize with 'en' for consistent server-side rendering
 	const [locale, setLocale] = useState<Locale>('en')
 	const [isHydrated, setIsHydrated] = useState(false)
 
-	// This effect runs once after hydration to set the correct locale from localStorage
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			// Get locale from localStorage
 			const savedLocale = localStorage.getItem('locale') as Locale
 			if (savedLocale === 'en' || savedLocale === 'vi') {
 				setLocale(savedLocale)
