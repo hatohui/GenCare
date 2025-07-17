@@ -2,7 +2,8 @@
 import { motion } from 'framer-motion'
 import React from 'react'
 import { MobileMenu } from './MobileMenu'
-import { NavComponentProps } from './NavBar'
+import { NavComponentProps } from '@/Interfaces/NavBar/Types/NavBarComponents'
+import { useLocale } from '@/Hooks/useLocale'
 
 const MobileButton = ({
 	className,
@@ -10,6 +11,8 @@ const MobileButton = ({
 	setOpened,
 	onTop,
 }: NavComponentProps & MobileMenu) => {
+	const { t } = useLocale()
+
 	return (
 		<>
 			<button
@@ -18,7 +21,7 @@ const MobileButton = ({
 				onClick={() => setOpened(!isOpened)}
 				onTouchEnd={() => setOpened(!isOpened)}
 				aria-expanded={isOpened}
-				aria-label={isOpened ? 'Close menu' : 'Open menu'}
+				aria-label={isOpened ? t('nav.closeMenu') : t('nav.openMenu')}
 				aria-controls='mobile-menu'
 			>
 				<motion.svg

@@ -9,18 +9,26 @@ import {
 	formSchema,
 	FormSchema,
 } from '@/Interfaces/Payment/schema/BookService'
-import { useBookServices, useMomoPay } from '@/Services/book-service'
+import {
+	useBookServices,
+	useMomoPay,
+	useVnpayPay,
+} from '@/Services/book-service'
 import { TrashCanSVG } from '@/Components/SVGs'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { toast } from 'react-hot-toast'
+import { useLocale } from '@/Hooks/useLocale'
 
 const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	const { data, isLoading } = useServiceById(serviceId)
+	const { t } = useLocale()
 	const updateBooking = useBookServices()
 	const router = useRouter()
-	const [paymentMethod, setPaymentMethod] = useState<'momo' | 'later'>('later')
+	const [paymentMethod, setPaymentMethod] = useState<
+		'momo' | 'vnpay' | 'later'
+	>('later')
 	const [showPaymentOptions, setShowPaymentOptions] = useState(false)
 
 	const {
@@ -50,16 +58,17 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 	})
 
 	const momoPayMutation = useMomoPay()
+	const vnpayPayMutation = useVnpayPay()
 
 	const onSubmit = async (formData: FormSchema) => {
 		try {
 			const result = await updateBooking.mutateAsync({
 				OrderDetails: formData.people,
 			})
+			const purchaseId = result.purchaseId || result.id
 			if (paymentMethod === 'momo') {
-				const purchaseId = result.purchaseId || result.id
 				if (!purchaseId) {
-					toast.error('Không tìm thấy thông tin đặt dịch vụ')
+					toast.error(t('payment.payment_required'))
 					return
 				}
 				await new Promise(res => setTimeout(res, 800))
@@ -68,24 +77,41 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					if (momoResult.payUrl) {
 						window.location.href = momoResult.payUrl
 					} else {
-						toast.error('Không thể tạo liên kết thanh toán')
+						toast.error(t('payment.payment_link_failed'))
 					}
 				} catch (error) {
 					console.error('MoMo payment failed:', error)
-					toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
+					toast.error(t('payment.payment_failed'))
+				}
+			} else if (paymentMethod === 'vnpay') {
+				if (!purchaseId) {
+					toast.error('Không tìm thấy thông tin đặt dịch vụ')
+					return
+				}
+				await new Promise(res => setTimeout(res, 800))
+				try {
+					const vnpayResult = await vnpayPayMutation.mutateAsync(purchaseId)
+					if (vnpayResult.payUrl) {
+						window.location.href = vnpayResult.payUrl
+					} else {
+						toast.error('Không thể tạo liên kết thanh toán')
+					}
+				} catch (error) {
+					console.error('VNPay payment failed:', error)
+					toast.error('Thanh toán VNPay thất bại. Vui lòng thử lại.')
 				}
 			} else {
-				toast.success('Đặt dịch vụ thành công! Bạn có thể thanh toán sau.')
+				toast.success(t('booking.booking_success'))
 				router.push('/app/booking')
 			}
 		} catch (error) {
 			console.error('Booking failed:', error)
-			toast.error('Đặt dịch vụ thất bại. Vui lòng thử lại.')
+			toast.error(t('booking.booking_failed'))
 		}
 	}
 
 	const handlePayLater = () => {
-		toast.success('Đặt dịch vụ thành công! Bạn có thể thanh toán sau.')
+		toast.success(t('booking.booking_success'))
 		router.push('/app/booking')
 	}
 
@@ -94,7 +120,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 			<div className='flex items-center justify-center py-20'>
 				<div className='text-center'>
 					<LoadingIcon className='mx-auto mb-4' />
-					<p className='text-gray-600'>Đang tải thông tin dịch vụ...</p>
+					<p className='text-gray-600'>{t('booking.loading_service')}</p>
 				</div>
 			</div>
 		)
@@ -113,11 +139,11 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							onClick={() => router.back()}
 							className='hover:text-main transition-colors'
 						>
-							← Quay lại
+							← {t('booking.go_back')}
 						</button>
 					</li>
 					<li>/</li>
-					<li className='text-main font-medium'>Đặt dịch vụ</li>
+					<li className='text-main font-medium'>{t('booking.form_title')}</li>
 				</ol>
 			</nav>
 
@@ -130,21 +156,21 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					transition={{ type: 'spring', stiffness: 50 }}
 				>
 					<div className='text-center mb-8'>
-						<h2 className='text-3xl font-bold text-main mb-2'>Đặt Dịch Vụ</h2>
-						<p className='text-gray-600'>
-							Vui lòng điền thông tin chi tiết bên dưới
-						</p>
+						<h2 className='text-3xl font-bold text-main mb-2'>
+							{t('booking.form_title')}
+						</h2>
+						<p className='text-gray-600'>{t('booking.form_description')}</p>
 					</div>
 
 					{/* Service Info Card */}
 					<div className='bg-gradient-to-r from-main/10 to-secondary/10 rounded-[30px] p-6 mb-8'>
 						<h3 className='text-xl font-semibold text-main mb-2'>
-							Thông Tin Dịch Vụ
+							{t('booking.service_info')}
 						</h3>
 						<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 							<div>
 								<label className='block text-sm font-medium text-gray-700 mb-1'>
-									Tên dịch vụ
+									{t('booking.service_name')}
 								</label>
 								<input
 									type='text'
@@ -155,7 +181,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							</div>
 							<div>
 								<label className='block text-sm font-medium text-gray-700 mb-1'>
-									Giá dịch vụ
+									{t('booking.service_price')}
 								</label>
 								<input
 									type='text'
@@ -168,15 +194,15 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						<div className='mt-4 p-4 bg-white rounded-[20px] border border-gray-200'>
 							<div className='flex justify-between items-center'>
 								<span className='text-lg font-semibold text-gray-700'>
-									Tổng tiền:
+									{t('booking.total')}:
 								</span>
 								<span className='text-2xl font-bold text-main'>
 									{totalPrice.toLocaleString('vi-VN')} VND
 								</span>
 							</div>
 							<p className='text-sm text-gray-600 mt-1'>
-								({fields.length} người × {data.price.toLocaleString('vi-VN')}{' '}
-								VND)
+								({fields.length} {t('booking.people')} ×{' '}
+								{data.price.toLocaleString('vi-VN')} VND)
 							</p>
 						</div>
 					</div>
@@ -184,7 +210,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					{/* Payment Method Selection */}
 					<div className='bg-white border border-gray-200 rounded-[30px] p-6 shadow-sm'>
 						<h3 className='text-lg font-semibold text-main mb-4'>
-							Phương thức thanh toán
+							{t('booking.payment_method')}
 						</h3>
 						<div className='space-y-3'>
 							<label className='flex items-center space-x-3 cursor-pointer'>
@@ -200,7 +226,25 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 									<div className='w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center'>
 										<span className='text-white font-bold text-sm'>M</span>
 									</div>
-									<span className='font-medium'>Thanh toán ngay với MoMo</span>
+									<span className='font-medium'>
+										{t('booking.pay_with_momo')}
+									</span>
+								</div>
+							</label>
+							<label className='flex items-center space-x-3 cursor-pointer'>
+								<input
+									type='radio'
+									name='paymentMethod'
+									value='vnpay'
+									checked={paymentMethod === 'vnpay'}
+									onChange={() => setPaymentMethod('vnpay')}
+									className='text-main focus:ring-main'
+								/>
+								<div className='flex items-center space-x-2'>
+									<div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center'>
+										<span className='text-white font-bold text-sm'>V</span>
+									</div>
+									<span className='font-medium'>Thanh toán ngay với VNPay</span>
 								</div>
 							</label>
 							<label className='flex items-center space-x-3 cursor-pointer'>
@@ -216,14 +260,22 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 									<div className='w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center'>
 										<span className='text-white font-bold text-sm'>$</span>
 									</div>
-									<span className='font-medium'>Thanh toán sau</span>
+									<span className='font-medium'>{t('booking.pay_later')}</span>
 								</div>
 							</label>
 						</div>
 						{paymentMethod === 'momo' && (
 							<div className='mt-3 p-3 bg-pink-50 border border-pink-200 rounded-[15px]'>
 								<p className='text-sm text-pink-700'>
-									Bạn sẽ được chuyển đến trang thanh toán MoMo sau khi xác nhận
+									{t('booking.momo_description')}
+									{t('booking.momo_description2')}
+								</p>
+							</div>
+						)}
+						{paymentMethod === 'vnpay' && (
+							<div className='mt-3 p-3 bg-blue-50 border border-blue-200 rounded-[15px]'>
+								<p className='text-sm text-blue-700'>
+									Bạn sẽ được chuyển đến trang thanh toán VNPay sau khi xác nhận
 									đặt dịch vụ.
 								</p>
 							</div>
@@ -231,7 +283,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						{paymentMethod === 'later' && (
 							<div className='mt-3 p-3 bg-gray-50 border border-gray-200 rounded-[15px]'>
 								<p className='text-sm text-gray-700'>
-									Bạn có thể thanh toán sau khi đặt dịch vụ thành công.
+									{t('booking.pay_later_description')}
 								</p>
 							</div>
 						)}
@@ -252,14 +304,14 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						>
 							<div className='flex justify-between items-center mb-4'>
 								<h3 className='text-lg font-semibold text-main'>
-									Người {index + 1}
+									{t('booking.person')} {index + 1}
 								</h3>
 								{fields.length > 1 && (
 									<button
 										type='button'
 										onClick={() => remove(index)}
 										className='text-red-500 hover:bg-red-50 rounded-full p-2 transition-colors'
-										title='Xóa người này'
+										title={t('booking.remove_person')}
 									>
 										<TrashCanSVG className='size-5' />
 									</button>
@@ -276,7 +328,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 								<div>
 									<label className='block text-sm font-medium text-gray-700 mb-1'>
-										Họ <span className='text-red-500'>*</span>
+										{t('booking.last_name')}{' '}
+										<span className='text-red-500'>*</span>
 									</label>
 									<input
 										type='text'
@@ -286,7 +339,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 												? 'border-red-500 focus:border-red-500'
 												: 'border-gray-300 focus:border-main'
 										}`}
-										placeholder='Nguyễn'
+										placeholder={t('booking.last_name')}
 									/>
 									{errors.people?.[index]?.lastName && (
 										<p className='text-red-500 text-sm mt-1'>
@@ -297,7 +350,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 
 								<div>
 									<label className='block text-sm font-medium text-gray-700 mb-1'>
-										Tên <span className='text-red-500'>*</span>
+										{t('booking.first_name')}{' '}
+										<span className='text-red-500'>*</span>
 									</label>
 									<input
 										type='text'
@@ -318,7 +372,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 
 								<div>
 									<label className='block text-sm font-medium text-gray-700 mb-1'>
-										Số điện thoại <span className='text-red-500'>*</span>
+										{t('booking.phone_number')}{' '}
+										<span className='text-red-500'>*</span>
 									</label>
 									<input
 										type='tel'
@@ -339,7 +394,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 
 								<div>
 									<label className='block text-sm font-medium text-gray-700 mb-1'>
-										Ngày sinh <span className='text-red-500'>*</span>
+										{t('booking.date_of_birth')}{' '}
+										<span className='text-red-500'>*</span>
 									</label>
 									<input
 										type='date'
@@ -359,7 +415,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 
 								<div>
 									<label className='block text-sm font-medium text-gray-700 mb-1'>
-										Giới tính <span className='text-red-500'>*</span>
+										{t('booking.gender')}{' '}
+										<span className='text-red-500'>*</span>
 									</label>
 									<select
 										{...register(`people.${index}.gender`, {
@@ -367,8 +424,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 										})}
 										className='w-full border border-gray-300 rounded-[30px] px-4 py-3 focus:border-main transition-colors'
 									>
-										<option value='true'>Nam</option>
-										<option value='false'>Nữ</option>
+										<option value='true'>{t('booking.gender_male')}</option>
+										<option value='false'>{t('booking.gender_female')}</option>
 									</select>
 									{errors.people?.[index]?.gender && (
 										<p className='text-red-500 text-sm mt-1'>
@@ -396,7 +453,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 							}
 							className='bg-main hover:bg-main/90 text-white px-6 py-3 rounded-[30px] font-medium transition-colors'
 						>
-							+ Thêm người khác
+							+ {t('booking.add_person')}
 						</button>
 					</div>
 
@@ -404,20 +461,31 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					<div className='text-center pt-6'>
 						<button
 							type='submit'
-							disabled={isSubmitting || updateBooking.isPending}
+							disabled={
+								isSubmitting ||
+								updateBooking.isPending ||
+								momoPayMutation.isPending ||
+								vnpayPayMutation.isPending
+							}
 							className={`px-8 py-4 rounded-[30px] text-lg font-semibold text-white transition-all ${
-								isSubmitting || updateBooking.isPending
+								isSubmitting ||
+								updateBooking.isPending ||
+								momoPayMutation.isPending ||
+								vnpayPayMutation.isPending
 									? 'bg-gray-400 cursor-not-allowed'
 									: 'bg-accent hover:bg-accent/90 shadow-lg hover:shadow-xl'
 							}`}
 						>
-							{isSubmitting || updateBooking.isPending ? (
+							{isSubmitting ||
+							updateBooking.isPending ||
+							momoPayMutation.isPending ||
+							vnpayPayMutation.isPending ? (
 								<div className='flex items-center justify-center'>
 									<LoadingIcon className='size-5 mr-2' />
-									Đang xử lý...
+									{t('payment.processing')}
 								</div>
 							) : (
-								'Xác nhận đặt dịch vụ'
+								t('booking.confirm_booking')
 							)}
 						</button>
 					</div>
@@ -430,19 +498,22 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					className='space-y-6'
 				>
 					<div className='text-center mb-8'>
-						<h2 className='text-3xl font-bold text-main mb-2'>Thanh Toán</h2>
+						<h2 className='text-3xl font-bold text-main mb-2'>
+							{t('booking.payment')}
+						</h2>
 						<p className='text-gray-600'>
-							Chọn phương thức thanh toán cho dịch vụ của bạn
+							{t('booking.select_payment_method')}
 						</p>
 					</div>
 
 					<div className='bg-white border border-gray-200 rounded-[30px] p-8 shadow-sm'>
 						<div className='text-center mb-6'>
 							<h3 className='text-xl font-semibold text-main mb-2'>
-								Thông tin đặt dịch vụ
+								{t('booking.booking_info')}
 							</h3>
 							<p className='text-gray-600'>
-								Dịch vụ: {data.name} - {totalPrice.toLocaleString('vi-VN')} VND
+								{t('booking.service')}: {data.name} -{' '}
+								{totalPrice.toLocaleString('vi-VN')} VND
 							</p>
 						</div>
 
@@ -456,21 +527,22 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 								</div>
 								<div className='text-left'>
 									<h4 className='font-semibold text-gray-800'>
-										Thanh toán sau
+										{t('booking.pay_later')}
 									</h4>
 									<p className='text-sm text-gray-600'>
-										Thanh toán khi thuận tiện
+										{t('booking.pay_when_convenient')}
 									</p>
 								</div>
 							</button>
 						</div>
 
 						<div className='text-center'>
+							{' '}
 							<button
 								onClick={() => setShowPaymentOptions(false)}
 								className='text-gray-600 hover:text-main transition-colors'
 							>
-								← Quay lại
+								← {t('booking.go_back')}
 							</button>
 						</div>
 					</div>

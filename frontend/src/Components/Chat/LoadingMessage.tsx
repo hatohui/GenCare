@@ -3,8 +3,10 @@
 import { motion } from 'motion/react'
 import { CldImage } from 'next-cloudinary'
 import FallBackUserImage from '../Profile/FallBackUserImage'
+import { useLocale } from '@/Hooks/useLocale'
 
 const LoadingMessage = ({ consultantIcon }: { consultantIcon?: string }) => {
+	const { t } = useLocale()
 	const bubbleVariants = {
 		initial: { opacity: 0, scale: 0.95, y: 10 },
 		animate: {
@@ -89,7 +91,7 @@ const LoadingMessage = ({ consultantIcon }: { consultantIcon?: string }) => {
 							className='text-xs sm:text-sm text-text'
 							variants={textVariants}
 						>
-							Thinking...
+							{t('chat.thinking')}
 						</motion.p>
 					</motion.div>
 				</motion.div>

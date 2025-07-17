@@ -13,6 +13,7 @@ import { CldImage } from 'next-cloudinary'
 import FallBackUserImage from '../Profile/FallBackUserImage'
 import clsx from 'clsx'
 import MotionLink from '@/Components/MotionLink'
+import { useLocale } from '@/Hooks/useLocale'
 
 const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 	const [isOpen, setIsOpen] = useState(false)
@@ -21,6 +22,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 	const { data: user } = useAccountStore()
 	const router = useRouter()
 	const { mutate: logout } = useLogoutAccount()
+	const { locale, setLocale, t } = useLocale()
 
 	// Close dropdown when clicking outside
 	useEffect(() => {
@@ -41,12 +43,12 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 		logout(undefined, {
 			onSuccess: () => {
 				router.push('/login')
-				toast.success('Logged out successfully')
+				toast.success(t('feedback.logoutSuccess'))
 				setIsOpen(false)
 			},
 			onError: () => {
 				console.error('Logout failed')
-				toast.error('Failed to logout')
+				toast.error(t('feedback.logoutFailed'))
 			},
 		})
 	}
@@ -77,7 +79,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 				whileHover={{ scale: 0.85, filter: 'brightness(1.2) contrast(1.1)' }}
 				transition={{ duration: 0.2 }}
 			>
-				<span className='pointer-events-none'>Đăng Nhập</span>
+				<span className='pointer-events-none'>{t('auth.login')}</span>
 				<svg
 					xmlns='http://www.w3.org/2000/svg'
 					fill='none'
@@ -214,7 +216,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 										d='M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z'
 									/>
 								</svg>
-								Đi tới ứng dụng
+								{t('nav.goToApp')}
 							</button>
 
 							<button
@@ -237,8 +239,39 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 										d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
 									/>
 								</svg>
-								Hồ sơ cá nhân
+								{t('profile.title')}
 							</button>
+
+							{/* Language Switcher */}
+							<div className='border-t border-gray-100 my-1 pt-1'>
+								<div className='px-4 py-1 text-xs text-gray-500'>
+									{t('language.select')}:
+								</div>
+								<div className='flex items-center px-4 py-1'>
+									<button
+										onClick={() => setLocale('en')}
+										className={`flex items-center px-3 py-1.5 rounded-md text-sm mr-2 ${
+											locale === 'en'
+												? 'bg-accent text-white font-medium'
+												: 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+										}`}
+									>
+										<span className='mr-1.5'>🇺🇸</span>
+										{t('language.english')}
+									</button>
+									<button
+										onClick={() => setLocale('vi')}
+										className={`flex items-center px-3 py-1.5 rounded-md text-sm ${
+											locale === 'vi'
+												? 'bg-accent text-white font-medium'
+												: 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+										}`}
+									>
+										<span className='mr-1.5'>🇻🇳</span>
+										{t('language.vietnamese')}
+									</button>
+								</div>
+							</div>
 
 							<div className='border-t border-gray-100 my-1'></div>
 
@@ -259,7 +292,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 										d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
 									/>
 								</svg>
-								Đăng xuất
+								{t('auth.logout')}
 							</button>
 						</div>
 					</motion.div>

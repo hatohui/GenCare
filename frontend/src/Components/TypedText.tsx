@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
@@ -9,12 +9,24 @@ const TypedText = ({
 }: TypedOptions & { className?: string }) => {
 	const el = useRef<HTMLSpanElement>(null)
 	const [isFirstLoad, setIsFirstLoad] = useState(true)
+	const [isClient, setIsClient] = useState(false)
+
+	useEffect(() => {
+		setIsClient(true)
+	}, [])
 
 	// Extract strings join for dependency
 	const stringsKey = useMemo(
 		() => (options.strings ? options.strings.join('') : ''),
 		[options.strings]
 	)
+
+	// Reset isFirstLoad when strings change
+	useEffect(() => {
+		if (isClient) {
+			setIsFirstLoad(true)
+		}
+	}, [stringsKey, isClient])
 
 	// Memoize defaultOptions so it doesn't change on every render
 	const defaultOptions: TypedOptions = useMemo(
@@ -28,22 +40,23 @@ const TypedText = ({
 		[]
 	)
 
-	// Reset isFirstLoad when strings change
-	React.useEffect(() => {
-		setIsFirstLoad(true)
-	}, [stringsKey])
+	useEffect(() => {
+		if (!el.current || !isClient) return
 
-	React.useEffect(() => {
-		if (!el.current) return
 		const typed = new Typed(el.current, { ...defaultOptions, ...options })
 
 		return () => {
 			typed.destroy()
 		}
-		// Only re-run when options or strings change
-	}, [defaultOptions, stringsKey, options.typeSpeed, options.backSpeed])
+	}, [defaultOptions, options, isClient])
 
-	return isFirstLoad ? (
+	// Show a static version of the text during server rendering or initial client hydration
+	// Once on the client, we'll replace it with the animated version if needed
+	return !isClient ? (
+		<span className={className}>
+			{options.strings && options.strings.length > 0 ? options.strings[0] : ''}
+		</span>
+	) : isFirstLoad ? (
 		<span className={className} ref={el} />
 	) : (
 		<span className={className}>

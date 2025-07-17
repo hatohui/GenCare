@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import NavLinks from './NavLink'
 import Logo from '../Logo'
 import UserProfile from './UserProfile'
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function SideNav() {
+	const { t } = useLocale()
 	const [collapsed, setCollapsed] = useState(false)
 	const [isHovering, setIsHovering] = useState(false)
 
@@ -26,7 +28,7 @@ export default function SideNav() {
 	return (
 		<div className='relative overflow-visible'>
 			<button
-				aria-label='side-bar-toggle'
+				aria-label={collapsed ? t('nav.expand') : t('nav.collapse')}
 				className='absolute top-1/2 -translate-y-1/2 right-[-16px] z-10 rounded-full bg-accent text-white w-8 h-8 items-center justify-center shadow-lg hover:scale-105 transition hidden md:flex'
 				onClick={() => setCollapsed(!collapsed)}
 			>
