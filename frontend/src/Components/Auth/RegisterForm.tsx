@@ -11,6 +11,7 @@ import GoogleLoginButton from './GoogleLoginButton'
 import SubmitButton from './SubmitButton'
 import clsx from 'clsx'
 import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
+import { useLocale } from '@/Hooks/useLocale'
 
 type RegisterFormProps = keyof RegisterFormData
 
@@ -25,6 +26,7 @@ const RegisterForm = ({
 	className,
 	handleLogin,
 }: RegisterComponentProps) => {
+	const { t } = useLocale()
 	const [form, setForm] = useState<RegisterFormData>({
 		firstName: '',
 		lastName: '',
@@ -141,8 +143,8 @@ const RegisterForm = ({
 		>
 			<h1 className='text-xl font-bold mb-4'>
 				{step === 1
-					? 'Đăng ký tài khoản (Bước 1)'
-					: 'Đăng ký tài khoản (Bước 2)'}
+					? t('auth.register.titleStep1')
+					: t('auth.register.titleStep2')}
 			</h1>
 
 			{/* Step 1: Basic Information */}
@@ -150,7 +152,7 @@ const RegisterForm = ({
 				<>
 					<div className='flex gap-4'>
 						<FloatingLabel
-							label='Họ'
+							label={t('common.lastName')}
 							id='lastName'
 							name='lastName'
 							value={form.lastName}
@@ -158,7 +160,7 @@ const RegisterForm = ({
 							error={errors.lastName}
 						/>
 						<FloatingLabel
-							label='Tên'
+							label={t('common.firstName')}
 							id='firstName'
 							name='firstName'
 							value={form.firstName}
@@ -168,7 +170,7 @@ const RegisterForm = ({
 					</div>
 
 					<FloatingLabel
-						label='Email'
+						label={t('common.email')}
 						id='email'
 						name='email'
 						value={form.email}
@@ -177,7 +179,7 @@ const RegisterForm = ({
 					/>
 
 					<FloatingLabel
-						label='Mật khẩu'
+						label={t('common.password')}
 						id='password'
 						type='password'
 						name='password'
@@ -187,7 +189,7 @@ const RegisterForm = ({
 					/>
 
 					<FloatingLabel
-						label='Xác nhận mật khẩu'
+						label={t('common.confirmPassword')}
 						id='confirmPassword'
 						type='password'
 						name='confirmPassword'
@@ -197,7 +199,7 @@ const RegisterForm = ({
 					/>
 
 					<FloatingLabel
-						label='Số điện thoại'
+						label={t('common.phoneNumber')}
 						id='phoneNumber'
 						name='phoneNumber'
 						value={form.phoneNumber}
@@ -212,7 +214,7 @@ const RegisterForm = ({
 							onClick={handleNext}
 							className='w-full p-2 rounded-full bg-main text-white'
 						>
-							Chuyển sang bước 2
+							{t('auth.register.nextStep')}
 						</button>
 					</div>
 				</>
@@ -229,7 +231,7 @@ const RegisterForm = ({
 								errors.dateOfBirth ? 'text-red-500' : 'text-gray-700'
 							}`}
 						>
-							Ngày sinh (dd/mm/yyyy)
+							{t('common.dateOfBirth')}
 						</label>
 						<input
 							type='date'
@@ -254,7 +256,7 @@ const RegisterForm = ({
 							htmlFor='gender'
 							className='block text-sm font-medium text-gray-700 mb-1'
 						>
-							Giới tính:
+							{t('common.gender')}
 						</label>
 						<select
 							id='gender'
@@ -265,8 +267,8 @@ const RegisterForm = ({
 								errors.gender ? 'border-red-500' : 'border-gray-300'
 							} rounded-md shadow-sm focus:ring-main focus:border-main focus:outline-none focus:ring-0`}
 						>
-							<option value='true'>Nam</option>
-							<option value='false'>Nữ</option>
+							<option value='true'>{t('common.male')}</option>
+							<option value='false'>{t('common.female')}</option>
 						</select>
 						{errors.gender && (
 							<p className='text-red-500 text-sm mt-1'>
@@ -285,7 +287,7 @@ const RegisterForm = ({
 								onChange={handleChange}
 								className={`w-4 h-4`}
 							/>
-							<span>Tôi đồng ý với điều khoản dịch vụ</span>
+							<span>{t('auth.register.agreeToTerms')}</span>
 						</label>
 						{errors.agreeToTerms && (
 							<p className='text-red-500 text-sm mt-1'>
@@ -296,7 +298,7 @@ const RegisterForm = ({
 
 					{/* Submit button */}
 					<SubmitButton
-						label='Đăng kí'
+						label={t('auth.register.submit')}
 						buttonClass='bg-main text-white w-full p-2 rounded-full flex justify-center bg-gradient-to-r from-accent to-accent/80 backdrop-blur-3xl hover:from-accent/90 hover:to-accent'
 					/>
 
@@ -307,7 +309,7 @@ const RegisterForm = ({
 							onClick={handleBack}
 							className='w-full p-2 rounded-full bg-gray-500 text-white'
 						>
-							Quay lại bước 1
+							{t('auth.register.backStep')}
 						</button>
 					</div>
 				</>
@@ -315,9 +317,9 @@ const RegisterForm = ({
 
 			{/* Footer: Google Login & Redirect */}
 			<div className='text-center text-gray-500 mt-4'>
-				Đã có tài khoản?{' '}
+				{t('auth.alreadyHaveAccount')}{' '}
 				<a href='/login' className='text-accent hover:underline'>
-					Đăng nhập
+					{t('auth.login')}
 				</a>
 			</div>
 

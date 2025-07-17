@@ -7,6 +7,8 @@ import { Service } from '@/Interfaces/Service/Types/Service'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { CldImage } from 'next-cloudinary'
+import LocalizedCurrency from '@/Components/LocalizedCurrency'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface ServiceCardProps {
 	service: Pick<Service, 'id' | 'name' | 'description' | 'price' | 'imageUrls'>
@@ -15,19 +17,20 @@ interface ServiceCardProps {
 const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 	const { accessToken } = useToken()
 	const router = useRouter()
+	const { t } = useLocale()
 
 	const handleBookNow = () => {
 		try {
 			// Validate service data
 			if (!service.id || !service.name || !service.price) {
 				console.error('Invalid service data')
-				toast.error('Thông tin dịch vụ không hợp lệ')
+				toast.error(t('feedback.invalid_service'))
 				return
 			}
 
 			// Check authentication
 			if (!accessToken) {
-				toast.error('Vui lòng đăng nhập để đặt dịch vụ')
+				toast.error(t('feedback.login_required'))
 				router.push('/login')
 				return
 			}
@@ -36,7 +39,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 			router.push(`/app/booking/${service.id}`)
 		} catch (error) {
 			console.error('Error navigating to booking:', error)
-			toast.error('Có lỗi xảy ra. Vui lòng thử lại.')
+			toast.error(t('feedback.error'))
 		}
 	}
 
@@ -45,7 +48,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 			router.push(`/service/${service.id}`)
 		} catch (error) {
 			console.error('Error navigating to service details:', error)
-			toast.error('Có lỗi xảy ra. Vui lòng thử lại.')
+			toast.error(t('feedback.error'))
 		}
 	}
 
@@ -76,7 +79,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 
 				{/* Price Badge */}
 				<div className='absolute top-3 right-3 bg-accent text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg'>
-					{service.price.toLocaleString('vi-VN')} VND
+					<LocalizedCurrency amount={service.price} />
 				</div>
 			</div>
 
@@ -96,13 +99,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 							onClick={handleViewDetails}
 							className='flex-1 px-4 py-2 border border-main text-main rounded-[20px] hover:bg-main hover:text-white transition-colors font-medium'
 						>
-							Xem chi tiết
+							{t('action.view_details')}
 						</button>
 						<button
 							onClick={handleBookNow}
 							className='flex-1 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors font-medium'
 						>
-							Đặt ngay
+							{t('action.book_now')}
 						</button>
 					</div>
 				</div>

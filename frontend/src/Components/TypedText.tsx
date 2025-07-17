@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
@@ -9,14 +9,19 @@ const TypedText = ({
 }: TypedOptions & { className?: string }) => {
 	const el = useRef(null)
 	const [isFirstLoad, setIsFirstLoad] = useState(true)
+	const [isClient, setIsClient] = useState(false)
 
-	// Extract strings join for dependency
+	useEffect(() => {
+		setIsClient(true)
+	}, [])
+
 	const stringsKey = options.strings ? options.strings.join('') : ''
 
-	// Reset isFirstLoad when strings change
-	React.useEffect(() => {
-		setIsFirstLoad(true)
-	}, [stringsKey])
+	useEffect(() => {
+		if (isClient) {
+			setIsFirstLoad(true)
+		}
+	}, [stringsKey, isClient])
 
 	const defaultOptions: TypedOptions = useMemo(
 		() => ({
@@ -29,16 +34,23 @@ const TypedText = ({
 		[]
 	)
 
-	React.useEffect(() => {
-		if (!el.current) return
+	useEffect(() => {
+		if (!el.current || !isClient) return
+
 		const typed = new Typed(el.current, { ...defaultOptions, ...options })
 
 		return () => {
 			typed.destroy()
 		}
-	}, [defaultOptions, options])
+	}, [defaultOptions, options, isClient])
 
-	return isFirstLoad ? (
+	// Show a static version of the text during server rendering or initial client hydration
+	// Once on the client, we'll replace it with the animated version if needed
+	return !isClient ? (
+		<span className={className}>
+			{options.strings && options.strings.length > 0 ? options.strings[0] : ''}
+		</span>
+	) : isFirstLoad ? (
 		<span className={className} ref={el} />
 	) : (
 		<span className={className}>
