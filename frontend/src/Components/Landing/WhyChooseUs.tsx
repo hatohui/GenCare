@@ -2,74 +2,73 @@
 
 import { motion } from 'motion/react'
 import FlorageBackground from './FlorageBackground'
+import { useLocale } from '../../Hooks/useLocale'
 
-const items = [
-	{
-		title: 'Chuyên Gia Y Tế',
-		description:
-			'Đội ngũ chuyên gia y tế hàng đầu với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc sức khỏe.',
-		icon: (
-			<svg
-				className='w-8 h-8'
-				fill='none'
-				stroke='currentColor'
-				viewBox='0 0 24 24'
-			>
-				<path
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth={2}
-					d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-				/>
-			</svg>
-		),
-		color: 'from-blue-500 to-cyan-500',
-	},
-	{
-		title: 'Bảo Mật Tối Đa',
-		description:
-			'Cam kết bảo mật thông tin cá nhân của bạn ở mức cao nhất với công nghệ mã hóa tiên tiến.',
-		icon: (
-			<svg
-				className='w-8 h-8'
-				fill='none'
-				stroke='currentColor'
-				viewBox='0 0 24 24'
-			>
-				<path
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth={2}
-					d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
-				/>
-			</svg>
-		),
-		color: 'from-green-500 to-emerald-500',
-	},
-	{
-		title: 'Dịch Vụ Tận Tâm',
-		description:
-			'Dịch vụ khách hàng chu đáo, tận tâm hỗ trợ 24/7 với đội ngũ nhân viên chuyên nghiệp.',
-		icon: (
-			<svg
-				className='w-8 h-8'
-				fill='none'
-				stroke='currentColor'
-				viewBox='0 0 24 24'
-			>
-				<path
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth={2}
-					d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
-				/>
-			</svg>
-		),
-		color: 'from-pink-500 to-rose-500',
-	},
-]
+const WhyChooseUsSection = () => {
+	const { t } = useLocale()
 
-export default function WhyChooseUsSection() {
+	const items = [
+		{
+			title: t('landing.experts.title'),
+			description: t('landing.experts.description'),
+			icon: (
+				<svg
+					className='w-8 h-8'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+					/>
+				</svg>
+			),
+			color: 'from-blue-500 to-cyan-500',
+		},
+		{
+			title: t('landing.security.title'),
+			description: t('landing.security.description'),
+			icon: (
+				<svg
+					className='w-8 h-8'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+					/>
+				</svg>
+			),
+			color: 'from-green-500 to-emerald-500',
+		},
+		{
+			title: t('landing.service.title'),
+			description: t('landing.service.description'),
+			icon: (
+				<svg
+					className='w-8 h-8'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
+					/>
+				</svg>
+			),
+			color: 'from-pink-500 to-rose-500',
+		},
+	]
 	return (
 		<section className='py-24 pt-40 bg-gradient-to-b from-white to-general relative overflow-hidden pb-40'>
 			{/* Enhanced Background decoration */}
@@ -120,14 +119,13 @@ export default function WhyChooseUsSection() {
 					className='text-center mb-20'
 				>
 					<h2 className='text-5xl md:text-6xl font-bold mb-8 text-secondary leading-tight'>
-						Vì Sao Chọn{' '}
+						{t('landing.whyChooseUs')}{' '}
 						<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
-							Chúng Tôi?
+							{t('landing.whyChooseUsEmphasis')}
 						</span>
 					</h2>
 					<p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
-						Chúng tôi cam kết mang đến dịch vụ chăm sóc sức khỏe chất lượng cao
-						với những giá trị cốt lõi
+						{t('landing.whyChooseUsDescription')}
 					</p>
 				</motion.div>
 
@@ -180,7 +178,7 @@ export default function WhyChooseUsSection() {
 								</div>
 
 								{/* Enhanced Decorative element */}
-								<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500'></div>
+								<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100'></div>
 							</div>
 						</motion.div>
 					))}
@@ -203,7 +201,7 @@ export default function WhyChooseUsSection() {
 						className='px-10 py-5 bg-gradient-to-r from-main to-secondary text-white rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
 						<span className='flex items-center justify-center gap-3'>
-							Tìm Hiểu Thêm
+							{t('landing.learnMore')}
 							<svg
 								className='w-5 h-5'
 								fill='none'
@@ -226,3 +224,5 @@ export default function WhyChooseUsSection() {
 		</section>
 	)
 }
+
+export default WhyChooseUsSection

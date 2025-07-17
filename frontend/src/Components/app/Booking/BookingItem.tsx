@@ -15,6 +15,7 @@ import LoadingIcon from '@/Components/LoadingIcon'
 import ConfirmDialog from '@/Components/ConfirmationDialog'
 import { parseISO, isValid, format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface BookingItemProps {
 	booking: OrderDetail
@@ -23,6 +24,7 @@ interface BookingItemProps {
 const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [showConfirm, setShowConfirm] = useState(false)
+	const { t } = useLocale()
 
 	// Debug: Log the booking data to check purchaseId
 	console.log('BookingItem - booking data:', booking)
@@ -36,12 +38,12 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 		try {
 			const dateObj = date instanceof Date ? date : parseISO(date)
 			if (!isValid(dateObj)) {
-				return 'Ngày không hợp lệ'
+				return t('booking.invalid_date')
 			}
 			return formatDateFns(dateObj, 'EEEE, dd MMMM yyyy', { locale: vi })
 		} catch (error) {
 			console.error('Error formatting date:', error)
-			return 'Ngày không hợp lệ'
+			return t('booking.invalid_date')
 		}
 	}
 
@@ -56,7 +58,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const handleMomoPayment = async () => {
 		// Check if purchaseId exists
 		if (!booking.purchaseId) {
-			toast.error('Không tìm thấy thông tin đặt dịch vụ')
+			toast.error(t('payment.payment_required'))
 			return
 		}
 
@@ -72,11 +74,11 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 			if (result.payUrl) {
 				window.location.href = result.payUrl
 			} else {
-				toast.error('Không thể tạo liên kết thanh toán')
+				toast.error(t('payment.payment_link_failed'))
 			}
 		} catch (error) {
 			console.error('MoMo payment failed:', error)
-			toast.error('Thanh toán MoMo thất bại. Vui lòng thử lại.')
+			toast.error(t('payment.payment_failed'))
 		}
 	}
 
@@ -120,10 +122,10 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 		setShowConfirm(false)
 		await deleteMutation.mutateAsync(undefined, {
 			onSuccess() {
-				toast.success('Đã hủy đặt dịch vụ!')
+				toast.success(t('payment.booking_cancelled'))
 			},
 			onError() {
-				toast.error('Hủy đặt dịch vụ thất bại!')
+				toast.error(t('payment.booking_cancel_failed'))
 			},
 		})
 	}
@@ -146,9 +148,11 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 						</h3>
 						<div className='text-sm text-gray-600 space-y-1'>
 							<p>
-								Khách hàng: {booking.firstName} {booking.lastName}
+								{t('booking.customer')}: {booking.firstName} {booking.lastName}
 							</p>
-							<p>Ngày đặt: {formatDate(booking.createdAt)}</p>
+							<p>
+								{t('booking.booking_date')}: {formatDate(booking.createdAt)}
+							</p>
 							<p>
 								Trạng thái:
 								<span
@@ -158,7 +162,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 											: 'bg-yellow-100 text-yellow-600'
 									}`}
 								>
-									{booking.status ? 'Đã thanh toán' : 'Chưa thanh toán'}
+									{booking.status ? t('payment.paid') : t('payment.unpaid')}
 								</span>
 							</p>
 						</div>
@@ -173,7 +177,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									className='flex items-center gap-2 px-4 py-2 text-main border border-main rounded-[20px] hover:bg-main hover:text-white transition-colors'
 								>
 									<EyeSVG className='size-4' />
-									Xem kết quả
+									{t('booking.view_results')}
 								</button>
 								<button
 									onClick={() =>
@@ -182,7 +186,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors'
 								>
 									<DownloadSVG className='size-4' />
-									Tải xuống
+									{t('booking.download_results')}
 								</button>
 							</>
 						) : (
@@ -237,7 +241,9 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									disabled={deleteMutation.isPending}
 									className='flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-[20px] hover:bg-red-600 transition-colors'
 								>
-									{deleteMutation.isPending ? 'Đang xóa...' : 'Hủy đặt'}
+									{deleteMutation.isPending
+										? t('booking.deleting')
+										: t('payment.cancel_booking')}
 								</button>
 							</>
 						)}
@@ -256,8 +262,8 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 
 			<ConfirmDialog
 				isOpen={showConfirm}
-				title='Xác nhận hủy đặt dịch vụ'
-				message='Bạn có chắc chắn muốn hủy đặt dịch vụ này?'
+				title={t('payment.confirm_cancel')}
+				message={t('payment.cancel_booking_confirm')}
 				onConfirm={handleConfirmDelete}
 				onCancel={handleCancelDelete}
 			/>
