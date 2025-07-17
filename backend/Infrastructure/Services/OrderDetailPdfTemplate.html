@@ -1,0 +1,121 @@
+<!--
+Lưu ý: Để file template này được sử dụng khi chạy backend, hãy cấu hình trong .csproj:
+<ItemGroup>
+  <None Update="Infrastructure/Services/OrderDetailPdfTemplate.html">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+-->
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kết Quả Xét Nghiệm - Gencare</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #fff;
+        color: #222;
+        margin: 0;
+        padding: 0;
+      }
+      .logo-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 32px;
+        margin-bottom: 24px;
+      }
+      .logo-img {
+        height: 64px;
+        width: auto;
+        border-radius: 12px;
+      }
+      .main-content {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      h2 {
+        text-align: center;
+        color: #0d4fad;
+        margin-bottom: 24px;
+      }
+      h3 {
+        margin-top: 32px;
+        margin-bottom: 10px;
+        color: #222;
+        text-align: left;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 10px;
+        background: #fff;
+      }
+      td,
+      th {
+        border: 1px solid #e3e8ee;
+        text-align: left;
+        padding: 8px 12px;
+        font-size: 1rem;
+      }
+      th {
+        background-color: #f2f6fa;
+        color: #0d4fad;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo-center">
+    </div>
+    <div class="main-content">
+      <h2>KẾT QUẢ XÉT NGHIỆM</h2>
+      <h3>Thông tin bệnh nhân</h3>
+      <table>
+        <tr>
+          <th>Họ và tên</th>
+          <td>{{LastName}} {{FirstName}}</td>
+        </tr>
+        <tr>
+          <th>Số điện thoại</th>
+          <td>{{Phone}}</td>
+        </tr>
+        <tr>
+          <th>Ngày sinh</th>
+          <td>{{DateOfBirth}}</td>
+        </tr>
+        <tr>
+          <th>Giới tính</th>
+          <td>{{Gender}}</td>
+        </tr>
+      </table>
+      <h3>Kết quả xét nghiệm</h3>
+      <table>
+        <tr>
+          <th>Mã phiếu</th>
+          <td>{{OrderId}}</td>
+        </tr>
+        <tr>
+          <th>Ngày đặt xét nghiệm</th>
+          <td>{{OrderDate}}</td>
+        </tr>
+        <tr>
+          <th>Ngày lấy mẫu</th>
+          <td>{{SampleDate}}</td>
+        </tr>
+        <tr>
+          <th>Ngày trả kết quả</th>
+          <td>{{ResultDate}}</td>
+        </tr>
+        <tr>
+          <th>Trạng thái</th>
+          <td>{{Status}}</td>
+        </tr>
+      </table>
+      <h3>Kết quả chi tiết</h3>
+      {{ResultTableHtml}}
+    </div>
+  </body>
+</html>
