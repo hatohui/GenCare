@@ -34,4 +34,20 @@ public class PaymentHistoryService(IPaymentHistoryRepository paymentHistoryRepos
     {
         return await paymentHistoryRepository.GetAll();
     }
+
+    public async Task<PaymentHistory?> GetPaymentHistoryById(Guid purchaseId)
+    {
+        return await paymentHistoryRepository.GetById(purchaseId);
+    }
+
+    public async Task<PaymentHistory?> GetPaymentHistoryByPayId(Guid payId)
+    {
+        var list = await paymentHistoryRepository.GetAll();
+        return list.FirstOrDefault(ph => Guid.Equals(ph.PayId, payId));
+    }
+
+    public async Task UpdatePaymentHistoryAsync(PaymentHistory paymentHistory)
+    {
+        await paymentHistoryRepository.UpdateAsync(paymentHistory);
+    }
 }

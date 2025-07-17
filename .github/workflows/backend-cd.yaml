@@ -72,46 +72,46 @@ jobs:
             IMAGE=${{ env.IMAGE_NAME }}
             SHA=${{ github.sha }}
 
-            echo "🔄 Fetching secrets from Doppler..."
-            DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format json --project gencare --config prd > /tmp/secrets.json || { echo "❌ Failed to fetch Doppler secrets"; exit 1; }
+            echo "> Fetching secrets from Doppler..."
+            DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format json --project gencare --config prd > /tmp/secrets.json || { echo "Failed to fetch Doppler secrets"; exit 1; }
 
-            echo "🧹 Converting JSON secrets to unquoted env file..."
-            jq -r 'to_entries | .[] | "\(.key)=\(.value)"' /tmp/secrets.json > /tmp/env_vars || { echo "❌ Failed to convert secrets to env file"; exit 1; }
+            echo "> Converting JSON secrets to unquoted env file..."
+            jq -r 'to_entries | .[] | "\(.key)=\(.value)"' /tmp/secrets.json > /tmp/env_vars || { echo "Failed to convert secrets to env file"; exit 1; }
             rm -f /tmp/secrets.json
 
-            echo "🔄 Pulling latest image..."
-            sudo docker pull $IMAGE:$SHA || { echo "❌ Failed to pull image $IMAGE:$SHA"; exit 1; }
+            echo "> Pulling latest image..."
+            sudo docker pull $IMAGE:$SHA || { echo "Failed to pull image $IMAGE:$SHA"; exit 1; }
 
-            echo "🛑 Stopping and removing old container..."
+            echo "> Stopping and removing old container..."
             sudo docker stop gencare-backend || true
             sudo docker rm gencare-backend || true
 
-            echo "🚀 Starting new container with Doppler secrets..."
-            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:$SHA || { echo "❌ Failed to start container"; exit 1; }
+            echo "> Starting new container with Doppler secrets..."
+            sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:$SHA || { echo "Failed to start container"; exit 1; }
 
-            echo "🧹 Cleaning up temporary env file..."
+            echo "> Cleaning up temporary env file..."
             rm -f /tmp/env_vars
 
             echo "⏳ Waiting for health check..."
             for i in {1..5}; do
               if curl -f http://localhost:8080/health; then
-                echo "✅ Health check passed"
+                echo "> Health check passed"
                 break
               fi
               echo "Attempt $i failed, retrying in 5 seconds..."
               sleep 5
               if [ "$i" -eq 5 ]; then
-                echo "❌ Health check failed after 5 attempts, rolling back..."
+                echo "> Health check failed after 5 attempts, rolling back..."
                 sudo docker logs gencare-backend
                 sudo docker stop gencare-backend || true
                 sudo docker rm gencare-backend || true
-                echo "🔄 Pulling previous image..."
-                sudo docker pull $IMAGE:previous || { echo "❌ Failed to pull previous image"; exit 1; }
-                echo "🚀 Starting previous container with Doppler secrets..."
-                DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format json --project gencare --config prd > /tmp/secrets.json || { echo "❌ Failed to fetch Doppler secrets for rollback"; exit 1; }
-                jq -r 'to_entries | .[] | "\(.key)=\(.value)"' /tmp/secrets.json > /tmp/env_vars || { echo "❌ Failed to convert secrets to env file for rollback"; exit 1; }
+                echo "> Pulling previous image..."
+                sudo docker pull $IMAGE:previous || { echo "> Failed to pull previous image"; exit 1; }
+                echo "> Starting previous container with Doppler secrets..."
+                DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }} doppler secrets download --no-file --format json --project gencare --config prd > /tmp/secrets.json || { echo "> Failed to fetch Doppler secrets for rollback"; exit 1; }
+                jq -r 'to_entries | .[] | "\(.key)=\(.value)"' /tmp/secrets.json > /tmp/env_vars || { echo "> Failed to convert secrets to env file for rollback"; exit 1; }
                 rm -f /tmp/secrets.json
-                sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:previous || { echo "❌ Failed to start previous container"; exit 1; }
+                sudo docker run -d --name gencare-backend -p 8080:8080 --env-file /tmp/env_vars $IMAGE:previous || { echo "> Failed to start previous container"; exit 1; }
                 rm -f /tmp/env_vars
                 exit 1
               fi

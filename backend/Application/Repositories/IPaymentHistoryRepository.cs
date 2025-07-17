@@ -11,7 +11,7 @@ public interface IPaymentHistoryRepository
     Task Add(PaymentHistory paymentHistory);
     Task<List<PaymentHistory>> GetAll();
     Task<PaymentHistory?> GetById(Guid id);
-    Task Update(PaymentHistory paymentHistory);
+    Task UpdateAsync(PaymentHistory paymentHistory);
     Task Delete(PaymentHistory paymentHistory);
     Task<HashSet<Guid>> GetPaidPurchaseIdsAsync(IEnumerable<Purchase> purchases);
     

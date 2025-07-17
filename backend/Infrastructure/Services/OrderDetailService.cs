@@ -1,6 +1,7 @@
 ﻿
 using Application.Repositories;
 using Application.Services;
+using Domain.Common.Constants;
 using Domain.Exceptions;
 
 namespace Infrastructure.Services;
@@ -27,12 +28,13 @@ public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
         if (purchase.AccountId.ToString("D") != accountId)
             throw new AppException(403, "You are not allowed to delete this order detail because you are not the owner of this purchase");
 
-        //if payment history of the order detail does not exist, delete the order detail
-        //if exists, block deletion
+        //thanh toán rồi thì không được xóa
         var payment = await paymentHistoryRepository.GetById(orderDetail.PurchaseId);
-        if(payment is not null)
-            throw new AppException(400, "You are not allowed to delete this order detail because this order is paid");
-
+        if (payment is not null)
+        {
+            if(payment.Status.Trim().ToLower() == PaymentStatus.Paid.ToLower())
+                throw new AppException(400, "You are not allowed to delete this order detail because this order is paid");
+        }
         //check if result of order detail exists?
         //if exists, block deletion
         var resultTest = await resultRepository.ViewResultAsync(orderDetail.Id);
@@ -54,6 +56,12 @@ public class OrderDetailService(IOrderDetailRepository orderDetailRepository,
         //if purchase has no order details left, delete purchase
         if (tmp)
         {
+            //xóa payment của purchase trước
+            payment = await paymentHistoryRepository.GetById(purchase.Id);
+            if (payment is not null)
+            {
+                await paymentHistoryRepository.Delete(payment);
+            }
             await purchaseRepository.Delete(purchase);
         }
     }
