@@ -28,7 +28,7 @@ public class OrderDetailController(IOrderDetailService orderDetailService, IOrde
     /// Xuất PDF kết quả xét nghiệm của bệnh nhân.
     /// </summary>
     [HttpGet("{orderDetailId}/result-pdf")]
-    //[Authorize]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetResultPdf([FromRoute] Guid orderDetailId, CancellationToken cancellationToken)
