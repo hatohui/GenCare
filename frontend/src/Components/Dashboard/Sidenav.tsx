@@ -36,19 +36,19 @@ export default function SideNav() {
 			<div
 				onMouseEnter={() => setIsHovering(true)}
 				onMouseLeave={() => setIsHovering(false)}
-				className={`flex h-full flex-col text-white py-1 md:py-5 transition-all duration-300 ${
+				className={`flex h-full flex-col text-white py-1 md:py-5 transition-all duration-300 overflow-y-auto ${
 					isExpanded ? 'w-full md:w-60' : 'w-full md:w-14'
 				} main-gradient-bg`}
 			>
 				{/* Logo */}
-				<div className='center-all py-5 pb-10'>
+				<div className='center-all py-5 pb-10 flex-shrink-0'>
 					<Logo className='h-full w-full flex-1' withLabel={isExpanded} />
 				</div>
 
 				<div className='flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2'>
 					<NavLinks collapsed={!isExpanded} />
 
-					<div className='center-all'>
+					<div className='center-all flex-shrink-0'>
 						<div className='h-[2px] round bg-gray-300 w-11/12' />
 					</div>
 
