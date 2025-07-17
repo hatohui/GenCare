@@ -30,4 +30,7 @@ export interface AllResult {
 	updatedAt?: Date
 }
 
-export type AllResultArray = AllResult[]
+export type AllResultArray = {
+	result: AllResult[]
+	totalCount: number
+}
