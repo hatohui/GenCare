@@ -106,7 +106,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 				className={clsx(
 					'flex items-center gap-3 px-3 py-2 rounded-full transition-all duration-200',
 					'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20',
-					onTop ? 'text-white' : 'text-gray-800'
+					onTop ? 'text-gray-800' : 'text-white'
 				)}
 				aria-label='User profile menu'
 				aria-expanded={isOpen}
@@ -183,8 +183,8 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 									<p className='text-sm font-semibold text-gray-900 truncate'>
 										{user.firstName} {user.lastName}
 									</p>
-									<p className='text-xs text-gray-500 truncate'>{user.email}</p>
-									<p className='text-xs text-gray-400 capitalize'>
+									<p className='text-xs text-gray-600 truncate'>{user.email}</p>
+									<p className='text-xs text-gray-500 capitalize'>
 										{user.role?.name || 'User'}
 									</p>
 								</div>
@@ -195,10 +195,10 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 						<div className='py-1'>
 							<button
 								onClick={handleGoToApp}
-								className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors duration-150'
+								className='w-full px-4 py-2 text-left text-sm text-gray-500 hover:bg-gray-800 flex items-center gap-3 transition-colors duration-150'
 							>
 								<svg
-									className='size-4 text-gray-500'
+									className='size-4 text-gray-400'
 									fill='none'
 									viewBox='0 0 24 24'
 									stroke='currentColor'
@@ -224,10 +224,10 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 									router.push('/app/profile')
 									setIsOpen(false)
 								}}
-								className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors duration-150'
+								className='w-full px-4 py-2 text-left text-sm text-gray-500 hover:bg-gray-800 flex items-center gap-3 transition-colors duration-150'
 							>
 								<svg
-									className='size-4 text-gray-500'
+									className='size-4 text-gray-400'
 									fill='none'
 									viewBox='0 0 24 24'
 									stroke='currentColor'
@@ -277,10 +277,10 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 
 							<button
 								onClick={handleLogout}
-								className='w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors duration-150'
+								className='w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-900/20 flex items-center gap-3 transition-colors duration-150'
 							>
 								<svg
-									className='size-4 text-red-500'
+									className='size-4 text-red-400'
 									fill='none'
 									viewBox='0 0 24 24'
 									stroke='currentColor'
