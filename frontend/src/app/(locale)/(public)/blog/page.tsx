@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useGetBlogs } from '@/Services/Blog-service'
-import Pagination from '@/Components/Management/Pagination'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
 	Plus,
@@ -10,7 +9,6 @@ import {
 	Eye,
 	Clock,
 	User,
-	Search,
 	ChevronLeft,
 	ChevronRight,
 	X,

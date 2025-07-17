@@ -4,17 +4,11 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
 	Pencil,
-	Upload,
-	Eye,
-	EyeOff,
 	HelpCircle,
-	Image,
 	Tag,
-	User,
 	FileText,
 	Save,
 	X,
-	Plus,
 	Info,
 	Bold,
 	Italic,
@@ -208,7 +202,7 @@ const EditablePreview = ({
 							<div className='text-center text-gray-500 py-20'>
 								<FileText className='w-12 h-12 mx-auto mb-4 text-gray-300' />
 								<p className='text-lg font-medium'>Chưa có nội dung</p>
-								<p className='text-sm'>Nhấp "Edit" để bắt đầu viết bài viết</p>
+								<p className='text-sm'>Nhấp Edit để bắt đầu viết bài viết</p>
 								<p className='text-xs text-gray-400 mt-2'>
 									Sử dụng thanh công cụ phía trên để định dạng
 								</p>
@@ -768,7 +762,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 														<>
 															<p>Không tìm thấy thẻ phù hợp</p>
 															<p className='text-xs mt-1'>
-																Nhấn Enter để thêm "{tagInputValue.trim()}"
+																Nhấn Enter để thêm {tagInputValue.trim()}
 															</p>
 														</>
 													) : (
