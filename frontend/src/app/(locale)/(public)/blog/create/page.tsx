@@ -1,11 +1,30 @@
 'use client'
 
 import React from 'react'
-import { BlogForm, BlogCreateInput } from '@/Components/Blogs/BlogForm'
+import dynamic from 'next/dynamic'
 import { useCreateBlog } from '@/Services/Blog-service'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
+
+// Dynamically import BlogForm to prevent SSR issues with Cloudinary
+const BlogForm = dynamic(
+	() =>
+		import('@/Components/Blogs/BlogForm').then(mod => ({
+			default: mod.BlogForm,
+		})),
+	{
+		ssr: false,
+		loading: () => (
+			<div className='flex items-center justify-center p-8'>
+				<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-accent'></div>
+			</div>
+		),
+	}
+)
+
+// Import the type separately
+import type { BlogCreateInput } from '@/Components/Blogs/BlogForm'
 
 const BlogCreatePage = () => {
 	const [imageUrls, setImageUrls] = React.useState<string[]>([])

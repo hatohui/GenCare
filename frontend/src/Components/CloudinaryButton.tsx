@@ -30,6 +30,23 @@ export const CloudinaryButton = ({
 }) => {
 	const [isUploading, setIsUploading] = useState(false)
 
+	// Check if Cloudinary environment variables are available
+	const isCloudinaryConfigured = React.useMemo(() => {
+		if (typeof window === 'undefined') {
+			// Server-side: check if we're in a build environment
+			return (
+				process.env.NODE_ENV === 'development' ||
+				(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+					process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY)
+			)
+		}
+		// Client-side: check if the environment variables are available
+		return !!(
+			process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+			process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY
+		)
+	}, [])
+
 	// Timeout fallback to prevent stuck uploading state
 	React.useEffect(() => {
 		let timeoutId: NodeJS.Timeout
@@ -47,6 +64,25 @@ export const CloudinaryButton = ({
 			}
 		}
 	}, [isUploading])
+
+	// If Cloudinary is not configured, show a disabled button
+	if (!isCloudinaryConfigured) {
+		return (
+			<button
+				type='button'
+				disabled
+				className={`flex items-center gap-2 px-4 py-2 rounded-full bg-gray-400 text-white font-semibold shadow cursor-not-allowed ${
+					className || ''
+				}`}
+				title='Cloudinary not configured'
+			>
+				{typeof UploadCloud !== 'undefined' && (
+					<UploadCloud className='w-5 h-5' />
+				)}
+				<span>Upload not available</span>
+			</button>
+		)
+	}
 
 	return (
 		<CldUploadWidget
