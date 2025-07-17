@@ -1,9 +1,10 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Payment.Momo;
+using Application.DTOs.Payment.VNPay;
 using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
@@ -22,7 +23,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Application.DTOs.Payment.VNPay;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
@@ -243,6 +243,8 @@ builder.Services.AddScoped<IZoomService, ZoomService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IVNPayService, VNPayService>();
+builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
+builder.Services.AddScoped<IReminderService, ReminderService>();
 
 
 //===========Redis Configuration===========
@@ -293,11 +295,19 @@ app.UseHangfireDashboard(
     new DashboardOptions { Authorization = [new AllowAllDashboardAuthorizationFilter()] }
 );
 
+// Schedule recurring jobs
 RecurringJob.AddOrUpdate<IRefreshTokenService>(
     "cleanup-revoked-refresh-tokens",
     service => service.CleanupRevokedTokensAsync(),
     Cron.Daily
 );
+
+RecurringJob.AddOrUpdate<IReminderService>(
+    "reminder-unpaid-purchases",
+    service => service.SendUnpaidPurchaseRemindersAsync(),
+    Cron.Daily
+);
+
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
