@@ -22,6 +22,17 @@ public class CommentRepository(IApplicationDbContext dbContext) : ICommentReposi
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<int> GetLikesCountByBlogIdAsync(Guid blogId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<int> GetCommentsCountByBlogIdAsync(Guid blogId)
+    {
+        return await dbContext.Comments
+            .CountAsync(c => c.BlogId == blogId);
+    }
+
     public async Task<List<Comment>> GetAll()
     {
         return await dbContext.Comments
