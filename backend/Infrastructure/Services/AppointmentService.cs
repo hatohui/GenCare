@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Appointment.Request;
 using Application.DTOs.Appointment.Response;
 using Application.DTOs.Zoom;
+using Application.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
@@ -25,6 +26,12 @@ public class AppointmentService(IAccountRepository accountRepository,
             throw new AppException(404, "member id is invalid");
         if (staff == null)
             throw new AppException(404, "staff id is invalid");
+
+        //chặn đặt lịch quá thời gian
+        if (request.ScheduleAt <= DateTimeHelper.ToUtc7(DateTime.UtcNow))
+        {
+            throw new AppException(400, "Schedule must be later than now");
+        }
 
         //create appointment without Zoom meeting
         Appointment appointment = new()

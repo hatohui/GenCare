@@ -1,5 +1,10 @@
 import axiosInstance from '@/Utils/axios'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from '@tanstack/react-query'
 import { AllResultArray, Result } from '@/Interfaces/Tests/Types/Tests'
 
 const ResultAPI = {
@@ -18,17 +23,31 @@ const ResultAPI = {
 		return axiosInstance.delete(`/result/${id}`).then(res => res.data)
 	},
 	// Private API - requires authentication
-	getAllOrderDetail: () => {
+	getAllOrderDetail: (page: number, count: number, search?: string) => {
+		const params = new URLSearchParams({
+			page: page.toString(),
+			count: count.toString(),
+		})
+
+		if (search) {
+			params.append('search', search)
+		}
+
 		return axiosInstance
-			.get<AllResultArray>('/result/all')
+			.get<AllResultArray>(`/result/all?${params.toString()}`)
 			.then(res => res.data)
 	},
 }
 
-export const useGetAllOrderDetail = () => {
+export const useGetAllOrderDetail = (
+	page: number,
+	count: number,
+	search?: string
+) => {
 	return useQuery({
-		queryKey: ['all-order-detail'],
-		queryFn: () => ResultAPI.getAllOrderDetail(),
+		queryKey: ['all-order-detail', page, count, search],
+		queryFn: () => ResultAPI.getAllOrderDetail(page, count, search),
+		placeholderData: keepPreviousData,
 	})
 }
 
