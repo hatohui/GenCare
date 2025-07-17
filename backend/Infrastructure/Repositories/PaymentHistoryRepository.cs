@@ -60,7 +60,7 @@ public class PaymentHistoryRepository(IApplicationDbContext dbContext) : IPaymen
             .FirstOrDefaultAsync(ph => ph.PurchaseId == id);
     }
 
-    public async Task Update(PaymentHistory paymentHistory)
+    public async Task UpdateAsync(PaymentHistory paymentHistory)
     {
         dbContext.PaymentHistories.Update(paymentHistory);
         await dbContext.SaveChangesAsync();

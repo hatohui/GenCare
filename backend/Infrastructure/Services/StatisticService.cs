@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Statistic.Models;
+﻿using Application.DTOs.Statistic.Models;
 using Application.DTOs.Statistic.Response;
 using Application.Repositories;
 using Application.Services;
 using Domain.Common.Constants;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Services;
 public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository,
@@ -36,7 +30,6 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
             UserStatistic = userStatistic
         };
     }
-
     public async Task<List<RevenueDataModel>> GetPeriodRevenueAsync()
     {
         var paymentHistories = await paymentHistoryRepository.GetAll();
@@ -45,6 +38,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
                 .Select(g => new RevenueDataModel
                 {
+                    //mỗi nhóm có 1 thuộc tính key (key này chứa các trường mà bạn đã dùng để nhóm)
                     Date = new DateOnly(g.Key.Year, g.Key.Month, 1),
                     Revenue = g.Sum(p => p.Amount),
                     Bookings = g.Count() //đếm số lượng phần tử trong mỗi nhóm
@@ -54,7 +48,6 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .ToList();
         return response;
     }
- 
     private async Task<DashboardStatisticModel> GetDashboardStatistic()
     {
         //dashboard statistic 
@@ -225,5 +218,4 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
             MonthlyGrowth = monthlyUserGrowth
         };
     }
-    
 }

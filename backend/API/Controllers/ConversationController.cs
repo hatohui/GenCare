@@ -50,7 +50,7 @@ public class ConversationController(IConversationService conversationService): C
         return BadRequest(response);
     }
 
-    [HttpGet("view")]
+    [HttpGet]
     public async Task<IActionResult> ViewConversation([FromQuery] ViewConversationRequest request)
     {
         var response = await conversationService.ViewConversationAsync(request);
@@ -58,7 +58,7 @@ public class ConversationController(IConversationService conversationService): C
             return Ok(response);
         return NotFound(new { Message = "Conversation not found." });
     }
-    [HttpPost("{conversationId}/assign")]
+    [HttpPost("assign/{conversationId}")]
     public async Task<IActionResult> AssignStaffToConversation(Guid conversationId)
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
