@@ -1,16 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿
 using Application.DTOs.Service.Requests;
-using Application.DTOs.Service.Responses;
 using Application.Helpers;
 using Application.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
 using Infrastructure.Services;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
-using NSubstitute;
 using Xunit;
 
 namespace Test.Services;
@@ -325,5 +320,314 @@ public class ServicesTests
         Assert.Equal("Old Description", result.Description); // Unchanged
         Assert.Equal(10, result.Price); // Unchanged because req.Price = 0 = default
         Assert.False(result.IsDeleted); // Unchanged
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_ThrowsUnauthorizedAccessException_WhenUserRole()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var userToken = CreateTokenWithRole("user"); // user can not delete service
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = Guid.NewGuid() };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+            sut.DeleteServiceByIdAsync(req, userToken));
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_ThrowsUnauthorizedAccessException_WhenManagerRole()
+    {
+        // Arrange  
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var managerToken = CreateTokenWithRole("manager"); // manager cannot delete service
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = Guid.NewGuid() };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+            sut.DeleteServiceByIdAsync(req, managerToken));
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_ThrowsArgumentException_WhenServiceIdIsEmpty()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin");
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = Guid.Empty };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+            sut.DeleteServiceByIdAsync(req, adminToken));
+
+        Assert.Equal("Service id cannot be empty.", exception.Message);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_ThrowsKeyNotFoundException_WhenServiceNotFound()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin");
+        var serviceId = Guid.NewGuid();
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync((Service)null); // ✅ Service not found
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            sut.DeleteServiceByIdAsync(req, adminToken));
+
+        Assert.Equal("Service not found.", exception.Message);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_DeletesServiceAndMedia_WhenAdminRole()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin"); //only admin can delete service
+        var serviceId = Guid.NewGuid();
+
+        var service = new Service
+        {
+            Id = serviceId,
+            Name = "Test Service",
+            Price = 10
+        };
+
+        var medias = new List<Media>
+        {
+            new Media { Id = Guid.NewGuid(), ServiceId = serviceId, Url = "image1.jpg" },
+            new Media { Id = Guid.NewGuid(), ServiceId = serviceId, Url = "image2.jpg" }
+        };
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync(service);
+
+        mediaRepo.Setup(r => r.GetAllMediaByServiceIdAsync(serviceId))
+            .ReturnsAsync(medias); // Service have media
+
+        mediaRepo.Setup(r => r.DeleteAllByServiceIdAsync(serviceId))
+            .Returns(Task.CompletedTask);
+
+        serviceRepo.Setup(r => r.DeleteServiceByIdAsync(serviceId))
+            .ReturnsAsync(true); //delete service success
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act
+        var result = await sut.DeleteServiceByIdAsync(req, adminToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal("Service and images deleted successfully.", result.Message);
+
+        //  Verify media deletion was called
+        mediaRepo.Verify(r => r.DeleteAllByServiceIdAsync(serviceId), Times.Once);
+
+        // Verify service deletion was called
+        serviceRepo.Verify(r => r.DeleteServiceByIdAsync(serviceId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_DeletesServiceAndMedia_WhenStaffRole()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var staffToken = CreateTokenWithRole("staff"); // ✅ Staff có quyền
+        var serviceId = Guid.NewGuid();
+
+        var service = new Service { Id = serviceId, Name = "Test Service" };
+        var medias = new List<Media>
+        {
+            new Media { ServiceId = serviceId, Url = "image.jpg" }
+        };
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync(service);
+
+        mediaRepo.Setup(r => r.GetAllMediaByServiceIdAsync(serviceId))
+            .ReturnsAsync(medias);
+
+        mediaRepo.Setup(r => r.DeleteAllByServiceIdAsync(serviceId))
+            .Returns(Task.CompletedTask);
+
+        serviceRepo.Setup(r => r.DeleteServiceByIdAsync(serviceId))
+            .ReturnsAsync(true);
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act
+        var result = await sut.DeleteServiceByIdAsync(req, staffToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal("Service and images deleted successfully.", result.Message);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_DeletesServiceOnly_WhenNoMedia()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin");
+        var serviceId = Guid.NewGuid();
+
+        var service = new Service { Id = serviceId, Name = "Test Service" };
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync(service);
+
+        mediaRepo.Setup(r => r.GetAllMediaByServiceIdAsync(serviceId))
+            .ReturnsAsync(new List<Media>());
+
+        serviceRepo.Setup(r => r.DeleteServiceByIdAsync(serviceId))
+            .ReturnsAsync(true);
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act
+        var result = await sut.DeleteServiceByIdAsync(req, adminToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal("Service and images deleted successfully.", result.Message);
+
+        //  Verify media deletion was NOT called (no media to delete)
+        mediaRepo.Verify(r => r.DeleteAllByServiceIdAsync(It.IsAny<Guid>()), Times.Never);
+
+        //  Verify service deletion was called
+        serviceRepo.Verify(r => r.DeleteServiceByIdAsync(serviceId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_DeletesServiceOnly_WhenMediaIsNull()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin");
+        var serviceId = Guid.NewGuid();
+
+        var service = new Service { Id = serviceId, Name = "Test Service" };
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync(service);
+
+        mediaRepo.Setup(r => r.GetAllMediaByServiceIdAsync(serviceId))
+            .ReturnsAsync((List<Media>)null); //  Media = null
+
+        serviceRepo.Setup(r => r.DeleteServiceByIdAsync(serviceId))
+            .ReturnsAsync(true);
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act
+        var result = await sut.DeleteServiceByIdAsync(req, adminToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal("Service and images deleted successfully.", result.Message);
+
+        // ✅ Media deletion should not be called when media is null
+        mediaRepo.Verify(r => r.DeleteAllByServiceIdAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_ReturnsFailure_WhenServiceDeletionFails()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin");
+        var serviceId = Guid.NewGuid();
+
+        var service = new Service { Id = serviceId, Name = "Test Service" };
+        var medias = new List<Media>
+        {
+            new Media { ServiceId = serviceId, Url = "image.jpg" }
+        };
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync(service);
+
+        mediaRepo.Setup(r => r.GetAllMediaByServiceIdAsync(serviceId))
+            .ReturnsAsync(medias);
+
+        mediaRepo.Setup(r => r.DeleteAllByServiceIdAsync(serviceId))
+            .Returns(Task.CompletedTask); // Media deletion thành công
+
+        serviceRepo.Setup(r => r.DeleteServiceByIdAsync(serviceId))
+            .ReturnsAsync(false); //  Service deletion fail
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act
+        var result = await sut.DeleteServiceByIdAsync(req, adminToken);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Failed to delete the service.", result.Message);
+
+        // media deletion should still be called
+        mediaRepo.Verify(r => r.DeleteAllByServiceIdAsync(serviceId), Times.Once);
+        serviceRepo.Verify(r => r.DeleteServiceByIdAsync(serviceId), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteServiceByIdAsync_HandlesMediaDeletionException()
+    {
+        // Arrange
+        var serviceRepo = new Mock<IServiceRepository>();
+        var mediaRepo = new Mock<IMediaRepository>();
+        var adminToken = CreateTokenWithRole("admin");
+        var serviceId = Guid.NewGuid();
+
+        var service = new Service { Id = serviceId, Name = "Test Service" };
+        var medias = new List<Media>
+        {
+            new Media { ServiceId = serviceId, Url = "image.jpg" }
+        };
+
+        serviceRepo.Setup(r => r.SearchServiceByIdForStaffAsync(serviceId))
+            .ReturnsAsync(service);
+
+        mediaRepo.Setup(r => r.GetAllMediaByServiceIdAsync(serviceId))
+            .ReturnsAsync(medias);
+
+        mediaRepo.Setup(r => r.DeleteAllByServiceIdAsync(serviceId))
+            .ThrowsAsync(new Exception("Database error")); // Media deletion throw exception
+
+        var sut = new ServicesService(serviceRepo.Object, mediaRepo.Object);
+        var req = new DeleteServiceRequest { Id = serviceId };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() =>
+            sut.DeleteServiceByIdAsync(req, adminToken));
+
+        // ✅ Service deletion should not be called if media deletion fails
+        serviceRepo.Verify(r => r.DeleteServiceByIdAsync(It.IsAny<Guid>()), Times.Never);
     }
 }
