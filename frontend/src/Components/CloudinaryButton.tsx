@@ -2,6 +2,8 @@
 
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary'
 import { useState } from 'react'
+import { UploadCloud } from 'lucide-react'
+import React from 'react'
 
 /**
  * A button component that opens a Cloudinary upload widget.
@@ -28,6 +30,60 @@ export const CloudinaryButton = ({
 }) => {
 	const [isUploading, setIsUploading] = useState(false)
 
+	// Check if Cloudinary environment variables are available
+	const isCloudinaryConfigured = React.useMemo(() => {
+		if (typeof window === 'undefined') {
+			// Server-side: check if we're in a build environment
+			return (
+				process.env.NODE_ENV === 'development' ||
+				(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+					process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY)
+			)
+		}
+		// Client-side: check if the environment variables are available
+		return !!(
+			process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+			process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY
+		)
+	}, [])
+
+	// Timeout fallback to prevent stuck uploading state
+	React.useEffect(() => {
+		let timeoutId: NodeJS.Timeout
+
+		if (isUploading) {
+			timeoutId = setTimeout(() => {
+				console.warn('CloudinaryButton: Upload timeout, resetting state')
+				setIsUploading(false)
+			}, 30000) // 30 seconds timeout
+		}
+
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId)
+			}
+		}
+	}, [isUploading])
+
+	// If Cloudinary is not configured, show a disabled button
+	if (!isCloudinaryConfigured) {
+		return (
+			<button
+				type='button'
+				disabled
+				className={`flex items-center gap-2 px-4 py-2 rounded-full bg-gray-400 text-white font-semibold shadow cursor-not-allowed ${
+					className || ''
+				}`}
+				title='Cloudinary not configured'
+			>
+				{typeof UploadCloud !== 'undefined' && (
+					<UploadCloud className='w-5 h-5' />
+				)}
+				<span>Upload not available</span>
+			</button>
+		)
+	}
+
 	return (
 		<CldUploadWidget
 			options={{
@@ -39,7 +95,12 @@ export const CloudinaryButton = ({
 			signatureEndpoint='/api/sign-image'
 			uploadPreset={uploadPreset}
 			onOpen={() => {
+				console.log('CloudinaryButton: Widget opened')
 				setIsUploading(true)
+			}}
+			onClose={() => {
+				console.log('CloudinaryButton: Widget closed')
+				setIsUploading(false)
 			}}
 			onSuccess={(result: CloudinaryUploadWidgetResults) => {
 				const info = result.info as {
@@ -64,11 +125,16 @@ export const CloudinaryButton = ({
 			{({ open }) => (
 				<button
 					type='button'
-					className={className}
+					className={`flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-white font-semibold shadow hover:bg-blue-700 focus:ring-2 focus:ring-accent/50 transition ${
+						className || ''
+					}`}
 					onClick={() => open()}
 					disabled={isUploading}
 				>
-					{isUploading ? 'Uploading...' : text}
+					{typeof UploadCloud !== 'undefined' && (
+						<UploadCloud className='w-5 h-5' />
+					)}
+					<span>{isUploading ? 'Uploading...' : text}</span>
 				</button>
 			)}
 		</CldUploadWidget>

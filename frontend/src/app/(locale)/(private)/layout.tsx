@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react'
 import Sidenav from '@/Components/Dashboard/Sidenav'
 import { useAuthGuard } from '@/Hooks/Auth/useAuthGuard'
+import { useRouter } from 'next/navigation'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const [hydrated, setHydrated] = useState(false)
-	const { isUserLoading } = useAuthGuard()
+	const { isUserLoading, user } = useAuthGuard()
+	const router = useRouter()
 
 	useEffect(() => {
 		setHydrated(true)
@@ -21,6 +23,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				Đang xác minh người dùng...
 			</div>
 		)
+	}
+
+	if (!user) {
+		router.push('/login')
+		return null
 	}
 
 	return (
