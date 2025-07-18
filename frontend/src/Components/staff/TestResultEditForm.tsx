@@ -6,13 +6,14 @@ import { useGetResult, useUpdateResult } from '@/Services/Result-service'
 import LoadingIcon from '../LoadingIcon'
 import { ResultData, Result } from '@/Interfaces/Tests/Types/Tests'
 import {
-	CheckCircle,
 	XCircle,
 	Plus,
 	Trash2,
 	FlaskConical,
 	Save,
+	CheckCircle,
 } from 'lucide-react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface TestResultEditFormProps {
 	orderDetailId: string
@@ -22,17 +23,17 @@ interface TestResultEditFormProps {
 
 // Simple validation schema
 const testParameterSchema = z.object({
-	key: z.string().min(1, 'Tên tham số là bắt buộc'),
-	value: z.number().min(0, 'Giá trị không thể âm'),
-	unit: z.string().min(1, 'Đơn vị là bắt buộc'),
+	key: z.string().min(1, 'Parameter name is required'),
+	value: z.number().min(0, 'Value cannot be negative'),
+	unit: z.string().min(1, 'Unit is required'),
 	referenceRange: z.string(),
 	flag: z.enum(['normal', 'high', 'low']),
 })
 
 const formSchema = z
 	.object({
-		orderDate: z.string().min(1, 'Ngày đặt là bắt buộc'),
-		sampleDate: z.string().min(1, 'Ngày lấy mẫu là bắt buộc'),
+		orderDate: z.string().min(1, 'Order date is required'),
+		sampleDate: z.string().min(1, 'Sample date is required'),
 		resultDate: z.string().optional().nullable(),
 		status: z.boolean(),
 		testParameters: z.array(testParameterSchema),
@@ -45,7 +46,7 @@ const formSchema = z
 			return true
 		},
 		{
-			message: 'Ngày trả kết quả là bắt buộc khi đã hoàn thành.',
+			message: 'Result date is required when completed',
 			path: ['resultDate'],
 		}
 	)
@@ -84,6 +85,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 }) => {
 	const { data, isLoading, error } = useGetResult(orderDetailId)
 	const updateResult = useUpdateResult()
+	const { t } = useLocale()
 
 	const {
 		register,
@@ -194,7 +196,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 		return (
 			<div className='flex justify-center items-center min-h-[400px]'>
 				<LoadingIcon className='mx-auto mb-4 size-8' />
-				<p className='text-gray-600'>Đang tải dữ liệu...</p>
+				<p className='text-gray-600'>{t('common.loading')}</p>
 			</div>
 		)
 	}
@@ -203,13 +205,17 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 		return (
 			<div className='text-center p-8'>
 				<div className='text-red-500 text-6xl mb-4'>⚠️</div>
-				<h3 className='text-xl font-semibold mb-2'>Không thể tải dữ liệu</h3>
-				<p className='text-gray-600 mb-4'>Vui lòng thử lại sau.</p>
+				<h3 className='text-xl font-semibold mb-2'>
+					{t('common.error.load_data')}
+				</h3>
+				<p className='text-gray-600 mb-4'>
+					{t('common.error.try_again_later')}
+				</p>
 				<button
 					onClick={() => window.location.reload()}
 					className='bg-main text-white px-6 py-3 rounded-lg hover:bg-main/90'
 				>
-					Thử lại
+					{t('test.try_again')}
 				</button>
 			</div>
 		)
@@ -219,10 +225,10 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 		<div className='bg-white rounded-xl shadow-lg mx-auto overflow-y-auto'>
 			{/* Header */}
 			<div className='bg-gradient-to-r from-main to-secondary p-6 text-white rounded-t-xl'>
-				<h2 className='text-2xl font-bold mb-2'>
-					Chỉnh sửa kết quả xét nghiệm
-				</h2>
-				<p className='text-white/80'>Mã xét nghiệm: {orderDetailId}</p>
+				<h2 className='text-2xl font-bold mb-2'>{t('test.edit_results')}</h2>
+				<p className='text-white/80'>
+					{t('test.result_code')}: {orderDetailId}
+				</p>
 			</div>
 
 			{/* Form */}
@@ -232,7 +238,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 					<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-2'>
-								Ngày đặt
+								{t('test.order_date')}
 							</label>
 							<input
 								type='date'
@@ -247,7 +253,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 						</div>
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-2'>
-								Ngày lấy mẫu
+								{t('test.sample_date')}
 							</label>
 							<input
 								type='date'
@@ -262,7 +268,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 						</div>
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-2'>
-								Ngày trả kết quả
+								{t('test.result_date')}
 							</label>
 							<input
 								type='date'
@@ -281,7 +287,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 					<div className='bg-gray-50 p-4 rounded-lg'>
 						<h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
 							<CheckCircle className='size-5' />
-							Trạng thái xét nghiệm
+							{t('test.status')}
 						</h3>
 						<div className='flex gap-4'>
 							<label className='flex items-center gap-2 cursor-pointer'>
@@ -292,7 +298,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 									className='w-4 h-4 text-main'
 								/>
 								<XCircle className='size-5 text-yellow-500' />
-								<span>Chưa hoàn thành</span>
+								<span>{t('test.incomplete')}</span>
 							</label>
 							<label className='flex items-center gap-2 cursor-pointer'>
 								<input
@@ -302,7 +308,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 									className='w-4 h-4 text-main'
 								/>
 								<CheckCircle className='size-5 text-green-500' />
-								<span>Đã hoàn thành</span>
+								<span>{t('test.complete')}</span>
 							</label>
 						</div>
 					</div>
@@ -312,7 +318,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 						<div className='flex justify-between items-center mb-4'>
 							<h3 className='text-lg font-semibold flex items-center gap-2'>
 								<FlaskConical className='size-5' />
-								Tham số xét nghiệm
+								{t('test.parameters')}
 							</h3>
 							<div className='flex gap-2'>
 								<button
@@ -320,7 +326,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 									onClick={() => setValue('testParameters', SAMPLE_PARAMETERS)}
 									className='px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm'
 								>
-									Dữ liệu mẫu
+									{t('test.sample_data')}
 								</button>
 								<button
 									type='button'
@@ -336,7 +342,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 									className='px-4 py-2 bg-main text-white rounded-lg hover:bg-main/90 text-sm flex items-center gap-1'
 								>
 									<Plus className='size-4' />
-									Thêm
+									{t('test.add_parameter')}
 								</button>
 							</div>
 						</div>
@@ -347,7 +353,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 									<div className='grid grid-cols-1 sm:grid-cols-5 gap-4'>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
-												Tên tham số
+												{t('test.parameter_name')}
 											</label>
 											<input
 												{...register(`testParameters.${index}.key`)}
@@ -357,7 +363,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 										</div>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
-												Giá trị
+												{t('test.value')}
 											</label>
 											<input
 												type='number'
@@ -370,36 +376,36 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 										</div>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
-												Đơn vị
+												{t('test.unit')}
 											</label>
 											<input
 												{...register(`testParameters.${index}.unit`)}
 												className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
-												placeholder='VD: mg/dL'
+												placeholder={t('test.unit_placeholder')}
 											/>
 										</div>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
-												Khoảng tham chiếu
+												{t('test.reference_range')}
 											</label>
 											<input
 												{...register(`testParameters.${index}.referenceRange`)}
 												className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
-												placeholder='VD: 70-100'
+												placeholder={t('test.reference_range_placeholder')}
 											/>
 										</div>
 										<div className='flex gap-2'>
 											<div className='flex-1'>
 												<label className='block text-sm font-medium mb-1'>
-													Trạng thái
+													{t('test.status')}
 												</label>
 												<select
 													{...register(`testParameters.${index}.flag`)}
 													className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
 												>
-													<option value='normal'>Bình thường</option>
-													<option value='high'>Cao</option>
-													<option value='low'>Thấp</option>
+													<option value='normal'>{t('test.normal')}</option>
+													<option value='high'>{t('test.high')}</option>
+													<option value='low'>{t('test.low')}</option>
 												</select>
 											</div>
 											<button
@@ -418,7 +424,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 						{fields.length === 0 && (
 							<div className='text-center py-8 text-gray-500'>
 								<FlaskConical className='size-12 text-gray-300 mx-auto mb-2' />
-								<p>Chưa có tham số nào</p>
+								<p>{t('test.no_parameters')}</p>
 								<button
 									type='button'
 									onClick={() =>
@@ -432,7 +438,7 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 									}
 									className='text-main hover:text-accent mt-2'
 								>
-									Thêm tham số đầu tiên
+									{t('test.add_first_parameter')}
 								</button>
 							</div>
 						)}
@@ -448,12 +454,12 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 							{isSubmitting || updateResult.isPending ? (
 								<>
 									<LoadingIcon className='size-4' />
-									Đang cập nhật...
+									{t('test.updating')}
 								</>
 							) : (
 								<>
 									<Save className='size-4' />
-									Cập nhật kết quả
+									{t('test.update_results')}
 								</>
 							)}
 						</button>
