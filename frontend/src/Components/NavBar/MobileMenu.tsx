@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast'
 import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
 import { CldImage } from 'next-cloudinary'
 import FallBackUserImage from '../Profile/FallBackUserImage'
+import { useLocale } from '@/Hooks/useLocale'
 
 export type MobileMenu = {
 	isOpened: boolean
@@ -23,18 +24,19 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 	const router = useRouter()
 	const { mutate: logout } = useLogoutAccount()
 	const [showUserMenu, setShowUserMenu] = useState(false)
+	const { locale, setLocale, t } = useLocale()
 
 	const handleLogout = () => {
 		logout(undefined, {
 			onSuccess: () => {
 				router.push('/login')
-				toast.success('Logged out successfully')
+				toast.success(t('feedback.logoutSuccess'))
 				setOpened(false)
 				setShowUserMenu(false)
 			},
 			onError: () => {
 				console.error('Logout failed')
-				toast.error('Failed to logout')
+				toast.error(t('feedback.logoutFailed'))
 			},
 		})
 	}
@@ -102,7 +104,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 										: 'hover:bg-gray-100'
 								}`}
 							>
-								{button.label}
+								{t(button.label)}
 							</Link>
 						))}
 
@@ -135,7 +137,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 									onClick={() => setShowUserMenu(!showUserMenu)}
 									className='w-full px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center justify-center gap-2'
 								>
-									<span>Menu</span>
+									<span>{t('nav.menu')}</span>
 									<svg
 										className={`size-4 transition-transform duration-200 ${
 											showUserMenu ? 'rotate-180' : ''
@@ -185,7 +187,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 														d='M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z'
 													/>
 												</svg>
-												Đi tới ứng dụng
+												{t('nav.goToApp')}
 											</button>
 
 											<button
@@ -209,8 +211,41 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 														d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
 													/>
 												</svg>
-												Hồ sơ cá nhân
+												{t('profile.title')}
 											</button>
+
+											{/* Language Switcher */}
+											<div className='border-t border-gray-100 my-1 pt-1 px-4 py-1'>
+												<div className='text-xs text-gray-500 mb-2'>
+													{t('language.select')}:
+												</div>
+												<div className='flex items-center'>
+													<button
+														onClick={() => setLocale('en')}
+														className={`flex items-center px-3 py-1.5 rounded-md text-sm mr-2 ${
+															locale === 'en'
+																? 'bg-accent text-white font-medium'
+																: 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+														}`}
+													>
+														<span className='mr-1.5'>🇺🇸</span>
+														{t('language.english')}
+													</button>
+													<button
+														onClick={() => setLocale('vi')}
+														className={`flex items-center px-3 py-1.5 rounded-md text-sm ${
+															locale === 'vi'
+																? 'bg-accent text-white font-medium'
+																: 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+														}`}
+													>
+														<span className='mr-1.5'>🇻🇳</span>
+														{t('language.vietnamese')}
+													</button>
+												</div>
+											</div>
+
+											<div className='border-t border-gray-100 my-1'></div>
 
 											<button
 												onClick={handleLogout}
@@ -229,7 +264,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 														d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
 													/>
 												</svg>
-												Đăng xuất
+												{t('auth.logout')}
 											</button>
 										</motion.div>
 									)}
@@ -240,7 +275,7 @@ const MobileMenu = ({ isOpened, setOpened }: MobileMenu) => {
 								href='/login'
 								className='block px-4 py-2 text-accent bg-accent rounded'
 							>
-								Đăng Nhập
+								{t('auth.login')}
 							</Link>
 						)}
 					</nav>

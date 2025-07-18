@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { COLOR_ON_TOP, COLOR_ON_SCROLL } from '@/Constants/NavBar'
 import clsx from 'clsx'
 import { NavComponentProps } from '@/Interfaces/NavBar/Types/NavBarComponents'
+import { useLocale } from '@/Hooks/useLocale'
 
 export type RouterButtonProps = {
 	label: string
@@ -22,6 +23,7 @@ const RouterButton = ({
 	index,
 }: NavButtonProps & { index: number }) => {
 	const path = usePathname()
+	const { t } = useLocale()
 
 	return (
 		<Link id={label} href={to} tabIndex={index} role='link' className='z-30'>
@@ -66,7 +68,7 @@ const RouterButton = ({
 						path === to ? 'brightness-125' : 'brightness-90'
 					}`}
 				>
-					{label}
+					{t(label)}
 				</label>
 				<motion.div
 					className='absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-b from-transparent from-95% to-accent/100 to-5% z-20'
