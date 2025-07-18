@@ -1,23 +1,29 @@
 'use client'
 
 import React from 'react'
-import { useGetBlogs } from '@/Services/Blog-service'
+import {
+	useInfiniteBlogs,
+	useDeleteBlog,
+	useLikeBlog,
+} from '@/Services/Blog-service'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
 	Plus,
 	MessageCircle,
-	Eye,
 	Clock,
 	User,
-	ChevronLeft,
-	ChevronRight,
 	X,
+	Edit,
+	Trash2,
+	Heart,
+	Loader2,
 } from 'lucide-react'
 import TypedText from '@/Components/TypedText'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import { useAccountStore } from '@/Hooks/useAccount'
 import SearchBar from '@/Components/Management/SearchBar'
 import { Blog } from '@/Interfaces/Blogs/Types/Blogs'
+import { useInView } from 'react-intersection-observer'
 
 // Tag suggestions (reuse from BlogForm)
 const TAG_SUGGESTIONS = [
@@ -47,12 +53,39 @@ const TAG_SUGGESTIONS = [
 const ITEMS_PER_PAGE = 10
 
 // Forum-style blog item component
-const ForumBlogItem = ({ blog }: { blog: Blog }) => {
+const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 	const router = useRouter()
+	const { data: user } = useAccountStore()
+	const deleteBlog = useDeleteBlog()
+	const likeBlog = useLikeBlog()
+
+	// Check if user has permission to edit/delete (not member or consultant)
+	const canManage = user && !['member', 'consultant'].includes(user.role?.name)
+
+	const handleDelete = (e: React.MouseEvent) => {
+		e.stopPropagation() // Prevent navigation to blog detail
+		if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+			deleteBlog.mutate(blog.id, {
+				onSuccess: () => {
+					// Query invalidation will handle the update automatically
+					// No need for window.location.reload()
+				},
+				onError: error => {
+					console.error('Failed to delete blog:', error)
+					// Could add toast notification here
+				},
+			})
+		}
+	}
+
+	const handleEdit = (e: React.MouseEvent) => {
+		e.stopPropagation() // Prevent navigation to blog detail
+		router.push(`/blog/${blog.id}/edit`)
+	}
 
 	return (
 		<div
-			className='bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer'
+			className='bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer relative'
 			onClick={() => router.push(`/blog/${blog.id}`)}
 		>
 			<div className='flex items-start space-x-4'>
@@ -100,18 +133,59 @@ const ForumBlogItem = ({ blog }: { blog: Blog }) => {
 					<div className='flex items-center space-x-4 text-gray-500 text-sm'>
 						<div className='flex items-center'>
 							<MessageCircle className='w-4 h-4 mr-1' />
-							<span>0 bình luận</span>
+							<span>{blog.comments || 0} bình luận</span>
 						</div>
-						<div className='flex items-center'>
-							<Eye className='w-4 h-4 mr-1' />
-							<span>0 lượt xem</span>
-						</div>
+						{user ? (
+							<button
+								onClick={e => {
+									e.stopPropagation() // Prevent navigation to blog detail
+									likeBlog.mutate(blog.id)
+								}}
+								disabled={likeBlog.isPending}
+								className='flex items-center hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+							>
+								<Heart className='w-4 h-4 mr-1' />
+								<span>{blog.likes || 0} lượt thích</span>
+							</button>
+						) : (
+							<button
+								onClick={e => {
+									e.stopPropagation() // Prevent navigation to blog detail
+									router.push('/login')
+								}}
+								className='flex items-center hover:text-red-500 transition-colors'
+							>
+								<Heart className='w-4 h-4 mr-1' />
+								<span>{blog.likes || 0} lượt thích</span>
+							</button>
+						)}
 					</div>
 				</div>
 			</div>
+
+			{/* Edit/Delete Buttons for Admin/Staff/Manager */}
+			{canManage && (
+				<div className='absolute top-4 right-4 flex gap-2'>
+					<button
+						onClick={handleEdit}
+						className='p-2 bg-main text-white rounded-lg hover:bg-main/80 transition-colors'
+						title='Chỉnh sửa bài viết'
+					>
+						<Edit className='w-4 h-4' />
+					</button>
+					<button
+						onClick={handleDelete}
+						disabled={deleteBlog.isPending}
+						className='p-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+						title='Xóa bài viết'
+					>
+						<Trash2 className='w-4 h-4' />
+					</button>
+				</div>
+			)}
 		</div>
 	)
-}
+})
 
 const BlogPage = () => {
 	const router = useRouter()
@@ -121,16 +195,39 @@ const BlogPage = () => {
 	// Always derive filters from URL
 	const search = searchParams?.get('search') || ''
 	const selectedTag = searchParams?.get('tag') || null
-	const page = Number(searchParams?.get('page')) || 1
 
-	// Fetch blogs
-	const { data, isFetching } = useGetBlogs(
-		page,
-		ITEMS_PER_PAGE,
-		search,
-		selectedTag
+	// Memoize the strings to prevent unnecessary re-renders of TypedText
+	const titleStrings = React.useMemo(() => ['Diễn Đàn Sức Khỏe GenCare'], [])
+	const subtitleStrings = React.useMemo(
+		() => [
+			'Thảo luận, chia sẻ và học hỏi từ cộng đồng chuyên gia y tế và người quan tâm đến sức khỏe',
+		],
+		[]
 	)
-	const blogs = data || []
+
+	// Infinite scroll setup
+	const { ref, inView } = useInView()
+
+	// Fetch blogs with infinite scrolling
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+		error,
+		isError,
+	} = useInfiniteBlogs(ITEMS_PER_PAGE, search, selectedTag)
+
+	// Flatten all pages into a single array
+	const blogs = data?.pages.flatMap(page => page) || []
+
+	// Load more when the last item comes into view
+	React.useEffect(() => {
+		if (inView && hasNextPage && !isFetchingNextPage) {
+			fetchNextPage()
+		}
+	}, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
 	// Handlers
 	const handleTagClick = (tag: string | null) => {
@@ -140,16 +237,8 @@ const BlogPage = () => {
 		} else {
 			params.delete('tag')
 		}
-		params.set('page', '1') // reset to first page on tag change
-		router.push(`/blog?${params.toString()}`)
-	}
-
-	const handlePageChange: React.Dispatch<
-		React.SetStateAction<number>
-	> = value => {
-		const newPage = typeof value === 'function' ? value(page) : value
-		const params = new URLSearchParams(searchParams?.toString())
-		params.set('page', String(newPage))
+		// Remove page parameter for infinite scroll
+		params.delete('page')
 		router.push(`/blog?${params.toString()}`)
 	}
 
@@ -185,18 +274,18 @@ const BlogPage = () => {
 					</h3>
 					<h1 className='text-5xl font-bold mb-6 text-shadow-2xs'>
 						<TypedText
-							typeSpeed={10}
-							className='bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 bg-clip-text text-transparent'
-							strings={['Diễn Đàn Sức Khỏe GenCare']}
+							key='blog-title'
+							typeSpeed={12}
+							className='bg-gradient-to-r from-white to-general bg-clip-text text-transparent'
+							strings={titleStrings}
 						/>
 					</h1>
 					<p className='text-xl mb-8 max-w-3xl mx-auto text-shadow-2xs'>
 						<TypedText
+							key='blog-subtitle'
 							typeSpeed={8}
-							className='bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 bg-clip-text text-transparent'
-							strings={[
-								'Thảo luận, chia sẻ và học hỏi từ cộng đồng chuyên gia y tế và người quan tâm đến sức khỏe',
-							]}
+							className='bg-gradient-to-r bg-white bg-clip-text text-transparent'
+							strings={subtitleStrings}
 						/>
 					</p>
 				</div>
@@ -210,7 +299,9 @@ const BlogPage = () => {
 						<button className='px-6 py-2 bg-gradient-to-r from-main to-secondary text-white rounded-full font-medium hover:shadow-lg transition-shadow'>
 							NÊN ĐỌC
 						</button>
-						<div className='text-sm text-gray-500'>{blogs.length} bài viết</div>
+						<div className='text-sm text-gray-500'>
+							{isLoading ? 'Đang tải...' : `${blogs.length} bài viết`}
+						</div>
 					</div>
 				</div>
 			</section>
@@ -323,7 +414,27 @@ const BlogPage = () => {
 					<div className='flex-1'>
 						{/* Forum Threads List */}
 						<div className='space-y-4'>
-							{blogs.length === 0 && !isFetching && (
+							{/* Error State */}
+							{isError && (
+								<div className='text-center py-12 text-red-500'>
+									<div className='text-6xl mb-4'>❌</div>
+									<h3 className='text-xl font-semibold mb-2'>
+										Không thể tải bài viết
+									</h3>
+									<p className='mb-4'>
+										Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
+									</p>
+									<button
+										onClick={() => window.location.reload()}
+										className='px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors'
+									>
+										Thử lại
+									</button>
+								</div>
+							)}
+
+							{/* Empty State */}
+							{blogs.length === 0 && !isLoading && !isError && (
 								<div className='text-center py-12 text-gray-500'>
 									<div className='text-6xl mb-4'>📝</div>
 									<h3 className='text-xl font-semibold mb-2'>
@@ -333,7 +444,7 @@ const BlogPage = () => {
 								</div>
 							)}
 
-							{isFetching && (
+							{isLoading && (
 								<div className='space-y-4'>
 									{[...Array(3)].map((_, i) => (
 										<div
@@ -357,32 +468,31 @@ const BlogPage = () => {
 							{blogs.map((blog: Blog) => (
 								<ForumBlogItem key={blog.id} blog={blog} />
 							))}
-						</div>
 
-						{/* Pagination */}
-						{blogs.length > 0 && (
-							<div className='flex items-center justify-between mt-8'>
-								<div className='text-sm text-gray-500'>
-									Trang {page} trên {Math.ceil(blogs.length / ITEMS_PER_PAGE)}
+							{/* Infinite Scroll Loading Indicator */}
+							{hasNextPage && (
+								<div ref={ref} className='flex justify-center py-8'>
+									{isFetchingNextPage ? (
+										<div className='flex items-center gap-2 text-gray-500'>
+											<Loader2 className='w-5 h-5 animate-spin' />
+											<span>Đang tải thêm bài viết...</span>
+										</div>
+									) : (
+										<div className='text-gray-400 text-sm'>
+											Cuộn xuống để tải thêm
+										</div>
+									)}
 								</div>
-								<div className='flex items-center space-x-2'>
-									<button
-										onClick={() => handlePageChange(page - 1)}
-										disabled={page <= 1}
-										className='p-2 rounded-lg bg-general text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed'
-									>
-										<ChevronLeft className='w-4 h-4' />
-									</button>
-									<button
-										onClick={() => handlePageChange(page + 1)}
-										disabled={blogs.length < ITEMS_PER_PAGE}
-										className='p-2 rounded-lg bg-accent text-white hover:bg-accent/80 disabled:opacity-50 disabled:cursor-not-allowed'
-									>
-										<ChevronRight className='w-4 h-4' />
-									</button>
+							)}
+
+							{/* End of content indicator */}
+							{!hasNextPage && blogs.length > 0 && (
+								<div className='text-center py-8 text-gray-400'>
+									<div className='text-2xl mb-2'>🎉</div>
+									<p className='text-sm'>Bạn đã xem hết tất cả bài viết!</p>
 								</div>
-							</div>
-						)}
+							)}
+						</div>
 					</div>
 				</div>
 			</div>

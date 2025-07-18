@@ -21,7 +21,8 @@ import {
 import FloatingLabelInput from '../Form/FloatingLabel'
 import ReactMarkdown from 'react-markdown'
 import { CloudinaryButton } from '../CloudinaryButton'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
+import './BlogForm.css'
 
 // Enhanced editable preview component
 const EditablePreview = ({
@@ -215,8 +216,6 @@ const EditablePreview = ({
 	)
 }
 
-import './BlogForm.css'
-
 export type BlogCreateInput = {
 	title: string
 	content: string
@@ -230,6 +229,7 @@ interface BlogFormProps {
 	loading?: boolean
 	imageUrls?: string[]
 	onImageUrlsChange?: (urls: string[]) => void
+	initialData?: Partial<BlogCreateInput>
 }
 
 // Enhanced tag suggestions with categories
@@ -276,6 +276,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 	loading,
 	imageUrls = [],
 	onImageUrlsChange,
+	initialData,
 }) => {
 	const [showMarkdownHelp, setShowMarkdownHelp] = useState(false)
 	const [tagInputValue, setTagInputValue] = useState('')
@@ -290,11 +291,11 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 		watch,
 	} = useForm<BlogCreateInput>({
 		defaultValues: {
-			title: '',
-			content: '',
-			author: '',
-			tagTitle: [],
-			imageUrls: [],
+			title: initialData?.title || '',
+			content: initialData?.content || '',
+			author: initialData?.author || '',
+			tagTitle: initialData?.tagTitle || [],
+			imageUrls: initialData?.imageUrls || [],
 		},
 		mode: 'onChange',
 	})

@@ -3,9 +3,14 @@ import { CldImage } from 'next-cloudinary'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import { Heart, MessageCircle } from 'lucide-react'
+import { useLikeBlog } from '@/Services/Blog-service'
+import { useAccountStore } from '@/Hooks/useAccount'
 
 const BlogCard = ({ blog }: { blog: Blog }) => {
 	const router = useRouter()
+	const { data: user } = useAccountStore()
+	const likeBlog = useLikeBlog()
 	return (
 		<article
 			key={blog.id}
@@ -52,12 +57,45 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
 							</p>
 						</div>
 					</div>
-					<button
-						className='px-4 py-2 bg-accent text-white rounded-full text-sm font-medium hover:bg-accent/80 transition-colors'
-						onClick={() => router.push(`/blog/${blog.id}`)}
-					>
-						Đọc thêm
-					</button>
+					<div className='flex items-center gap-4'>
+						{/* Stats */}
+						<div className='flex items-center gap-3 text-gray-500 text-sm'>
+							<div className='flex items-center gap-1'>
+								<MessageCircle className='w-4 h-4' />
+								<span>{blog.comments || 0}</span>
+							</div>
+							{user ? (
+								<button
+									onClick={e => {
+										e.stopPropagation()
+										likeBlog.mutate(blog.id)
+									}}
+									disabled={likeBlog.isPending}
+									className='flex items-center gap-1 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+								>
+									<Heart className='w-4 h-4' />
+									<span>{blog.likes || 0}</span>
+								</button>
+							) : (
+								<button
+									onClick={e => {
+										e.stopPropagation()
+										router.push('/login')
+									}}
+									className='flex items-center gap-1 hover:text-red-500 transition-colors'
+								>
+									<Heart className='w-4 h-4' />
+									<span>{blog.likes || 0}</span>
+								</button>
+							)}
+						</div>
+						<button
+							className='px-4 py-2 bg-accent text-white rounded-full text-sm font-medium hover:bg-accent/80 transition-colors'
+							onClick={() => router.push(`/blog/${blog.id}`)}
+						>
+							Đọc thêm
+						</button>
+					</div>
 				</div>
 			</div>
 		</article>
