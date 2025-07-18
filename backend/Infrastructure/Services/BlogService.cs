@@ -17,14 +17,27 @@ public class BlogService(IBlogRepository blogRepository,
     public async Task AddBlogAsync(BlogCreateRequest request, string accountId)
     {
         //process tag
-        List<Tag> tags = new();
-        //get tag list from tag id list in request
-        if (request.TagId != null && request.TagId.Count > 0)
+        List<Tag> tags = new(); //mảng để xíu tạo blog tag
+        //get tag list from tag title list in request
+        if (request.TagTitle != null && request.TagTitle.Count > 0)
         {
-            foreach (var tagId in request.TagId)
+            foreach (var tagTitle in request.TagTitle)
             {
-                var tmp = await tagRepository.GetById(tagId);
-                if(tmp != null) tags.Add(tmp);
+                var tmp = await tagRepository.GetByTitle(tagTitle);
+                //nếu không tồn tại thì tạo mới tag
+                if(tmp is null)
+                {
+                    tmp = new()
+                    {
+                        Title = tagTitle.Trim(),
+                    };
+                    tags.Add(tmp);
+                }
+                else
+                //tồn tại r thì thêm vào mảng
+                {
+                    tags.Add(tmp);
+                }
             }
         }
         //process media
@@ -74,14 +87,6 @@ public class BlogService(IBlogRepository blogRepository,
             BlogTags = blogTags,
             Media = medias
         };
-        ////add blog to media list
-        //foreach (var media in medias)
-        //{
-        //    media.Blog = blog;
-        //}
-
-        //await blogTagRepository.AddRange(blogTags);
-        //await mediaRepository.AddListOfMediaAsync(medias);
         await blogRepository.Add(blog);
     }
 

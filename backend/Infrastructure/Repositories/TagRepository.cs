@@ -69,4 +69,14 @@ public class TagRepository(IApplicationDbContext dbContext) : ITagRepository
         dbContext.Tags.Update(tag);
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task<Tag?> GetByTitle(string title)
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            return null;
+        }
+        return await dbContext.Tags
+            .FirstOrDefaultAsync(t => t.Title.ToLower() == title.ToLower());
+    }
 }
