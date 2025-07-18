@@ -11,7 +11,8 @@ using Domain.Exceptions;
 namespace Infrastructure.Services;
 public class BlogService(IBlogRepository blogRepository,
                        ITagRepository tagRepository,
-                       IMediaRepository mediaRepository) : IBlogService
+                       IMediaRepository mediaRepository,
+                       ICommentRepository commentRepository) : IBlogService
 {
     public async Task AddBlogAsync(BlogCreateRequest request, string accountId)
     {
@@ -131,7 +132,8 @@ public class BlogService(IBlogRepository blogRepository,
         {
             var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
             var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
-
+            var likes = await commentRepository.GetLikesCountByBlogIdAsync(blog.Id);
+            var comments = await commentRepository.GetCommentsCountByBlogIdAsync(blog.Id);
             responses.Add(new ModelOfBlogResponse
             {
                 Id = blog.Id.ToString(),
@@ -146,8 +148,10 @@ public class BlogService(IBlogRepository blogRepository,
                 DeletedAt = blog.DeletedAt,
                 DeletedBy = blog.DeletedBy?.ToString(),
                 IsDeleted = blog.IsDeleted,
-                TagTitles = tagTitles,
-                ImageUrls = imageUrls
+                TagTitles = tagTitles!,
+                ImageUrls = imageUrls,
+                Comments = comments,
+                Likes = likes
             });
         }
 
