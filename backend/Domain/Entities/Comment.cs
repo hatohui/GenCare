@@ -1,10 +1,14 @@
-﻿namespace Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Entities;
 
 public class Comment
 {
     public Guid Id { get; set; }
 
     public string Content { get; set; } = null!;
+    [Column("likes")]
+    public int Likes { get; set; }
 
     public Guid BlogId { get; set; }
 

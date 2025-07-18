@@ -35,4 +35,6 @@ public interface ICommentService
     /// <param name="commentId">The ID of the comment to delete.</param>
     /// <param name="accountId">The ID of the account performing the deletion.</param>
     Task DeleteCommentAsync(string commentId, string accountId);
+    
+    Task LikeCommentAsync(Guid commentId, string accountId);
 }
