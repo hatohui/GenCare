@@ -3,6 +3,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface FilterButtonsProps {
 	includeDeleted: boolean | null
@@ -21,27 +22,31 @@ const FilterButtons = ({
 	handlePriceSorting,
 	handleAlphabeticalSorting,
 }: FilterButtonsProps) => {
+	const { t } = useLocale()
+
 	const filterButtons = [
 		{
-			label: 'Tất cả',
+			label: t('status.active'),
 			active: includeDeleted === null,
 			onClick: () => setIncludeDeleted(null),
 		},
 		{
-			label: 'Đang hoạt động',
+			label: t('management.service.active'),
 			active: includeDeleted === false,
 			onClick: () => setIncludeDeleted(false),
 		},
 		{
-			label: 'Ngừng hoạt động',
+			label: t('management.service.inactive'),
 			active: includeDeleted === true,
 			onClick: () => setIncludeDeleted(true),
 		},
 	]
 
 	const getPriceSortLabel = () => {
-		if (orderByPrice === null) return 'Sắp xếp giá (Tắt)'
-		return orderByPrice ? 'Giá tăng dần ↑' : 'Giá giảm dần ↓'
+		if (orderByPrice === null) return t('management.sort_price_off')
+		return orderByPrice
+			? t('management.price_ascending')
+			: t('management.price_descending')
 	}
 
 	return (
@@ -105,7 +110,7 @@ const FilterButtons = ({
 						: 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
 				)}
 			>
-				{sortByAlphabetical ? 'A → Z' : 'Sắp xếp ABC'}
+				{sortByAlphabetical ? 'A → Z' : t('management.sort_alphabetical')}
 			</motion.button>
 		</motion.div>
 	)

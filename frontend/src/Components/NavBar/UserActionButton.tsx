@@ -7,11 +7,13 @@ import { useLogoutAccount } from '@/Services/auth-service'
 import useToken from '@/Hooks/Auth/useToken'
 import { toast } from 'react-hot-toast'
 import { getRoleFromToken } from '@/Utils/Auth/getRoleFromToken'
+import { useLocale } from '@/Hooks/useLocale'
 
 const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 	const tokenStore = useToken()
 	const router = useRouter()
 	const { mutate: logout } = useLogoutAccount()
+	const { t } = useLocale()
 
 	const handleLogout = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -19,11 +21,11 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 		logout(undefined, {
 			onSuccess: () => {
 				router.push('/login')
-				toast.success('Logged out successfully')
+				toast.success(t('feedback.logoutSuccess'))
 			},
 			onError: () => {
 				console.error('Logout failed')
-				toast.error('Failed to logout')
+				toast.error(t('feedback.logoutFailed'))
 			},
 		})
 	}
@@ -48,10 +50,10 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 						router.push('/dashboard')
 					}
 				}}
-				aria-label='Đi tới ứng dụng'
+				aria-label={t('nav.goToApp')}
 			>
 				<span className='pointer-events-none whitespace-nowrap'>
-					Đi tới ứng dụng
+					{t('nav.goToApp')}
 				</span>
 			</button>
 			{/* Logout Button */}
@@ -67,7 +69,7 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 				onClick={handleLogout}
 			>
 				<label className='pointer-events-none whitespace-nowrap'>
-					Đăng Xuất
+					{t('auth.logout')}
 				</label>
 				{onTop && <UserSVG className='size-5 text-white' />}
 			</button>
@@ -84,7 +86,7 @@ const UserActionButton = ({ className, onTop }: NavComponentProps) => {
 			whileHover={{ scale: 0.85, filter: 'brightness(1.2) contrast(1.1)' }}
 			transition={{ duration: 0.2 }}
 		>
-			<label className='pointer-events-none'>Đăng Nhập</label>
+			<label className='pointer-events-none'>{t('auth.login')}</label>
 			<svg
 				xmlns='http://www.w3.org/2000/svg'
 				fill='none'

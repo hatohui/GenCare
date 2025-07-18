@@ -95,4 +95,15 @@ public class CommentController(ICommentService commentService) : ControllerBase
         await commentService.DeleteCommentAsync(id, accountId.ToString("D"));
         return NoContent();
     }
+    [HttpPost("{id}/like")]
+    public async Task<IActionResult> LikeComment([FromRoute] Guid id)
+    {
+        
+        //get access token
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id from access token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        await commentService.LikeCommentAsync(id, accountId.ToString("D"));
+        return NoContent();
+    }
 }

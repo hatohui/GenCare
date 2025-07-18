@@ -46,4 +46,8 @@ public interface ICommentRepository
     /// <param name="comment">The comment entity to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task Delete(Comment comment);
+    
+    Task<int>GetLikesCountByBlogIdAsync(Guid blogId);
+    
+    Task<int>GetCommentsCountByBlogIdAsync(Guid blogId);
 }

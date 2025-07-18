@@ -66,7 +66,7 @@ public class PurchaseService(
             PaymentMethod = PaymentMethod.Bank,
             PayId = null
         };
-        
+
         purchase.PaymentHistory = payHis;
         await purchaseRepository.AddAsync(purchase);
 
@@ -91,30 +91,33 @@ public class PurchaseService(
         List<BookedService> rs = new();
         foreach (var purchase in purchases)
         {
-            //check if payment history of this purchase exists
+            //kiểm tra trạng thái payment history
             var paid = false;
             var paymentHistory = await paymentHistoryRepository.GetById(purchase.Id);
-            if (paymentHistory!.Status.ToLower() == PaymentStatus.Paid.ToLower())
-                paid = true;
-            //get order details of this purchase
-            var orderDetails = purchase.OrderDetails;
-            foreach (var orderDetail in orderDetails)
+            if (paymentHistory != null)
             {
-                //find service by id
-                var service = await serviceRepository.SearchServiceByIdAsync(orderDetail.ServiceId);
-                rs.Add(new BookedService()
+                if (paymentHistory!.Status.Trim().ToLower() == PaymentStatus.Paid.ToLower())
+                    paid = true;
+                //get order details of this purchase
+                var orderDetails = purchase.OrderDetails;
+                foreach (var orderDetail in orderDetails)
                 {
-                    OrderDetailId = orderDetail.Id.ToString("D"),
-                    PurchaseId = purchase.Id.ToString("D"),
-                    ServiceName = service?.Name ?? "Unknown Service",
-                    FirstName = orderDetail.FirstName,
-                    LastName = orderDetail.LastName,
-                    PhoneNumber = orderDetail.Phone,
-                    DateOfBirth = orderDetail.DateOfBirth,
-                    Gender = orderDetail.Gender,
-                    CreatedAt = purchase.CreatedAt,
-                    Status = paid
-                });
+                    //find service by id
+                    var service = await serviceRepository.SearchServiceByIdAsync(orderDetail.ServiceId);
+                    rs.Add(new BookedService()
+                    {
+                        OrderDetailId = orderDetail.Id.ToString("D"),
+                        PurchaseId = purchase.Id.ToString("D"),
+                        ServiceName = service?.Name ?? "Unknown Service",
+                        FirstName = orderDetail.FirstName,
+                        LastName = orderDetail.LastName,
+                        PhoneNumber = orderDetail.Phone,
+                        DateOfBirth = orderDetail.DateOfBirth,
+                        Gender = orderDetail.Gender,
+                        CreatedAt = purchase.CreatedAt,
+                        Status = paid
+                    });
+                }
             }
         }
 
