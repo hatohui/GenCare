@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface ConfirmDialogProps {
 	isOpen: boolean
@@ -16,14 +17,21 @@ interface ConfirmDialogProps {
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 	isOpen,
-	title = 'Confirm Action',
-	message = 'Are you sure you want to proceed?',
+	title,
+	message,
 	onConfirm,
 	onCancel,
 	confirmButtonVariant = 'danger',
-	confirmButtonText = 'Xác nhận',
-	cancelButtonText = 'Hủy',
+	confirmButtonText,
+	cancelButtonText,
 }) => {
+	const { t } = useLocale()
+
+	// Use translation keys as defaults
+	const dialogTitle = title || t('common.confirm_action')
+	const dialogMessage = message || t('common.confirm_message')
+	const confirmText = confirmButtonText || t('button.confirm')
+	const cancelText = cancelButtonText || t('button.cancel')
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === 'Escape' && isOpen) {
@@ -56,14 +64,16 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 						className='fixed inset-0 z-50 flex items-center justify-center'
 					>
 						<div className='bg-white rounded-xl shadow-lg p-6 max-w-sm w-full'>
-							<h2 className='text-lg font-bold text-gray-800 mb-2'>{title}</h2>
-							<p className='text-sm text-gray-600 mb-4'>{message}</p>
+							<h2 className='text-lg font-bold text-gray-800 mb-2'>
+								{dialogTitle}
+							</h2>
+							<p className='text-sm text-gray-600 mb-4'>{dialogMessage}</p>
 							<div className='flex justify-end gap-3'>
 								<button
 									onClick={onCancel}
 									className='px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100'
 								>
-									{cancelButtonText}
+									{cancelText}
 								</button>
 								<button
 									onClick={onConfirm}
@@ -73,7 +83,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 											: 'bg-blue-600 hover:bg-blue-700'
 									}`}
 								>
-									{confirmButtonText}
+									{confirmText}
 								</button>
 							</div>
 						</div>

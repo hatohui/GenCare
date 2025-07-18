@@ -8,19 +8,19 @@ export const COLOR_ON_TOP = 'var(--color-main)'
 export const COLOR_ON_SCROLL = 'var(--color-general)'
 export const NAV_OPTIONS: RouterButtonProps[] = [
 	{
-		label: 'Trang Chủ',
+		label: 'nav.home',
 		to: '/',
 	},
 	{
-		label: 'Dịch Vụ',
+		label: 'nav.services',
 		to: '/service',
 	},
 	{
-		label: 'Bài Viết',
+		label: 'nav.blog',
 		to: '/blog',
 	},
 	{
-		label: 'Liên Hệ',
+		label: 'nav.contact',
 		to: '/contact',
 	},
 ]

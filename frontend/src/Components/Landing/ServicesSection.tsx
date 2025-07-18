@@ -3,9 +3,11 @@
 import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
 import { LoadingSkeleton } from '../Skeletons'
+import { useLocale } from '../../Hooks/useLocale'
 
 export default function ServicesSection() {
 	const { data, isLoading } = useServiceByPage(1, 6, true, '')
+	const { t } = useLocale()
 
 	if (isLoading) return <LoadingSkeleton />
 
@@ -46,9 +48,9 @@ export default function ServicesSection() {
 					transition={{ duration: 0.8, ease: 'easeOut' }}
 					className='text-5xl md:text-6xl font-bold mb-16 text-white leading-tight'
 				>
-					Dịch Vụ Của{' '}
+					{t('landing.ourServices')}{' '}
 					<span className='bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent'>
-						Chúng Tôi
+						{t('landing.ourServicesEmphasis')}
 					</span>
 				</motion.h2>
 
@@ -102,7 +104,7 @@ export default function ServicesSection() {
 								className='self-center px-8 py-4 bg-gradient-to-r from-accent to-accent/80 rounded-2xl text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
 							>
 								<span className='flex items-center justify-center gap-2'>
-									Xem Chi Tiết
+									{t('landing.viewDetails')}
 									<svg
 										className='w-4 h-4'
 										fill='none'
@@ -120,7 +122,7 @@ export default function ServicesSection() {
 							</motion.button>
 
 							{/* Decorative border */}
-							<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500'></div>
+							<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100'></div>
 						</motion.div>
 					))}
 				</div>
@@ -142,7 +144,7 @@ export default function ServicesSection() {
 						className='px-10 py-5 bg-white text-main rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
 						<span className='flex items-center justify-center gap-3'>
-							Xem Tất Cả Dịch Vụ
+							{t('landing.viewAllServices')}
 							<svg
 								className='w-5 h-5'
 								fill='none'
