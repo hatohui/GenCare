@@ -17,8 +17,10 @@ ENV ASPNETCORE_URLS=http://+:8080 \
     ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_EnableDiagnostics=0
 
+# Install only the essential libraries for IronPDF
 RUN apt-get update && \
-    apt-get install -y libgdiplus libc6-dev libx11-dev libxkbcommon-x11-0 && \
+    apt-get install -y libgdiplus && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --gid 1001 appgroup && \
@@ -26,7 +28,6 @@ RUN addgroup --gid 1001 appgroup && \
 
 WORKDIR /app
 COPY --from=build /app/publish .
-
 RUN chown -R gencare:appgroup /app
 
 USER gencare
