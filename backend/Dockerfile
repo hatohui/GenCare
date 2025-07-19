@@ -1,5 +1,5 @@
 # Build stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY NuGet.Config ./
 COPY API/API.csproj ./API/
@@ -12,7 +12,7 @@ WORKDIR /src/API
 RUN dotnet publish -c Release -o /app/publish --packages /src/.nuget/packages
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-slim AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
 ENV ASPNETCORE_URLS=http://+:8080 \
     ASPNETCORE_ENVIRONMENT=Production \
