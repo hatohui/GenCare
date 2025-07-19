@@ -26,10 +26,7 @@ using Microsoft.OpenApi.Models;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
-IronPdf.License.LicenseKey =
-    "IRONSUITE.PHAMANHKIET.DEV.GMAIL.COM.25060-1546486873-K4GYA-5EXQUJLP3C3I-VVXLZL6EEY5U-OYAH4ZZOS7A3-VO2D3XJEKYTQ-DIBGIHQBCRLF-6Y5UGFIJBS2Q-CBETNL-THR7RQFESBOQEA-DEPLOYMENT.TRIAL-XYEJVN.TRIAL.EXPIRES.15.AUG.2025";
-IronPdf.Installation.LinuxAndDockerDependenciesAutoConfig = false;
-IronPdf.Installation.Initialize();
+
 
 //==============connect momo api===================== //
 builder.Services.Configure<MomoConfig>(options =>
@@ -251,7 +248,6 @@ builder.Services.AddScoped<IZoomService, ZoomService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IVNPayService, VNPayService>();
-builder.Services.AddScoped<IOrderDetailPdfService, OrderDetailPdfService>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
 
