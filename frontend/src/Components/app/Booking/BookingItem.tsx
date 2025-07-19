@@ -9,6 +9,7 @@ import {
 	useMomoPay,
 	useVnpayPay,
 	useDeleteOrderDetail,
+	useExportOrderDetail,
 } from '@/Services/book-service'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
@@ -34,6 +35,11 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const vnpayPayMutation = useVnpayPay()
 	const deleteMutation = useDeleteOrderDetail(booking.orderDetailId)
 
+	// PDF export functionality
+	const { refetch: exportPDF, isFetching: isExporting } = useExportOrderDetail(
+		booking.orderDetailId
+	)
+
 	const formatDate = (date: Date | string) => {
 		try {
 			const dateObj = date instanceof Date ? date : parseISO(date)
@@ -53,6 +59,40 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false)
+	}
+
+	const handleDownloadPDF = async () => {
+		if (!booking.orderDetailId) {
+			console.error('No order detail ID available')
+			return
+		}
+
+		try {
+			const response = await exportPDF()
+			if (response.data) {
+				// Create a blob from the PDF data
+				const blob = new Blob([response.data], { type: 'application/pdf' })
+
+				// Create a download link
+				const url = window.URL.createObjectURL(blob)
+				const link = document.createElement('a')
+				link.href = url
+				link.download = `ket-qua-xet-nghiem-${booking.serviceName || 'test'}-${
+					booking.orderDetailId
+				}.pdf`
+
+				// Trigger download
+				document.body.appendChild(link)
+				link.click()
+
+				// Cleanup
+				document.body.removeChild(link)
+				window.URL.revokeObjectURL(url)
+			}
+		} catch (error) {
+			console.error('Error downloading PDF:', error)
+			toast.error('Lỗi khi tải PDF. Vui lòng thử lại.')
+		}
 	}
 
 	const handleMomoPayment = async () => {
@@ -180,13 +220,12 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									{t('booking.view_results')}
 								</button>
 								<button
-									onClick={() =>
-										console.log('Download results for:', booking.serviceName)
-									}
-									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors'
+									onClick={handleDownloadPDF}
+									disabled={isExporting}
+									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 								>
 									<DownloadSVG className='size-4' />
-									{t('booking.download_results')}
+									{isExporting ? 'Đang tải...' : t('booking.download_results')}
 								</button>
 							</>
 						) : (

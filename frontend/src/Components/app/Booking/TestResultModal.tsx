@@ -7,6 +7,7 @@ import { format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { ResultData } from '@/Interfaces/Tests/Types/Tests'
 import { useGetResult } from '@/Services/Result-service'
+import { useExportOrderDetail } from '@/Services/book-service'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -248,13 +249,46 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 		enabled: isOpen && !!orderDetailId,
 	})
 
+	// PDF export functionality
+	const { refetch: exportPDF, isFetching: isExporting } =
+		useExportOrderDetail(orderDetailId)
+
 	const handleClose = () => {
 		onClose()
 	}
 
-	const handleDownloadPDF = () => {
-		// TODO: Implement PDF download functionality
-		console.log('Downloading PDF for:', bookingItem?.serviceName)
+	const handleDownloadPDF = async () => {
+		if (!orderDetailId) {
+			console.error('No order detail ID available')
+			return
+		}
+
+		try {
+			const response = await exportPDF()
+			if (response.data) {
+				// Create a blob from the PDF data
+				const blob = new Blob([response.data], { type: 'application/pdf' })
+
+				// Create a download link
+				const url = window.URL.createObjectURL(blob)
+				const link = document.createElement('a')
+				link.href = url
+				link.download = `ket-qua-xet-nghiem-${
+					bookingItem?.serviceName || 'test'
+				}-${orderDetailId}.pdf`
+
+				// Trigger download
+				document.body.appendChild(link)
+				link.click()
+
+				// Cleanup
+				document.body.removeChild(link)
+				window.URL.revokeObjectURL(url)
+			}
+		} catch (error) {
+			console.error('Error downloading PDF:', error)
+			// You might want to show a toast notification here
+		}
 	}
 
 	const handleViewFullReport = () => {
@@ -314,10 +348,11 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 							</button>
 							<button
 								onClick={handleDownloadPDF}
-								className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors'
+								disabled={isExporting}
+								className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 							>
 								<DownloadSVG className='size-4' />
-								Tải PDF
+								{isExporting ? 'Đang tải...' : 'Tải PDF'}
 							</button>
 						</div>
 					</div>

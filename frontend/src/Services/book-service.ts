@@ -64,6 +64,11 @@ const bookingApi = {
 	ManualPay: (data: { purchaseId: string }) => {
 		return axiosInstance.post('/manual-payment', data).then(res => res.data)
 	},
+	ExportPDF: (orderDetailId: string) => {
+		return axiosInstance
+			.get(`/orderdetails/${orderDetailId}/result-pdf`)
+			.then(res => res.data)
+	},
 }
 
 // Error handler utility
@@ -162,6 +167,15 @@ export const useDeleteOrderDetail = (id: string) => {
 			queryClient.invalidateQueries({ queryKey: ['getOrder'] })
 		},
 		onError: handleApiError,
+		...retryConfig,
+	})
+}
+
+export const useExportOrderDetail = (orderDetailId: string) => {
+	return useQuery({
+		queryKey: ['exportOrderDetail', orderDetailId],
+		queryFn: () => bookingApi.ExportPDF(orderDetailId),
+		enabled: false, // Don't auto-fetch, only fetch when manually triggered
 		...retryConfig,
 	})
 }
