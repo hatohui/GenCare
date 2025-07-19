@@ -20,6 +20,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check disk space
+        run: |
+          echo "Initial disk space:"
+          df -h
+
+      - name: Clean up disk space
+        run: |
+          echo "Cleaning up Docker system..."
+          sudo docker system prune -af --volumes || true
+          echo "Removing temporary files..."
+          sudo rm -rf /tmp/* || true
+          echo "Disk space after cleanup:"
+          df -h
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -36,6 +51,11 @@ jobs:
           FILES_HASH=$(find backend/ -type f -not -path 'backend/Dockerfile' -exec sha256sum {} + | sort | sha256sum | awk '{print $1}')
           COMBINED_HASH=$(echo "${DOCKERFILE_HASH}${FILES_HASH}" | sha256sum | awk '{print $1}')
           echo "cache-key=$COMBINED_HASH" >> $GITHUB_OUTPUT
+
+      - name: Clear Docker cache before build
+        run: |
+          echo "Clearing old buildx cache..."
+          rm -rf /tmp/.buildx-cache || true
 
       - name: Cache Docker images
         uses: actions/cache@v4
@@ -61,6 +81,15 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           build-args: |
             CACHEBUST=${{ steps.cache-key.outputs.cache-key }}
+
+      - name: Clean up after build
+        run: |
+          echo "Cleaning up Docker system..."
+          sudo docker system prune -af --volumes || true
+          echo "Removing temporary files..."
+          sudo rm -rf /tmp/* || true
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0

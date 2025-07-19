@@ -22,5 +22,6 @@ test/
 # OS junk
 .DS_Store
 Thumbs.db
-
+*.md
 test
+.editorconfig
