@@ -13,15 +13,13 @@ RUN dotnet publish -c Release -o /app/publish --packages /src/.nuget/packages
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+
 ENV ASPNETCORE_URLS=http://+:8080 \
     ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_EnableDiagnostics=0
 
-# Install only the essential libraries for IronPDF
-RUN apt-get update && \
-    apt-get install -y libgdiplus && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt update \
+    && apt install -y sudo libxkbcommon-x11-0 libc6 libc6-dev libgtk2.0-0 libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcb-dri3-0 libdrm-common libgbm1 libasound2 libxrender1 libfontconfig1 libxshmfence1 libgdiplus libva-dev
 
 RUN addgroup --gid 1001 appgroup && \
     adduser --uid 1001 --ingroup appgroup --disabled-password gencare
