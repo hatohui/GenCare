@@ -22,6 +22,22 @@ public class CommentRepository(IApplicationDbContext dbContext) : ICommentReposi
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<int> GetLikesCountByBlogIdAsync(Guid blogId)
+    {
+        var blog = await dbContext.Blogs
+            .Where(b => b.Id == blogId && !b.IsDeleted)
+            .Select(b => b.Likes)
+            .FirstOrDefaultAsync();
+    
+        return blog;
+    }
+
+    public async Task<int> GetCommentsCountByBlogIdAsync(Guid blogId)
+    {
+        return await dbContext.Comments
+            .CountAsync(c => c.BlogId == blogId);
+    }
+
     public async Task<List<Comment>> GetAll()
     {
         return await dbContext.Comments

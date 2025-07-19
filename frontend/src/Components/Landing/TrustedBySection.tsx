@@ -2,41 +2,43 @@
 
 import { CheckCircle, Clock, DollarSign, Star, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
-
-const items = [
-	{
-		title: 'Hỗ trợ 24/7',
-		desc: 'Kết nối bác sĩ mọi lúc, mọi nơi',
-		icon: <Clock className='w-6 h-6' />,
-	},
-	{
-		title: (
-			<span className='inline-flex items-center gap-1'>
-				4.9
-				<Star className='w-5 h-5 text-yellow-500 fill-yellow-500' />
-			</span>
-		),
-		desc: 'Được đánh giá bởi hơn 5.000 bệnh nhân',
-		icon: <Star className='w-6 h-6' />,
-	},
-	{
-		title: 'Bác sĩ uy tín',
-		desc: '100% bác sĩ được cấp phép & xác thực',
-		icon: <CheckCircle className='w-6 h-6' />,
-	},
-	{
-		title: 'Đặt lịch nhanh',
-		desc: 'Gặp bác sĩ trong vòng 15 phút',
-		icon: <Zap className='w-6 h-6' />,
-	},
-	{
-		title: 'Linh hoạt & tiết kiệm',
-		desc: 'Nhiều gói dịch vụ phù hợp nhu cầu',
-		icon: <DollarSign className='w-6 h-6' />,
-	},
-]
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function TrustedBySection() {
+	const { t } = useLocale()
+	const items = [
+		{
+			title: t('landing.trusted.support247.title'),
+			desc: t('landing.trusted.support247.desc'),
+			icon: <Clock className='w-6 h-6' />,
+		},
+		{
+			title: (
+				<span className='inline-flex items-center gap-1'>
+					{t('landing.trusted.rating.title')}
+					<Star className='w-5 h-5 text-yellow-500 fill-yellow-500' />
+				</span>
+			),
+			desc: t('landing.trusted.rating.desc'),
+			icon: <Star className='w-6 h-6' />,
+		},
+		{
+			title: t('landing.trusted.doctors.title'),
+			desc: t('landing.trusted.doctors.desc'),
+			icon: <CheckCircle className='w-6 h-6' />,
+		},
+		{
+			title: t('landing.trusted.booking.title'),
+			desc: t('landing.trusted.booking.desc'),
+			icon: <Zap className='w-6 h-6' />,
+		},
+		{
+			title: t('landing.trusted.flexible.title'),
+			desc: t('landing.trusted.flexible.desc'),
+			icon: <DollarSign className='w-6 h-6' />,
+		},
+	]
+
 	return (
 		<section className='relative md:absolute bg-white text-center px-8 pt-4 rounded-[30px] mx-auto md:max-w-6xl mt-[0px] z-20 shadow-2xl border border-gray-100/50 md:right-0 md:left-0 md:-translate-y-1/2'>
 			{/* Background decoration */}

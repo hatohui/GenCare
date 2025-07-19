@@ -44,6 +44,8 @@ public class BlogRepository(IApplicationDbContext dbContext) : IBlogRepository
             .ToListAsync();
     }
 
+ 
+
 
     public async Task<List<Blog>> GetAll()
     {

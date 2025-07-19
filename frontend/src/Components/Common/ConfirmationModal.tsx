@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface ConfirmationModalProps {
 	isOpen: boolean
@@ -26,6 +27,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 	isDangerous = false,
 	isLoading = false,
 }) => {
+	const { t } = useLocale()
 	const modalRef = useRef<HTMLDivElement>(null)
 	const firstFocusableRef = useRef<HTMLButtonElement>(null)
 
@@ -167,7 +169,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 						{isLoading ? (
 							<div className='flex items-center justify-center gap-2'>
 								<div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin' />
-								Đang xử lý...
+								{t('common.processing')}
 							</div>
 						) : (
 							confirmText

@@ -14,6 +14,8 @@ public class ModelOfBlogResponse
     public DateTime? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
     public bool IsDeleted { get; set; }
+    public int Likes { get; set; }
+    public int Comments { get; set;}
     public List<string> TagTitles { get; set; } = new List<string>();
     public List<string> ImageUrls { get; set; } = new List<string>();
 }

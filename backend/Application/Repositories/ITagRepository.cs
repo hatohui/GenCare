@@ -53,4 +53,5 @@ public interface ITagRepository
 
     Task<List<string>?> GetTagTitlesByBlogIdAsync(Guid blogId);
 
+    Task<Tag?> GetByTitle(string title);
 }

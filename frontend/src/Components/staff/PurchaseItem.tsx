@@ -14,12 +14,14 @@ import {
 	ChevronUpSVG,
 } from '../SVGs'
 import clsx from 'clsx'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface PurchaseItemProps {
 	purchase: BookedService
 }
 
 const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
+	const { t } = useLocale()
 	const [isOpen, setIsOpen] = useState(false)
 	const [showConfirm, setShowConfirm] = useState(false)
 	const manualPayment = useManualPay()
@@ -30,12 +32,12 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 			{
 				onSuccess: () => {
 					setShowConfirm(false)
-					toast.success('Đã xác nhận thanh toán thành công!')
+					toast.success(t('staff.payment_confirmed_success'))
 				},
 				onError: error => {
 					console.error('Manual payment failed:', error)
 					setShowConfirm(false)
-					toast.error('Không thể xác nhận thanh toán. Vui lòng thử lại.')
+					toast.error(t('staff.payment_confirmation_failed'))
 				},
 			}
 		)
@@ -58,15 +60,15 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 	}
 
 	const formatGender = (gender: boolean) => {
-		return gender ? 'Nam' : 'Nữ'
+		return gender ? t('common.male') : t('common.female')
 	}
 
 	return (
 		<div className='w-full'>
 			<ConfirmDialog
 				isOpen={showConfirm}
-				title='Xác nhận thanh toán'
-				message='Bạn có chắc chắn muốn xác nhận rằng khách hàng đã thanh toán?'
+				title={t('staff.confirm_payment')}
+				message={t('staff.confirm_payment_message')}
 				onConfirm={handlePayment}
 				onCancel={() => setShowConfirm(false)}
 			/>
@@ -86,7 +88,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 						<div className='flex-1'>
 							<div className='flex items-center gap-3 mb-2'>
 								<h3 className='text-lg font-bold text-gray-900'>
-									Mã giao dịch: {purchase.purchaseId}
+									{t('staff.transaction_code')}: {purchase.purchaseId}
 								</h3>
 								<div
 									className={clsx(
@@ -101,7 +103,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 									) : (
 										<XCircleSVG className='size-3' />
 									)}
-									{purchase.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+									{purchase.isPaid ? t('payment.paid') : t('payment.unpaid')}
 								</div>
 							</div>
 							<p className='text-2xl font-bold text-main'>
@@ -127,10 +129,10 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 									{manualPayment.isPending ? (
 										<>
 											<LoadingIcon className='size-4' />
-											Đang xử lý...
+											{t('common.processing')}
 										</>
 									) : (
-										'Xác nhận thanh toán'
+										t('staff.confirm_payment')
 									)}
 								</button>
 							)}
@@ -138,7 +140,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 							<button
 								onClick={() => setIsOpen(!isOpen)}
 								className='p-2 rounded-full hover:bg-gray-100 transition-colors'
-								aria-label={isOpen ? 'Thu gọn' : 'Mở rộng'}
+								aria-label={isOpen ? t('common.collapse') : t('common.expand')}
 							>
 								{isOpen ? (
 									<ChevronUpSVG className='size-5 text-gray-600' />
@@ -152,7 +154,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 					{/* Service Count */}
 					<div className='flex items-center gap-2 text-sm text-gray-600'>
 						<span className='font-medium'>{purchase.order.length}</span>
-						<span>dịch vụ đã đặt</span>
+						<span>{t('staff.services_booked')}</span>
 					</div>
 				</div>
 
@@ -168,7 +170,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 							className='mt-6 pt-6 border-t border-gray-200'
 						>
 							<h4 className='font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-								Chi tiết dịch vụ:
+								{t('staff.service_details')}:
 							</h4>
 							<div className='grid gap-4 max-h-[400px] overflow-auto pr-2'>
 								{purchase.order.map((service, index) => (
@@ -183,7 +185,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 										<div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
 											<div>
 												<p className='text-sm font-medium text-gray-700 mb-1'>
-													Dịch vụ:
+													{t('service.name')}:
 												</p>
 												<p className='text-sm text-gray-900 font-semibold'>
 													{service.serviceName}
@@ -191,7 +193,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 											</div>
 											<div>
 												<p className='text-sm font-medium text-gray-700 mb-1'>
-													Khách hàng:
+													{t('customer.name')}:
 												</p>
 												<p className='text-sm text-gray-900'>
 													{service.firstName} {service.lastName}
@@ -199,7 +201,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 											</div>
 											<div>
 												<p className='text-sm font-medium text-gray-700 mb-1'>
-													Số điện thoại:
+													{t('common.phoneNumber')}:
 												</p>
 												<p className='text-sm text-gray-900'>
 													{service.phoneNumber}
@@ -207,7 +209,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 											</div>
 											<div>
 												<p className='text-sm font-medium text-gray-700 mb-1'>
-													Ngày sinh:
+													{t('common.dateOfBirth')}:
 												</p>
 												<p className='text-sm text-gray-900'>
 													{formatDate(service.dateOfBirth)}
@@ -215,7 +217,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 											</div>
 											<div>
 												<p className='text-sm font-medium text-gray-700 mb-1'>
-													Giới tính:
+													{t('common.gender')}:
 												</p>
 												<p className='text-sm text-gray-900'>
 													{formatGender(service.gender)}
@@ -223,7 +225,7 @@ const PurchaseItem = ({ purchase }: PurchaseItemProps) => {
 											</div>
 											<div>
 												<p className='text-sm font-medium text-gray-700 mb-1'>
-													Ngày đặt:
+													{t('booking.booking_date')}:
 												</p>
 												<p className='text-sm text-gray-900'>
 													{formatDate(service.createdAt)}

@@ -47,4 +47,6 @@ public interface IBlogRepository
     Task<List<Blog>> SearchBlogsAsync(string search);
     
     Task<List<Blog>> SearchBlogByTag(string tags);
+    
+ 
 }

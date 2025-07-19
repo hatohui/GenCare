@@ -99,4 +99,22 @@ public class CommentService(IBlogRepository blogRepository,
         comment.IsDeleted = true;
         await commentRepository.Update(comment);
     }
+
+    public async Task LikeCommentAsync(Guid commentId, string accountId)
+    {
+        //get comment by id
+        var comment = await commentRepository.GetById(commentId.ToString("D"));
+        if (comment is null)
+        {
+            throw new AppException(404, "Comment not found");
+        }
+        //check if account already liked this comment
+        if (comment.Likes > 0 && comment.AccountId.ToString("D") == accountId)
+        {
+            throw new AppException(400, "You have already liked this comment");
+        }
+        //like comment
+        comment.Likes++;
+        await commentRepository.Update(comment);
+    }
 }

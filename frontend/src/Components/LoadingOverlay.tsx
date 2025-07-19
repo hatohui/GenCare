@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface LoadingOverlayProps {
 	isVisible: boolean
@@ -10,9 +11,12 @@ interface LoadingOverlayProps {
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 	isVisible,
-	message = 'Đang tải dữ liệu...',
+	message,
 	className = '',
 }) => {
+	const { t } = useLocale()
+	const displayMessage = message || t('common.loading_data')
+
 	if (!isVisible) return null
 
 	return (
@@ -21,7 +25,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 		>
 			<div className='text-center'>
 				<div className='animate-pulse text-lg font-medium text-slate-700 drop-shadow-lg'>
-					{message}
+					{displayMessage}
 				</div>
 			</div>
 		</div>

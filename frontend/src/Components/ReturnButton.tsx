@@ -2,6 +2,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface ReturnButtonProps {
 	to?: string
@@ -15,6 +16,7 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
 	className = '',
 }) => {
 	const router = useRouter()
+	const { t } = useLocale()
 
 	const getVariantClasses = () => {
 		switch (variant) {
@@ -58,7 +60,7 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
 					d='M15 19l-7-7 7-7'
 				/>
 			</svg>
-			Back
+			{t('button.back')}
 		</motion.button>
 	)
 }

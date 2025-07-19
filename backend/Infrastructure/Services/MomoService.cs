@@ -134,19 +134,8 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
 
         var checkSignature = ComputeHmacSha256(rawSignature, momoConfig.Value.SecretKey);
 
-        if (signature == checkSignature)
+        if (signature == checkSignature && resultCode == 0)
         {
-            //xử lý db
-            //PaymentHistoryModel model = new() 
-            //{
-            //    PurchaseId = orderId.ToString(),
-            //    TransactionId = transId.ToString(),
-            //    Amount = Convert.ToDecimal(amount),
-            //    PaymentMethod = PaymentMethod.Momo,
-            //};
-
-            //
-
             Guid payIdTmp = Guid.Parse(orderId);
             var paymentHistory = await paymentHistoryService.GetPaymentHistoryByPayId(payIdTmp);
             //xử lý db

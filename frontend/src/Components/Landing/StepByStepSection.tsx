@@ -2,16 +2,17 @@
 
 import { motion } from 'motion/react'
 import { useState } from 'react'
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function ProcessSteps() {
+	const { t } = useLocale()
 	const [isInView, setIsInView] = useState(false)
 
 	const timelineData = [
 		{
 			step: '1',
-			title: 'Đặt Lịch Hẹn',
-			description:
-				'Đặt lịch hẹn qua Website, Zalo, Facebook hoặc Hotline 19001717.',
+			title: t('landing.steps.step1.title'),
+			description: t('landing.steps.step1.description'),
 			icon: (
 				<svg
 					className='w-12 h-12 text-blue-500'
@@ -24,8 +25,8 @@ export default function ProcessSteps() {
 		},
 		{
 			step: '2',
-			title: 'Nhận Kết Quả',
-			description: 'Nhận kết quả xét nghiệm qua Zalo/SMS.',
+			title: t('landing.steps.step2.title'),
+			description: t('landing.steps.step2.description'),
 			icon: (
 				<svg
 					className='w-12 h-12 text-green-500'
@@ -39,9 +40,8 @@ export default function ProcessSteps() {
 		},
 		{
 			step: '3',
-			title: 'Xem Kết Quả và Được Tư Vấn',
-			description:
-				'Bác sĩ sẽ xem xét kết quả và đưa ra phác đồ điều trị chuyên biệt.',
+			title: t('landing.steps.step3.title'),
+			description: t('landing.steps.step3.description'),
 			icon: (
 				<svg
 					className='w-12 h-12 text-purple-500'
@@ -54,9 +54,8 @@ export default function ProcessSteps() {
 		},
 		{
 			step: '4',
-			title: 'Kiểm Tra Lại và Theo Dõi',
-			description:
-				'Tái khám và theo dõi tình trạng sức khỏe với hệ thống theo dõi liên tục.',
+			title: t('landing.steps.step4.title'),
+			description: t('landing.steps.step4.description'),
 			icon: (
 				<svg
 					className='w-12 h-12 text-orange-500'
@@ -108,9 +107,9 @@ export default function ProcessSteps() {
 					className='text-5xl md:text-6xl font-bold text-center mb-20 text-secondary leading-tight'
 					viewport={{ once: true, amount: 0.3 }}
 				>
-					Quy Trình Kiểm Tra Sức Khỏe{' '}
+					{t('landing.steps.process_title')}{' '}
 					<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
-						Tại GenCare
+						{t('landing.steps.at_gencare')}
 					</span>
 				</motion.h2>
 
@@ -227,7 +226,7 @@ export default function ProcessSteps() {
 						className='px-10 py-5 bg-gradient-to-r from-main to-secondary text-white rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
 						<span className='flex items-center justify-center gap-3'>
-							Bắt Đầu Ngay
+							{t('landing.steps.get_started')}
 							<svg
 								className='w-5 h-5'
 								fill='none'

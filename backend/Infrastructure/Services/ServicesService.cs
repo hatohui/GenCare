@@ -210,8 +210,8 @@ public class ServicesService(
         if (request.Description != null && request.Description != service.Description)
             service.Description = request.Description;
 
-        if (request.Price != service.Price)
-            service.Price = request.Price;
+        if (request.Price is >= 0 && request.Price.Value != service.Price)
+            service.Price = request.Price.Value;
         if (request.IsDeleted != service.IsDeleted)
             service.IsDeleted = request.IsDeleted;
 

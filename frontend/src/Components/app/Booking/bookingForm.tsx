@@ -91,8 +91,8 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 				await new Promise(res => setTimeout(res, 800))
 				try {
 					const vnpayResult = await vnpayPayMutation.mutateAsync(purchaseId)
-					if (vnpayResult.payUrl) {
-						window.location.href = vnpayResult.payUrl
+					if (vnpayResult) {
+						window.location.href = vnpayResult
 					} else {
 						toast.error('Không thể tạo liên kết thanh toán')
 					}

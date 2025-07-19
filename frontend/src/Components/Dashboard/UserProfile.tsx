@@ -30,7 +30,7 @@ const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 		<div
 			ref={containerRef}
 			onClick={() => setShowPopUp(prev => !prev)}
-			className='relative hidden md:flex justify-start items-center gap-2 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-slate-700/50 cursor-pointer'
+			className=' hidden md:flex justify-start items-center gap-2 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-slate-700/50 cursor-pointer'
 		>
 			<AnimatePresence>
 				{showPopUp && (

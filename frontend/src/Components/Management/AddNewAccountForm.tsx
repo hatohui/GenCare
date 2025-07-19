@@ -6,6 +6,7 @@ import { CreateAccountForm } from './CreateAccountForm'
 import { useCreateAccount } from '@/Services/account-service'
 import { CreateAccountRequest } from '@/Interfaces/Account/Schema/account'
 import { toast } from 'react-hot-toast'
+import { useLocale } from '@/Hooks/useLocale'
 
 // Simple X icon component
 const XIcon = ({ className }: { className?: string }) => (
@@ -36,17 +37,18 @@ const AddNewAccountForm: React.FC<AddNewAccountFormProps> = ({
 	className = '',
 }) => {
 	const createMutation = useCreateAccount()
+	const { t } = useLocale()
 
 	const handleSave = (formData: CreateAccountRequest) => {
 		createMutation.mutate(formData, {
 			onSuccess: () => {
 				onSuccess()
 				onClose()
-				toast.success('Account created successfully')
+				toast.success(t('management.account.created_successfully'))
 			},
 			onError: error => {
 				console.error('Failed to create account:', error)
-				toast.error('Failed to create account')
+				toast.error(t('management.account.create_failed'))
 			},
 		})
 	}
@@ -70,7 +72,7 @@ const AddNewAccountForm: React.FC<AddNewAccountFormProps> = ({
 				{/* Header */}
 				<div className='flex items-center justify-between p-6 border-b border-gray-200'>
 					<h2 className='text-xl font-semibold text-gray-900'>
-						Create New Account
+						{t('management.account.create_new')}
 					</h2>
 					<button
 						onClick={onClose}

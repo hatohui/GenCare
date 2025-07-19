@@ -2,8 +2,10 @@
 
 import { motion, AnimatePresence } from 'motion/react'
 import { useState, useEffect } from 'react'
+import { useLocale } from '@/Hooks/useLocale'
 
 const BackToTop = () => {
+	const { t } = useLocale()
 	const [isVisible, setIsVisible] = useState(false)
 	const [isAnimating, setIsAnimating] = useState(false)
 
@@ -129,7 +131,7 @@ const BackToTop = () => {
 						transition={{ duration: 0.2 }}
 						className='absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200'
 					>
-						Về đầu trang
+						{t('common.back_to_top')}
 						{/* Arrow pointing to button */}
 						<div className='absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-4 border-l-gray-900 border-t-4 border-t-transparent border-b-4 border-b-transparent' />
 					</motion.div>

@@ -5,7 +5,6 @@ import { useEffect } from 'react'
 import SearchBar from '@/Components/Management/SearchBar'
 import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
-import { SearchSVG } from '@/Components/SVGs'
 import ServiceList from '@/Components/app/services/ServiceList'
 import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'motion/react'
@@ -94,7 +93,6 @@ export default function Page() {
 					<div className='flex flex-col lg:flex-row gap-4 items-center'>
 						{/* Search Bar */}
 						<div className='relative flex-1 w-full max-w-2xl'>
-							<SearchSVG className='absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 z-10 size-5' />
 							<SearchBar className=' border-gray-300  ml-12  pr-12 py-3 rounded-[30px] text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-main/20 focus:border-main transition-all' />
 						</div>
 

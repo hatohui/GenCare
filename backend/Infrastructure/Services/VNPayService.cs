@@ -107,7 +107,7 @@ public class VNPayService(IOptions<VNPayConfig> VNPayConfig,
         string transactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
         string vnp_SecureHash = vnpay.GetResponseData("vnp_SecureHash");
         bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, VNPayConfig.Value.Vnp_HashSecret);
-        if (checkSignature)
+        if (checkSignature && responseCode == "00")
         {
             Guid payIdTmp = Guid.Parse(payId);
             var paymentHistory = await paymentHistoryService.GetPaymentHistoryByPayId(payIdTmp);
