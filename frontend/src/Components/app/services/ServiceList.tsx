@@ -8,8 +8,10 @@ import Pagination from '@/Components/Management/Pagination'
 import { ServiceCard } from '@/Components/Services/ServiceCard'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { toast } from 'react-hot-toast'
+import { useLocale } from '@/Hooks/useLocale'
 
 const ServiceList = () => {
+	const { t } = useLocale()
 	const searchParams = useSearchParams()
 	const [page, setPage] = useState<number>(1)
 	const [orderByPrice, setOrderByPrice] = useState<boolean | null>(null)
@@ -42,9 +44,9 @@ const ServiceList = () => {
 	useEffect(() => {
 		if (isError && error) {
 			console.error('Service fetch error:', error)
-			toast.error('Không thể tải danh sách dịch vụ. Vui lòng thử lại.')
+			toast.error(t('service.error.load_list'))
 		}
-	}, [isError, error])
+	}, [isError, error, t])
 
 	// Loading state
 	if (isFetching && !data) {
@@ -52,7 +54,7 @@ const ServiceList = () => {
 			<div className='flex justify-center items-center min-h-[400px]'>
 				<div className='text-center'>
 					<LoadingIcon className='mx-auto mb-4' />
-					<p className='text-gray-600'>Đang tải danh sách dịch vụ...</p>
+					<p className='text-gray-600'>{t('service.loading')}</p>
 				</div>
 			</div>
 		)
@@ -65,16 +67,16 @@ const ServiceList = () => {
 				<div className='text-center max-w-md mx-auto p-6'>
 					<div className='text-red-500 text-6xl mb-4'>⚠️</div>
 					<h3 className='text-xl font-semibold text-gray-800 mb-2'>
-						Không thể tải dịch vụ
+						{t('service.error.load_service')}
 					</h3>
 					<p className='text-gray-600 mb-4'>
-						Đã xảy ra lỗi khi tải danh sách dịch vụ. Vui lòng thử lại sau.
+						{t('service.error.load_service_description')}
 					</p>
 					<button
 						onClick={() => window.location.reload()}
 						className='bg-main hover:bg-main/90 text-white px-6 py-3 rounded-[30px] font-medium transition-colors'
 					>
-						Thử lại
+						{t('service.try_again')}
 					</button>
 				</div>
 			</div>
@@ -88,19 +90,19 @@ const ServiceList = () => {
 				<div className='text-center max-w-md mx-auto p-6'>
 					<div className='text-gray-400 text-6xl mb-4'>🔍</div>
 					<h3 className='text-xl font-semibold text-gray-800 mb-2'>
-						Không tìm thấy dịch vụ
+						{t('service.no_services_found')}
 					</h3>
 					<p className='text-gray-600 mb-6'>
 						{search || orderByPrice !== null
-							? 'Không có dịch vụ nào phù hợp với bộ lọc của bạn. Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc.'
-							: 'Hiện tại chưa có dịch vụ nào được cung cấp.'}
+							? t('service.no_services_description')
+							: t('service.no_services_available')}
 					</p>
 					{(search || orderByPrice !== null) && (
 						<button
 							onClick={() => (window.location.href = '/app/service')}
 							className='bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-[30px] font-medium transition-colors shadow-sm'
 						>
-							Xóa bộ lọc
+							{t('service.clear_filters')}
 						</button>
 					)}
 				</div>
@@ -113,13 +115,21 @@ const ServiceList = () => {
 			{/* Results Info */}
 			<div className='flex justify-between items-center'>
 				<div className='text-sm text-gray-600'>
-					Hiển thị {(page - 1) * itemsPerPage + 1} -{' '}
-					{Math.min(page * itemsPerPage, data?.totalCount || 0)} trong tổng số{' '}
-					{data?.totalCount || 0} dịch vụ
+					{t('service.showing', {
+						'0': ((page - 1) * itemsPerPage + 1).toString(),
+						'1': Math.min(
+							page * itemsPerPage,
+							data?.totalCount || 0
+						).toString(),
+						'2': (data?.totalCount || 0).toString(),
+					})}
 				</div>
 				{pageCount > 1 && (
 					<div className='text-sm text-gray-600'>
-						Trang {page} / {pageCount}
+						{t('service.page', {
+							'0': page.toString(),
+							'1': pageCount.toString(),
+						})}
 					</div>
 				)}
 			</div>
@@ -160,7 +170,9 @@ const ServiceList = () => {
 					<div className='bg-white rounded-[20px] p-6 shadow-lg'>
 						<div className='flex items-center gap-3'>
 							<LoadingIcon className='size-6' />
-							<span className='text-gray-700'>Đang tải...</span>
+							<span className='text-gray-700'>
+								{t('service.showing_loading')}
+							</span>
 						</div>
 					</div>
 				</div>

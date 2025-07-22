@@ -1,31 +1,20 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-
 WORKDIR /src
-
-# Copy NuGet.Config and .sln first
 COPY NuGet.Config ./
-
-# Copy only .csproj files first for layer caching
 COPY API/API.csproj ./API/
 COPY Application/Application.csproj ./Application/
 COPY Domain/Domain.csproj ./Domain/
 COPY Infrastructure/Infrastructure.csproj ./Infrastructure/
+RUN dotnet restore API/API.csproj --packages /src/.nuget/packages --verbosity minimal
 
-# Restore dependencies at the solution level with detailed output
-RUN dotnet restore API/API.csproj --packages /src/.nuget/packages --verbosity detailed
-
-# Copy the rest of the source code, excluding the packages directory if needed
+# Copy the rest of the source code
 COPY . .
-
-# Set working directory to API before publishing
 WORKDIR /src/API
+RUN dotnet publish -c Release -o /app/publish --no-restore --packages /src/.nuget/packages
 
-# Publish the app, allowing restore if needed as a fallback
-RUN dotnet publish -c Release -o /app/publish --packages /src/.nuget/packages
-
-# Runtime stage e
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy AS runtime
 
 ENV ASPNETCORE_URLS=http://+:8080 \
     ASPNETCORE_ENVIRONMENT=Production \
@@ -36,9 +25,8 @@ RUN addgroup --gid 1001 appgroup && \
 
 WORKDIR /app
 COPY --from=build /app/publish .
+RUN chown -R gencare:appgroup /app
 
 USER gencare
-
 EXPOSE 8080
-
 ENTRYPOINT ["dotnet", "API.dll"]

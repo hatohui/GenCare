@@ -13,6 +13,29 @@ const vi: Record<string, string> = {
 	'payment.payment_method_selection': 'Phương thức thanh toán',
 	'payment.select_method': 'Chọn phương thức thanh toán cho dịch vụ của bạn',
 	'payment.payment_later_description': 'Thanh toán khi thuận tiện',
+
+	// Landing Page
+	'landing.health_check_process': 'Quy Trình Khám Sức Khỏe',
+	'landing.at_gencare': 'Tại GenCare',
+	'landing.book_appointment': 'Đặt Lịch Hẹn',
+	'landing.book_appointment_desc':
+		'Đặt lịch hẹn qua Website, Zalo, Facebook hoặc Hotline 19001717.',
+	'landing.start_now': 'Bắt Đầu Ngay',
+	'landing.steps.step1.title': 'Đặt Lịch Hẹn',
+	'landing.steps.step1.description':
+		'Đặt lịch hẹn qua Website, Zalo, Facebook hoặc Hotline 19001717.',
+	'landing.steps.step2.title': 'Nhận Kết Quả',
+	'landing.steps.step2.description':
+		'Nhận kết quả xét nghiệm qua Zalo/SMS/Website.',
+	'landing.steps.step3.title': 'Xem Kết Quả và Được Tư Vấn',
+	'landing.steps.step3.description':
+		'Bác sĩ sẽ xem xét kết quả và đưa ra phác đồ điều trị chuyên biệt.',
+	'landing.steps.step4.title': 'Kiểm Tra Lại và Theo Dõi',
+	'landing.steps.step4.description':
+		'Tái khám và theo dõi tình trạng sức khỏe với hệ thống theo dõi liên tục.',
+	'landing.steps.process_title': 'Quy Trình Kiểm Tra Sức Khỏe',
+	'landing.steps.at_gencare': 'Tại GenCare',
+	'landing.steps.get_started': 'Bắt Đầu Ngay',
 	'payment.pay_later_cash': 'Thanh toán sau',
 	'payment.processing': 'Đang xử lý...',
 	'payment.confirm_payment': 'Xác nhận thanh toán',
@@ -101,6 +124,11 @@ const vi: Record<string, string> = {
 	'service.new_images': 'Hình ảnh mới được thêm vào',
 	'service.loading': 'Đang tải danh sách dịch vụ...',
 	'service.error': 'Không thể tải dịch vụ',
+	'service.error.load_list':
+		'Không thể tải danh sách dịch vụ. Vui lòng thử lại.',
+	'service.error.load_service': 'Không thể tải dịch vụ',
+	'service.error.load_service_description':
+		'Đã xảy ra lỗi khi tải danh sách dịch vụ. Vui lòng thử lại sau.',
 	'service.no_services_found': 'Không tìm thấy dịch vụ',
 	'service.try_again': 'Thử lại',
 	'service.error_description':
@@ -113,6 +141,7 @@ const vi: Record<string, string> = {
 	'service.error_loading_details': 'Không thể tải chi tiết dịch vụ',
 	'service.showing': 'Hiển thị {0} - {1} trong tổng số {2} dịch vụ',
 	'service.page': 'Trang {0} / {1}',
+	'service.showing_loading': 'Đang tải...',
 	'service.hero_title': 'Dịch Vụ Chăm Sóc Sức Khỏe',
 	'service.hero_description':
 		'Khám phá các dịch vụ y tế chất lượng cao với đội ngũ chuyên gia giàu kinh nghiệm',
@@ -135,6 +164,9 @@ const vi: Record<string, string> = {
 	'service.client_testimonials': 'Khách hàng nói gì?',
 	'service.go_back': '← Quay lại',
 	'service.services': 'Dịch vụ',
+	'service.created_at': 'Khởi tạo',
+	'service.updated_at': 'Cập nhật',
+	'service.created_by': 'Người tạo',
 
 	// Status
 	'status.active': 'Hoạt động',
@@ -169,7 +201,15 @@ const vi: Record<string, string> = {
 	'common.female': 'Nữ',
 	'common.getHelp': 'Nhận hỗ trợ',
 	'common.loading': 'Đang tải...',
+	'common.loading_data': 'Đang tải dữ liệu...',
+	'common.back_to_top': 'Về đầu trang',
+	'common.no_data': 'Không có dữ liệu',
+	'common.processing': 'Đang xử lý...',
+	'common.status.pending': 'Đang chờ',
+	'common.status.completed': 'Hoàn thành',
 	'common.error': 'Lỗi',
+	'common.error.load_data': 'Không thể tải dữ liệu',
+	'common.error.try_again_later': 'Vui lòng thử lại sau',
 	'common.success': 'Thành công',
 	'common.warning': 'Cảnh báo',
 	'common.info': 'Thông tin',
@@ -183,6 +223,8 @@ const vi: Record<string, string> = {
 	'common.view': 'Xem',
 	'common.update': 'Cập nhật',
 	'common.create': 'Tạo',
+	'common.confirm_action': 'Xác nhận hành động',
+	'common.confirm_message': 'Bạn có chắc chắn muốn tiếp tục?',
 	'common.confirm': 'Xác nhận',
 	'common.back': 'Quay lại',
 	'common.next': 'Tiếp theo',
@@ -190,6 +232,8 @@ const vi: Record<string, string> = {
 	'common.submit': 'Gửi',
 	'common.close': 'Đóng',
 	'common.open': 'Mở',
+	'common.collapse': 'Thu gọn',
+	'common.expand': 'Mở rộng',
 	'common.try_again': 'Thử lại',
 	'common.go_back': 'Quay lại',
 	'common.actions': 'Hành động',
@@ -286,6 +330,7 @@ const vi: Record<string, string> = {
 	'test.ordered': 'Đã đặt xét nghiệm',
 	'test.completed': 'Đã hoàn thành',
 	'test.pending': 'Chưa hoàn thành',
+	'test.order_date': 'Ngày đặt',
 	'test.sample_date': 'Ngày lấy mẫu',
 	'test.result_date': 'Ngày trả kết quả',
 
@@ -423,6 +468,18 @@ const vi: Record<string, string> = {
 	'landing.ourServicesEmphasis': 'Chúng Tôi',
 	'landing.viewDetails': 'Xem Chi Tiết',
 	'landing.viewAllServices': 'Xem Tất Cả Dịch Vụ',
+
+	// Trusted By / Features Section
+	'landing.trusted.support247.title': 'Hỗ trợ 24/7',
+	'landing.trusted.support247.desc': 'Kết nối bác sĩ mọi lúc, mọi nơi',
+	'landing.trusted.rating.title': '4.9',
+	'landing.trusted.rating.desc': 'Được đánh giá bởi hơn 5.000 bệnh nhân',
+	'landing.trusted.doctors.title': 'Bác sĩ uy tín',
+	'landing.trusted.doctors.desc': '100% bác sĩ được cấp phép & xác thực',
+	'landing.trusted.booking.title': 'Đặt lịch nhanh',
+	'landing.trusted.booking.desc': 'Gặp bác sĩ trong vòng 15 phút',
+	'landing.trusted.flexible.title': 'Linh hoạt & tiết kiệm',
+	'landing.trusted.flexible.desc': 'Nhiều gói dịch vụ phù hợp nhu cầu',
 
 	// Footer
 	'footer.companyDescription':
@@ -580,6 +637,205 @@ const vi: Record<string, string> = {
 
 	'auth.user_not_authenticated': 'Người dùng chưa được xác thực.',
 	'consultant.not_found': 'Không tìm thấy tư vấn viên.',
+
+	// Management - Accounts
+	'management.account.create_new': 'Tạo tài khoản mới',
+	'management.account.edit': 'Chỉnh sửa tài khoản',
+	'management.account.first_name': 'Tên',
+	'management.account.last_name': 'Họ',
+	'management.account.email': 'Email',
+	'management.account.phone_number': 'Số điện thoại',
+	'management.account.gender': 'Giới tính',
+	'management.account.gender_male': 'Nam',
+	'management.account.gender_female': 'Nữ',
+	'management.account.date_of_birth': 'Ngày sinh',
+	'management.account.role': 'Vai trò',
+	'management.account.password': 'Mật khẩu',
+	'management.account.confirm_password': 'Xác nhận mật khẩu',
+	'management.account.staff_info': 'Thông tin nhân viên',
+	'management.account.degree': 'Bằng cấp',
+	'management.account.years_experience': 'Số năm kinh nghiệm',
+	'management.account.department': 'Phòng ban',
+	'management.account.biography': 'Tiểu sử',
+	'management.account.status': 'Trạng thái',
+	'management.account.mark_deleted': 'Đánh dấu đã xóa',
+	'management.account.creating': 'Đang tạo...',
+	'management.account.saving': 'Đang lưu...',
+	'management.account.created_successfully': 'Tạo tài khoản thành công',
+	'management.account.create_failed': 'Tạo tài khoản thất bại',
+	'management.account.payment_history': 'Lịch sử thanh toán',
+	'management.account.delete': 'Xóa',
+	'management.account.delete_confirm':
+		'Bạn có chắc chắn muốn xóa tài khoản của {0} {1}? Hành động này không thể hoàn tác.',
+	'management.account.delete_account': 'Xóa tài khoản',
+	'management.account.upload_avatar': 'Tải ảnh đại diện',
+	'management.account.change_avatar': 'Thay đổi ảnh đại diện',
+	'management.account.edit_profile_picture': 'Chỉnh sửa ảnh đại diện',
+	'management.account.staff_info_appears':
+		'Thông tin nhân viên sẽ xuất hiện khi chọn vai trò nhân viên',
+
+	// Management - Services
+	'management.service.create': 'Tạo dịch vụ',
+	'management.service.edit': 'Chỉnh sửa dịch vụ',
+	'management.service.name': 'Tên dịch vụ',
+	'management.service.description': 'Mô tả',
+	'management.service.price': 'Giá',
+	'management.service.status': 'Trạng thái',
+	'management.service.active': 'Hoạt động',
+	'management.service.inactive': 'Không hoạt động',
+	'management.service.images': 'Hình ảnh dịch vụ',
+	'management.service.update_info':
+		'Cập nhật thông tin dịch vụ và quản lý hình ảnh',
+	'management.service.creating': 'Đang tạo...',
+	'management.service.saving': 'Đang lưu...',
+
+	// Management - Slots
+	'management.slot.add_new': 'Thêm slot mới',
+	'management.slot.date': 'Ngày',
+	'management.slot.time_slot': 'Khung giờ',
+	'management.slot.select_time': 'Chọn khung giờ',
+	'management.slot.assign_consultant': 'Phân công tư vấn viên',
+	'management.slot.slot': 'Slot',
+	'management.slot.day': 'Ngày',
+	'management.slot.time': 'Thời gian',
+
+	// Management - General
+	'management.add_new': 'Thêm mới',
+	'management.search': 'Tìm kiếm',
+	'management.search_placeholder': 'Nhập từ khóa...',
+	'management.search_consultants': 'Tìm kiếm tư vấn viên...',
+	'management.close': 'Đóng',
+	'management.loading_departments': 'Đang tải phòng ban...',
+	'management.select_department': 'Chọn phòng ban',
+	'management.select_role': 'Chọn vai trò',
+	'management.save_changes': 'Lưu thay đổi',
+	'management.price_ascending': 'Giá tăng dần ↑',
+	'management.price_descending': 'Giá giảm dần ↓',
+	'management.sort_price_off': 'Sắp xếp giá (Tắt)',
+	'management.sort_alphabetical': 'Sắp xếp ABC',
+
+	// Forms - Placeholders and Labels
+	'form.enter_first_name': 'Nhập tên',
+	'form.enter_last_name': 'Nhập họ',
+	'form.enter_email': 'Nhập địa chỉ email',
+	'form.enter_phone': 'Nhập số điện thoại',
+	'form.enter_degree': 'Nhập bằng cấp/trình độ',
+	'form.enter_experience': 'Nhập số năm kinh nghiệm',
+	'form.enter_biography': 'Nhập tiểu sử hoặc tóm tắt chuyên môn',
+	'form.enter_service_name': 'Nhập tên dịch vụ',
+	'form.enter_service_description': 'Nhập mô tả dịch vụ',
+	'form.enter_service_price': 'Nhập giá dịch vụ',
+	'form.enter_description': 'Nhập mô tả',
+	'form.enter_price': 'Nhập giá',
+
+	// Test Results
+	'test.edit_results': 'Chỉnh sửa kết quả xét nghiệm',
+	'test.result_code': 'Mã xét nghiệm',
+	'test.status': 'Trạng thái',
+	'test.incomplete': 'Chưa hoàn thành',
+	'test.complete': 'Đã hoàn thành',
+	'test.parameters': 'Tham số xét nghiệm',
+	'test.sample_data': 'Dữ liệu mẫu',
+	'test.add_parameter': 'Thêm',
+	'test.parameter_name': 'Tên tham số',
+	'test.value': 'Giá trị',
+	'test.unit': 'Đơn vị',
+	'test.reference_range': 'Khoảng tham chiếu',
+	'test.flag': 'Trạng thái',
+	'test.normal': 'Bình thường',
+	'test.high': 'Cao',
+	'test.low': 'Thấp',
+	'test.no_parameters': 'Chưa có tham số nào',
+	'test.add_first_parameter': 'Thêm tham số đầu tiên',
+	'test.updating': 'Đang cập nhật...',
+	'test.update_results': 'Cập nhật kết quả',
+	'test.try_again': 'Thử lại',
+	'test.unit_placeholder': 'VD: mg/dL, mmol/L, %',
+	'test.reference_range_placeholder': 'VD: 70-100',
+	'test.validation.parameter_required': 'Tên tham số là bắt buộc',
+	'test.validation.value_negative': 'Giá trị không thể âm',
+	'test.validation.unit_required': 'Đơn vị là bắt buộc',
+	'test.validation.order_date_required': 'Ngày đặt là bắt buộc',
+	'test.validation.sample_date_required': 'Ngày lấy mẫu là bắt buộc',
+	'test.validation.result_date_required':
+		'Ngày trả kết quả là bắt buộc khi đã hoàn thành',
+
+	// Appointments
+	'appointment.confirm': 'Xác nhận',
+	'appointment.pending': 'Chờ',
+	'appointment.cancelled': 'Hủy',
+	'appointment.join_now': 'THAM GIA NGAY',
+	'appointment.join': 'Tham gia',
+	'appointment.join_zoom': 'Tham gia cuộc họp',
+	'appointment.previous_week': 'Tuần trước',
+	'appointment.current_week': 'Hiện tại',
+	'appointment.next_week': 'Tuần sau',
+	'appointment.error_occurred': 'Oops! Có lỗi xảy ra',
+	'appointment.retry': 'Thử lại',
+	'appointment.processing': 'Đang xử lý...',
+
+	// Staff Management
+	'staff.no_accounts': 'Chưa có tài khoản nào trong hệ thống.',
+	'staff.no_accounts_search': 'Không có tài khoản nào phù hợp với "{search}"',
+	'staff.no_accounts_found': 'Không tìm thấy tài khoản',
+	'staff.clear_search_filter': 'Xóa bộ lọc tìm kiếm',
+	'staff.no_transactions': 'Không có giao dịch nào',
+	'staff.no_transactions_search': 'Không có giao dịch nào phù hợp với "{0}"',
+	'staff.loading_accounts': 'Đang tải danh sách tài khoản...',
+	'staff.load_accounts_failed': 'Không thể tải danh sách',
+	'staff.load_accounts_error_description':
+		'Đã xảy ra lỗi khi tải danh sách tài khoản. Vui lòng thử lại sau.',
+	'staff.total_accounts': 'Tổng số tài khoản',
+	'staff.current_page': 'Trang hiện tại',
+	'staff.total_pages': 'Tổng số trang',
+	'staff.payment_confirmed_success': 'Đã xác nhận thanh toán thành công!',
+	'staff.payment_confirmation_failed':
+		'Không thể xác nhận thanh toán. Vui lòng thử lại.',
+	'staff.confirm_payment': 'Xác nhận thanh toán',
+	'staff.confirm_payment_message':
+		'Bạn có chắc chắn muốn xác nhận rằng khách hàng đã thanh toán?',
+	'staff.transaction_code': 'Mã giao dịch',
+	'staff.services_booked': 'dịch vụ đã đặt',
+	'staff.service_details': 'Chi tiết dịch vụ',
+	'staff.view_payment_details':
+		'Xem chi tiết thanh toán cho {firstName} {lastName}',
+	'staff.redirecting': 'Đang chuyển hướng...',
+	'staff.view_payments': 'Xem thanh toán',
+
+	// Consultant
+	'consultant.search_placeholder':
+		'Tìm kiếm tư vấn viên theo tên, phòng ban hoặc bằng cấp...',
+	'consultant.results_showing':
+		'Hiển thị {0} đến {1} trong tổng số {2} tư vấn viên',
+	'consultant.next': 'Tiếp theo',
+	'consultant.confirm_booking': 'Xác nhận đặt lịch',
+
+	// Profile
+	'profile.edit_profile': 'Chỉnh sửa hồ sơ',
+	'profile.edit_profile_picture': 'Chỉnh sửa ảnh đại diện',
+
+	// Buttons and Actions
+	'button.back': 'Quay lại',
+	'button.next': 'Tiếp theo',
+	'button.submit': 'Gửi',
+	'button.close': 'Đóng',
+	'button.try_again': 'Thử lại',
+
+	// Chat
+	'chat.scroll_down': 'Cuộn xuống',
+	'chat.send_message': 'Gửi tin nhắn',
+
+	// Lab
+	'lab.dashboard.pending': 'Đang chờ xử lý',
+	'lab.dashboard.completed': 'Đã hoàn thành',
+	'lab.dashboard.total': 'Tổng số xét nghiệm',
+	'lab.table.order_id': 'Mã đơn',
+	'lab.table.order_date': 'Ngày đặt',
+	'lab.table.sample_date': 'Ngày lấy mẫu',
+	'lab.table.result_date': 'Ngày trả kết quả',
+	'lab.table.status': 'Trạng thái',
+	'lab.table.actions': 'Hành động',
+	'lab.table.view_details': 'Xem chi tiết',
 }
 
 export default vi

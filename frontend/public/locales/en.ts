@@ -1,8 +1,6 @@
 const en: Record<string, string> = {
 	// App general
 	'app.title': 'GenCare - Gender Health Management System',
-	'common.refresh': 'Refresh',
-	'common.tryAgain': 'Try Again',
 	'app.description':
 		'Gender health management system to streamline patient care and administration.',
 	'app.keywords.genderHealth': 'gender health',
@@ -26,6 +24,10 @@ const en: Record<string, string> = {
 	'service.new_images': 'New images to be added',
 	'service.loading': 'Loading services...',
 	'service.error': 'Could not load services',
+	'service.error.load_list': 'Unable to load service list. Please try again.',
+	'service.error.load_service': 'Unable to load service',
+	'service.error.load_service_description':
+		'An error occurred while loading the service list. Please try again later.',
 	'service.no_services_found': 'No services found',
 	'service.try_again': 'Try again',
 	'service.error_description':
@@ -37,6 +39,7 @@ const en: Record<string, string> = {
 	'service.error_loading_details': 'Failed to load service details',
 	'service.showing': 'Showing {0} - {1} of {2} services',
 	'service.page': 'Page {0} of {1}',
+	'service.showing_loading': 'Loading...',
 	'service.hero_title': 'Healthcare Services',
 	'service.hero_description':
 		'Discover high-quality medical services with our experienced team of experts',
@@ -58,6 +61,9 @@ const en: Record<string, string> = {
 	'service.client_testimonials': 'What clients say?',
 	'service.go_back': '← Go back',
 	'service.services': 'Services',
+	'service.created_at': 'Created',
+	'service.updated_at': 'Updated',
+	'service.created_by': 'Created by',
 
 	// Status
 	'status.active': 'Active',
@@ -82,7 +88,15 @@ const en: Record<string, string> = {
 	// Common
 	'common.getHelp': 'Get Help',
 	'common.loading': 'Loading...',
+	'common.loading_data': 'Loading data...',
+	'common.back_to_top': 'Back to top',
+	'common.no_data': 'No data',
+	'common.processing': 'Processing...',
+	'common.status.pending': 'Pending',
+	'common.status.completed': 'Completed',
 	'common.error': 'Error',
+	'common.error.load_data': 'Unable to load data',
+	'common.error.try_again_later': 'Please try again later',
 	'common.success': 'Success',
 	'common.warning': 'Warning',
 	'common.info': 'Info',
@@ -96,6 +110,8 @@ const en: Record<string, string> = {
 	'common.view': 'View',
 	'common.update': 'Update',
 	'common.create': 'Create',
+	'common.confirm_action': 'Confirm Action',
+	'common.confirm_message': 'Are you sure you want to proceed?',
 	'common.confirm': 'Confirm',
 	'common.back': 'Back',
 	'common.next': 'Next',
@@ -103,6 +119,8 @@ const en: Record<string, string> = {
 	'common.submit': 'Submit',
 	'common.close': 'Close',
 	'common.open': 'Open',
+	'common.collapse': 'Collapse',
+	'common.expand': 'Expand',
 	'common.try_again': 'Try Again',
 	'common.go_back': 'Go Back',
 	'common.actions': 'Actions',
@@ -198,6 +216,7 @@ const en: Record<string, string> = {
 	'test.ordered': 'Test Ordered',
 	'test.completed': 'Completed',
 	'test.pending': 'Pending',
+	'test.order_date': 'Order Date',
 	'test.sample_date': 'Sample Date',
 	'test.result_date': 'Result Date',
 
@@ -425,6 +444,19 @@ const en: Record<string, string> = {
 	'landing.viewDetails': 'View Details',
 	'landing.viewAllServices': 'View All Services',
 
+	// Trusted By / Features Section
+	'landing.trusted.support247.title': '24/7 Support',
+	'landing.trusted.support247.desc': 'Connect with doctors anytime, anywhere',
+	'landing.trusted.rating.title': '4.9',
+	'landing.trusted.rating.desc': 'Rated by over 5,000 patients',
+	'landing.trusted.doctors.title': 'Trusted Doctors',
+	'landing.trusted.doctors.desc': '100% licensed & verified doctors',
+	'landing.trusted.booking.title': 'Quick Booking',
+	'landing.trusted.booking.desc': 'Meet doctors within 15 minutes',
+	'landing.trusted.flexible.title': 'Flexible & Affordable',
+	'landing.trusted.flexible.desc':
+		'Multiple service packages to fit your needs',
+
 	// Footer
 	'footer.companyDescription':
 		'We are committed to providing high-quality healthcare services with experienced experts and modern technology.',
@@ -579,6 +611,226 @@ const en: Record<string, string> = {
 
 	// Auth and consultant
 	'consultant.not_found': 'Consultant not found.',
+
+	// Management - Accounts
+	'management.account.create_new': 'Create New Account',
+	'management.account.edit': 'Edit Account',
+	'management.account.first_name': 'First Name',
+	'management.account.last_name': 'Last Name',
+	'management.account.email': 'Email',
+	'management.account.phone_number': 'Phone Number',
+	'management.account.gender': 'Gender',
+	'management.account.gender_male': 'Male',
+	'management.account.gender_female': 'Female',
+	'management.account.date_of_birth': 'Date of Birth',
+	'management.account.role': 'Role',
+	'management.account.password': 'Password',
+	'management.account.confirm_password': 'Confirm Password',
+	'management.account.staff_info': 'Staff Information',
+	'management.account.degree': 'Degree',
+	'management.account.years_experience': 'Years of Experience',
+	'management.account.department': 'Department',
+	'management.account.biography': 'Biography',
+	'management.account.status': 'Status',
+	'management.account.mark_deleted': 'Mark as deleted',
+	'management.account.creating': 'Creating...',
+	'management.account.saving': 'Saving...',
+	'management.account.created_successfully': 'Account created successfully',
+	'management.account.create_failed': 'Failed to create account',
+	'management.account.payment_history': 'Payment History',
+	'management.account.delete': 'Delete',
+	'management.account.delete_confirm':
+		'Are you sure you want to delete the account for {0} {1}? This action cannot be undone.',
+	'management.account.delete_account': 'Delete Account',
+	'management.account.upload_avatar': 'Upload Avatar',
+	'management.account.change_avatar': 'Change Avatar',
+	'management.account.edit_profile_picture': 'Edit Profile Picture',
+	'management.account.staff_info_appears':
+		'Staff information will appear when a staff role is selected',
+
+	// Management - Services
+	'management.service.create': 'Create Service',
+	'management.service.edit': 'Edit Service',
+	'management.service.name': 'Service Name',
+	'management.service.description': 'Description',
+	'management.service.price': 'Price',
+	'management.service.status': 'Status',
+	'management.service.active': 'Active',
+	'management.service.inactive': 'Inactive',
+	'management.service.images': 'Service Images',
+	'management.service.update_info':
+		'Update service information and manage images',
+	'management.service.creating': 'Creating...',
+	'management.service.saving': 'Saving...',
+
+	// Management - Slots
+	'management.slot.add_new': 'Add New Slot',
+	'management.slot.date': 'Date',
+	'management.slot.time_slot': 'Time Slot',
+	'management.slot.select_time': 'Select a time slot',
+	'management.slot.assign_consultant': 'Assign Consultant',
+	'management.slot.slot': 'Slot',
+	'management.slot.day': 'Day',
+	'management.slot.time': 'Time',
+
+	// Management - General
+	'management.add_new': 'Add New',
+	'management.search': 'Search',
+	'management.search_placeholder': 'Enter keywords...',
+	'management.search_consultants': 'Search consultants...',
+	'management.close': 'Close',
+	'management.loading_departments': 'Loading departments...',
+	'management.select_department': 'Select a department',
+	'management.select_role': 'Select a role',
+	'management.save_changes': 'Save Changes',
+	'management.price_ascending': 'Price ascending ↑',
+	'management.price_descending': 'Price descending ↓',
+	'management.sort_price_off': 'Sort by Price (Off)',
+	'management.sort_alphabetical': 'Sort A-Z',
+
+	// Forms - Placeholders and Labels
+	'form.enter_first_name': 'Enter first name',
+	'form.enter_last_name': 'Enter last name',
+	'form.enter_email': 'Enter email address',
+	'form.enter_phone': 'Enter phone number',
+	'form.enter_degree': 'Enter degree/qualification',
+	'form.enter_experience': 'Enter years of experience',
+	'form.enter_biography': 'Enter biography or professional summary',
+	'form.enter_service_name': 'Enter service name',
+	'form.enter_service_description': 'Enter service description',
+	'form.enter_service_price': 'Enter service price',
+	'form.enter_description': 'Enter description',
+	'form.enter_price': 'Enter price',
+
+	// Test Results
+	'test.edit_results': 'Edit Test Results',
+	'test.result_code': 'Test Code',
+	'test.status': 'Status',
+	'test.incomplete': 'Incomplete',
+	'test.complete': 'Completed',
+	'test.parameters': 'Test Parameters',
+	'test.sample_data': 'Sample Data',
+	'test.add_parameter': 'Add',
+	'test.parameter_name': 'Parameter Name',
+	'test.value': 'Value',
+	'test.unit': 'Unit',
+	'test.reference_range': 'Reference Range',
+	'test.flag': 'Flag',
+	'test.normal': 'Normal',
+	'test.high': 'High',
+	'test.low': 'Low',
+	'test.no_parameters': 'No parameters yet',
+	'test.add_first_parameter': 'Add first parameter',
+	'test.updating': 'Updating...',
+	'test.update_results': 'Update Results',
+	'test.try_again': 'Try Again',
+	'test.unit_placeholder': 'e.g. mg/dL, mmol/L, %',
+	'test.reference_range_placeholder': 'e.g. 70-100',
+	'test.validation.parameter_required': 'Parameter name is required',
+	'test.validation.value_negative': 'Value cannot be negative',
+	'test.validation.unit_required': 'Unit is required',
+	'test.validation.order_date_required': 'Order date is required',
+	'test.validation.sample_date_required': 'Sample date is required',
+	'test.validation.result_date_required':
+		'Result date is required when completed',
+
+	// Appointments
+	'appointment.confirm': 'Confirm',
+	'appointment.pending': 'Pending',
+	'appointment.cancelled': 'Cancelled',
+	'appointment.join_now': 'JOIN NOW',
+	'appointment.join': 'Join',
+	'appointment.join_zoom': 'Join Meeting',
+	'appointment.previous_week': 'Previous Week',
+	'appointment.current_week': 'Current',
+	'appointment.next_week': 'Next Week',
+	'appointment.error_occurred': 'Oops! An error occurred',
+	'appointment.retry': 'Retry',
+	'appointment.processing': 'Processing...',
+
+	// Staff Management
+	'staff.no_accounts': 'No accounts in the system yet.',
+	'staff.no_accounts_search': 'No accounts match "{search}"',
+	'staff.no_accounts_found': 'No accounts found',
+	'staff.clear_search_filter': 'Clear search filter',
+	'staff.no_transactions': 'No transactions',
+	'staff.no_transactions_search': 'No transactions match "{0}"',
+	'staff.loading_accounts': 'Loading account list...',
+	'staff.load_accounts_failed': 'Unable to load list',
+	'staff.load_accounts_error_description':
+		'An error occurred while loading the account list. Please try again later.',
+	'staff.total_accounts': 'Total accounts',
+	'staff.current_page': 'Current page',
+	'staff.total_pages': 'Total pages',
+	'staff.payment_confirmed_success': 'Payment confirmed successfully!',
+	'staff.payment_confirmation_failed':
+		'Unable to confirm payment. Please try again.',
+	'staff.confirm_payment': 'Confirm Payment',
+	'staff.confirm_payment_message':
+		'Are you sure you want to confirm that the customer has paid?',
+	'staff.transaction_code': 'Transaction Code',
+	'staff.services_booked': 'services booked',
+	'staff.service_details': 'Service Details',
+	'staff.view_payment_details':
+		'View payment details for {firstName} {lastName}',
+	'staff.redirecting': 'Redirecting...',
+	'staff.view_payments': 'View payments',
+
+	// Consultant
+	'consultant.search_placeholder':
+		'Search consultants by name, department, or degree...',
+	'consultant.results_showing': 'Showing {0} to {1} of {2} consultants',
+	'consultant.next': 'Next',
+	'consultant.confirm_booking': 'Confirm Booking',
+
+	// Landing Page
+	'landing.health_check_process': 'Health Check Process',
+	'landing.at_gencare': 'At GenCare',
+	'landing.book_appointment': 'Book Appointment',
+	'landing.book_appointment_desc':
+		'Book an appointment via Website, Zalo, Facebook or Hotline 19001717.',
+	'landing.start_now': 'Start Now',
+	'landing.steps.step1.title': 'Book Appointment',
+	'landing.steps.step1.description':
+		'Book an appointment via Website, Zalo, Facebook or Hotline 19001717.',
+	'landing.steps.step2.title': 'Receive Results',
+	'landing.steps.step2.description': 'Receive test results via Zalo/SMS.',
+	'landing.steps.step3.title': 'View Results and Get Consultation',
+	'landing.steps.step3.description':
+		'Doctor will review results and provide specialized treatment plan.',
+	'landing.steps.step4.title': 'Follow-up and Monitoring',
+	'landing.steps.step4.description':
+		'Re-examination and health monitoring with continuous tracking system.',
+	'landing.steps.process_title': 'Health Check Process',
+	'landing.steps.at_gencare': 'At GenCare',
+	'landing.steps.get_started': 'Get Started',
+
+	// Profile
+	'profile.edit_profile': 'Edit Profile',
+	'profile.edit_profile_picture': 'Edit Profile Picture',
+
+	// Buttons and Actions
+	'button.back': 'Back',
+	'button.next': 'Next',
+	'button.submit': 'Submit',
+	'button.close': 'Close',
+	'button.try_again': 'Try Again',
+
+	// Chat
+	'chat.scroll_down': 'Scroll Down',
+	'chat.send_message': 'Send Message',
+
+	// Lab
+	'lab.dashboard.pending': 'Pending',
+	'lab.dashboard.completed': 'Completed',
+	'lab.dashboard.total': 'Total tests',
+	'lab.table.order_id': 'Order ID',
+	'lab.table.order_date': 'Order Date',
+	'lab.table.sample_date': 'Sample Date',
+	'lab.table.result_date': 'Result Date',
+	'lab.table.status': 'Status',
+	'lab.table.actions': 'Actions',
+	'lab.table.view_details': 'View Details',
 }
 
 export default en

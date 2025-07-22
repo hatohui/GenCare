@@ -44,8 +44,6 @@ const TypedText = ({
 		}
 	}, [defaultOptions, options, isClient])
 
-	// Show a static version of the text during server rendering or initial client hydration
-	// Once on the client, we'll replace it with the animated version if needed
 	return !isClient ? (
 		<span className={className}>
 			{options.strings && options.strings.length > 0 ? options.strings[0] : ''}
