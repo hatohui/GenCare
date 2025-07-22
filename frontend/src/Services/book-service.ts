@@ -1,6 +1,7 @@
 import {
 	BookedServicesResponse,
 	OrderDetailResponse,
+	OrderDetail,
 } from '@/Interfaces/Payment/Types/BookService'
 import { MomoServiceResponse } from '@/Interfaces/Payment/Types/MomoService'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -178,4 +179,20 @@ export const useExportOrderDetail = (orderDetailId: string) => {
 		enabled: false, // Don't auto-fetch, only fetch when manually triggered
 		...retryConfig,
 	})
+}
+
+export const useCreateBookingPDF = () => {
+	return async (booking: OrderDetail, result?: any) => {
+		try {
+			const response = await axios.post(
+				'/api/create-pdf',
+				{ booking, result },
+				{ responseType: 'blob' }
+			)
+			return response.data
+		} catch (error) {
+			handleApiError(error)
+			throw error
+		}
+	}
 }

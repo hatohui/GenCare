@@ -9,7 +9,7 @@ import {
 	useMomoPay,
 	useVnpayPay,
 	useDeleteOrderDetail,
-	useExportOrderDetail,
+	useCreateBookingPDF,
 } from '@/Services/book-service'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
@@ -17,6 +17,7 @@ import ConfirmDialog from '@/Components/ConfirmationDialog'
 import { parseISO, isValid, format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useLocale } from '@/Hooks/useLocale'
+import { useGetResult } from '@/Services/Result-service'
 
 interface BookingItemProps {
 	booking: OrderDetail
@@ -36,9 +37,11 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const deleteMutation = useDeleteOrderDetail(booking.orderDetailId)
 
 	// PDF export functionality
-	const { refetch: exportPDF, isFetching: isExporting } = useExportOrderDetail(
-		booking.orderDetailId
-	)
+	const createBookingPDF = useCreateBookingPDF()
+	const [isExporting, setIsExporting] = useState(false)
+	const { refetch: refetchResult } = useGetResult(booking.orderDetailId, {
+		enabled: false,
+	})
 
 	const formatDate = (date: Date | string) => {
 		try {
@@ -53,7 +56,8 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 		}
 	}
 
-	const handleViewResults = () => {
+	const handleViewResults = async () => {
+		await refetchResult()
 		setIsModalOpen(true)
 	}
 
@@ -62,36 +66,25 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	}
 
 	const handleDownloadPDF = async () => {
-		if (!booking.orderDetailId) {
-			console.error('No order detail ID available')
-			return
-		}
-
+		setIsExporting(true)
 		try {
-			const response = await exportPDF()
-			if (response.data) {
-				// Create a blob from the PDF data
-				const blob = new Blob([response.data], { type: 'application/pdf' })
-
-				// Create a download link
-				const url = window.URL.createObjectURL(blob)
-				const link = document.createElement('a')
-				link.href = url
-				link.download = `ket-qua-xet-nghiem-${booking.serviceName || 'test'}-${
-					booking.orderDetailId
-				}.pdf`
-
-				// Trigger download
-				document.body.appendChild(link)
-				link.click()
-
-				// Cleanup
-				document.body.removeChild(link)
-				window.URL.revokeObjectURL(url)
-			}
+			const { data: latestResult } = await refetchResult()
+			const pdfBlob = await createBookingPDF(booking, latestResult)
+			const url = window.URL.createObjectURL(
+				new Blob([pdfBlob], { type: 'application/pdf' })
+			)
+			const link = document.createElement('a')
+			link.href = url
+			link.download = `booking-${booking.orderDetailId}.pdf`
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(url)
 		} catch (error) {
 			console.error('Error downloading PDF:', error)
 			toast.error('Lỗi khi tải PDF. Vui lòng thử lại.')
+		} finally {
+			setIsExporting(false)
 		}
 	}
 
@@ -225,7 +218,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 								>
 									<DownloadSVG className='size-4' />
-									{isExporting ? 'Đang tải...' : t('booking.download_results')}
+									{isExporting ? 'Đang tải...' : 'Tải PDF'}
 								</button>
 							</>
 						) : (

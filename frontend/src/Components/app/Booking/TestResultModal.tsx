@@ -7,7 +7,7 @@ import { format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { ResultData } from '@/Interfaces/Tests/Types/Tests'
 import { useGetResult } from '@/Services/Result-service'
-import { useExportOrderDetail } from '@/Services/book-service'
+import { useCreateBookingPDF } from '@/Services/book-service'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -245,46 +245,37 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	bookingItem,
 }) => {
 	const orderDetailId = bookingItem?.orderDetailId || ''
-	const { data, isLoading, error } = useGetResult(orderDetailId, {
+	const { data, isLoading, error, refetch } = useGetResult(orderDetailId, {
 		enabled: isOpen && !!orderDetailId,
 	})
 
-	// PDF export functionality
-	const { refetch: exportPDF, isFetching: isExporting } =
-		useExportOrderDetail(orderDetailId)
+	const createBookingPDF = useCreateBookingPDF()
 
 	const handleClose = () => {
 		onClose()
 	}
 
 	const handleDownloadPDF = async () => {
-		if (!orderDetailId) {
-			console.error('No order detail ID available')
+		if (!orderDetailId || !bookingItem) {
+			console.error('No order detail ID or booking item available')
 			return
 		}
-
 		try {
-			const response = await exportPDF()
-			if (response.data) {
-				// Create a blob from the PDF data
-				const blob = new Blob([response.data], { type: 'application/pdf' })
-
-				// Create a download link
-				const url = window.URL.createObjectURL(blob)
-				const link = document.createElement('a')
-				link.href = url
-				link.download = `ket-qua-xet-nghiem-${
-					bookingItem?.serviceName || 'test'
-				}-${orderDetailId}.pdf`
-
-				// Trigger download
-				document.body.appendChild(link)
-				link.click()
-
-				// Cleanup
-				document.body.removeChild(link)
-				window.URL.revokeObjectURL(url)
-			}
+			// Always fetch the latest result before generating PDF
+			const { data: latestResult } = await refetch()
+			const pdfBlob = await createBookingPDF(bookingItem, latestResult)
+			const url = window.URL.createObjectURL(
+				new Blob([pdfBlob], { type: 'application/pdf' })
+			)
+			const link = document.createElement('a')
+			link.href = url
+			link.download = `ket-qua-xet-nghiem-${
+				bookingItem.serviceName || 'test'
+			}-${orderDetailId}.pdf`
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(url)
 		} catch (error) {
 			console.error('Error downloading PDF:', error)
 			// You might want to show a toast notification here
@@ -348,11 +339,11 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 							</button>
 							<button
 								onClick={handleDownloadPDF}
-								disabled={isExporting}
+								disabled={isLoading}
 								className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 							>
 								<DownloadSVG className='size-4' />
-								{isExporting ? 'Đang tải...' : 'Tải PDF'}
+								{isLoading ? 'Đang tải...' : 'Tải PDF'}
 							</button>
 						</div>
 					</div>
