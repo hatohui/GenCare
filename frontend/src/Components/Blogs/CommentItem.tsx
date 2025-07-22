@@ -54,10 +54,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 						</span>
 						<span className='text-gray-400'>•</span>
 						<span className='text-sm text-gray-500'>
-							{formatDistanceToNow(new Date(comment.createdAt), {
-								addSuffix: true,
-								locale: vi,
-							})}
+							{(() => {
+								try {
+									return formatDistanceToNow(new Date(comment.createdAt), {
+										addSuffix: true,
+										locale: vi,
+									})
+								} catch {
+									return 'Invalid date'
+								}
+							})()}
 						</span>
 					</div>
 

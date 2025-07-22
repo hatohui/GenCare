@@ -23,6 +23,7 @@ import ReactMarkdown from 'react-markdown'
 import { CloudinaryButton } from '../CloudinaryButton'
 import { motion, AnimatePresence } from 'motion/react'
 import './BlogForm.css'
+import Image from 'next/image'
 
 // Enhanced editable preview component
 const EditablePreview = ({
@@ -514,10 +515,12 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 													animate={{ scale: 1, opacity: 1 }}
 													className='relative group'
 												>
-													<img
+													<Image
 														src={url}
 														alt={`Featured ${idx + 1}`}
 														className='w-16 h-16 object-cover rounded-lg shadow-md'
+														width={64}
+														height={64}
 													/>
 													<button
 														type='button'
