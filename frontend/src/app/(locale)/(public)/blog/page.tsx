@@ -187,6 +187,8 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 	)
 })
 
+ForumBlogItem.displayName = 'ForumBlogItem'
+
 const BlogPage = () => {
 	const router = useRouter()
 	const searchParams = useSearchParams()
@@ -215,7 +217,6 @@ const BlogPage = () => {
 		hasNextPage,
 		isFetchingNextPage,
 		isLoading,
-		error,
 		isError,
 	} = useInfiniteBlogs(ITEMS_PER_PAGE, search, selectedTag)
 

@@ -92,7 +92,12 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 	}
 
 	const canDeleteComment = (comment: Comment) => {
-		return !!(user && (user.id === comment.accountId || canManage))
+		return !!(
+			user &&
+			(user.id === comment.accountId ||
+				user.role?.name === 'admin' ||
+				user.role?.name === 'manager')
+		)
 	}
 
 	if (isLoading) {
@@ -495,20 +500,23 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 							{/* Comments List */}
 							{comments.length > 0 ? (
 								<div className='space-y-4'>
-									{comments.map((comment: Comment) => (
-										<CommentItem
-											key={comment.id}
-											comment={comment}
-											onDelete={handleCommentDelete}
-											canDelete={canDeleteComment(comment)}
-											onLike={handleLikeComment}
-											isLiking={
-												likeComment.isPending || isLikingComment === comment.id
-											}
-											user={user}
-											onLoginRequired={() => router.push('/login')}
-										/>
-									))}
+									{comments
+										.filter((comment: Comment) => !comment.isDeleted)
+										.map((comment: Comment) => (
+											<CommentItem
+												key={comment.id}
+												comment={comment}
+												onDelete={handleCommentDelete}
+												canDelete={canDeleteComment(comment)}
+												onLike={handleLikeComment}
+												isLiking={
+													likeComment.isPending ||
+													isLikingComment === comment.id
+												}
+												user={user}
+												onLoginRequired={() => router.push('/login')}
+											/>
+										))}
 								</div>
 							) : (
 								<div className='text-center py-8 text-gray-500'>

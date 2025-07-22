@@ -94,13 +94,9 @@ const blogApi = {
 	},
 	LikeComment: (header: string, id: string) => {
 		return axios
-			.post(
-				`${COMMENT_URL}/${id}/like`,
-				{},
-				{
-					headers: { Authorization: header },
-				}
-			)
+			.post(`${COMMENT_URL}/${id}/like`, null, {
+				headers: { Authorization: header },
+			})
 			.then(res => res.data)
 	},
 }
@@ -312,7 +308,7 @@ export const useLikeComment = () => {
 
 	return useMutation({
 		mutationFn: (id: string) => blogApi.LikeComment(header, id),
-		onSuccess: (_, id) => {
+		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['comments'] })
 			queryClient.invalidateQueries({ queryKey: ['blogs'] })
 			queryClient.invalidateQueries({ queryKey: ['infinite-blogs'] })
