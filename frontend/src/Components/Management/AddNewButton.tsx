@@ -3,8 +3,11 @@
 import { motion } from 'motion/react'
 import React from 'react'
 import { PlusSVG } from '../SVGs'
+import { useLocale } from '@/Hooks/useLocale'
 
 const AddNewButton = ({ handleAddNew }: { handleAddNew: () => void }) => {
+	const { t } = useLocale()
+
 	return (
 		<motion.button
 			className='round bg-accent text-white shadow-lg border-0 py-2.5 px-8 cursor-pointer flex center-all gap-2 font-medium text-sm min-w-[90px] hover:shadow-xl'
@@ -16,7 +19,7 @@ const AddNewButton = ({ handleAddNew }: { handleAddNew: () => void }) => {
 			whileTap={{ scale: 0.95 }}
 			transition={{ duration: 0.2, ease: 'easeInOut' }}
 			onClick={handleAddNew}
-			aria-label='Thêm tài khoản mới'
+			aria-label={t('management.add_new')}
 		>
 			<motion.span
 				className='pointer-events-none'
@@ -26,7 +29,7 @@ const AddNewButton = ({ handleAddNew }: { handleAddNew: () => void }) => {
 				<PlusSVG />
 			</motion.span>
 			<span className='whitespace-nowrap pointer-events-none hidden sm:block'>
-				Thêm mới
+				{t('management.add_new')}
 			</span>
 		</motion.button>
 	)

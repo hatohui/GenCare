@@ -5,12 +5,14 @@ import React, { useState } from 'react'
 import { motion } from 'motion/react'
 import { UserSVG, MoneySVG } from '@/Components/SVGs'
 import LoadingIcon from '@/Components/LoadingIcon'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface AccountItemProps {
 	item: Account
 }
 
 const AccountItem = ({ item }: AccountItemProps) => {
+	const { t } = useLocale()
 	const router = useRouter()
 	const [isLoading, setIsLoading] = useState(false)
 	const [imageError, setImageError] = useState(false)
@@ -60,14 +62,19 @@ const AccountItem = ({ item }: AccountItemProps) => {
 				onKeyDown={handleKeyDown}
 				role='button'
 				tabIndex={0}
-				aria-label={`Xem chi tiết thanh toán cho ${item.firstName} ${item.lastName}`}
+				aria-label={t('staff.view_payment_details', {
+					firstName: item.firstName,
+					lastName: item.lastName,
+				})}
 			>
 				{/* Loading Overlay */}
 				{isLoading && (
 					<div className='absolute inset-0 bg-white/80 flex items-center justify-center rounded-[30px] z-10'>
 						<div className='flex items-center gap-2 text-main'>
 							<LoadingIcon className='size-4' />
-							<span className='text-sm font-medium'>Đang chuyển hướng...</span>
+							<span className='text-sm font-medium'>
+								{t('staff.redirecting')}
+							</span>
 						</div>
 					</div>
 				)}
@@ -106,7 +113,8 @@ const AccountItem = ({ item }: AccountItemProps) => {
 						{item.email}
 					</p>
 					<p className='text-xs text-gray-400'>
-						{item.gender ? 'Nam' : 'Nữ'} • {formatDate(item.dateOfBirth)}
+						{item.gender ? t('common.male') : t('common.female')} •{' '}
+						{formatDate(item.dateOfBirth)}
 					</p>
 				</div>
 
@@ -114,7 +122,9 @@ const AccountItem = ({ item }: AccountItemProps) => {
 				<div className='mt-auto'>
 					<div className='flex items-center justify-center gap-2 text-accent group-hover:text-main transition-colors'>
 						<MoneySVG className='size-4' />
-						<span className='text-sm font-medium'>Xem thanh toán</span>
+						<span className='text-sm font-medium'>
+							{t('staff.view_payments')}
+						</span>
 					</div>
 					<div className='w-full h-1 bg-gray-200 rounded-full mt-2 overflow-hidden'>
 						<motion.div
