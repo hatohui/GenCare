@@ -6,22 +6,19 @@ COPY API/API.csproj ./API/
 COPY Application/Application.csproj ./Application/
 COPY Domain/Domain.csproj ./Domain/
 COPY Infrastructure/Infrastructure.csproj ./Infrastructure/
-RUN dotnet restore API/API.csproj --packages /src/.nuget/packages --verbosity detailed
+RUN dotnet restore API/API.csproj --packages /src/.nuget/packages --verbosity minimal
+
+# Copy the rest of the source code
 COPY . .
 WORKDIR /src/API
-RUN dotnet publish -c Release -o /app/publish --packages /src/.nuget/packages
+RUN dotnet publish -c Release -o /app/publish --no-restore --packages /src/.nuget/packages
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy AS runtime
+
 ENV ASPNETCORE_URLS=http://+:8080 \
     ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_EnableDiagnostics=0
-
-# Install only the essential libraries for IronPDF
-RUN apt-get update && \
-    apt-get install -y libgdiplus && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --gid 1001 appgroup && \
     adduser --uid 1001 --ingroup appgroup --disabled-password gencare

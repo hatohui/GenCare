@@ -30,9 +30,5 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\Infrastructure\Services\OrderDetailPdfTemplate.html">
-			<Link>Infrastructure\Services\OrderDetailPdfTemplate.html</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 </Project>
