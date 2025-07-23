@@ -1,0 +1,248 @@
+/* Custom styles for the enhanced BlogForm component */
+
+/* Smooth animations for form elements */
+.blog-form-enter {
+	opacity: 0;
+	transform: translateY(20px);
+}
+
+.blog-form-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Enhanced markdown editor styling */
+.EasyMDEContainer {
+	border-radius: 0.5rem;
+	overflow: hidden;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.EasyMDEContainer .CodeMirror {
+	border: none;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		sans-serif;
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.EasyMDEContainer .editor-toolbar {
+	border: none;
+	border-bottom: 1px solid #e5e7eb;
+	background: #f9fafb;
+	padding: 8px 12px;
+}
+
+.EasyMDEContainer .editor-toolbar button {
+	color: #6b7280;
+	border: none;
+	background: transparent;
+	padding: 4px 6px;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+
+.EasyMDEContainer .editor-toolbar button:hover {
+	background: #e5e7eb;
+	color: #374151;
+}
+
+.EasyMDEContainer .editor-toolbar button.active {
+	background: #3b82f6;
+	color: white;
+}
+
+/* Enhanced tag suggestions */
+.tag-suggestions {
+	animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Enhanced form sections */
+.form-section {
+	background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+	border: 1px solid #e2e8f0;
+	border-radius: 1rem;
+	padding: 1.5rem;
+	transition: all 0.3s ease;
+}
+
+.form-section:hover {
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	transform: translateY(-1px);
+}
+
+/* Enhanced buttons */
+.btn-primary {
+	background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+	border: none;
+	color: white;
+	padding: 12px 24px;
+	border-radius: 9999px;
+	font-weight: 600;
+	font-size: 14px;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:active {
+	transform: translateY(0);
+}
+
+/* Enhanced input fields */
+.enhanced-input {
+	border: 2px solid #e5e7eb;
+	border-radius: 0.5rem;
+	padding: 12px 16px;
+	font-size: 14px;
+	transition: all 0.2s ease;
+	background: white;
+}
+
+.enhanced-input:focus {
+	border-color: #3b82f6;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	outline: none;
+}
+
+/* Enhanced tag chips */
+.tag-chip {
+	background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+	color: white;
+	padding: 6px 12px;
+	border-radius: 9999px;
+	font-size: 12px;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.2s ease;
+	box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.tag-chip:hover {
+	transform: scale(1.05);
+	box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.tag-chip .remove-btn {
+	background: rgba(255, 255, 255, 0.2);
+	border: none;
+	color: white;
+	border-radius: 50%;
+	width: 16px;
+	height: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.tag-chip .remove-btn:hover {
+	background: rgba(255, 255, 255, 0.3);
+	transform: scale(1.1);
+}
+
+/* Enhanced image preview */
+.image-preview {
+	border-radius: 0.5rem;
+	overflow: hidden;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
+}
+
+.image-preview:hover {
+	transform: scale(1.02);
+	box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading states */
+.loading-spinner {
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+	.form-section {
+		padding: 1rem;
+	}
+
+	.btn-primary {
+		padding: 10px 20px;
+		font-size: 13px;
+	}
+
+	.enhanced-input {
+		padding: 10px 14px;
+		font-size: 13px;
+	}
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+	.blog-form-enter-active,
+	.tag-suggestions,
+	.form-section,
+	.btn-primary,
+	.enhanced-input,
+	.tag-chip,
+	.image-preview {
+		transition: none;
+		animation: none;
+	}
+}
+
+/* Focus indicators for better accessibility */
+.btn-primary:focus,
+.enhanced-input:focus,
+.tag-chip .remove-btn:focus {
+	outline: 2px solid #3b82f6;
+	outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.form-section {
+		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+		border-color: #374151;
+	}
+
+	.enhanced-input {
+		background: #374151;
+		border-color: #4b5563;
+		color: #f9fafb;
+	}
+
+	.enhanced-input:focus {
+		border-color: #60a5fa;
+		box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+	}
+}
