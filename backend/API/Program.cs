@@ -191,7 +191,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
-builder.Services.AddTransient<IValidator<AppointmentCreateRequest>, ZoomMeetingRequestValidator>();
+builder.Services.AddTransient<IValidator<AppointmentCreateRequest>, AppointmentCreateRequestValidator>();
 
 // ====== Application Services ======
 builder.Services.AddHangfireServer();

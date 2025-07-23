@@ -40,14 +40,16 @@ public class AppointmentRepository(IApplicationDbContext dbContext) : IAppointme
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<Appointment>> GetOverlappedAppointmentsForStaff(Guid staffId, DateTime start)
+    public async Task<List<Appointment>> GetOverlappedAppointmentsForStaff(Guid staffId, DateTime start, int durationInMinutes)
     {
-        var end = start.AddHours(2);
+        var end = start.AddMinutes(durationInMinutes);
         return await dbContext.Appointments
+            .Include(a => a.Member)
+            .Include(a => a.Staff)
             .Where(a =>
                 a.Staff.Id == staffId &&
                 a.ScheduleAt < end &&
-                a.ScheduleAt.AddHours(2) > start
+                a.ScheduleAt.AddMinutes(durationInMinutes) > start
             )
             .ToListAsync();
     }

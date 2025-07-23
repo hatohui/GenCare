@@ -1,11 +1,12 @@
 ﻿using Application.DTOs.Appointment.Request;
 using FluentValidation;
+using Application.Helpers;
 
 namespace API.ActionFilters;
 
-public class ZoomMeetingRequestValidator : AbstractValidator<AppointmentCreateRequest>
+public class AppointmentCreateRequestValidator : AbstractValidator<AppointmentCreateRequest>
 {
-    public ZoomMeetingRequestValidator()
+    public AppointmentCreateRequestValidator()
     {
         RuleFor(x => x.MemberId)
         .NotEmpty().WithMessage("MemberId is required.");
@@ -20,6 +21,6 @@ public class ZoomMeetingRequestValidator : AbstractValidator<AppointmentCreateRe
 
     private static bool BeInTheFuture(DateTime startTime)
     {
-        return startTime > DateTime.Now;
+        return startTime > DateTimeHelper.ToUtc7(DateTime.UtcNow);
     }
 }

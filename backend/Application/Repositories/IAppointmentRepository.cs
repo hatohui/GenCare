@@ -49,7 +49,7 @@ namespace Application.Repositories
         /// <param name="from">Thời gian bắt đầu của khoảng kiểm tra.</param>
         /// <param name="to">Thời gian kết thúc của khoảng kiểm tra.</param>
         /// <returns>Danh sách cuộc hẹn bị trùng với khoảng thời gian yêu cầu.</returns>
-        Task<List<Appointment>> GetOverlappedAppointmentsForStaff(Guid staffId, DateTime start);
+        Task<List<Appointment>> GetOverlappedAppointmentsForStaff(Guid staffId, DateTime start, int durationInMinutes);
 
     }
 }

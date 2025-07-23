@@ -62,7 +62,7 @@ public class AppointmentService(IAccountRepository accountRepository,
 
         // Check for overlapping appointments
         var staffId = Guid.Parse(request.StaffId);
-        var overlappingAppointments = await appointmentRepository.GetOverlappedAppointmentsForStaff(staffId, slotStart);
+        var overlappingAppointments = await appointmentRepository.GetOverlappedAppointmentsForStaff(staffId, slotStart, 120);
 
         var isOverlapped = overlappingAppointments.Count > 0;
 
@@ -74,7 +74,7 @@ public class AppointmentService(IAccountRepository accountRepository,
         {
             Topic = $"Consultation with {staff.FirstName} {staff.LastName}",
             StartTime = slotStart,
-            Duration = 120, // 1 hour
+            Duration = 120, // 2 hours
             Timezone = "Asia/Ho_Chi_Minh",
             Type = 2,
             JoinBeforeHost = true,
