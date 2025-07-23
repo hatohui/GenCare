@@ -7,7 +7,6 @@ using Application.Services;
 using Domain.Common.Constants;
 using Domain.Entities;
 using Domain.Exceptions;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Services;
 
@@ -21,7 +20,7 @@ public class AppointmentService(IAccountRepository accountRepository,
         var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
         //find staff by id
         var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
-        
+
         if (member == null)
             throw new AppException(404, "member id is invalid");
         if (staff == null)
@@ -48,24 +47,36 @@ public class AppointmentService(IAccountRepository accountRepository,
 
     public async Task<ZoomMeetingResponse> CreateAppointmentWithZoomAsync(AppointmentCreateRequest request, string accessId)
     {
-        //find member by id
+        // Validate member & staff ID
         var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
-        //find staff by id
         var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
-        
         if (member == null)
             throw new AppException(404, "member id is invalid");
         if (staff == null)
             throw new AppException(404, "staff id is invalid");
 
+        // Define time slot
+        var slotStart = request.ScheduleAt.Kind == DateTimeKind.Local
+        ? request.ScheduleAt
+        : request.ScheduleAt.ToLocalTime();
+
+        // Check for overlapping appointments
+        var staffId = Guid.Parse(request.StaffId);
+        var overlappingAppointments = await appointmentRepository.GetOverlappedAppointmentsForStaff(staffId, slotStart);
+
+        var isOverlapped = overlappingAppointments.Count > 0;
+
+        if (isOverlapped)
+            throw new AppException(409, "Staff already has an appointment in this time slot.");
+
         // Create Zoom meeting first
         var zoomRequest = new ZoomMeetingRequest
         {
             Topic = $"Consultation with {staff.FirstName} {staff.LastName}",
-            StartTime = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
-            Duration = 60, // 1 hour consultation
+            StartTime = slotStart,
+            Duration = 120, // 1 hour
             Timezone = "Asia/Ho_Chi_Minh",
-            Type = 2, // Scheduled meeting
+            Type = 2,
             JoinBeforeHost = true,
             WaitingRoom = true,
             HostVideo = true,
@@ -83,22 +94,22 @@ public class AppointmentService(IAccountRepository accountRepository,
             throw new AppException(500, $"Failed to create Zoom meeting: {ex.Message}");
         }
 
-        //create appointment with Zoom meeting details
-        Appointment appointment = new()
+        // Create appointment and save
+        var appointment = new Appointment()
         {
             Member = member,
             Staff = staff,
-            ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
-            JoinUrl = zoomMeeting.JoinUrl, // Save the Zoom join URL
+            ScheduleAt = slotStart,
+            JoinUrl = zoomMeeting.JoinUrl,
             CreatedBy = Guid.Parse(accessId),
             Status = AppointmentStatus.Booked,
         };
-        
-        //save appointment
+
         await appointmentRepository.Add(appointment);
 
         return zoomMeeting;
     }
+
 
     public async Task DeleteAppointmentAsync(string appointmentId, string deleteId)
     {
@@ -186,7 +197,7 @@ public class AppointmentService(IAccountRepository accountRepository,
     {
         //get account by id
         var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
-        if(account == null)
+        if (account == null)
         {
             throw new AppException(404, "Account not found");
         }
@@ -197,12 +208,13 @@ public class AppointmentService(IAccountRepository accountRepository,
             isLow = true;
         //get appointment by id
         var appointment = await appointmentRepository.GetById(appointmentId);
-        if(appointment == null)
+        if (appointment == null)
         {
             throw new AppException(404, "Appoinment not found");
         }
         //create response
-        var response = new AppointmentViewResponse() {
+        var response = new AppointmentViewResponse()
+        {
             MemberId = appointment.Member.Id.ToString("D"),
             MemberName = $"{appointment.Member.FirstName} {appointment.Member.LastName}",
             StaffId = appointment.Staff.Id.ToString("D"),
