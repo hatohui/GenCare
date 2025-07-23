@@ -33,12 +33,13 @@ public class AccountService(
         var existingUser = await accountRepo.GetByEmailAsync(request.Email);
         if (existingUser is not null)
         {
-            throw new Exception("User already exists");
+            throw new AppException(400, "User already exists");
         }
 
         var role =
             await roleRepo.GetRoleByNameAsync("Member")
-            ?? throw new Exception("Role 'Member' not found");
+            ?? throw new AppException(400, "Role 'Member' not found");
+      
 
         //create new user account
         var user = new Account
