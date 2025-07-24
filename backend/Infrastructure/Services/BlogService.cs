@@ -176,7 +176,8 @@ public class BlogService(IBlogRepository blogRepository,
         var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
         //get image urls by blog id
         var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
-
+        var likes = await commentRepository.GetLikesCountByBlogIdAsync(blog.Id);
+        var comments = await commentRepository.GetCommentsCountByBlogIdAsync(blog.Id);
         return new ModelOfBlogResponse()
         {
             Id = blog.Id.ToString("D"),
@@ -192,8 +193,29 @@ public class BlogService(IBlogRepository blogRepository,
             DeletedBy = blog.DeletedBy?.ToString("D"),
             IsDeleted = blog.IsDeleted,
             TagTitles = tagTitles,
-            ImageUrls = imageUrls
+            ImageUrls = imageUrls,
+            Likes = likes,
+            Comments = comments
+            
         };
+    }
+
+    public async Task LikeBlogAsync(Guid id, string accountId)
+    {
+        //get comment by id
+        var blog = await blogRepository.GetById(id.ToString("D"));
+        if (blog is null)
+        {
+            throw new AppException(404, "Comment not found");
+        }
+        //check if account already liked this comment
+        if (blog.Likes > 0)
+        {
+            throw new AppException(400, "You have already liked this comment");
+        }
+        //like comment
+        blog.Likes++;
+        await blogRepository.Update(blog);
     }
 
 
