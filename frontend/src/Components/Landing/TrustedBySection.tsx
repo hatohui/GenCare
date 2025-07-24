@@ -39,8 +39,8 @@ export default function TrustedBySection() {
 	]
 
 	return (
-		<section className='bg-white text-center px-8 pt-6 rounded-[30px] mx-auto max-w-6xl mt-0 z-20 shadow-2xl border border-gray-100/50'>
-			<div className='flex flex-row justify-between items-stretch gap-6 px-4 text-center'>
+		<section className='relative md:absolute bg-white text-center px-8 pt-4 rounded-[30px] mx-auto md:max-w-6xl my-[40px] z-20 shadow-2xl border border-gray-100/50 md:right-0 md:left-0 md:-translate-y-1/2'>
+			<div className='relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-6 text-center'>
 				{items.map((item, i) => (
 					<div
 						key={i}
