@@ -1,28 +1,29 @@
 'use client'
 
-import React from 'react'
+import FlorageBackground from '@/Components/Landing/FlorageBackground'
+import SearchBar from '@/Components/Management/SearchBar'
+import TypedText from '@/Components/TypedText'
+import { useAccountStore } from '@/Hooks/useAccount'
+import { useLocale } from '@/Hooks/useLocale'
+import { Blog } from '@/Interfaces/Blogs/Types/Blogs'
 import {
-	useInfiniteBlogs,
 	useDeleteBlog,
+	useInfiniteBlogs,
 	useLikeBlog,
 } from '@/Services/Blog-service'
-import { useRouter, useSearchParams } from 'next/navigation'
 import {
-	Plus,
-	MessageCircle,
 	Clock,
-	User,
-	X,
 	Edit,
-	Trash2,
 	Heart,
 	Loader2,
+	MessageCircle,
+	Plus,
+	Trash2,
+	User,
+	X,
 } from 'lucide-react'
-import TypedText from '@/Components/TypedText'
-import FlorageBackground from '@/Components/Landing/FlorageBackground'
-import { useAccountStore } from '@/Hooks/useAccount'
-import SearchBar from '@/Components/Management/SearchBar'
-import { Blog } from '@/Interfaces/Blogs/Types/Blogs'
+import { useRouter, useSearchParams } from 'next/navigation'
+import React from 'react'
 import { useInView } from 'react-intersection-observer'
 import { motion } from 'framer-motion'
 
@@ -57,6 +58,7 @@ const ITEMS_PER_PAGE = 10
 const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 	const router = useRouter()
 	const { data: user } = useAccountStore()
+	const { t } = useLocale()
 	const deleteBlog = useDeleteBlog()
 	const likeBlog = useLikeBlog()
 
@@ -65,11 +67,11 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 
 	const handleDelete = (e: React.MouseEvent) => {
 		e.stopPropagation() // Prevent navigation to blog detail
-		if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+		if (confirm(t('blog.confirm_delete'))) {
 			deleteBlog.mutate(blog.id, {
 				onSuccess: () => {},
 				onError: error => {
-					console.error('Failed to delete blog:', error)
+					console.error(t('blog.delete_failed'), error)
 				},
 			})
 		}
@@ -106,8 +108,8 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 						<div className='flex items-center text-gray-500 text-sm'>
 							<Clock className='w-4 h-4 mr-1' />
 							{blog.publishedAt
-								? new Date(blog.publishedAt).toLocaleDateString('vi-VN')
-								: new Date(blog.createdAt).toLocaleDateString('vi-VN')}
+								? new Date(blog.publishedAt).toLocaleDateString()
+								: new Date(blog.createdAt).toLocaleDateString()}
 						</div>
 					</div>
 
@@ -135,7 +137,9 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 					<div className='flex items-center space-x-4 text-gray-500 text-sm'>
 						<div className='flex items-center'>
 							<MessageCircle className='w-4 h-4 mr-1' />
-							<span>{blog.comments || 0} bình luận</span>
+							<span>
+								{blog.comments || 0} {t('blog.comments')}
+							</span>
 						</div>
 						{user ? (
 							<button
@@ -145,12 +149,9 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 								title='Thích bài viết'
 							>
 								<Heart className='w-4 h-4 mr-1' />
-								<span>{blog.likes || 0} lượt thích</span>
-								{likeBlog.isPending && (
-									<span className='absolute right-[-24px]'>
-										<Loader2 className='w-4 h-4 animate-spin text-accent' />
-									</span>
-								)}
+								<span>
+									{blog.likes || 0} {t('blog.likes')}
+								</span>
 							</button>
 						) : (
 							<button
@@ -162,7 +163,9 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 								title='Đăng nhập để thích bài viết'
 							>
 								<Heart className='w-4 h-4 mr-1' />
-								<span>{blog.likes || 0} lượt thích</span>
+								<span>
+									{blog.likes || 0} {t('blog.likes')}
+								</span>
 							</button>
 						)}
 					</div>
@@ -175,7 +178,7 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 					<button
 						onClick={handleEdit}
 						className='p-2 bg-main text-white rounded-lg hover:bg-main/80 transition-colors'
-						title='Chỉnh sửa bài viết'
+						title={t('blog.edit_post')}
 					>
 						<Edit className='w-4 h-4' />
 					</button>
@@ -183,7 +186,7 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 						onClick={handleDelete}
 						disabled={deleteBlog.isPending}
 						className='p-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-						title='Xóa bài viết'
+						title={t('blog.delete_post')}
 					>
 						<Trash2 className='w-4 h-4' />
 					</button>
@@ -199,19 +202,15 @@ const BlogPage = () => {
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const { data: user } = useAccountStore()
+	const { t } = useLocale()
 
 	// Always derive filters from URL
 	const search = searchParams?.get('search') || ''
 	const selectedTag = searchParams?.get('tags') || null
 
 	// Memoize the strings to prevent unnecessary re-renders of TypedText
-	const titleStrings = React.useMemo(() => ['Diễn Đàn Sức Khỏe GenCare'], [])
-	const subtitleStrings = React.useMemo(
-		() => [
-			'Thảo luận, chia sẻ và học hỏi từ cộng đồng chuyên gia y tế và người quan tâm đến sức khỏe',
-		],
-		[]
-	)
+	const titleStrings = React.useMemo(() => [t('blog.forum_title')], [t])
+	const subtitleStrings = React.useMemo(() => [t('blog.forum_subtitle')], [t])
 
 	// Infinite scroll setup
 	const { ref, inView } = useInView()
@@ -261,41 +260,40 @@ const BlogPage = () => {
 				<button
 					onClick={() => router.push('/blog/create')}
 					className='fixed bottom-8 right-8 z-50 flex items-center justify-center w-16 h-16 rounded-full bg-accent text-white shadow-lg hover:bg-blue-700 focus:ring-4 focus:ring-accent/30 transition text-2xl group'
-					title='Tạo bài viết mới'
-					aria-label='Tạo bài viết mới'
+					title={t('blog.create_post')}
+					aria-label={t('blog.create_post')}
 				>
 					<Plus className='w-8 h-8' />
-					<span className='sr-only'>Tạo bài viết mới</span>
+					<span className='sr-only'>{t('blog.create_post')}</span>
 					<span className='absolute bottom-20 right-0 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none'>
-						Tạo bài viết mới
+						{t('blog.create_post')}
 					</span>
 				</button>
 			)}
 
-			{/* Hero Section - Like Service Page, Blog Wording */}
-			<section className='relative z-0 py-20 bg-gradient-to-r from-main to-secondary text-white overflow-hidden'>
-				<div className='absolute top-0 left-0 z-10 florageBackground' />
-				<div className='relative max-w-7xl mx-auto px-6 text-center'>
-					<motion.h1
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6 }}
-						className='text-4xl md:text-5xl font-bold mb-6'
-					>
-						Khám phá{' '}
-						<span className='bg-gradient-to-r from-yellow-300 to-accent bg-clip-text text-transparent'>
-							Bài Viết & Kiến Thức
-						</span>
-					</motion.h1>
-					<motion.p
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.2 }}
-						className='text-xl mb-8 max-w-3xl mx-auto'
-					>
-						Nơi bạn tìm thấy những chia sẻ, kinh nghiệm và kiến thức sức khỏe từ
-						cộng đồng GenCare.
-					</motion.p>
+			{/* Hero Section */}
+			<section className='py-16 bg-gradient-to-r from-main to-secondary text-white relative overflow-hidden'>
+				<div className='absolute inset-0 florageBackground' />
+				<div className='max-w-6xl mx-auto px-6 text-center relative z-10 backdrop-blur-sm'>
+					<h3 className='font-semibold mb-4 text-white text-shadow-2xs'>
+						<span>{t('blog.knowledge_forum')}</span>
+					</h3>
+					<h1 className='text-5xl font-bold mb-6 text-shadow-2xs'>
+						<TypedText
+							key='blog-title'
+							typeSpeed={12}
+							className='bg-gradient-to-r from-white to-general bg-clip-text text-transparent'
+							strings={titleStrings}
+						/>
+					</h1>
+					<p className='text-xl mb-8 max-w-3xl mx-auto text-shadow-2xs'>
+						<TypedText
+							key='blog-subtitle'
+							typeSpeed={8}
+							className='bg-gradient-to-r bg-white bg-clip-text text-transparent'
+							strings={subtitleStrings}
+						/>
+					</p>
 				</div>
 				<FlorageBackground />
 			</section>
@@ -305,10 +303,12 @@ const BlogPage = () => {
 				<div className='max-w-6xl mx-auto px-6'>
 					<div className='flex items-center justify-between'>
 						<button className='px-6 py-2 bg-gradient-to-r from-main to-secondary text-white rounded-full font-medium hover:shadow-lg transition-shadow'>
-							NÊN ĐỌC
+							{t('blog.recommended')}
 						</button>
 						<div className='text-sm text-gray-500'>
-							{isLoading ? 'Đang tải...' : `${blogs.length} bài viết`}
+							{isLoading
+								? t('common.loading')
+								: t('blog.count_posts', { count: blogs.length })}
 						</div>
 					</div>
 				</div>
@@ -330,7 +330,7 @@ const BlogPage = () => {
 							{/* Recent Posts */}
 							<div className='mb-6'>
 								<h3 className='text-lg font-bold text-gray-800 mb-3 border-b-2 border-accent/30 pb-2'>
-									Bài viết gần đây
+									{t('blog.recent_posts')}
 								</h3>
 								<div className='space-y-2'>
 									{blogs.slice(0, 3).map((blog: Blog) => (
@@ -344,14 +344,33 @@ const BlogPage = () => {
 											</h4>
 											<p className='text-xs text-gray-500 mt-1'>
 												{blog.publishedAt
-													? new Date(blog.publishedAt).toLocaleDateString(
-															'vi-VN'
-													  )
-													: new Date(blog.createdAt).toLocaleDateString(
-															'vi-VN'
-													  )}
+													? new Date(blog.publishedAt).toLocaleDateString()
+													: new Date(blog.createdAt).toLocaleDateString()}
 											</p>
 										</div>
+									))}
+								</div>
+							</div>
+
+							{/* Categories */}
+							<div className='mb-6'>
+								<h3 className='text-lg font-bold text-gray-800 mb-3 border-b-2 border-accent/30 pb-2'>
+									{t('blog.categories')}
+								</h3>
+								<div className='space-y-2'>
+									{[
+										t('blog.category_health'),
+										t('blog.category_lifestyle'),
+										t('blog.category_medical'),
+										t('blog.category_nutrition'),
+										t('blog.category_psychology'),
+									].map(category => (
+										<button
+											key={category}
+											className='w-full text-left p-2 text-sm text-gray-600 hover:bg-accent/10 rounded-lg transition-colors'
+										>
+											{category}
+										</button>
 									))}
 								</div>
 							</div>
@@ -360,21 +379,21 @@ const BlogPage = () => {
 							<div className='mb-6'>
 								<div className='flex items-center justify-between mb-3'>
 									<h3 className='text-lg font-bold text-gray-800 border-b-2 border-accent/30 pb-2'>
-										Gắn thẻ
+										{t('blog.tags')}
 									</h3>
 									{selectedTag && (
 										<button
 											onClick={() => handleTagClick(null)}
 											className='flex items-center gap-1 text-xs text-gray-500 hover:text-accent transition-colors'
-											title='Xóa bộ lọc thẻ'
+											title={t('blog.clear_tag_filter')}
 										>
 											<X className='w-3 h-3' />
-											Xóa
+											{t('blog.clear')}
 										</button>
 									)}
 								</div>
 								<p className='text-xs text-gray-500 mb-3'>
-									Tính năng này đang được phát triển
+									{t('blog.tags_feature_in_progress')}
 								</p>
 								<div className='flex flex-wrap gap-2'>
 									{TAG_SUGGESTIONS.slice(0, 8).map(tag => (
@@ -404,16 +423,14 @@ const BlogPage = () => {
 								<div className='text-center py-12 text-red-500'>
 									<div className='text-6xl mb-4'>❌</div>
 									<h3 className='text-xl font-semibold mb-2'>
-										Không thể tải bài viết
+										{t('blog.load_failed')}
 									</h3>
-									<p className='mb-4'>
-										Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
-									</p>
+									<p className='mb-4'>{t('blog.load_failed_desc')}</p>
 									<button
 										onClick={() => window.location.reload()}
 										className='px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors'
 									>
-										Thử lại
+										{t('common.try_again')}
 									</button>
 								</div>
 							)}
@@ -423,9 +440,9 @@ const BlogPage = () => {
 								<div className='text-center py-12 text-gray-500'>
 									<div className='text-6xl mb-4'>📝</div>
 									<h3 className='text-xl font-semibold mb-2'>
-										Chưa có bài viết nào
+										{t('blog.no_posts')}
 									</h3>
-									<p>Hãy là người đầu tiên chia sẻ kiến thức y tế!</p>
+									<p>{t('blog.be_first_to_share')}</p>
 								</div>
 							)}
 
@@ -460,11 +477,11 @@ const BlogPage = () => {
 									{isFetchingNextPage ? (
 										<div className='flex items-center gap-2 text-gray-500'>
 											<Loader2 className='w-5 h-5 animate-spin' />
-											<span>Đang tải thêm bài viết...</span>
+											<span>{t('blog.loading_more')}</span>
 										</div>
 									) : (
 										<div className='text-gray-400 text-sm'>
-											Cuộn xuống để tải thêm
+											{t('blog.scroll_to_load_more')}
 										</div>
 									)}
 								</div>
@@ -474,7 +491,7 @@ const BlogPage = () => {
 							{!hasNextPage && blogs.length > 0 && (
 								<div className='text-center py-8 text-gray-400'>
 									<div className='text-2xl mb-2'>🎉</div>
-									<p className='text-sm'>Bạn đã xem hết tất cả bài viết!</p>
+									<p className='text-sm'>{t('blog.all_posts_loaded')}</p>
 								</div>
 							)}
 						</div>

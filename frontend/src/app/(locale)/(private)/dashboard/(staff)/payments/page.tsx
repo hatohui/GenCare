@@ -2,10 +2,11 @@
 
 import SearchBar from '@/Components/Management/SearchBar'
 import AccountList from '@/Components/staff/AccountList'
+import { useLocale } from '@/Hooks/useLocale'
 import { motion } from 'motion/react'
-import React from 'react'
 
 const Page = () => {
+	const { t } = useLocale()
 	return (
 		<div className='max-w-7xl mx-auto p-6'>
 			{/* Header */}
@@ -15,11 +16,9 @@ const Page = () => {
 				className='text-center mb-8'
 			>
 				<h1 className='text-3xl font-bold text-main mb-2'>
-					Quản Lý Thanh Toán
+					{t('staff.payments.title')}
 				</h1>
-				<p className='text-gray-600'>
-					Xem và quản lý thanh toán của khách hàng
-				</p>
+				<p className='text-gray-600'>{t('staff.payments.subtitle')}</p>
 			</motion.div>
 
 			{/* Search Section */}
