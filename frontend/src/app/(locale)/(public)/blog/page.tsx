@@ -201,7 +201,7 @@ const BlogPage = () => {
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const { data: user } = useAccountStore()
-	const { t, locale } = useLocale()
+	const { t } = useLocale()
 
 	// Always derive filters from URL
 	const search = searchParams?.get('search') || ''
