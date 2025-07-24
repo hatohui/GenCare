@@ -1,25 +1,28 @@
 'use client'
 
+import { useLocale } from '@/Hooks/useLocale'
 import type { RecentActivity as RecentActivityType } from '@/Interfaces/Statistics/Types/Statistics'
-import { motion } from 'motion/react'
-import React from 'react'
 import {
+	AlertCircle,
 	Calendar,
+	CheckCircle,
 	CreditCard,
 	FileText,
-	User,
-	Package,
-	CheckCircle,
-	XCircle,
-	AlertCircle,
 	Info,
+	Package,
+	User,
+	XCircle,
 } from 'lucide-react'
+import { motion } from 'motion/react'
+import React from 'react'
 
 interface RecentActivityProps {
 	activities: RecentActivityType[]
 }
 
 const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
+	const { t } = useLocale()
+
 	const getActivityIcon = (type: RecentActivityType['type']) => {
 		switch (type) {
 			case 'booking':
@@ -71,28 +74,31 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
 		try {
 			const date = new Date(timestamp)
 			if (isNaN(date.getTime())) {
-				return 'Thời gian không hợp lệ'
+				return t('recentActivity.invalid_time')
 			}
 			const now = new Date()
 			const diffInMinutes = Math.floor(
 				(now.getTime() - date.getTime()) / (1000 * 60)
 			)
 
-			if (diffInMinutes < 1) return 'Vừa xong'
-			if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
+			if (diffInMinutes < 1) return t('recentActivity.just_now')
+			if (diffInMinutes < 60)
+				return t('recentActivity.minutes_ago', { count: diffInMinutes })
 			if (diffInMinutes < 1440)
-				return `${Math.floor(diffInMinutes / 60)} giờ trước`
-			return date.toLocaleDateString('en-US')
+				return t('recentActivity.hours_ago', {
+					count: Math.floor(diffInMinutes / 60),
+				})
+			return date.toLocaleDateString()
 		} catch (error) {
 			console.error('Error formatting time:', error)
-			return 'Thời gian không hợp lệ'
+			return t('recentActivity.invalid_time')
 		}
 	}
 
 	if (!activities || activities.length === 0) {
 		return (
 			<div className='flex items-center justify-center h-64 bg-gray-50 rounded-[20px]'>
-				<p className='text-gray-500'>Không có hoạt động gần đây</p>
+				<p className='text-gray-500'>{t('recentActivity.empty')}</p>
 			</div>
 		)
 	}
@@ -105,10 +111,10 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
 		>
 			<div className='flex items-center justify-between mb-6'>
 				<h3 className='text-lg font-semibold text-gray-800'>
-					Hoạt Động Gần Đây
+					{t('recentActivity.title')}
 				</h3>
 				<button className='text-sm text-main hover:text-main/80 transition-colors'>
-					Xem tất cả
+					{t('recentActivity.see_all')}
 				</button>
 			</div>
 
@@ -154,7 +160,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
 			{activities.length > 8 && (
 				<div className='mt-4 pt-4 border-t border-gray-100'>
 					<button className='w-full text-sm text-main hover:text-main/80 transition-colors'>
-						Xem thêm {activities.length - 8} hoạt động khác
+						{t('recentActivity.see_more', { count: activities.length - 8 })}
 					</button>
 				</div>
 			)}
