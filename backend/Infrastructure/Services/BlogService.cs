@@ -208,11 +208,7 @@ public class BlogService(IBlogRepository blogRepository,
         {
             throw new AppException(404, "Comment not found");
         }
-        //check if account already liked this comment
-        if (blog.Likes > 0)
-        {
-            throw new AppException(400, "You have already liked this comment");
-        }
+       
         //like comment
         blog.Likes++;
         await blogRepository.Update(blog);
