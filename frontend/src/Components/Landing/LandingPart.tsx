@@ -125,7 +125,7 @@ const LandingPart = () => {
 
 					<div className='flex justify-center lg:justify-start w-full mt-8 mb-16'>
 						<AnimatedLink
-							className='px-6 py-4 bg-gradient-to-r from-accent to-accent/80 border-2 border-white/60 shadow-2xl hover:shadow-[0_0_32px_8px_rgba(16,185,129,0.25)] hover:border-accent/80 focus:outline-none focus:ring-4 focus:ring-accent/30 rounded-full font-bold text-sm text-white transition-all duration-300 flex items-center gap-3 backdrop-blur-xl hover:scale-105 active:scale-95'
+							className='px-6 py-4 md:ml-5 bg-gradient-to-r from-accent to-accent/80 border-2 border-white/60 shadow-2xl hover:shadow-[0_0_32px_8px_rgba(16,185,129,0.25)] hover:border-accent/80 focus:outline-none focus:ring-4 focus:ring-accent/30 rounded-full font-bold text-sm text-white transition-all duration-300 flex items-center gap-3 backdrop-blur-xl hover:scale-105 active:scale-95'
 							href='/register'
 							style={{ zIndex: 10 }}
 							{...buttonVariants}
