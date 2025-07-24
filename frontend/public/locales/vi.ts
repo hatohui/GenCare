@@ -717,7 +717,6 @@ const vi: Record<string, string> = {
 	'management.account.management_title': 'Quản lý tài khoản',
 	'management.account.management_subtitle':
 		'Tìm kiếm và quản lý tài khoản người dùng',
-	'management.account.full_name': 'Họ và Tên',
 	'management.account.actions': 'Tác vụ',
 
 	// Management - Services

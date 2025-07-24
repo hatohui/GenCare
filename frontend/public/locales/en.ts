@@ -699,7 +699,6 @@ const en: Record<string, string> = {
 		'Staff information will appear when a staff role is selected',
 	'management.account.management_title': 'Account Management',
 	'management.account.management_subtitle': 'Search and manage user accounts',
-	'management.account.full_name': 'Full Name',
 	'management.account.actions': 'Actions',
 
 	// Management - Services
