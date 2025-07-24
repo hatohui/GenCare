@@ -3,8 +3,11 @@
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import Logo from '../Logo'
+import { useLocale } from '../../Hooks/useLocale'
 
 export default function FooterSection() {
+	const { t } = useLocale()
+
 	return (
 		<footer className='bg-gradient-to-b from-main to-secondary text-white relative overflow-hidden'>
 			{/* Background Pattern */}
@@ -25,8 +28,7 @@ export default function FooterSection() {
 							<h3 className='text-2xl font-bold text-white'>GenCare</h3>
 						</div>
 						<p className='text-gray-300 mb-6 leading-relaxed max-w-md'>
-							Chúng tôi cam kết cung cấp dịch vụ chăm sóc sức khỏe chất lượng
-							cao với đội ngũ chuyên gia giàu kinh nghiệm và công nghệ hiện đại.
+							{t('footer.companyDescription')}
 						</p>
 						<div className='flex space-x-4'>
 							<motion.a
@@ -77,7 +79,9 @@ export default function FooterSection() {
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
 					>
-						<h4 className='text-lg font-semibold mb-6 text-white'>Dịch Vụ</h4>
+						<h4 className='text-lg font-semibold mb-6 text-white'>
+							{t('footer.services')}
+						</h4>
 						<ul className='space-y-3'>
 							<li>
 								<Link
@@ -85,7 +89,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Khám sức khỏe
+									{t('footer.generalHealthCheck')}
 								</Link>
 							</li>
 							<li>
@@ -94,7 +98,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Tư vấn dinh dưỡng
+									{t('footer.nutritionConsultation')}
 								</Link>
 							</li>
 							<li>
@@ -103,7 +107,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Chăm sóc thai kỳ
+									{t('footer.pregnancyCare')}
 								</Link>
 							</li>
 							<li>
@@ -112,7 +116,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Khám phụ khoa
+									{t('footer.gynecology')}
 								</Link>
 							</li>
 						</ul>
@@ -124,7 +128,9 @@ export default function FooterSection() {
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
 					>
-						<h4 className='text-lg font-semibold mb-6 text-white'>Hỗ Trợ</h4>
+						<h4 className='text-lg font-semibold mb-6 text-white'>
+							{t('footer.support')}
+						</h4>
 						<ul className='space-y-3'>
 							<li>
 								<Link
@@ -132,7 +138,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Liên hệ
+									{t('footer.contact')}
 								</Link>
 							</li>
 							<li>
@@ -150,7 +156,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Bảo mật
+									{t('footer.privacy')}
 								</Link>
 							</li>
 							<li>
@@ -159,7 +165,7 @@ export default function FooterSection() {
 									className='text-gray-300 hover:text-white transition-colors flex items-center'
 								>
 									<span className='w-2 h-2 bg-accent rounded-full mr-3'></span>
-									Điều khoản
+									{t('footer.terms')}
 								</Link>
 							</li>
 						</ul>
@@ -191,7 +197,7 @@ export default function FooterSection() {
 								</svg>
 							</div>
 							<div>
-								<p className='text-sm text-gray-300'>Điện thoại</p>
+								<p className='text-sm text-gray-300'>{t('footer.phone')}</p>
 								<p className='font-semibold text-white'>+84 123 456 789</p>
 							</div>
 						</div>
@@ -212,7 +218,7 @@ export default function FooterSection() {
 								</svg>
 							</div>
 							<div>
-								<p className='text-sm text-gray-300'>Email</p>
+								<p className='text-sm text-gray-300'>{t('footer.email')}</p>
 								<p className='font-semibold text-white'>info@gencare.com</p>
 							</div>
 						</div>
@@ -239,8 +245,10 @@ export default function FooterSection() {
 								</svg>
 							</div>
 							<div>
-								<p className='text-sm text-gray-300'>Địa chỉ</p>
-								<p className='font-semibold text-white'>Hà Nội, Việt Nam</p>
+								<p className='text-sm text-gray-300'>{t('footer.address')}</p>
+								<p className='font-semibold text-white'>
+									{t('footer.location')}
+								</p>
 							</div>
 						</div>
 					</div>
@@ -254,26 +262,26 @@ export default function FooterSection() {
 					className='border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center'
 				>
 					<p className='text-gray-300 text-sm mb-4 md:mb-0'>
-						&copy; 2025 GenCare. Tất cả quyền được bảo lưu.
+						{t('footer.copyright')}
 					</p>
 					<div className='flex items-center space-x-6 text-sm'>
 						<Link
 							href='/privacy'
 							className='text-gray-300 hover:text-white transition-colors'
 						>
-							Chính sách bảo mật
+							{t('footer.privacyPolicy')}
 						</Link>
 						<Link
 							href='/terms'
 							className='text-gray-300 hover:text-white transition-colors'
 						>
-							Điều khoản sử dụng
+							{t('footer.termsOfUse')}
 						</Link>
 						<Link
 							href='/sitemap'
 							className='text-gray-300 hover:text-white transition-colors'
 						>
-							Sitemap
+							{t('footer.sitemap')}
 						</Link>
 					</div>
 				</motion.div>

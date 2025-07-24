@@ -5,11 +5,21 @@ import Image from 'next/image'
 import AnimatedLink from '../MotionLink'
 import FlorageBackground from './FlorageBackground'
 import { usePathname } from 'next/navigation'
+import { useLocale } from '../../Hooks/useLocale'
+import ClientHydration from '../ClientHydration'
 
 const LandingPart = () => {
 	const [typing, setTyping] = useState(false)
+	const [isClient, setIsClient] = useState(false)
 	const pathname = usePathname()
+	const { t } = useLocale()
 
+	// Mark when we're client-side rendered
+	useEffect(() => {
+		setIsClient(true)
+	}, [])
+
+	// Reset typing state when path changes
 	useEffect(() => {
 		setTyping(false)
 	}, [pathname])
@@ -68,7 +78,7 @@ const LandingPart = () => {
 						{...animateStyle}
 					>
 						<span className='ml-1 bg-gradient-to-r from-secondary to-main bg-clip-text text-transparent'>
-							DỊCH VỤ CHĂM SÓC SỨC KHỎE
+							{t('landing.healthServiceTitle')}
 						</span>
 					</motion.h3>
 
@@ -76,23 +86,30 @@ const LandingPart = () => {
 						className='text-center lg:text-left p-6 text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold xl:font-extrabold leading-tight'
 						{...animateStyle}
 					>
-						{!typing ? (
-							<>
+						{!isClient ? (
+							// Server-side or initial render - show static version
+							<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
+								{t('landing.mainTitle')}
+							</span>
+						) : !typing ? (
+							// Client-side, animation not complete
+							<ClientHydration>
 								<TypedText
 									typeSpeed={10}
 									className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'
-									strings={['Giải Pháp Y Tế Giới Tính, Dành Cho ']}
+									strings={[t('landing.mainTitle')]}
 									onComplete={() => setTyping(true)}
 								/>
 								<span>&nbsp;</span>
-							</>
+							</ClientHydration>
 						) : (
+							// Client-side, animation complete
 							<>
 								<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
-									Giải Pháp Y Tế Giới Tính, Dành Cho{' '}
+									{t('landing.mainTitle')}
 								</span>
 								<span className='bg-gradient-to-r text-stroke-[1px] from-secondary to-main bg-clip-text underline text-transparent animate-pulse'>
-									Bạn!
+									{t('landing.titleEmphasis')}
 								</span>
 							</>
 						)}
@@ -103,8 +120,7 @@ const LandingPart = () => {
 						{...animateStyle}
 						transition={{ delay: 1.5 }}
 					>
-						Hệ thống cơ sở y tế Gencare là cơ sở chuyên về chăm sóc sức khỏe
-						giới tính hàng đầu tại Việt Nam.
+						{t('landing.description')}
 					</motion.p>
 
 					<div className='flex justify-center lg:justify-start w-full mt-8 mb-16'>
@@ -114,7 +130,7 @@ const LandingPart = () => {
 							style={{ zIndex: 10 }}
 							{...buttonVariants}
 						>
-							<span>Đăng kí ngay với chúng tôi</span>
+							<span>{t('landing.registerNow')}</span>
 							<svg
 								className='w-5 h-5'
 								fill='none'

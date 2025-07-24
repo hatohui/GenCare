@@ -2,6 +2,7 @@
 using Api.Middlewares;
 using API.ActionFilters;
 using API.Middlewares;
+using Application.DTOs.Appointment.Request;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Payment.Momo;
 using Application.DTOs.Payment.VNPay;
@@ -27,7 +28,8 @@ using Microsoft.OpenApi.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
-//=============connect momo api===================== //
+
+//==============connect momo api===================== //
 builder.Services.Configure<MomoConfig>(options =>
 {
     options.PartnerCode =
@@ -58,13 +60,17 @@ builder.Services.AddScoped<IMomoService, MomoService>();
 //===================config vnpay
 builder.Services.Configure<VNPayConfig>(options =>
 {
-    options.Vnp_TmnCode = Environment.GetEnvironmentVariable("VNP_TMNCODE")
+    options.Vnp_TmnCode =
+        Environment.GetEnvironmentVariable("VNP_TMNCODE")
         ?? throw new InvalidOperationException("Missing VNPay Tmn Code");
-    options.Vnp_HashSecret = Environment.GetEnvironmentVariable("VNP_HASHSECRET")
+    options.Vnp_HashSecret =
+        Environment.GetEnvironmentVariable("VNP_HASHSECRET")
         ?? throw new InvalidOperationException("Missing VNPay Hash Secret");
-    options.Vnp_Url = Environment.GetEnvironmentVariable("VNP_URL")
+    options.Vnp_Url =
+        Environment.GetEnvironmentVariable("VNP_URL")
         ?? throw new InvalidOperationException("Missing VNPay Url");
-    options.Vnp_ReturnUrl = Environment.GetEnvironmentVariable("VNP_RETURN_URL")
+    options.Vnp_ReturnUrl =
+        Environment.GetEnvironmentVariable("VNP_RETURN_URL")
         ?? throw new InvalidOperationException("Missing VNPay Return URL");
 });
 
@@ -185,6 +191,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
+builder.Services.AddTransient<IValidator<AppointmentCreateRequest>, AppointmentCreateRequestValidator>();
 
 // ====== Application Services ======
 builder.Services.AddHangfireServer();
@@ -246,7 +253,6 @@ builder.Services.AddScoped<IVNPayService, VNPayService>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
 
-
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -307,7 +313,6 @@ RecurringJob.AddOrUpdate<IReminderService>(
     service => service.SendUnpaidPurchaseRemindersAsync(),
     Cron.Daily
 );
-
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();

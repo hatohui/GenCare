@@ -34,6 +34,14 @@ const bookingApi = {
 				return res.data
 			})
 	},
+	VnpayPay: (purchaseId: string) => {
+		return axiosInstance
+			.get(`/payments/vnpay?purchaseId=${purchaseId}`, {})
+			.then(res => {
+				console.log(res.data)
+				return res.data
+			})
+	},
 	// Private API - requires authentication
 	DeleteOrderDetail: (id: string) => {
 		return axiosInstance.delete(`/orderDetails/${id}`).then(res => res.data)
@@ -131,6 +139,14 @@ export const useGetOrder = () => {
 export const useMomoPay = () => {
 	return useMutation({
 		mutationFn: (purchaseId: string) => bookingApi.MomoPay(purchaseId),
+		onError: handleApiError,
+		...retryConfig,
+	})
+}
+
+export const useVnpayPay = () => {
+	return useMutation({
+		mutationFn: (purchaseId: string) => bookingApi.VnpayPay(purchaseId),
 		onError: handleApiError,
 		...retryConfig,
 	})
