@@ -9,6 +9,7 @@ import {
 	useMomoPay,
 	useVnpayPay,
 	useDeleteOrderDetail,
+	useCreateBookingPDF,
 } from '@/Services/book-service'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
@@ -16,6 +17,7 @@ import ConfirmDialog from '@/Components/ConfirmationDialog'
 import { parseISO, isValid, format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useLocale } from '@/Hooks/useLocale'
+import { useGetResult } from '@/Services/Result-service'
 
 interface BookingItemProps {
 	booking: OrderDetail
@@ -34,6 +36,13 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const vnpayPayMutation = useVnpayPay()
 	const deleteMutation = useDeleteOrderDetail(booking.orderDetailId)
 
+	// PDF export functionality
+	const createBookingPDF = useCreateBookingPDF()
+	const [isExporting, setIsExporting] = useState(false)
+	const { refetch: refetchResult } = useGetResult(booking.orderDetailId, {
+		enabled: false,
+	})
+
 	const formatDate = (date: Date | string) => {
 		try {
 			const dateObj = date instanceof Date ? date : parseISO(date)
@@ -47,12 +56,36 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 		}
 	}
 
-	const handleViewResults = () => {
+	const handleViewResults = async () => {
+		await refetchResult()
 		setIsModalOpen(true)
 	}
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false)
+	}
+
+	const handleDownloadPDF = async () => {
+		setIsExporting(true)
+		try {
+			const { data: latestResult } = await refetchResult()
+			const pdfBlob = await createBookingPDF(booking, latestResult)
+			const url = window.URL.createObjectURL(
+				new Blob([pdfBlob], { type: 'application/pdf' })
+			)
+			const link = document.createElement('a')
+			link.href = url
+			link.download = `booking-${booking.orderDetailId}.pdf`
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(url)
+		} catch (error) {
+			console.error('Error downloading PDF:', error)
+			toast.error('Lỗi khi tải PDF. Vui lòng thử lại.')
+		} finally {
+			setIsExporting(false)
+		}
 	}
 
 	const handleMomoPayment = async () => {
@@ -180,13 +213,12 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									{t('booking.view_results')}
 								</button>
 								<button
-									onClick={() =>
-										console.log('Download results for:', booking.serviceName)
-									}
-									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors'
+									onClick={handleDownloadPDF}
+									disabled={isExporting}
+									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 								>
 									<DownloadSVG className='size-4' />
-									{t('booking.download_results')}
+									{isExporting ? 'Đang tải...' : 'Tải PDF'}
 								</button>
 							</>
 						) : (

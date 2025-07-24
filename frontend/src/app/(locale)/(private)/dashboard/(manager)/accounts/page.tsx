@@ -1,16 +1,18 @@
 'use client'
 import AccountListContent from '@/Components/Management/AccountListContent'
-import AddNewButton from '@/Components/Management/AddNewButton'
 import AddNewAccountForm from '@/Components/Management/AddNewAccountForm'
-import SearchBar from '@/Components/Management/SearchBar'
-import Pagination from '@/Components/Management/Pagination'
-import clsx from 'clsx'
-import React, { useState } from 'react'
+import AddNewButton from '@/Components/Management/AddNewButton'
 import AccountListHeader from '@/Components/Management/ItemCardHeader'
-import { motion, useReducedMotion } from 'motion/react'
+import Pagination from '@/Components/Management/Pagination'
+import SearchBar from '@/Components/Management/SearchBar'
 import { useAccountManagement } from '@/Hooks/useAccountManagement'
+import { useLocale } from '@/Hooks/useLocale'
+import clsx from 'clsx'
+import { motion, useReducedMotion } from 'motion/react'
+import { useState } from 'react'
 
 const AccountPage = () => {
+	const { t } = useLocale()
 	const shouldReduceMotion = useReducedMotion()
 	const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
@@ -94,13 +96,13 @@ const AccountPage = () => {
 						className='text-xl font-semibold text-slate-800 mb-1'
 						{...getSlideAnimationProps('left', 2)}
 					>
-						Quản lý tài khoản
+						{t('management.account.management_title')}
 					</motion.h1>
 					<motion.p
 						className='text-xs text-text'
 						{...getSlideAnimationProps('left', 3)}
 					>
-						Tìm kiếm và quản lý tài khoản người dùng
+						{t('management.account.management_subtitle')}
 					</motion.p>
 				</div>
 				<motion.div
@@ -120,11 +122,11 @@ const AccountPage = () => {
 				{/* Table Header */}
 				<motion.div {...getAnimationProps(5)}>
 					<AccountListHeader
-						label='Họ và Tên'
-						secondaryLabel='Email'
-						thirdLabel='Vai trò'
-						fourthLabel='Ngày sinh'
-						fifthLabel='Tác vụ'
+						label={t('management.account.full_name')}
+						secondaryLabel={t('management.account.email')}
+						thirdLabel={t('management.account.role')}
+						fourthLabel={t('management.account.date_of_birth')}
+						fifthLabel={t('management.account.actions')}
 					/>
 				</motion.div>
 

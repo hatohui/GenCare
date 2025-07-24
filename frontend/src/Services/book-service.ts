@@ -1,6 +1,7 @@
 import {
 	BookedServicesResponse,
 	OrderDetailResponse,
+	OrderDetail,
 } from '@/Interfaces/Payment/Types/BookService'
 import { MomoServiceResponse } from '@/Interfaces/Payment/Types/MomoService'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -63,6 +64,11 @@ const bookingApi = {
 	// Private API - requires authentication
 	ManualPay: (data: { purchaseId: string }) => {
 		return axiosInstance.post('/manual-payment', data).then(res => res.data)
+	},
+	ExportPDF: (orderDetailId: string) => {
+		return axiosInstance
+			.get(`/orderdetails/${orderDetailId}/result-pdf`)
+			.then(res => res.data)
 	},
 }
 
@@ -164,4 +170,29 @@ export const useDeleteOrderDetail = (id: string) => {
 		onError: handleApiError,
 		...retryConfig,
 	})
+}
+
+export const useExportOrderDetail = (orderDetailId: string) => {
+	return useQuery({
+		queryKey: ['exportOrderDetail', orderDetailId],
+		queryFn: () => bookingApi.ExportPDF(orderDetailId),
+		enabled: false, // Don't auto-fetch, only fetch when manually triggered
+		...retryConfig,
+	})
+}
+
+export const useCreateBookingPDF = () => {
+	return async (booking: OrderDetail, result?: any) => {
+		try {
+			const response = await axios.post(
+				'/api/create-pdf',
+				{ booking, result },
+				{ responseType: 'blob' }
+			)
+			return response.data
+		} catch (error) {
+			handleApiError(error)
+			throw error
+		}
+	}
 }

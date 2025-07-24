@@ -92,4 +92,14 @@ public class BlogController(IBlogService blogService) : ControllerBase
         
         return Ok(blog);
     }
+    [HttpPost("{id}/like")]
+    public async Task<IActionResult> LikeBlog([FromRoute] Guid id)
+    {
+        //get access token from header
+        var access = AuthHelper.GetAccessToken(HttpContext);
+        //get account id by token
+        var accountId = JwtHelper.GetAccountIdFromToken(access);
+        await blogService.LikeBlogAsync(id, accountId.ToString("D"));
+        return Ok(new { Message = "Blog liked successfully." });
+    }
 }

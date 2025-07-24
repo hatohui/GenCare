@@ -13,12 +13,14 @@ const ChatArea = ({
 	isError,
 	userIcon,
 	consultantIcon,
+	withImage = true,
 }: {
 	history: Content[]
 	isPending: boolean
 	isError: boolean
 	userIcon?: string
 	consultantIcon?: string
+	withImage?: boolean
 }) => {
 	const chatContainerRef = useRef<HTMLDivElement>(null)
 	const [showScrollButton, setShowScrollButton] = useState(false)

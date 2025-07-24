@@ -314,6 +314,12 @@ RecurringJob.AddOrUpdate<IReminderService>(
     Cron.Daily
 );
 
+RecurringJob.AddOrUpdate<IReminderService>(
+    "SendTodayAppointmentReminders",
+    s => s.SendTodayAppointmentRemindersAsync(),
+    Cron.Daily
+);
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<RateLimitMiddleware>();

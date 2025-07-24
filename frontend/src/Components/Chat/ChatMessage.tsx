@@ -10,11 +10,13 @@ const ChatMessage = ({
 	isUser,
 	userIcon,
 	consultantIcon,
+	withImage = true,
 }: {
 	entry: Content
 	isUser: boolean
 	userIcon?: string
 	consultantIcon?: string
+	withImage?: boolean
 }) => {
 	const text = entry.parts?.[0].text || ''
 	const bubbleVariants = {
@@ -119,20 +121,24 @@ const ChatMessage = ({
 					</motion.div>
 				</motion.div>
 				{isUser &&
-					(userIcon ? (
-						<motion.div variants={iconVariants}>
-							<CldImage
-								src={userIcon}
-								alt='User icon'
-								className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5'
-								width={36}
-								height={36}
-							/>
-						</motion.div>
+					(withImage ? (
+						userIcon ? (
+							<motion.div variants={iconVariants}>
+								<CldImage
+									src={userIcon}
+									alt='User icon'
+									className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5'
+									width={36}
+									height={36}
+								/>
+							</motion.div>
+						) : (
+							<motion.div variants={iconVariants}>
+								<FallBackUserImage className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5' />
+							</motion.div>
+						)
 					) : (
-						<motion.div variants={iconVariants}>
-							<FallBackUserImage className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5' />
-						</motion.div>
+						<div className='mt-1.5'></div>
 					))}
 			</div>
 		</motion.div>

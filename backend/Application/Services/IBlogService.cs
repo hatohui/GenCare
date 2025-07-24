@@ -39,5 +39,6 @@ namespace Application.Services
         Task<List<ModelOfBlogResponse>> GetListOfBlogsAsync(ListOfBlogRequest request);
         
         Task<ModelOfBlogResponse> GetBlogByIdAsync(string blogId);
+        Task LikeBlogAsync(Guid id, string accountId);
     }
 }
