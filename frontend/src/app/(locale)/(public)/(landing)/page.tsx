@@ -17,12 +17,11 @@ const Page = () => {
 			<TrustedBySection />
 			<WhyChooseUsSection />
 			<ServicesSection />
-			{/* <BlogSection /> */}
 			<TestimonialsSection />
-			<div className='abosolute -translate-y-[750px] z-10 h-0  '>
+			<div className='abosolute -translate-y-[750px] z-10 h-0 '>
 				<ProcessSteps />
 			</div>
-			<div className='abosolute translate-y-[1200px] z-10  '>
+			<div className='abosolute translate-y-[860px] z-10 h-0'>
 				<FooterSection />
 			</div>
 			<BackToTop />

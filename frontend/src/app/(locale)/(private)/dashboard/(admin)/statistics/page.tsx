@@ -132,6 +132,10 @@ const AdminStatisticsPage = () => {
 
 	const { dashboardStatistic } = statisticsData
 
+	const filteredAndSortedTopServices = statisticsData.topServices
+		.filter(service => service.bookings > 0)
+		.sort((a, b) => b.bookings - a.bookings)
+
 	return (
 		<div className='max-w-7xl mx-auto p-6 space-y-8'>
 			{/* Header */}
@@ -243,7 +247,7 @@ const AdminStatisticsPage = () => {
 						{t('statistics.topServices')}
 					</h3>
 					<div className='space-y-4'>
-						{statisticsData.topServices.map((service, index) => (
+						{filteredAndSortedTopServices.map((service, index) => (
 							<motion.div
 								key={service.serviceId}
 								initial={{ opacity: 0, x: -20 }}
@@ -282,7 +286,7 @@ const AdminStatisticsPage = () => {
 
 				{/* Recent Activity */}
 				<RecentActivity
-					activities={statisticsData.topServices.map(service => ({
+					activities={filteredAndSortedTopServices.map(service => ({
 						id: service.serviceId,
 						type: 'service',
 						message: service.serviceName,

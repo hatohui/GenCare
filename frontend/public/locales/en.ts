@@ -466,11 +466,11 @@ const en: Record<string, string> = {
 	'landing.trusted.support247.desc': 'Connect with doctors anytime, anywhere',
 	'landing.trusted.rating.title': '4.9',
 	'landing.trusted.rating.desc': 'Rated by over 5,000 patients',
-	'landing.trusted.doctors.title': 'Trusted Doctors',
+	'landing.trusted.doctors.title': 'Trusted',
 	'landing.trusted.doctors.desc': '100% licensed & verified doctors',
 	'landing.trusted.booking.title': 'Quick Booking',
 	'landing.trusted.booking.desc': 'Meet doctors within 15 minutes',
-	'landing.trusted.flexible.title': 'Flexible & Affordable',
+	'landing.trusted.flexible.title': 'Affordable',
 	'landing.trusted.flexible.desc':
 		'Multiple service packages to fit your needs',
 
