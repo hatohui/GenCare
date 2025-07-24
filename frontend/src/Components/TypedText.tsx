@@ -1,50 +1,37 @@
 'use client'
 
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useEffect } from 'react'
 import Typed, { TypedOptions } from 'typed.js'
 
 const TypedText = ({
 	className,
-	...options
+	strings,
+	typeSpeed = 30,
+	backSpeed = 25,
+	showCursor = false,
+	onComplete,
+	...otherOptions
 }: TypedOptions & { className?: string }) => {
-	const el = useRef(null)
-	const [isFirstLoad, setIsFirstLoad] = useState(true)
+	const el = useRef<HTMLSpanElement>(null)
 
-	// Extract strings join for dependency
-	const stringsKey = options.strings ? options.strings.join('') : ''
+	useEffect(() => {
+		if (!el.current || !strings) return
 
-	// Reset isFirstLoad when strings change
-	React.useEffect(() => {
-		setIsFirstLoad(true)
-	}, [stringsKey])
-
-	const defaultOptions: TypedOptions = useMemo(
-		() => ({
-			typeSpeed: 30,
-			backSpeed: 25,
-			showCursor: false,
-			onDestroy: () => setIsFirstLoad(false),
-			onComplete: () => setIsFirstLoad(false),
-		}),
-		[]
-	)
-
-	React.useEffect(() => {
-		if (!el.current) return
-		const typed = new Typed(el.current, { ...defaultOptions, ...options })
+		const typed = new Typed(el.current, {
+			strings,
+			typeSpeed,
+			backSpeed,
+			showCursor,
+			onComplete,
+			...otherOptions,
+		})
 
 		return () => {
 			typed.destroy()
 		}
-	}, [defaultOptions, options])
+	}, [strings, typeSpeed, backSpeed, showCursor, onComplete, otherOptions])
 
-	return isFirstLoad ? (
-		<span className={className} ref={el} />
-	) : (
-		<span className={className}>
-			{options.strings && options.strings.length > 0 ? options.strings[0] : ''}
-		</span>
-	)
+	return <span className={className} ref={el} />
 }
 
 export default TypedText

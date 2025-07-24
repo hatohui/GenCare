@@ -3,9 +3,10 @@
 import { motion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 import BlogSection from './Blogsection'
+import { useLocale } from '../../Hooks/useLocale'
 
 import Image from 'next/image'
-import Testimonials from '@/Constants/Testomonial'
+import useLocalizedTestimonials from '@/Constants/LocalizedTestimonials'
 
 /**
  * Section for testimonials. Scroll-based animation for each testimonial.
@@ -17,6 +18,8 @@ import Testimonials from '@/Constants/Testomonial'
 export default function TestimonialsSection() {
 	const targetRef = useRef<HTMLDivElement | null>(null)
 	const { scrollYProgress } = useScroll({ target: targetRef })
+	const { t } = useLocale()
+	const testimonials = useLocalizedTestimonials()
 
 	const x = useTransform(scrollYProgress, [0, 1.2], ['50%', '-95%'])
 
@@ -39,20 +42,19 @@ export default function TestimonialsSection() {
 					transition={{ duration: 0.8, ease: 'easeOut' }}
 					className='text-5xl md:text-6xl font-bold mb-16 text-secondary leading-tight'
 				>
-					Khách Hàng{' '}
+					{t('testimonial.title')}{' '}
 					<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
-						Nói Gì
+						{t('testimonial.titleEmphasis')}
 					</span>
 				</motion.h2>
 
 				<motion.div style={{ x }} className='flex gap-8 p-8'>
 					<div className='min-w-[350px] flex items-end'>
 						<p className='text-xl text-gray-600 mb-16 w-[300px] leading-relaxed'>
-							GenCare provided exceptional service and care. The staff is
-							friendly and professional. Highly recommended!
+							{t('testimonial.introText')}
 						</p>
 					</div>
-					{Testimonials.map((item, i) => (
+					{testimonials.map((item, i) => (
 						<motion.div
 							key={i}
 							initial={{ opacity: 0, y: 60, filter: 'brightness(0.8)' }}

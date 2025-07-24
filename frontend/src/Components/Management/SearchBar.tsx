@@ -3,7 +3,9 @@ import { debounce } from '@/Utils/debounce'
 import clsx from 'clsx'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { useState, useMemo, useCallback } from 'react'
+import { Search } from 'lucide-react'
 import CompactFloatingInput from '../Form/CompactFloatingInput'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface SearchBarProps {
 	className?: string
@@ -21,6 +23,7 @@ const SearchBar = ({
 	const [searchParam, setSearchParam] = useState(search)
 	const router = useRouter()
 	const pathname = usePathname()
+	const { t } = useLocale()
 
 	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchParam(event.target.value)
@@ -48,30 +51,18 @@ const SearchBar = ({
 	return (
 		<div className={clsx('relative max-w-xs w-full', className)}>
 			<CompactFloatingInput
-				label='Tìm kiếm'
+				label={t('management.search')}
 				type='text'
 				id='search'
 				value={searchParam ?? ''}
 				onChange={handleSearch}
 				aria-label='Search accounts'
-				placeholder='Nhập từ khóa...'
+				placeholder={t('management.search_placeholder')}
 				className='drop-shadow-sm'
 			/>
 			{/* Search icon */}
 			<div className='absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none'>
-				<svg
-					className='w-4 h-4 text-text'
-					fill='none'
-					stroke='currentColor'
-					viewBox='0 0 24 24'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={2}
-						d='m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-					/>
-				</svg>
+				<Search className='w-4 h-4 text-text' />
 			</div>
 		</div>
 	)

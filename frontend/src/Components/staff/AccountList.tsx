@@ -8,8 +8,10 @@ import Pagination from '../Management/Pagination'
 import AccountItem from './AccountItem'
 import LoadingIcon from '../LoadingIcon'
 import { UserSVG } from '../SVGs'
+import { useLocale } from '@/Hooks/useLocale'
 
 const AccountList = () => {
+	const { t } = useLocale()
 	const searchParams = useSearchParams()
 	const [page, setPage] = useState<number>(1)
 	const [search, setSearch] = useState<string>('')
@@ -37,7 +39,7 @@ const AccountList = () => {
 			<div className='flex justify-center items-center min-h-[400px]'>
 				<div className='text-center'>
 					<LoadingIcon className='mx-auto mb-4 size-8' />
-					<p className='text-gray-600'>Đang tải danh sách tài khoản...</p>
+					<p className='text-gray-600'>{t('staff.loading_accounts')}</p>
 				</div>
 			</div>
 		)
@@ -50,16 +52,16 @@ const AccountList = () => {
 				<div className='text-center max-w-md mx-auto p-6'>
 					<div className='text-red-500 text-6xl mb-4'>⚠️</div>
 					<h3 className='text-xl font-semibold text-gray-800 mb-2'>
-						Không thể tải danh sách
+						{t('staff.load_accounts_failed')}
 					</h3>
 					<p className='text-gray-600 mb-4'>
-						Đã xảy ra lỗi khi tải danh sách tài khoản. Vui lòng thử lại sau.
+						{t('staff.load_accounts_error_description')}
 					</p>
 					<button
 						onClick={() => window.location.reload()}
 						className='bg-main hover:bg-main/90 text-white px-6 py-3 rounded-[30px] font-medium transition-colors'
 					>
-						Thử lại
+						{t('common.try_again')}
 					</button>
 				</div>
 			</div>
@@ -75,12 +77,12 @@ const AccountList = () => {
 						<UserSVG className='mx-auto size-16' />
 					</div>
 					<h3 className='text-xl font-semibold text-gray-800 mb-2'>
-						Không tìm thấy tài khoản
+						{t('staff.no_accounts_found')}
 					</h3>
 					<p className='text-gray-600 mb-6'>
 						{search
-							? `Không có tài khoản nào phù hợp với "${search}"`
-							: 'Chưa có tài khoản nào trong hệ thống.'}
+							? t('staff.no_accounts_search', { search })
+							: t('staff.no_accounts')}
 					</p>
 					{search && (
 						<button
@@ -91,7 +93,7 @@ const AccountList = () => {
 							}}
 							className='bg-main hover:bg-main/90 text-white px-6 py-3 rounded-[30px] font-medium transition-colors'
 						>
-							Xóa bộ lọc tìm kiếm
+							{t('staff.clear_search_filter')}
 						</button>
 					)}
 				</div>
@@ -109,17 +111,19 @@ const AccountList = () => {
 			>
 				<div className='bg-white border border-gray-200 rounded-[20px] p-4 text-center'>
 					<div className='text-2xl font-bold text-main'>{data.totalCount}</div>
-					<div className='text-sm text-gray-600'>Tổng số tài khoản</div>
+					<div className='text-sm text-gray-600'>
+						{t('staff.total_accounts')}
+					</div>
 				</div>
 				<div className='bg-white border border-gray-200 rounded-[20px] p-4 text-center'>
 					<div className='text-2xl font-bold text-blue-600'>
 						{data.accounts.length}
 					</div>
-					<div className='text-sm text-gray-600'>Trang hiện tại</div>
+					<div className='text-sm text-gray-600'>{t('staff.current_page')}</div>
 				</div>
 				<div className='bg-white border border-gray-200 rounded-[20px] p-4 text-center'>
 					<div className='text-2xl font-bold text-green-600'>{pageCount}</div>
-					<div className='text-sm text-gray-600'>Tổng số trang</div>
+					<div className='text-sm text-gray-600'>{t('staff.total_pages')}</div>
 				</div>
 			</motion.div>
 

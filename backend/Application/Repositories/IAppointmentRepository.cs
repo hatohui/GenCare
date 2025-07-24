@@ -40,5 +40,16 @@ namespace Application.Repositories
         /// <param name="a">The appointment entity with updated information.</param>
         /// <returns>A task that represents the asynchronous update operation.</returns>
         Task Update(Appointment a);
+
+        /// <summary>
+        /// Lấy danh sách các cuộc hẹn của một staff trong một khoảng thời gian nhất định,
+        /// dùng để kiểm tra trùng lịch.
+        /// </summary>
+        /// <param name="staffId">Id của staff.</param>
+        /// <param name="from">Thời gian bắt đầu của khoảng kiểm tra.</param>
+        /// <param name="to">Thời gian kết thúc của khoảng kiểm tra.</param>
+        /// <returns>Danh sách cuộc hẹn bị trùng với khoảng thời gian yêu cầu.</returns>
+        Task<List<Appointment>> GetOverlappedAppointmentsForStaff(Guid staffId, DateTime start, int durationInMinutes);
+
     }
 }

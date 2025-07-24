@@ -6,66 +6,7 @@ import ReturnButton from '../ReturnButton'
 import { motion } from 'motion/react'
 import Testimonials from '@/Constants/Testomonial'
 import { CldImage } from 'next-cloudinary'
-
-const benefits = [
-	{
-		icon: (
-			<svg
-				className='w-7 h-7'
-				fill='none'
-				stroke='currentColor'
-				viewBox='0 0 24 24'
-			>
-				<path
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth={2}
-					d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-				/>
-			</svg>
-		),
-		title: 'Chuyên gia hàng đầu',
-		desc: 'Đội ngũ bác sĩ giàu kinh nghiệm, tận tâm.',
-	},
-	{
-		icon: (
-			<svg
-				className='w-7 h-7'
-				fill='none'
-				stroke='currentColor'
-				viewBox='0 0 24 24'
-			>
-				<path
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth={2}
-					d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
-				/>
-			</svg>
-		),
-		title: 'Bảo mật tối đa',
-		desc: 'Thông tin cá nhân được bảo vệ tuyệt đối.',
-	},
-	{
-		icon: (
-			<svg
-				className='w-7 h-7'
-				fill='none'
-				stroke='currentColor'
-				viewBox='0 0 24 24'
-			>
-				<path
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					strokeWidth={2}
-					d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
-				/>
-			</svg>
-		),
-		title: 'Dịch vụ tận tâm',
-		desc: 'Hỗ trợ khách hàng 24/7, chu đáo.',
-	},
-]
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function ServiceDetail({
 	id,
@@ -86,8 +27,70 @@ export default function ServiceDetail({
 	updatedAt?: string | Date | null
 	createdBy?: string | null
 }) {
+	const { t } = useLocale()
 	const { accessToken } = useToken()
 	const router = useRouter()
+
+	const benefits = [
+		{
+			icon: (
+				<svg
+					className='w-7 h-7'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+					/>
+				</svg>
+			),
+			title: t('service.expert_title'),
+			desc: t('service.expert_description'),
+		},
+		{
+			icon: (
+				<svg
+					className='w-7 h-7'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+					/>
+				</svg>
+			),
+			title: t('service.security_title'),
+			desc: t('service.security_description'),
+		},
+		{
+			icon: (
+				<svg
+					className='w-7 h-7'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
+					/>
+				</svg>
+			),
+			title: t('service.care_title'),
+			desc: t('service.care_description'),
+		},
+	]
+
 	const handleAddToCart = () => {
 		if (!accessToken) {
 			router.push('/login')
@@ -119,20 +122,26 @@ export default function ServiceDetail({
 						className='bg-gradient-to-r from-accent to-pink-600/70 text-white px-8 py-4 rounded-full text-lg font-bold shadow-lg transition duration-300 hover:from-pink-600 hover:to-rose-500 hover:scale-105'
 						onClick={handleAddToCart}
 					>
-						Đặt ngay
+						{t('action.book_now')}
 					</button>
 					<div className='flex flex-col gap-2 text-gray-500 text-sm'>
 						{createdAt && (
 							<span>
-								Khởi tạo: {new Date(createdAt).toLocaleDateString('vi-VN')}
+								{t('service.created_at')}:{' '}
+								{new Date(createdAt).toLocaleDateString('vi-VN')}
 							</span>
 						)}
 						{updatedAt && (
 							<span>
-								Cập nhật: {new Date(updatedAt).toLocaleDateString('vi-VN')}
+								{t('service.updated_at')}:{' '}
+								{new Date(updatedAt).toLocaleDateString('vi-VN')}
 							</span>
 						)}
-						{createdBy && <span>Người tạo: {createdBy}</span>}
+						{createdBy && (
+							<span>
+								{t('service.created_by')}: {createdBy}
+							</span>
+						)}
 					</div>
 				</motion.div>
 				{/* Right Panel */}
@@ -149,7 +158,7 @@ export default function ServiceDetail({
 					{/* Description Section */}
 					<div className='bg-white p-8 rounded-2xl shadow-md text-lg text-gray-700'>
 						<h2 className='text-xl font-semibold text-main mb-4'>
-							Mô tả dịch vụ
+							{t('service.service_description')}
 						</h2>
 						<p className='text-gray-600 leading-relaxed'>{description}</p>
 					</div>
@@ -163,7 +172,7 @@ export default function ServiceDetail({
 					transition={{ duration: 0.5 }}
 					className='text-2xl font-bold text-secondary mb-6 text-center'
 				>
-					Vì sao chọn dịch vụ này?
+					{t('service.why_choose_us')}
 				</motion.h3>
 				<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
 					{benefits.map((b, i) => (
@@ -189,7 +198,7 @@ export default function ServiceDetail({
 					transition={{ duration: 0.5 }}
 					className='text-2xl font-bold text-secondary mb-6 text-center'
 				>
-					Khách hàng nói gì?
+					{t('service.client_testimonials')}
 				</motion.h3>
 				<div className='flex flex-wrap gap-6 justify-center'>
 					{Testimonials.slice(0, 3).map((item, i) => (

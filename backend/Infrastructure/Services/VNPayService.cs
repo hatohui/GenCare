@@ -51,7 +51,8 @@ public class VNPayService(IOptions<VNPayConfig> VNPayConfig,
         //mang các ký tự phân tách thập phân, phần nghìn, ký tự tiền tệ. Để gửi số tiền thanh toán là 100,000 VND
         //(một trăm nghìn VNĐ) thì merchant cần nhân thêm 100 lần(khử phần thập phân), sau đó gửi sang VNPAY
         //là: 10000000
-        vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+        DateTime createdDate = DateTime.UtcNow;
+        vnpay.AddRequestData("vnp_CreateDate", DateTimeHelper.ToUtc7(createdDate).ToString("yyyyMMddHHmmss"));
         vnpay.AddRequestData("vnp_CurrCode", "VND");
         vnpay.AddRequestData("vnp_IpAddr", ipAddress);
         vnpay.AddRequestData("vnp_Locale", "vn");
@@ -66,7 +67,8 @@ public class VNPayService(IOptions<VNPayConfig> VNPayConfig,
         vnpay.AddRequestData("vnp_TxnRef", tmp.ToString("D")); // Mã tham chiếu của giao dịch tại hệ 
         //thống của merchant.Mã này là duy nhất dùng để phân biệt các đơn hàng gửi sang VNPAY.Không được
         //        trùng lặp trong ngày
-        vnpay.AddRequestData("vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss"));
+        //DateTime.Now.AddMinutes(15)
+        vnpay.AddRequestData("vnp_ExpireDate", DateTimeHelper.ToUtc7(createdDate.AddMinutes(15)).ToString("yyyyMMddHHmmss"));
         string paymentUrl = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
 
         return paymentUrl;
@@ -105,7 +107,7 @@ public class VNPayService(IOptions<VNPayConfig> VNPayConfig,
         string transactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
         string vnp_SecureHash = vnpay.GetResponseData("vnp_SecureHash");
         bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, VNPayConfig.Value.Vnp_HashSecret);
-        if (checkSignature)
+        if (checkSignature && responseCode == "00")
         {
             Guid payIdTmp = Guid.Parse(payId);
             var paymentHistory = await paymentHistoryService.GetPaymentHistoryByPayId(payIdTmp);

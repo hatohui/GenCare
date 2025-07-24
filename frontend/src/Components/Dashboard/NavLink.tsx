@@ -8,6 +8,7 @@ import { getNavOptionsFromRole } from '@/Utils/Permissions/getNavOptionsFromRole
 import { useAccountStore } from '@/Hooks/useAccount'
 import { useState, useTransition } from 'react'
 import LoadingIcon from '../LoadingIcon'
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function NavLinks({
 	collapsed = false,
@@ -18,6 +19,7 @@ export default function NavLinks({
 	const pathname = usePathname()
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
+	const { t } = useLocale()
 	const [activeLoadingLink, setActiveLoadingLink] = useState<string | null>(
 		null
 	)
@@ -66,7 +68,9 @@ export default function NavLinks({
 						<span className='size-6'>
 							{isLoading ? <LoadingIcon /> : link.svg}
 						</span>
-						{!collapsed && <span className='show-pc-only'>{link.label}</span>}
+						{!collapsed && (
+							<span className='show-pc-only'>{t(link.label)}</span>
+						)}
 					</Link>
 				)
 			})}

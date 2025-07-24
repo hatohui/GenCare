@@ -49,12 +49,12 @@ const ScheduleCalendar = ({
 	const getScheduleForSlotAndDay = (slotId: string, day: Date) => {
 		return schedules
 			.find(schedule =>
-				schedule.slots.some(
+				schedule?.slots?.some(
 					slot =>
-						slot.accounts.length > 0 && isSameDay(parseISO(slot.startAt), day)
+						slot?.accounts?.length > 0 && isSameDay(parseISO(slot.startAt), day)
 				)
 			)
-			?.slots.find(slot => slot.accounts.length > 0)
+			?.slots?.find(slot => slot?.accounts?.length > 0)
 	}
 
 	// Handle slot click

@@ -18,7 +18,7 @@ namespace Application.DTOs.Zoom
         /// <summary>
         /// The duration of the meeting in minutes.
         /// </summary>
-        public int Duration { get; set; } = 60;
+        public int Duration { get; set; } = 120;
 
         /// <summary>
         /// The timezone for the meeting (e.g., "America/New_York").
