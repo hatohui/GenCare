@@ -1,19 +1,21 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { useGetAllOrderDetail, useGetResult } from '@/Services/Result-service'
-import LoadingIcon from '@/Components/LoadingIcon'
-import { motion } from 'motion/react'
-import { ResultData } from '@/Interfaces/Tests/Types/Tests'
-import TestResultEditModal from '@/Components/staff/TestResultEditModal'
 import StatusBadge from '@/Components/Lab/StatusBadge'
-import { EyeSVG, PencilSVG } from '@/Components/SVGs'
+import LoadingIcon from '@/Components/LoadingIcon'
 import Pagination from '@/Components/Management/Pagination'
 import SearchBar from '@/Components/Management/SearchBar'
-import { useSearchParams } from 'next/navigation'
+import { EyeSVG, PencilSVG } from '@/Components/SVGs'
+import TestResultEditModal from '@/Components/staff/TestResultEditModal'
 import { ITEMS_PER_PAGE_COUNT } from '@/Constants/Management'
+import { useLocale } from '@/Hooks/useLocale'
+import { ResultData } from '@/Interfaces/Tests/Types/Tests'
+import { useGetAllOrderDetail, useGetResult } from '@/Services/Result-service'
+import { motion } from 'motion/react'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const Page = () => {
+	const { t } = useLocale()
 	const searchParams = useSearchParams()
 	const [page, setPage] = useState<number>(1)
 	const itemsPerPage = ITEMS_PER_PAGE_COUNT
@@ -63,11 +65,9 @@ const Page = () => {
 				className='text-center mb-8'
 			>
 				<h1 className='text-3xl font-bold text-main mb-2'>
-					Quản Lý Kết Quả Xét Nghiệm
+					{t('staff.tests.title')}
 				</h1>
-				<p className='text-gray-600'>
-					Xem và quản lý kết quả xét nghiệm của khách hàng
-				</p>
+				<p className='text-gray-600'>{t('staff.tests.subtitle')}</p>
 			</motion.div>
 
 			{/* Search Bar */}
@@ -82,9 +82,11 @@ const Page = () => {
 					<div className='text-sm text-gray-600'>
 						{data && (
 							<span>
-								Hiển thị {(page - 1) * itemsPerPage + 1} -{' '}
-								{Math.min(page * itemsPerPage, data.totalCount || 0)} trong tổng
-								số {data.totalCount || 0} kết quả
+								{t('staff.tests.showing', {
+									from: (page - 1) * itemsPerPage + 1,
+									to: Math.min(page * itemsPerPage, data.totalCount || 0),
+									total: data.totalCount || 0,
+								})}
 							</span>
 						)}
 					</div>
@@ -104,19 +106,21 @@ const Page = () => {
 					</div>
 				) : isError ? (
 					<div className='text-center text-red-500'>
-						Không thể tải danh sách đơn hàng.
+						{t('staff.tests.load_error')}
 					</div>
 				) : (
 					<div className='overflow-x-auto'>
 						<table className='min-w-full text-sm'>
 							<thead className='sticky top-0 bg-white z-10 shadow-sm'>
 								<tr className='text-left border-b'>
-									<th className='py-2 px-3'>Mã đơn</th>
-									<th className='py-2 px-3'>Tên khách hàng</th>
-									<th className='py-2 px-3'>Dịch vụ</th>
-									<th className='py-2 px-3'>Ngày tạo</th>
-									<th className='py-2 px-3'>Trạng thái</th>
-									<th className='py-2 px-3'>Hành động</th>
+									<th className='py-2 px-3'>{t('staff.tests.order_id')}</th>
+									<th className='py-2 px-3'>
+										{t('staff.tests.customer_name')}
+									</th>
+									<th className='py-2 px-3'>{t('staff.tests.service')}</th>
+									<th className='py-2 px-3'>{t('staff.tests.created_at')}</th>
+									<th className='py-2 px-3'>{t('staff.tests.status')}</th>
+									<th className='py-2 px-3'>{t('staff.tests.actions')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -157,10 +161,12 @@ const Page = () => {
 															e.stopPropagation()
 															handleOpenModal(order.orderDetailId)
 														}}
-														title='Xem kết quả'
+														title={t('staff.tests.view_result')}
 													>
 														<EyeSVG className='size-5' />
-														<span className='hidden sm:inline'>Xem</span>
+														<span className='hidden sm:inline'>
+															{t('staff.tests.view')}
+														</span>
 													</button>
 													<button
 														className='flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-colors font-medium shadow-sm'
@@ -168,10 +174,12 @@ const Page = () => {
 															e.stopPropagation()
 															setEditOrderId(order.orderDetailId)
 														}}
-														title='Chỉnh sửa kết quả'
+														title={t('staff.tests.edit_result')}
 													>
 														<PencilSVG className='size-5' />
-														<span className='hidden sm:inline'>Sửa</span>
+														<span className='hidden sm:inline'>
+															{t('staff.tests.edit')}
+														</span>
 													</button>
 												</div>
 											</td>
@@ -180,7 +188,7 @@ const Page = () => {
 								) : (
 									<tr>
 										<td colSpan={6} className='text-center py-6 text-gray-400'>
-											Không có dữ liệu
+											{t('common.no_data')}
 										</td>
 									</tr>
 								)}
@@ -228,7 +236,7 @@ const Page = () => {
 						<div className='bg-gradient-to-r from-main to-secondary px-6 py-4 text-white relative'>
 							<h2 className='text-xl font-bold flex items-center gap-2'>
 								<EyeSVG className='size-5' />
-								Kết quả xét nghiệm
+								{t('staff.tests.result_title')}
 							</h2>
 							<button
 								className='absolute top-3 right-4 text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/20'
@@ -256,7 +264,7 @@ const Page = () => {
 								<div className='flex flex-col justify-center items-center min-h-[200px] gap-4'>
 									<LoadingIcon className='size-8 text-main' />
 									<p className='text-gray-600 font-medium'>
-										Đang tải kết quả...
+										{t('staff.tests.loading_result')}
 									</p>
 								</div>
 							) : isResultError ? (
@@ -278,10 +286,10 @@ const Page = () => {
 									</div>
 									<div className='text-center'>
 										<h3 className='text-lg font-semibold text-red-600 mb-2'>
-											Lỗi tải dữ liệu
+											{t('staff.tests.data_error_title')}
 										</h3>
 										<p className='text-gray-600'>
-											Không thể tải kết quả xét nghiệm. Vui lòng thử lại sau.
+											{t('staff.tests.data_error_message')}
 										</p>
 									</div>
 								</div>
@@ -309,14 +317,14 @@ const Page = () => {
 													</div>
 													<div>
 														<h3 className='font-semibold text-gray-800'>
-															Tổng quan kết quả
+															{t('staff.tests.total_summary_title')}
 														</h3>
 														<p className='text-sm text-gray-600'>
 															{
 																Object.keys(resultData.resultData as ResultData)
 																	.length
 															}{' '}
-															thông số xét nghiệm
+															{t('staff.tests.test_parameters')}
 														</p>
 													</div>
 												</div>
@@ -345,23 +353,25 @@ const Page = () => {
 																}`}
 															>
 																{result.flag === 'normal'
-																	? 'Bình thường'
+																	? t('staff.tests.normal_flag')
 																	: result.flag === 'high'
-																	? 'Cao'
-																	: 'Thấp'}
+																	? t('staff.tests.high_flag')
+																	: t('staff.tests.low_flag')}
 															</div>
 														</div>
 
 														<div className='space-y-2 text-sm'>
 															<div className='flex justify-between items-center'>
-																<span className='text-gray-600'>Giá trị:</span>
+																<span className='text-gray-600'>
+																	{t('staff.tests.value')}:
+																</span>
 																<span className='font-semibold text-gray-800'>
 																	{result.value} {result.unit}
 																</span>
 															</div>
 															<div className='flex justify-between items-center'>
 																<span className='text-gray-600'>
-																	Tham chiếu:
+																	{t('staff.tests.reference_range')}:
 																</span>
 																<span className='text-gray-700 font-mono text-xs'>
 																	{result.referenceRange}
@@ -391,10 +401,10 @@ const Page = () => {
 											</div>
 											<div className='text-center'>
 												<h3 className='text-lg font-semibold text-gray-600 mb-2'>
-													Chưa có dữ liệu
+													{t('staff.tests.no_data_title')}
 												</h3>
 												<p className='text-gray-500'>
-													Kết quả xét nghiệm chưa được cập nhật.
+													{t('staff.tests.no_data_message')}
 												</p>
 											</div>
 										</div>
@@ -419,10 +429,10 @@ const Page = () => {
 									</div>
 									<div className='text-center'>
 										<h3 className='text-lg font-semibold text-gray-600 mb-2'>
-											Không có dữ liệu
+											{t('staff.tests.no_data_title')}
 										</h3>
 										<p className='text-gray-500'>
-											Không tìm thấy kết quả xét nghiệm.
+											{t('staff.tests.no_data_message')}
 										</p>
 									</div>
 								</div>
