@@ -474,7 +474,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 												</button>
 											)}
 											<span className='text-gray-600 font-medium'>
-												{blog.like || 0} lượt thích
+												{blog.likes || 0} lượt thích
 											</span>
 										</div>
 									</div>

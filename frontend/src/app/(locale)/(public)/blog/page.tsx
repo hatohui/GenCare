@@ -24,6 +24,7 @@ import { useAccountStore } from '@/Hooks/useAccount'
 import SearchBar from '@/Components/Management/SearchBar'
 import { Blog } from '@/Interfaces/Blogs/Types/Blogs'
 import { useInView } from 'react-intersection-observer'
+import { motion } from 'framer-motion'
 
 // Tag suggestions (reuse from BlogForm)
 const TAG_SUGGESTIONS = [
@@ -66,13 +67,9 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 		e.stopPropagation() // Prevent navigation to blog detail
 		if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
 			deleteBlog.mutate(blog.id, {
-				onSuccess: () => {
-					// Query invalidation will handle the update automatically
-					// No need for window.location.reload()
-				},
+				onSuccess: () => {},
 				onError: error => {
 					console.error('Failed to delete blog:', error)
-					// Could add toast notification here
 				},
 			})
 		}
@@ -81,6 +78,11 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 	const handleEdit = (e: React.MouseEvent) => {
 		e.stopPropagation() // Prevent navigation to blog detail
 		router.push(`/blog/${blog.id}/edit`)
+	}
+
+	const handleLike = (e: React.MouseEvent) => {
+		e.stopPropagation()
+		likeBlog.mutate(blog.id)
 	}
 
 	return (
@@ -137,23 +139,27 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 						</div>
 						{user ? (
 							<button
-								onClick={e => {
-									e.stopPropagation() // Prevent navigation to blog detail
-									likeBlog.mutate(blog.id)
-								}}
+								onClick={handleLike}
 								disabled={likeBlog.isPending}
-								className='flex items-center hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+								className='flex items-center hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative'
+								title='Thích bài viết'
 							>
 								<Heart className='w-4 h-4 mr-1' />
 								<span>{blog.likes || 0} lượt thích</span>
+								{likeBlog.isPending && (
+									<span className='absolute right-[-24px]'>
+										<Loader2 className='w-4 h-4 animate-spin text-accent' />
+									</span>
+								)}
 							</button>
 						) : (
 							<button
 								onClick={e => {
-									e.stopPropagation() // Prevent navigation to blog detail
+									e.stopPropagation()
 									router.push('/login')
 								}}
 								className='flex items-center hover:text-red-500 transition-colors'
+								title='Đăng nhập để thích bài viết'
 							>
 								<Heart className='w-4 h-4 mr-1' />
 								<span>{blog.likes || 0} lượt thích</span>
@@ -196,7 +202,7 @@ const BlogPage = () => {
 
 	// Always derive filters from URL
 	const search = searchParams?.get('search') || ''
-	const selectedTag = searchParams?.get('tag') || null
+	const selectedTag = searchParams?.get('tags') || null
 
 	// Memoize the strings to prevent unnecessary re-renders of TypedText
 	const titleStrings = React.useMemo(() => ['Diễn Đàn Sức Khỏe GenCare'], [])
@@ -234,9 +240,9 @@ const BlogPage = () => {
 	const handleTagClick = (tag: string | null) => {
 		const params = new URLSearchParams(searchParams?.toString())
 		if (tag) {
-			params.set('tag', tag)
+			params.set('tags', tag)
 		} else {
-			params.delete('tag')
+			params.delete('tags')
 		}
 		// Remove page parameter for infinite scroll
 		params.delete('page')
@@ -266,29 +272,30 @@ const BlogPage = () => {
 				</button>
 			)}
 
-			{/* Hero Section */}
-			<section className='py-16 bg-gradient-to-r from-main to-secondary text-white relative overflow-hidden'>
-				<div className='absolute inset-0 florageBackground' />
-				<div className='max-w-6xl mx-auto px-6 text-center relative z-10 backdrop-blur-sm'>
-					<h3 className='font-semibold mb-4 text-white text-shadow-2xs'>
-						<span>DIỄN ĐÀN CHIA SẺ KIẾN THỨC Y TẾ</span>
-					</h3>
-					<h1 className='text-5xl font-bold mb-6 text-shadow-2xs'>
-						<TypedText
-							key='blog-title'
-							typeSpeed={12}
-							className='bg-gradient-to-r from-white to-general bg-clip-text text-transparent'
-							strings={titleStrings}
-						/>
-					</h1>
-					<p className='text-xl mb-8 max-w-3xl mx-auto text-shadow-2xs'>
-						<TypedText
-							key='blog-subtitle'
-							typeSpeed={8}
-							className='bg-gradient-to-r bg-white bg-clip-text text-transparent'
-							strings={subtitleStrings}
-						/>
-					</p>
+			{/* Hero Section - Like Service Page, Blog Wording */}
+			<section className='relative z-0 py-20 bg-gradient-to-r from-main to-secondary text-white overflow-hidden'>
+				<div className='absolute top-0 left-0 z-10 florageBackground' />
+				<div className='relative max-w-7xl mx-auto px-6 text-center'>
+					<motion.h1
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className='text-4xl md:text-5xl font-bold mb-6'
+					>
+						Khám phá{' '}
+						<span className='bg-gradient-to-r from-yellow-300 to-accent bg-clip-text text-transparent'>
+							Bài Viết & Kiến Thức
+						</span>
+					</motion.h1>
+					<motion.p
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.2 }}
+						className='text-xl mb-8 max-w-3xl mx-auto'
+					>
+						Nơi bạn tìm thấy những chia sẻ, kinh nghiệm và kiến thức sức khỏe từ
+						cộng đồng GenCare.
+					</motion.p>
 				</div>
 				<FlorageBackground />
 			</section>
@@ -345,29 +352,6 @@ const BlogPage = () => {
 													  )}
 											</p>
 										</div>
-									))}
-								</div>
-							</div>
-
-							{/* Categories */}
-							<div className='mb-6'>
-								<h3 className='text-lg font-bold text-gray-800 mb-3 border-b-2 border-accent/30 pb-2'>
-									Thể loại
-								</h3>
-								<div className='space-y-2'>
-									{[
-										'Sức khỏe & Thể chất',
-										'Lối sống',
-										'Y tế',
-										'Dinh dưỡng',
-										'Tâm lý',
-									].map(category => (
-										<button
-											key={category}
-											className='w-full text-left p-2 text-sm text-gray-600 hover:bg-accent/10 rounded-lg transition-colors'
-										>
-											{category}
-										</button>
 									))}
 								</div>
 							</div>
