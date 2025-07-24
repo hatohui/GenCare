@@ -20,7 +20,7 @@ const ChatArea = ({
 	isError: boolean
 	userIcon?: string
 	consultantIcon?: string
-	withImage: boolean
+	withImage?: boolean
 }) => {
 	const chatContainerRef = useRef<HTMLDivElement>(null)
 	const [showScrollButton, setShowScrollButton] = useState(false)
