@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
 
 const Logo = ({
 	className,
@@ -9,8 +10,16 @@ const Logo = ({
 	className?: string
 	withLabel?: boolean
 }) => {
+	const router = useRouter()
 	return (
-		<div className={clsx(className, 'center-all gap-1')}>
+		<div
+			className={clsx(className, 'center-all gap-1 cursor-pointer select-none')}
+			onClick={() => router.push('/')}
+			title='Trang chủ GenCare'
+			role='button'
+			tabIndex={0}
+			style={{ userSelect: 'none' }}
+		>
 			<Image
 				src='/images/gencarelogo.png'
 				alt='gencare-logo'

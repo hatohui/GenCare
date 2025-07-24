@@ -1,7 +1,6 @@
 'use client'
 
 import { CheckCircle, Clock, DollarSign, Star, Zap } from 'lucide-react'
-import { motion } from 'motion/react'
 import { useLocale } from '@/Hooks/useLocale'
 
 export default function TrustedBySection() {

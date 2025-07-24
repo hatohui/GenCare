@@ -1,10 +1,6 @@
-import { AppointmentsTimetable } from '@/Components/Appointment/AppointmentsTimetable'
-import type { Metadata } from 'next'
+'use client'
 
-export const metadata: Metadata = {
-	title: 'My Appointments - GenCare',
-	description: 'View your appointments',
-}
+import { AppointmentsTimetable } from '@/Components/Appointment/AppointmentsTimetable'
 
 const MemberAppointmentsPage = () => {
 	return (

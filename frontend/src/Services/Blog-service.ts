@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { DEFAULT_API_URL } from '@/Constants/API'
 import {
+	Blog,
 	Blogs,
 	CreateBlog,
 	CreateComment,
@@ -18,7 +19,7 @@ const COMMENT_URL = `${DEFAULT_API_URL}/comments`
 
 const blogApi = {
 	GetBlogById: (id: string) => {
-		return axios.get(`${BLOG_URL}/${id}`).then(res => res.data)
+		return axios.get<Blog>(`${BLOG_URL}/${id}`).then(res => res.data)
 	},
 	GetBlogs: (
 		page: number,

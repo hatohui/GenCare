@@ -11,12 +11,14 @@ export type SingleDateCalendarProps = {
 	selectedDate: Date | null
 	setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>
 	className?: string
+	disablePastDates?: boolean
 }
 
 const SingleDateCalendar = ({
 	className,
 	selectedDate,
 	setSelectedDate,
+	disablePastDates = false,
 }: SingleDateCalendarProps) => {
 	const [currentDate, setCurrentDate] = useState(new Date())
 
@@ -49,6 +51,7 @@ const SingleDateCalendar = ({
 				rangeEnd={selectedDate}
 				currentDate={currentDate}
 				handleDateClick={handleDateClick}
+				disablePastDates={disablePastDates}
 			/>
 
 			<div className='text-center text-sm font-light mx-5'>

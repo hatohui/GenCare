@@ -7,6 +7,7 @@ import { useLocale } from '../../Hooks/useLocale'
 
 import Image from 'next/image'
 import useLocalizedTestimonials from '@/Constants/LocalizedTestimonials'
+import { fadeInUp, textVariants } from '../../Utils/animations'
 
 /**
  * Section for testimonials. Scroll-based animation for each testimonial.
@@ -23,24 +24,28 @@ export default function TestimonialsSection() {
 
 	const x = useTransform(scrollYProgress, [0, 1.2], ['50%', '-95%'])
 
-	//const bgColor = useTransform(scrollYProgress, [0, 1], ['#ffffff', '#f1f1f1']) // From white to general
-	const image = useTransform(scrollYProgress, [0, 1], ['-20%', '20%'])
+	const testimonialVariants = {
+		initial: { opacity: 0, y: 40 },
+		whileInView: { opacity: 1, y: 0 },
+		whileHover: {
+			scale: 1.05,
+			y: -8,
+			filter: 'brightness(1)',
+			transition: { duration: 0.3 },
+		},
+	}
 
 	return (
 		<section
 			ref={targetRef}
-			className='relative py-24 h-[500vh] flex-col items-center justify-center text-center bg-gradient-to-b from-white to-gray-50 pb-40'
+			className='relative h-[600vh] flex-col items-center justify-center text-center pb-[1vh]'
 		>
 			<BlogSection />
-			<motion.div
-				style={{}}
-				className='sticky top-0 translate-y-12 h-screen overflow-hidden flex flex-col items-center'
-			>
+
+			<motion.div className='sticky top-0 translate-y-12 h-screen overflow-hidden flex flex-col items-center'>
 				<motion.h2
-					initial={{ opacity: 0, y: 50 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, ease: 'easeOut' }}
-					className='text-5xl md:text-6xl font-bold mb-16 text-secondary leading-tight'
+					{...fadeInUp}
+					className='text-4xl md:text-5xl font-bold mb-16 text-secondary leading-tight'
 				>
 					{t('testimonial.title')}{' '}
 					<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
@@ -48,7 +53,7 @@ export default function TestimonialsSection() {
 					</span>
 				</motion.h2>
 
-				<motion.div style={{ x }} className='flex gap-8 p-8'>
+				<motion.div style={{ x }} className='flex gap-12 p-8'>
 					<div className='min-w-[350px] flex items-end'>
 						<p className='text-xl text-gray-600 mb-16 w-[300px] leading-relaxed'>
 							{t('testimonial.introText')}
@@ -57,58 +62,40 @@ export default function TestimonialsSection() {
 					{testimonials.map((item, i) => (
 						<motion.div
 							key={i}
-							initial={{ opacity: 0, y: 60, filter: 'brightness(0.8)' }}
-							whileHover={{
-								scale: 1.08,
-								filter: 'brightness(1)',
-								y: -10,
-								transition: { duration: 0.4, ease: 'easeOut' },
-							}}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: i * 0.1, ease: 'easeOut' }}
-							className='group relative bg-white w-[350px] h-[450px] rounded-3xl shadow-2xl hover:shadow-3xl flex flex-col items-center justify-between overflow-hidden border border-gray-100/50'
+							variants={testimonialVariants}
+							initial='initial'
+							whileInView='whileInView'
+							whileHover='whileHover'
+							className='group relative bg-white w-sm rounded-3xl shadow-2xl hover:shadow-3xl flex flex-col items-center justify-between overflow-hidden border border-gray-100/50'
 						>
-							{/* Enhanced gradient overlay */}
-							<div className='absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10'></div>
-
 							{/* Name overlay */}
 							<div className='absolute top-6 left-6 z-20'>
 								<motion.p
-									className='text-3xl font-bold text-white drop-shadow-2xl'
-									whileHover={{ scale: 1.05 }}
-									transition={{ duration: 0.3 }}
+									variants={textVariants}
+									className='text-2xl font-bold text-white drop-shadow-2xl'
 								>
 									{item.name}
 								</motion.p>
 							</div>
 
 							{/* Background image */}
-							<motion.div
-								style={{ x: image }}
-								className='absolute w-[500px] z-0'
-							>
-								<Image
-									src={item.avatar}
-									alt={`Portrait of ${item.name}`}
-									className='object-cover h-[450px] rounded-3xl'
-									width={500}
-									height={500}
-								/>
-							</motion.div>
+							<Image
+								src={item.avatar}
+								alt={`Portrait of ${item.name}`}
+								className='object-cover h-[450px] select-none rounded-3xl'
+								width={500}
+								height={500}
+							/>
 
 							{/* Enhanced Testimonial text overlay */}
 							<div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-8 z-10'>
 								<motion.p
-									className='text-white text-xl leading-relaxed font-medium'
-									whileHover={{ scale: 1.02 }}
-									transition={{ duration: 0.3 }}
+									variants={textVariants}
+									className='text-white text-md leading-relaxed font-medium'
 								>
 									&quot; {item.content} &quot;
 								</motion.p>
 							</div>
-
-							{/* Decorative border glow */}
-							<div className='absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
 						</motion.div>
 					))}
 				</motion.div>

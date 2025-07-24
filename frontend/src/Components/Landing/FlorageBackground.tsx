@@ -7,7 +7,7 @@ interface FlorageBackgroundProps {
 const FlorageBackground: React.FC<FlorageBackgroundProps> = ({ className }) => {
 	return (
 		<div
-			className={`absolute florageBackground top-0 inset-0 opacity-65 -z-10 ${className}`}
+			className={`absolute florageBackground top-0 inset-0 opacity-[95%] -z-10 ${className}`}
 		/>
 	)
 }

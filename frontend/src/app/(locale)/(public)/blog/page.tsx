@@ -68,13 +68,9 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 		e.stopPropagation() // Prevent navigation to blog detail
 		if (confirm(t('blog.confirm_delete'))) {
 			deleteBlog.mutate(blog.id, {
-				onSuccess: () => {
-					// Query invalidation will handle the update automatically
-					// No need for window.location.reload()
-				},
+				onSuccess: () => {},
 				onError: error => {
 					console.error(t('blog.delete_failed'), error)
-					// Could add toast notification here
 				},
 			})
 		}
@@ -83,6 +79,11 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 	const handleEdit = (e: React.MouseEvent) => {
 		e.stopPropagation() // Prevent navigation to blog detail
 		router.push(`/blog/${blog.id}/edit`)
+	}
+
+	const handleLike = (e: React.MouseEvent) => {
+		e.stopPropagation()
+		likeBlog.mutate(blog.id)
 	}
 
 	return (
@@ -141,12 +142,10 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 						</div>
 						{user ? (
 							<button
-								onClick={e => {
-									e.stopPropagation() // Prevent navigation to blog detail
-									likeBlog.mutate(blog.id)
-								}}
+								onClick={handleLike}
 								disabled={likeBlog.isPending}
-								className='flex items-center hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+								className='flex items-center hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative'
+								title='Thích bài viết'
 							>
 								<Heart className='w-4 h-4 mr-1' />
 								<span>
@@ -156,10 +155,11 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 						) : (
 							<button
 								onClick={e => {
-									e.stopPropagation() // Prevent navigation to blog detail
+									e.stopPropagation()
 									router.push('/login')
 								}}
 								className='flex items-center hover:text-red-500 transition-colors'
+								title='Đăng nhập để thích bài viết'
 							>
 								<Heart className='w-4 h-4 mr-1' />
 								<span>
@@ -205,7 +205,7 @@ const BlogPage = () => {
 
 	// Always derive filters from URL
 	const search = searchParams?.get('search') || ''
-	const selectedTag = searchParams?.get('tag') || null
+	const selectedTag = searchParams?.get('tags') || null
 
 	// Memoize the strings to prevent unnecessary re-renders of TypedText
 	const titleStrings = React.useMemo(() => [t('blog.forum_title')], [t])
@@ -238,9 +238,9 @@ const BlogPage = () => {
 	const handleTagClick = (tag: string | null) => {
 		const params = new URLSearchParams(searchParams?.toString())
 		if (tag) {
-			params.set('tag', tag)
+			params.set('tags', tag)
 		} else {
-			params.delete('tag')
+			params.delete('tags')
 		}
 		// Remove page parameter for infinite scroll
 		params.delete('page')

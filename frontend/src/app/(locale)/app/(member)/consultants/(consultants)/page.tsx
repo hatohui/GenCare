@@ -7,7 +7,7 @@ import { useGetConsultants } from '@/Services/account-service'
 import { Consultant } from '@/Interfaces/Account/Types/Consultant'
 import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
-import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
+import { useConsultantStore } from '@/Components/Consultant/ConsultantContext'
 import { PaginationContext } from './layout'
 import { CldImage } from 'next-cloudinary'
 import { useLocale } from '@/Hooks/useLocale'
@@ -19,7 +19,7 @@ const ConsultantList = () => {
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const searchTerm = searchParams?.get('search') ?? ''
-	const { setConsultants } = useConsultantContext()
+	const setConsultants = useConsultantStore(state => state.setConsultants)
 	const { t } = useLocale()
 
 	// Check for reduced motion preference

@@ -37,6 +37,7 @@ const Page = () => {
 		}
 	}, [searchParams, refetch, t])
 
+	// Show loading while booking data is being fetched
 	if (isLoading) {
 		return (
 			<div className='flex justify-center items-center min-h-[400px]'>
