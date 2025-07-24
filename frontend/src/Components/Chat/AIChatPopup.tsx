@@ -77,6 +77,7 @@ const AIChatPopup = () => {
 									isError={isError}
 									userIcon={undefined}
 									consultantIcon={undefined}
+									withImage={false}
 								/>
 								<ChatControl
 									inputRef={inputRef}

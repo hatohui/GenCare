@@ -26,8 +26,8 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 				'p-2 rounded-md transition-colors',
 				onTop !== undefined
 					? onTop
-						? 'hover:bg-white/10 text-white'
-						: 'hover:bg-gray-100 text-gray-800'
+						? 'hover:bg-gray-100 text-gray-800'
+						: 'hover:bg-white/10 text-white'
 					: 'hover:bg-gray-100 text-gray-800',
 				className
 			)}
@@ -37,7 +37,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 					: t('language.switchToEnglish')
 			}
 		>
-			<span className='font-medium'>
+			<span className='font-light text-sm'>
 				{locale === 'en'
 					? '🇺🇸 ' + t('language.english')
 					: '🇻🇳 ' + t('language.vietnamese')}
