@@ -196,6 +196,24 @@ public class BlogService(IBlogRepository blogRepository,
         };
     }
 
+    public async Task LikeBlogAsync(Guid id, string accountId)
+    {
+        //get comment by id
+        var blog = await blogRepository.GetById(id.ToString("D"));
+        if (blog is null)
+        {
+            throw new AppException(404, "Comment not found");
+        }
+        //check if account already liked this comment
+        if (blog.Likes > 0)
+        {
+            throw new AppException(400, "You have already liked this comment");
+        }
+        //like comment
+        blog.Likes++;
+        await blogRepository.Update(blog);
+    }
+
 
     public async Task<List<AllBlogViewResponse>> GetAllBlogsAsync()
     {
