@@ -6,13 +6,14 @@ import Button from '@/Components/Button'
 import clsx from 'clsx'
 import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
-import { useConsultantContext } from '@/Components/Consultant/ConsultantContext'
+import { useConsultantStore } from '@/Components/Consultant/ConsultantContext'
 import { useCreateAppointmentWithZoom } from '@/Services/appointment-service'
 import { convertToISOString, formatDateForDisplay } from '@/Utils/dateTime'
 import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'motion/react'
 import { CldImage } from 'next-cloudinary'
 import { useLocale } from '@/Hooks/useLocale'
+import { isToday, parse } from 'date-fns'
 
 const timeSlots = [
 	'08:00',
@@ -30,7 +31,7 @@ const BookConsultantPage = () => {
 	const router = useRouter()
 	const params = useParams()
 	const consultantId = params?.id as string
-	const { consultants } = useConsultantContext()
+	const consultants = useConsultantStore(state => state.consultants)
 	const consultantFromContext = consultants.find(c => c.id === consultantId)
 	const createAppointmentMutation = useCreateAppointmentWithZoom()
 
@@ -40,6 +41,10 @@ const BookConsultantPage = () => {
 
 	// Loading states
 	const isLoading = isUserLoading || createAppointmentMutation.isPending
+
+	// For disabling past time slots
+	const now = new Date()
+	const isSelectedToday = selectedDate && isToday(selectedDate)
 
 	if (isUserLoading || (isUserLoading && !consultantFromContext)) {
 		return <div className='h-full w-full center-all'>{t('common.loading')}</div>
@@ -207,6 +212,7 @@ const BookConsultantPage = () => {
 							className='bg-none shadow-none'
 							selectedDate={selectedDate}
 							setSelectedDate={setSelectedDate}
+							disablePastDates={true}
 						/>
 					</motion.div>
 
@@ -220,31 +226,41 @@ const BookConsultantPage = () => {
 							{t('appointment.booking.chooseTime')}
 						</label>
 						<div className='grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3'>
-							{timeSlots.map((slot, idx) => (
-								<motion.button
-									key={slot}
-									onClick={() => setSelectedTime(slot)}
-									disabled={isLoading}
-									initial={{ opacity: 0, scale: 0.8 }}
-									animate={{ opacity: 1, scale: 1 }}
-									transition={{ duration: 0.3, delay: 0.6 + idx * 0.1 }}
-									whileHover={{
-										scale: 1.05,
-										boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
-										transition: { duration: 0.2 },
-									}}
-									whileTap={{ scale: 0.95 }}
-									className={clsx(
-										'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
-										selectedTime === slot
-											? 'bg-blue-500 text-white border-blue-600'
-											: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
-										isLoading && 'opacity-50 cursor-not-allowed'
-									)}
-								>
-									{slot}
-								</motion.button>
-							))}
+							{timeSlots.map((slot, idx) => {
+								let slotDisabled = isLoading
+								if (isSelectedToday) {
+									const [h, m] = slot.split(':').map(Number)
+									const slotDate = new Date(selectedDate as Date)
+									slotDate.setHours(h, m, 0, 0)
+									if (slotDate < now) slotDisabled = true
+								}
+								return (
+									<motion.button
+										key={slot}
+										onClick={() => setSelectedTime(slot)}
+										disabled={slotDisabled}
+										initial={{ opacity: 0, scale: 0.8 }}
+										animate={{ opacity: 1, scale: 1 }}
+										transition={{ duration: 0.3, delay: 0.6 + idx * 0.1 }}
+										whileHover={{
+											scale: 1.05,
+											boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
+											transition: { duration: 0.2 },
+										}}
+										whileTap={{ scale: 0.95 }}
+										className={clsx(
+											'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
+											selectedTime === slot
+												? 'bg-blue-500 text-white border-blue-600'
+												: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
+											slotDisabled &&
+												'opacity-50 cursor-not-allowed bg-gray-200 text-gray-400'
+										)}
+									>
+										{slot}
+									</motion.button>
+								)
+							})}
 						</div>
 					</motion.div>
 

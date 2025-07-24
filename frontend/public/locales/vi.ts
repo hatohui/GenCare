@@ -426,6 +426,8 @@ const vi: Record<string, string> = {
 	'nav.analytics': 'Phân tích',
 	'nav.payments': 'DS Thanh toán',
 	'nav.testResults': 'Kết quả xét nghiệm',
+	'nav.customers': 'Khách hàng',
+	'nav.schedule': 'Lịch trình',
 
 	// Profile
 	'profile.title': 'Hồ sơ cá nhân',

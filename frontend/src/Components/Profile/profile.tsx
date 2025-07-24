@@ -6,6 +6,17 @@ import { useUpdateAccount } from '@/Services/account-service'
 import { useAccountStore } from '@/Hooks/useAccount'
 import { CloudinaryButton } from '../CloudinaryButton'
 import { toast } from 'react-hot-toast'
+import {
+	User,
+	Mail,
+	Phone,
+	Calendar,
+	Venus,
+	Briefcase,
+	GraduationCap,
+	BookOpen,
+	Info,
+} from 'lucide-react'
 
 const iconClass = 'inline-block w-5 h-5 mr-2 text-main opacity-80'
 
@@ -65,217 +76,53 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 		{
 			label: 'Full Name',
 			value: `${account.firstName} ${account.lastName}`,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M16.5 7.5v-1.125A2.625 2.625 0 0013.875 3.75h-3.75A2.625 2.625 0 007.5 6.375V7.5'
-					/>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z'
-					/>
-				</svg>
-			),
+			icon: <User className={iconClass} />,
 		},
 		{
 			label: 'Email',
 			value: account.email,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M16.5 12a4.5 4.5 0 01-9 0m9 0a4.5 4.5 0 00-9 0m9 0V9.75A2.25 2.25 0 0016.5 7.5h-9A2.25 2.25 0 005.25 9.75V12m9 0v2.25A2.25 2.25 0 0112 16.5h0a2.25 2.25 0 01-2.25-2.25V12'
-					/>
-				</svg>
-			),
+			icon: <Mail className={iconClass} />,
 		},
 		{
 			label: 'Phone',
 			value: account.phoneNumber || 'N/A',
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M2.25 6.75v10.5A2.25 2.25 0 004.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75'
-					/>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M6.75 9.75h10.5'
-					/>
-				</svg>
-			),
+			icon: <Phone className={iconClass} />,
 		},
 		{
 			label: 'Date of Birth',
 			value: account.dateOfBirth,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 6v6l4 2'
-					/>
-				</svg>
-			),
+			icon: <Calendar className={iconClass} />,
 		},
 		{
 			label: 'Gender',
 			value: account.gender ? 'Nam' : 'Nữ',
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 14.25c2.485 0 4.5-2.015 4.5-4.5S14.485 5.25 12 5.25 7.5 7.265 7.5 9.75s2.015 4.5 4.5 4.5z'
-					/>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 17.25v.75'
-					/>
-				</svg>
-			),
+			icon: <Venus className={iconClass} />,
 		},
 		{
 			label: 'Role',
 			value: account.role.name,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M16.5 7.5v-1.125A2.625 2.625 0 0013.875 3.75h-3.75A2.625 2.625 0 007.5 6.375V7.5'
-					/>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z'
-					/>
-				</svg>
-			),
+			icon: <Briefcase className={iconClass} />,
 		},
 		// Add more fields as needed, e.g. departmentName, degree, yearOfExperience, biography
 		account.staffInfo?.departmentName && {
 			label: 'Department',
 			value: account.staffInfo.departmentName,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 6v6l4 2'
-					/>
-				</svg>
-			),
+			icon: <BookOpen className={iconClass} />,
 		},
 		account.staffInfo?.degree && {
 			label: 'Degree',
 			value: account.staffInfo.degree,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 6v6l4 2'
-					/>
-				</svg>
-			),
+			icon: <GraduationCap className={iconClass} />,
 		},
 		account.staffInfo?.yearOfExperience && {
 			label: 'Years of Experience',
 			value: account.staffInfo.yearOfExperience,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 6v6l4 2'
-					/>
-				</svg>
-			),
+			icon: <Info className={iconClass} />,
 		},
 		account.staffInfo?.biography && {
 			label: 'Biography',
 			value: account.staffInfo.biography,
-			icon: (
-				<svg
-					className={iconClass}
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'
-				>
-					<path
-						strokeLinecap='round'
-						strokeLinejoin='round'
-						strokeWidth={1.5}
-						d='M12 6v6l4 2'
-					/>
-				</svg>
-			),
+			icon: <Info className={iconClass} />,
 		},
 	]
 	const infoFields = infoFieldsRaw.filter(Boolean) as {
@@ -308,8 +155,8 @@ const Profile = ({ data }: { data: StaffAccount | undefined }) => {
 								height={128}
 							/>
 						) : (
-							<div className='w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border-4 border-white shadow-lg text-2xl md:text-3xl'>
-								No Image
+							<div className='w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border-4 border-white shadow-lg'>
+								<User className='w-12 h-12 md:w-20 md:h-20' />
 							</div>
 						)}
 						{/* Camera icon overlay for edit, only on hover */}

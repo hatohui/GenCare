@@ -9,6 +9,7 @@ import {
 	isToday,
 	isWithinInterval,
 	getDate,
+	isBefore,
 } from 'date-fns'
 import { getCalendarDates } from '@/Utils/Calendar/getCalendarDates'
 import { animate } from 'motion/react'
@@ -18,6 +19,7 @@ export type DateGridProps = {
 	rangeStart: Date | null
 	rangeEnd: Date | null
 	handleDateClick: (date: Date) => void
+	disablePastDates?: boolean
 }
 
 const DateGrid = ({
@@ -25,6 +27,7 @@ const DateGrid = ({
 	rangeEnd,
 	currentDate,
 	handleDateClick,
+	disablePastDates = false,
 }: DateGridProps) => {
 	const keyDateString = currentDate.toDateString()
 
@@ -67,69 +70,70 @@ const DateGrid = ({
 				))}
 			</div>
 			<div key={keyDateString} className='calendar-grid grid-rows-6'>
-				{dates.map(date => (
-					<div
-						key={date.toDateString()}
-						className='my-1 opacity-0 toBeAnimated'
-					>
+				{dates.map(date => {
+					const isPast = disablePastDates
+						? isBefore(date, new Date().setHours(0, 0, 0, 0))
+						: false
+					return (
 						<div
-							className={clsx(
-								'center-all h-full w-full px-[2px]',
-								isInRangeThisMonth(date) &&
-									isFirstDayOfMonth(date) &&
-									'start-cell',
-								isInRangeThisMonth(date) &&
-									isLastDayOfMonth(date) &&
-									!isSingleDay &&
-									'end-cell',
-								isStart(date) &&
-									rangeEnd &&
-									isSameMonth(date, currentDate) &&
-									!isSingleDay &&
-									'start-cell',
-								isEnd(date) &&
-									rangeStart &&
-									isSameMonth(date, currentDate) &&
-									!isSingleDay &&
-									'end-cell',
-								isInRangeThisMonth(date) &&
-									!isStartOrEnd(date) &&
-									!isFirstDayOfMonth(date) &&
-									!isLastDayOfMonth(date)
-									? 'bg-blue-200'
-									: ''
-							)}
+							key={date.toDateString()}
+							className='my-1 opacity-0 toBeAnimated'
 						>
-							<button
-								key={date.toDateString()}
-								onClick={() => handleDateClick(date)}
+							<div
 								className={clsx(
-									'hoverable h-full text-sm w-full border py-2 px-1 select-none rounded-full',
-
-									isToday(date) && 'today-cell',
-
-									isStartOrEnd(date) &&
+									'center-all h-full w-full px-[2px]',
+									isInRangeThisMonth(date) &&
+										isFirstDayOfMonth(date) &&
+										'start-cell',
+									isInRangeThisMonth(date) &&
+										isLastDayOfMonth(date) &&
+										!isSingleDay &&
+										'end-cell',
+									isStart(date) &&
+										rangeEnd &&
 										isSameMonth(date, currentDate) &&
-										'selected-cell',
-
-									!isSameMonth(date, currentDate) && 'disabled-cell',
-
-									isFirstDayOfMonth(date) &&
-										isInRangeThisMonth(date) &&
-										'month-rear-button',
-
-									isLastDayOfMonth(date) &&
-										isInRangeThisMonth(date) &&
-										'month-rear-button',
-
-									'border-transparent hover:border-transparent'
+										!isSingleDay &&
+										'start-cell',
+									isEnd(date) &&
+										rangeStart &&
+										isSameMonth(date, currentDate) &&
+										!isSingleDay &&
+										'end-cell',
+									isInRangeThisMonth(date) &&
+										!isStartOrEnd(date) &&
+										!isFirstDayOfMonth(date) &&
+										!isLastDayOfMonth(date)
+										? 'bg-blue-200'
+										: ''
 								)}
 							>
-								{getDate(date)}
-							</button>
+								<button
+									key={date.toDateString()}
+									onClick={() => !isPast && handleDateClick(date)}
+									disabled={isPast}
+									className={clsx(
+										'hoverable h-full text-sm w-full border py-2 px-1 select-none rounded-full',
+										isToday(date) && 'today-cell',
+										isStartOrEnd(date) &&
+											isSameMonth(date, currentDate) &&
+											'selected-cell',
+										!isSameMonth(date, currentDate) && 'disabled-cell',
+										isFirstDayOfMonth(date) &&
+											isInRangeThisMonth(date) &&
+											'month-rear-button',
+										isLastDayOfMonth(date) &&
+											isInRangeThisMonth(date) &&
+											'month-rear-button',
+										isPast && 'bg-gray-200 text-gray-400 cursor-not-allowed',
+										'border-transparent hover:border-transparent'
+									)}
+								>
+									{getDate(date)}
+								</button>
+							</div>
 						</div>
-					</div>
-				))}
+					)
+				})}
 			</div>
 		</section>
 	)

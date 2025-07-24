@@ -3,6 +3,11 @@
 import { CheckCircle, Clock, DollarSign, Star, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useLocale } from '@/Hooks/useLocale'
+import {
+	itemVariants,
+	iconVariants,
+	backgroundGlow,
+} from '../../Utils/animations'
 
 export default function TrustedBySection() {
 	const { t } = useLocale()
@@ -41,31 +46,12 @@ export default function TrustedBySection() {
 
 	return (
 		<section className='relative md:absolute bg-white text-center px-8 pt-4 rounded-[30px] mx-auto md:max-w-6xl mt-[0px] z-20 shadow-2xl border border-gray-100/50 md:right-0 md:left-0 md:-translate-y-1/2'>
-			{/* Background decoration */}
+			{/* Simplified Background decoration */}
 			<div className='absolute inset-0 opacity-5'>
 				<motion.div
-					animate={{
-						scale: [1, 1.1, 1],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 6,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
+					variants={backgroundGlow}
+					animate='animate'
 					className='absolute top-5 left-5 w-20 h-20 bg-main rounded-full blur-2xl'
-				></motion.div>
-				<motion.div
-					animate={{
-						scale: [1.1, 1, 1.1],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 8,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute bottom-5 right-5 w-24 h-24 bg-secondary rounded-full blur-2xl'
 				></motion.div>
 			</div>
 
@@ -73,24 +59,17 @@ export default function TrustedBySection() {
 				{items.map((item, i) => (
 					<motion.div
 						key={i}
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
-						whileHover={{
-							y: -5,
-							scale: 1.02,
-							transition: { duration: 0.3, ease: 'easeOut' },
-						}}
+						variants={itemVariants}
+						initial='initial'
+						whileInView='whileInView'
+						whileHover='whileHover'
+						transition={{ delay: i * 0.1 }}
 						className='group flex-1  md:border-l first:border-none px-6 py-4 relative'
 					>
 						{/* Icon */}
 						<motion.div
+							variants={iconVariants}
 							className='w-12 h-12 mx-auto mb-3 bg-gradient-to-r from-accent to-accent/80 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-all duration-300'
-							whileHover={{
-								scale: 1.1,
-								rotate: 5,
-								transition: { duration: 0.3 },
-							}}
 						>
 							{item.icon}
 						</motion.div>

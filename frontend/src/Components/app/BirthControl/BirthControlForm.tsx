@@ -125,6 +125,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 						<SingleDateCalendar
 							selectedDate={startDate}
 							setSelectedDate={setStartDate}
+							disablePastDates={false}
 						/>
 						{isSaving && (
 							<div className='absolute inset-0 bg-white/80 flex items-center justify-center rounded-[15px]'>

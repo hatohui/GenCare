@@ -3,6 +3,13 @@
 import { motion } from 'motion/react'
 import FlorageBackground from './FlorageBackground'
 import { useLocale } from '../../Hooks/useLocale'
+import {
+	fadeInUp,
+	cardVariants,
+	iconVariants,
+	buttonVariants,
+	backgroundGlow,
+} from '../../Utils/animations'
 
 const WhyChooseUsSection = () => {
 	const { t } = useLocale()
@@ -69,55 +76,26 @@ const WhyChooseUsSection = () => {
 			color: 'from-pink-500 to-rose-500',
 		},
 	]
+
 	return (
 		<section className='py-24 pt-40 bg-gradient-to-b from-white to-general relative overflow-hidden pb-40'>
-			{/* Enhanced Background decoration */}
+			{/* Simplified Background decoration */}
 			<div className='absolute inset-0 opacity-10'>
 				<motion.div
-					animate={{
-						scale: [1, 1.2, 1],
-						opacity: [0.1, 0.2, 0.1],
-					}}
-					transition={{
-						duration: 8,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
+					variants={backgroundGlow}
+					animate='animate'
 					className='absolute top-20 left-10 w-40 h-40 bg-main rounded-full blur-3xl'
 				></motion.div>
 				<motion.div
-					animate={{
-						scale: [1.2, 1, 1.2],
-						opacity: [0.1, 0.2, 0.1],
-					}}
-					transition={{
-						duration: 10,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
+					variants={backgroundGlow}
+					animate='animate'
+					transition={{ duration: 8 }}
 					className='absolute bottom-20 right-10 w-48 h-48 bg-secondary rounded-full blur-3xl'
-				></motion.div>
-				<motion.div
-					animate={{
-						scale: [1, 1.3, 1],
-						opacity: [0.1, 0.15, 0.1],
-					}}
-					transition={{
-						duration: 12,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-accent rounded-full blur-3xl'
 				></motion.div>
 			</div>
 
 			<div className='relative z-10 max-w-7xl mx-auto px-8'>
-				<motion.div
-					initial={{ opacity: 0, y: 50 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, ease: 'easeOut' }}
-					className='text-center mb-20'
-				>
+				<motion.div {...fadeInUp} className='text-center mb-20'>
 					<h2 className='text-5xl md:text-6xl font-bold mb-8 text-secondary leading-tight'>
 						{t('landing.whyChooseUs')}{' '}
 						<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
@@ -133,14 +111,11 @@ const WhyChooseUsSection = () => {
 					{items.map((item, i) => (
 						<motion.div
 							key={i}
-							initial={{ opacity: 0, y: 60 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: i * 0.2, ease: 'easeOut' }}
-							whileHover={{
-								y: -12,
-								scale: 1.03,
-								transition: { duration: 0.3, ease: 'easeOut' },
-							}}
+							variants={cardVariants}
+							initial='initial'
+							whileInView='whileInView'
+							whileHover='whileHover'
+							transition={{ delay: i * 0.1 }}
 							className='group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100/50'
 						>
 							{/* Enhanced Gradient overlay on hover */}
@@ -152,19 +127,10 @@ const WhyChooseUsSection = () => {
 							<div className='relative p-10'>
 								{/* Enhanced Icon container */}
 								<motion.div
-									whileHover={{
-										rotate: 360,
-										scale: 1.1,
-										transition: { duration: 0.6, ease: 'easeInOut' },
-									}}
+									variants={iconVariants}
 									className={`w-20 h-20 rounded-3xl bg-gradient-to-r ${item.color} flex items-center justify-center text-white mb-8 mx-auto shadow-2xl group-hover:shadow-3xl transition-all duration-500`}
 								>
-									<motion.div
-										whileHover={{ scale: 1.1 }}
-										transition={{ duration: 0.2 }}
-									>
-										{item.icon}
-									</motion.div>
+									{item.icon}
 								</motion.div>
 
 								{/* Enhanced Content */}
@@ -186,18 +152,14 @@ const WhyChooseUsSection = () => {
 
 				{/* Enhanced Bottom CTA */}
 				<motion.div
-					initial={{ opacity: 0, y: 40 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.8, ease: 'easeOut' }}
+					{...fadeInUp}
+					transition={{ delay: 0.4 }}
 					className='text-center mt-20'
 				>
 					<motion.button
-						whileHover={{
-							scale: 1.05,
-							boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
-							transition: { duration: 0.3, ease: 'easeOut' },
-						}}
-						whileTap={{ scale: 0.95 }}
+						variants={buttonVariants}
+						whileHover='whileHover'
+						whileTap='whileTap'
 						className='px-10 py-5 bg-gradient-to-r from-main to-secondary text-white rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
 						<span className='flex items-center justify-center gap-3'>

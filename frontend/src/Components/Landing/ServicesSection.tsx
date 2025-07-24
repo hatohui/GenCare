@@ -4,6 +4,13 @@ import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
 import { LoadingSkeleton } from '../Skeletons'
 import { useLocale } from '../../Hooks/useLocale'
+import {
+	fadeInUp,
+	cardVariants,
+	iconVariants,
+	buttonVariants,
+	backgroundGlow,
+} from '../../Utils/animations'
 
 export default function ServicesSection() {
 	const { data, isLoading } = useServiceByPage(1, 6, true, '')
@@ -13,39 +20,18 @@ export default function ServicesSection() {
 
 	return (
 		<section className='snap-start py-24 bg-gradient-to-b from-general to-main text-center relative overflow-hidden pb-40'>
-			{/* Background decoration */}
+			{/* Simplified Background decoration */}
 			<div className='absolute inset-0 opacity-5'>
 				<motion.div
-					animate={{
-						scale: [1, 1.2, 1],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 8,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
+					variants={backgroundGlow}
+					animate='animate'
 					className='absolute top-20 left-10 w-40 h-40 bg-white rounded-full blur-3xl'
-				></motion.div>
-				<motion.div
-					animate={{
-						scale: [1.2, 1, 1.2],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 10,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute bottom-20 right-10 w-48 h-48 bg-white rounded-full blur-3xl'
 				></motion.div>
 			</div>
 
 			<div className='relative z-10 max-w-7xl mx-auto px-8'>
 				<motion.h2
-					initial={{ opacity: 0, y: 50 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, ease: 'easeOut' }}
+					{...fadeInUp}
 					className='text-5xl md:text-6xl font-bold mb-16 text-white leading-tight'
 				>
 					{t('landing.ourServices')}{' '}
@@ -58,18 +44,11 @@ export default function ServicesSection() {
 					{data?.services.map((service, index) => (
 						<motion.div
 							key={service.id}
-							initial={{ opacity: 0, y: 60 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{
-								duration: 0.8,
-								delay: index * 0.1,
-								ease: 'easeOut',
-							}}
-							whileHover={{
-								scale: 1.05,
-								y: -8,
-								transition: { duration: 0.3, ease: 'easeOut' },
-							}}
+							variants={cardVariants}
+							initial='initial'
+							whileInView='whileInView'
+							whileHover='whileHover'
+							transition={{ delay: index * 0.1 }}
 							className='group relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100/50 flex flex-col justify-between overflow-hidden'
 						>
 							{/* Subtle gradient overlay */}
@@ -77,12 +56,8 @@ export default function ServicesSection() {
 
 							<div className='relative z-10 mb-8'>
 								<motion.div
+									variants={iconVariants}
 									className='w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-secondary to-main rounded-3xl flex items-center justify-center text-3xl shadow-lg group-hover:shadow-xl transition-all duration-500'
-									whileHover={{
-										scale: 1.1,
-										rotate: 5,
-										transition: { duration: 0.3 },
-									}}
 								>
 									🚑
 								</motion.div>
@@ -95,12 +70,9 @@ export default function ServicesSection() {
 							</div>
 
 							<motion.button
-								whileHover={{
-									scale: 1.05,
-									boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-									transition: { duration: 0.3 },
-								}}
-								whileTap={{ scale: 0.95 }}
+								variants={buttonVariants}
+								whileHover='whileHover'
+								whileTap='whileTap'
 								className='self-center px-8 py-4 bg-gradient-to-r from-accent to-accent/80 rounded-2xl text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
 							>
 								<span className='flex items-center justify-center gap-2'>
@@ -129,18 +101,14 @@ export default function ServicesSection() {
 
 				{/* Bottom CTA */}
 				<motion.div
-					initial={{ opacity: 0, y: 40 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+					{...fadeInUp}
+					transition={{ delay: 0.3 }}
 					className='text-center mt-16'
 				>
 					<motion.button
-						whileHover={{
-							scale: 1.05,
-							boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
-							transition: { duration: 0.3, ease: 'easeOut' },
-						}}
-						whileTap={{ scale: 0.95 }}
+						variants={buttonVariants}
+						whileHover='whileHover'
+						whileTap='whileTap'
 						className='px-10 py-5 bg-white text-main rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
 						<span className='flex items-center justify-center gap-3'>
