@@ -86,6 +86,16 @@ const en: Record<string, string> = {
 	'action.view_details': 'View Details',
 
 	// Common
+	'common.dateOfBirth': 'Date of Birth',
+	'common.gender': 'Gender',
+	'common.female': 'Female',
+	'common.male': 'Male',
+	'common.email': 'Email',
+	'common.password': 'Password',
+	'common.firstName': 'First Name',
+	'common.lastName': 'Last Name',
+	'common.confirmPassword': 'Confirm Password',
+	'common.phoneNumber': 'Phone Number',
 	'common.getHelp': 'Get Help',
 	'common.loading': 'Loading...',
 	'common.loading_data': 'Loading data...',
@@ -124,8 +134,6 @@ const en: Record<string, string> = {
 	'common.try_again': 'Try Again',
 	'common.go_back': 'Go Back',
 	'common.actions': 'Actions',
-	'common.email': 'Email',
-	'common.password': 'Password',
 
 	// Consultant
 	'consultant.failed_to_load': 'Failed to load consultants',
@@ -203,6 +211,7 @@ const en: Record<string, string> = {
 	'chat.thinking': 'Thinking...',
 	'chat.message': 'Message',
 	'chat.send': 'Send',
+	'chat.widget.placeholder': 'Enter your message here...',
 
 	// Consultants
 	'consultant.details': 'Consultant Details',
@@ -361,7 +370,15 @@ const en: Record<string, string> = {
 	'auth.error_occurred': 'Error occurred.',
 	'auth.user_not_authenticated': 'User not authenticated.',
 	'auth.verifyingUser': 'Verifying user...',
-
+	// Register form specific
+	// Register form specific
+	'auth.register.titleStep1': 'Register Account (Step 1)',
+	'auth.register.titleStep2': 'Register Account (Step 2)',
+	'auth.register.nextStep': 'Go to Step 2',
+	'auth.register.backStep': 'Back to Step 1',
+	'auth.register.agreeToTerms': 'I agree to the terms of service',
+	'auth.register.submit': 'Register',
+	'auth.alreadyHaveAccount': 'Already have an account?',
 	// Reset Password
 	'auth.resetPassword.title': 'Reset Your Password',
 	'auth.resetPassword.submit': 'Reset Password',
@@ -490,6 +507,38 @@ const en: Record<string, string> = {
 	'blog.sampleText':
 		'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, ipsa.',
 	'blog.readMore': 'Read More',
+	'blog.confirm_delete': 'Are you sure you want to delete this post?',
+	'blog.delete_failed': 'Failed to delete blog post.',
+	'blog.comments': 'comments',
+	'blog.likes': 'likes',
+	'blog.edit_post': 'Edit post',
+	'blog.delete_post': 'Delete post',
+	'blog.forum_title': 'GenCare Health Forum',
+	'blog.forum_subtitle':
+		'Discuss, share, and learn from a community of health experts and enthusiasts.',
+	'blog.create_post': 'Create new post',
+	'blog.knowledge_forum': 'HEALTH KNOWLEDGE FORUM',
+	'blog.recommended': 'Recommended',
+	'blog.count_posts': '{count} posts',
+	'blog.recent_posts': 'Recent Posts',
+	'blog.categories': 'Categories',
+	'blog.category_health': 'Health & Fitness',
+	'blog.category_lifestyle': 'Lifestyle',
+	'blog.category_medical': 'Medical',
+	'blog.category_nutrition': 'Nutrition',
+	'blog.category_psychology': 'Psychology',
+	'blog.tags': 'Tags',
+	'blog.clear_tag_filter': 'Clear tag filter',
+	'blog.clear': 'Clear',
+	'blog.tags_feature_in_progress': 'This feature is under development',
+	'blog.load_failed': 'Failed to load posts',
+	'blog.load_failed_desc':
+		'An error occurred while loading data. Please try again later.',
+	'blog.no_posts': 'No posts yet',
+	'blog.be_first_to_share': 'Be the first to share health knowledge!',
+	'blog.loading_more': 'Loading more posts...',
+	'blog.scroll_to_load_more': 'Scroll down to load more',
+	'blog.all_posts_loaded': 'You have seen all posts!',
 
 	// Home Page
 	'home.welcome': 'Welcome back, {0}! 👋',
@@ -648,6 +697,9 @@ const en: Record<string, string> = {
 	'management.account.edit_profile_picture': 'Edit Profile Picture',
 	'management.account.staff_info_appears':
 		'Staff information will appear when a staff role is selected',
+	'management.account.management_title': 'Account Management',
+	'management.account.management_subtitle': 'Search and manage user accounts',
+	'management.account.actions': 'Actions',
 
 	// Management - Services
 	'management.service.create': 'Create Service',
@@ -776,6 +828,36 @@ const en: Record<string, string> = {
 		'View payment details for {firstName} {lastName}',
 	'staff.redirecting': 'Redirecting...',
 	'staff.view_payments': 'View payments',
+	'staff.payments.title': 'Payment Management',
+	'staff.payments.subtitle': 'View and manage customer payments',
+	'staff.tests.title': 'Test Results Management',
+	'staff.tests.subtitle': 'View and manage customer test results',
+	'staff.tests.showing': 'Showing {from} - {to} of {total} results',
+	'staff.tests.load_error': 'Unable to load order list.',
+	'staff.tests.order_id': 'Order ID',
+	'staff.tests.customer_name': 'Customer Name',
+	'staff.tests.service': 'Service',
+	'staff.tests.created_at': 'Created At',
+	'staff.tests.status': 'Status',
+	'staff.tests.actions': 'Actions',
+	'staff.tests.view_result': 'View result',
+	'staff.tests.view': 'View',
+	'staff.tests.edit_result': 'Edit result',
+	'staff.tests.edit': 'Edit',
+	'staff.tests.result_title': 'Test Result',
+	'staff.tests.loading_result': 'Loading result...',
+	'staff.tests.data_error_title': 'Data Load Error',
+	'staff.tests.data_error_message':
+		'Unable to load test result. Please try again later.',
+	'staff.tests.total_summary_title': 'Result Summary',
+	'staff.tests.test_parameters': 'test parameters',
+	'staff.tests.normal_flag': 'Normal',
+	'staff.tests.high_flag': 'High',
+	'staff.tests.low_flag': 'Low',
+	'staff.tests.value': 'Value',
+	'staff.tests.reference_range': 'Reference Range',
+	'staff.tests.no_data_title': 'No Data',
+	'staff.tests.no_data_message': 'Test result not updated yet.',
 
 	// Consultant
 	'consultant.search_placeholder':
@@ -832,6 +914,33 @@ const en: Record<string, string> = {
 	'lab.table.status': 'Status',
 	'lab.table.actions': 'Actions',
 	'lab.table.view_details': 'View Details',
+
+	// Contact
+	'contact.title': 'Contact Us',
+	'contact.subtitle':
+		"We'd love to hear from you! Fill out the form or reach us via the information below.",
+	'contact.form.name': 'Your Name',
+	'contact.form.name_placeholder': 'Enter your name',
+	'contact.form.email': 'Your Email',
+	'contact.form.email_placeholder': 'Enter your email address',
+	'contact.form.message': 'Message',
+	'contact.form.message_placeholder': 'Type your message here...',
+	'contact.form.send': 'Send Message',
+	'contact.form.sending': 'Sending...',
+	'contact.form.success': 'Thank you! Your message has been sent.',
+	'contact.info.address': 'Address',
+	'contact.info.phone': 'Phone',
+	'contact.info.email': 'Email',
+	'contact.info.note':
+		'Our team will get back to you as soon as possible. For urgent matters, please call our hotline.',
+	'recentActivity.title': 'Recent Activity',
+	'recentActivity.see_all': 'See all',
+	'recentActivity.see_more': 'See {count} more activities',
+	'recentActivity.empty': 'No recent activity',
+	'recentActivity.just_now': 'Just now',
+	'recentActivity.minutes_ago': '{count} minutes ago',
+	'recentActivity.hours_ago': '{count} hours ago',
+	'recentActivity.invalid_time': 'Invalid time',
 }
 
 export default en
