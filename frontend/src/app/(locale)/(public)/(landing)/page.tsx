@@ -8,6 +8,7 @@ import TestimonialsSection from '@/Components/Landing/TestomonialSection'
 import TrustedBySection from '@/Components/Landing/TrustedBySection'
 import WhyChooseUsSection from '@/Components/Landing/WhyChooseUs'
 import BackToTop from '@/Components/Landing/BackToTop'
+import FlorageBackground from '@/Components/Landing/FlorageBackground'
 
 const Page = () => {
 	return (
@@ -25,6 +26,7 @@ const Page = () => {
 				<FooterSection />
 			</div>
 			<BackToTop />
+			<FlorageBackground />
 		</main>
 	)
 }

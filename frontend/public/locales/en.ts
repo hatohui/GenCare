@@ -617,6 +617,7 @@ const en: Record<string, string> = {
 	'management.account.edit': 'Edit Account',
 	'management.account.first_name': 'First Name',
 	'management.account.last_name': 'Last Name',
+	'management.account.full_name': 'Full Name',
 	'management.account.email': 'Email',
 	'management.account.phone_number': 'Phone Number',
 	'management.account.gender': 'Gender',
