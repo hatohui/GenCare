@@ -317,6 +317,7 @@ const vi: Record<string, string> = {
 	'chat.thinking': 'Đang suy nghĩ...',
 	'chat.message': 'Tin nhắn',
 	'chat.send': 'Gửi',
+	'chat.widget.placeholder': 'Nhập tin nhắn của bạn...',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',
@@ -514,6 +515,38 @@ const vi: Record<string, string> = {
 	'blog.sampleText':
 		'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, ipsa.',
 	'blog.readMore': 'Đọc Thêm',
+	'blog.confirm_delete': 'Bạn có chắc chắn muốn xóa bài viết này?',
+	'blog.delete_failed': 'Xóa bài viết thất bại.',
+	'blog.comments': 'bình luận',
+	'blog.likes': 'lượt thích',
+	'blog.edit_post': 'Chỉnh sửa bài viết',
+	'blog.delete_post': 'Xóa bài viết',
+	'blog.forum_title': 'Diễn Đàn Sức Khỏe GenCare',
+	'blog.forum_subtitle':
+		'Thảo luận, chia sẻ và học hỏi từ cộng đồng chuyên gia y tế và người quan tâm đến sức khỏe.',
+	'blog.create_post': 'Tạo bài viết mới',
+	'blog.knowledge_forum': 'DIỄN ĐÀN CHIA SẺ KIẾN THỨC Y TẾ',
+	'blog.recommended': 'NÊN ĐỌC',
+	'blog.count_posts': '{count} bài viết',
+	'blog.recent_posts': 'Bài viết gần đây',
+	'blog.categories': 'Thể loại',
+	'blog.category_health': 'Sức khỏe & Thể chất',
+	'blog.category_lifestyle': 'Lối sống',
+	'blog.category_medical': 'Y tế',
+	'blog.category_nutrition': 'Dinh dưỡng',
+	'blog.category_psychology': 'Tâm lý',
+	'blog.tags': 'Gắn thẻ',
+	'blog.clear_tag_filter': 'Xóa bộ lọc thẻ',
+	'blog.clear': 'Xóa',
+	'blog.tags_feature_in_progress': 'Tính năng này đang được phát triển',
+	'blog.load_failed': 'Không thể tải bài viết',
+	'blog.load_failed_desc':
+		'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.',
+	'blog.no_posts': 'Chưa có bài viết nào',
+	'blog.be_first_to_share': 'Hãy là người đầu tiên chia sẻ kiến thức y tế!',
+	'blog.loading_more': 'Đang tải thêm bài viết...',
+	'blog.scroll_to_load_more': 'Cuộn xuống để tải thêm',
+	'blog.all_posts_loaded': 'Bạn đã xem hết tất cả bài viết!',
 
 	// Home Page
 	'home.welcome': 'Chào mừng trở lại, {0}! 👋',
@@ -673,6 +706,11 @@ const vi: Record<string, string> = {
 	'management.account.edit_profile_picture': 'Chỉnh sửa ảnh đại diện',
 	'management.account.staff_info_appears':
 		'Thông tin nhân viên sẽ xuất hiện khi chọn vai trò nhân viên',
+	'management.account.management_title': 'Quản lý tài khoản',
+	'management.account.management_subtitle':
+		'Tìm kiếm và quản lý tài khoản người dùng',
+	'management.account.full_name': 'Họ và Tên',
+	'management.account.actions': 'Tác vụ',
 
 	// Management - Services
 	'management.service.create': 'Tạo dịch vụ',
@@ -801,6 +839,36 @@ const vi: Record<string, string> = {
 		'Xem chi tiết thanh toán cho {firstName} {lastName}',
 	'staff.redirecting': 'Đang chuyển hướng...',
 	'staff.view_payments': 'Xem thanh toán',
+	'staff.payments.title': 'Quản Lý Thanh Toán',
+	'staff.payments.subtitle': 'Xem và quản lý thanh toán của khách hàng',
+	'staff.tests.title': 'Quản Lý Kết Quả Xét Nghiệm',
+	'staff.tests.subtitle': 'Xem và quản lý kết quả xét nghiệm của khách hàng',
+	'staff.tests.showing': 'Hiển thị {from} - {to} trong tổng số {total} kết quả',
+	'staff.tests.load_error': 'Không thể tải danh sách đơn hàng.',
+	'staff.tests.order_id': 'Mã đơn',
+	'staff.tests.customer_name': 'Tên khách hàng',
+	'staff.tests.service': 'Dịch vụ',
+	'staff.tests.created_at': 'Ngày tạo',
+	'staff.tests.status': 'Trạng thái',
+	'staff.tests.actions': 'Hành động',
+	'staff.tests.view_result': 'Xem kết quả',
+	'staff.tests.view': 'Xem',
+	'staff.tests.edit_result': 'Chỉnh sửa kết quả',
+	'staff.tests.edit': 'Sửa',
+	'staff.tests.result_title': 'Kết quả xét nghiệm',
+	'staff.tests.loading_result': 'Đang tải kết quả...',
+	'staff.tests.data_error_title': 'Lỗi tải dữ liệu',
+	'staff.tests.data_error_message':
+		'Không thể tải kết quả xét nghiệm. Vui lòng thử lại sau.',
+	'staff.tests.total_summary_title': 'Tổng quan kết quả',
+	'staff.tests.test_parameters': 'thông số xét nghiệm',
+	'staff.tests.normal_flag': 'Bình thường',
+	'staff.tests.high_flag': 'Cao',
+	'staff.tests.low_flag': 'Thấp',
+	'staff.tests.value': 'Giá trị',
+	'staff.tests.reference_range': 'Tham chiếu',
+	'staff.tests.no_data_title': 'Chưa có dữ liệu',
+	'staff.tests.no_data_message': 'Kết quả xét nghiệm chưa được cập nhật.',
 
 	// Consultant
 	'consultant.search_placeholder':
@@ -836,6 +904,25 @@ const vi: Record<string, string> = {
 	'lab.table.status': 'Trạng thái',
 	'lab.table.actions': 'Hành động',
 	'lab.table.view_details': 'Xem chi tiết',
+
+	// Contact Page
+	'contact.title': 'Liên hệ',
+	'contact.subtitle':
+		'Chúng tôi rất mong nhận được phản hồi từ bạn! Điền vào biểu mẫu hoặc liên hệ qua thông tin bên dưới.',
+	'contact.form.name': 'Tên của bạn',
+	'contact.form.name_placeholder': 'Nhập tên của bạn',
+	'contact.form.email': 'Email của bạn',
+	'contact.form.email_placeholder': 'Nhập địa chỉ email',
+	'contact.form.message': 'Nội dung',
+	'contact.form.message_placeholder': 'Nhập nội dung liên hệ...',
+	'contact.form.send': 'Gửi liên hệ',
+	'contact.form.sending': 'Đang gửi...',
+	'contact.form.success': 'Cảm ơn bạn! Chúng tôi đã nhận được liên hệ của bạn.',
+	'contact.info.address': 'Địa chỉ',
+	'contact.info.phone': 'Điện thoại',
+	'contact.info.email': 'Email',
+	'contact.info.note':
+		'Chúng tôi sẽ phản hồi bạn sớm nhất có thể. Nếu cần gấp, vui lòng gọi hotline.',
 }
 
 export default vi
