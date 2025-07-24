@@ -7,6 +7,7 @@ import { format as formatDateFns } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { ResultData } from '@/Interfaces/Tests/Types/Tests'
 import { useGetResult } from '@/Services/Result-service'
+import { useCreateBookingPDF } from '@/Services/book-service'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -244,17 +245,41 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	bookingItem,
 }) => {
 	const orderDetailId = bookingItem?.orderDetailId || ''
-	const { data, isLoading, error } = useGetResult(orderDetailId, {
+	const { data, isLoading, error, refetch } = useGetResult(orderDetailId, {
 		enabled: isOpen && !!orderDetailId,
 	})
+
+	const createBookingPDF = useCreateBookingPDF()
 
 	const handleClose = () => {
 		onClose()
 	}
 
-	const handleDownloadPDF = () => {
-		// TODO: Implement PDF download functionality
-		console.log('Downloading PDF for:', bookingItem?.serviceName)
+	const handleDownloadPDF = async () => {
+		if (!orderDetailId || !bookingItem) {
+			console.error('No order detail ID or booking item available')
+			return
+		}
+		try {
+			// Always fetch the latest result before generating PDF
+			const { data: latestResult } = await refetch()
+			const pdfBlob = await createBookingPDF(bookingItem, latestResult)
+			const url = window.URL.createObjectURL(
+				new Blob([pdfBlob], { type: 'application/pdf' })
+			)
+			const link = document.createElement('a')
+			link.href = url
+			link.download = `ket-qua-xet-nghiem-${
+				bookingItem.serviceName || 'test'
+			}-${orderDetailId}.pdf`
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(url)
+		} catch (error) {
+			console.error('Error downloading PDF:', error)
+			// You might want to show a toast notification here
+		}
 	}
 
 	const handleViewFullReport = () => {
@@ -314,10 +339,11 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 							</button>
 							<button
 								onClick={handleDownloadPDF}
-								className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors'
+								disabled={isLoading}
+								className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 							>
 								<DownloadSVG className='size-4' />
-								Tải PDF
+								{isLoading ? 'Đang tải...' : 'Tải PDF'}
 							</button>
 						</div>
 					</div>
