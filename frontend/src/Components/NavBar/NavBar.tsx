@@ -10,6 +10,7 @@ import NavButtons from './NavButtons'
 import UserProfileDropdown from './UserProfileDropdown'
 import LanguageSwitcher from '../LanguageSwitcher'
 import { useLocale } from '@/Hooks/useLocale'
+import useToken from '@/Hooks/Auth/useToken'
 
 export type NavComponentProps = { className?: string; onTop: boolean }
 
@@ -18,7 +19,9 @@ const NavBar = () => {
 	const [isOpened, setOpened] = useState(false)
 	const [onTop, setOnTop] = useState(true)
 	const lastScrollY = useRef(0)
+	const { accessToken } = useToken()
 	const { t } = useLocale()
+	const isLoggedIn = !!accessToken
 
 	useEffect(() => {
 		function handleScroll() {
@@ -121,12 +124,19 @@ const NavBar = () => {
 							/>
 							<div role='group' aria-label={t('nav.userActions')}>
 								<div className='flex items-center'>
-									<LanguageSwitcher className='hidden md:block mr-2' />
-									<UserProfileDropdown
-										className='hidden md:flex'
-										onTop={onTop}
-										aria-label={t('nav.userActions')}
-									/>
+									<div className='flex'>
+										{!isLoggedIn && (
+											<LanguageSwitcher
+												onTop={onTop}
+												className='hidden md:block mr-2'
+											/>
+										)}
+										<UserProfileDropdown
+											className='hidden md:flex'
+											onTop={onTop}
+											aria-label={t('nav.userActions')}
+										/>
+									</div>
 									<MobileButton
 										className='block md:hidden inset-0'
 										onTop={onTop}
