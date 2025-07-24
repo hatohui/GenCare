@@ -18,7 +18,7 @@ public class ConversationController(IConversationService conversationService): C
         var response = await conversationService.InitConversationWithMessageAsync(request, token);
         return Ok(response);
     }
-    [HttpGet("all")]
+    [HttpGet]
     public async Task<IActionResult> ViewAllConversations()
     {
         ViewAllConversationResponse response = await conversationService.ViewAllConversationAsync();
@@ -40,20 +40,20 @@ public class ConversationController(IConversationService conversationService): C
         return Ok(conversations);
     }
     
-    [HttpPut("edit")]
+    [HttpPut("{id}")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
-    public async Task<IActionResult> EditConversation([FromBody] EditConversationRequest request)
+    public async Task<IActionResult> EditConversation([FromBody] EditConversationRequest request,[FromRoute]Guid id)
     {
-        var response = await conversationService.EditConversationAsync(request);
+        var response = await conversationService.EditConversationAsync(request, id);
         if (response.Success)
             return Ok(response);
         return BadRequest(response);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> ViewConversation([FromQuery] ViewConversationRequest request)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> ViewConversation([FromRoute] Guid conversationId)
     {
-        var response = await conversationService.ViewConversationAsync(request);
+        var response = await conversationService.ViewConversationAsync(conversationId);
         if (response.ConversationId != Guid.Empty)
             return Ok(response);
         return NotFound(new { Message = "Conversation not found." });
