@@ -433,6 +433,13 @@ const vi: Record<string, string> = {
 	'profile.title': 'Hồ sơ cá nhân',
 	'profile.settings': 'Cài đặt',
 	'profile.no_account_data': 'Không tìm thấy dữ liệu tài khoản.',
+	'profile.full_name': 'Họ và tên',
+	'profile.email': 'Email',
+	'profile.phone_number': 'Số điện thoại',
+	'profile.date_of_birth': 'Ngày sinh',
+	'profile.gender': 'Giới tính',
+	'profile.avatar': 'Ảnh đại diện',
+	'profile.role': 'Vai trò',
 
 	// Language
 	'language.select': 'Chọn ngôn ngữ',
@@ -645,6 +652,7 @@ const vi: Record<string, string> = {
 	'management.account.edit': 'Chỉnh sửa tài khoản',
 	'management.account.first_name': 'Tên',
 	'management.account.last_name': 'Họ',
+	'management.account.full_name': 'Họ và tên',
 	'management.account.email': 'Email',
 	'management.account.phone_number': 'Số điện thoại',
 	'management.account.gender': 'Giới tính',

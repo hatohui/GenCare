@@ -176,7 +176,8 @@ public class BlogService(IBlogRepository blogRepository,
         var tagTitles = await tagRepository.GetTagTitlesByBlogIdAsync(blog.Id);
         //get image urls by blog id
         var imageUrls = await mediaRepository.GetImageUrlsByBlogIdAsync(blog.Id);
-
+        var likes = await commentRepository.GetLikesCountByBlogIdAsync(blog.Id);
+        var comments = await commentRepository.GetCommentsCountByBlogIdAsync(blog.Id);
         return new ModelOfBlogResponse()
         {
             Id = blog.Id.ToString("D"),
@@ -192,7 +193,10 @@ public class BlogService(IBlogRepository blogRepository,
             DeletedBy = blog.DeletedBy?.ToString("D"),
             IsDeleted = blog.IsDeleted,
             TagTitles = tagTitles,
-            ImageUrls = imageUrls
+            ImageUrls = imageUrls,
+            Likes = likes,
+            Comments = comments
+            
         };
     }
 
