@@ -11,7 +11,7 @@ import BackToTop from '@/Components/Landing/BackToTop'
 
 const Page = () => {
 	return (
-		<main className='relative'>
+		<main className='relative space-y-10'>
 			<LandingPart />
 			<TrustedBySection />
 			<WhyChooseUsSection />

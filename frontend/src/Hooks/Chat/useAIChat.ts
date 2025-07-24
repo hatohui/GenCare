@@ -34,6 +34,9 @@ export const useAiChat = () => {
 			parts: [{ text: inputValue }],
 		}
 
+		// Add user message to history immediately
+		setHistory(prev => [...prev, userMessage])
+
 		const query: GeminiQuery = {
 			message: inputValue,
 			history: [...history, userMessage],
@@ -42,20 +45,18 @@ export const useAiChat = () => {
 		mutation.mutate(query, {
 			onSuccess: (response: GoogleAiResponse) => {
 				setHistory(prev => {
-					const newHistory = [...prev, userMessage]
 					if ('message' in response) {
 						return [
-							...newHistory,
+							...prev,
 							{ role: 'model', parts: [{ text: response.message }] },
 						]
 					}
-					return newHistory
+					return prev
 				})
 			},
 			onError: () => {
 				setHistory(prev => [
 					...prev,
-					userMessage,
 					{
 						role: 'model',
 						parts: [{ text: 'Error: Failed to get response from AI' }],

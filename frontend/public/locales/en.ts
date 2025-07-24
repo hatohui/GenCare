@@ -77,6 +77,7 @@ const en: Record<string, string> = {
 	'date.just_now': 'Just now',
 
 	// Common actions
+	'common.signout': 'Sign Out',
 	'action.save': 'Save',
 	'action.cancel': 'Cancel',
 	'action.delete': 'Delete',

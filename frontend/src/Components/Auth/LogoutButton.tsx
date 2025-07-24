@@ -3,10 +3,12 @@ import React from 'react'
 import { LogoutSVG } from '../SVGs'
 import { useLogoutAccount } from '@/Services/auth-service'
 import { useRouter } from 'next/navigation'
+import { useLocale } from '@/Hooks/useLocale'
 
 const LogoutButton = () => {
 	const router = useRouter()
 	const { mutate: logout } = useLogoutAccount()
+	const { t } = useLocale()
 
 	const handleLogout = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -27,7 +29,7 @@ const LogoutButton = () => {
 			className='center-all bg-accent px-2 py-1 rounded w-full h-fit gap-2 text-semibold transition duration-150 font-medium hover:bg-sky-100 hover:text-blue-600'
 		>
 			<LogoutSVG />
-			<div className='text-center'>Sign Out</div>
+			<div className='text-center'>{t('common.signout')}</div>
 		</button>
 	)
 }

@@ -180,6 +180,7 @@ const vi: Record<string, string> = {
 	'date.just_now': 'Vừa xong',
 
 	// Common actions
+	'common.signout': 'Đăng xuất',
 	'action.save': 'Lưu',
 	'action.cancel': 'Hủy',
 	'action.delete': 'Xóa',

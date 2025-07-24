@@ -128,6 +128,6 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		label: 'nav.chat',
 		to: '/app/chat',
 		svg: <MessageCircle size={20} />,
-		level: PermissionLevel.member,
+		level: PermissionLevel.consultant,
 	},
 ]

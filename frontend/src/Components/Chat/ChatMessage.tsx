@@ -53,7 +53,11 @@ const ChatMessage = ({
 			animate={{ opacity: 1 }}
 			transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
 		>
-			<div className='flex items-start gap-2 sm:gap-3'>
+			<div
+				className={`flex gap-2 sm:gap-3 w-full items-start ${
+					isUser ? 'justify-end' : 'justify-start'
+				}`}
+			>
 				{!isUser &&
 					(consultantIcon ? (
 						<motion.div variants={iconVariants}>
@@ -72,7 +76,7 @@ const ChatMessage = ({
 					))}
 				<motion.div
 					className={clsx(
-						'max-w-[85%] sm:max-w-[70%] px-3 py-1.5 rounded-xl shadow-md',
+						'px-3 py-1.5 max-w-[50%] rounded-xl shadow-md',
 						isUser
 							? 'bg-accent text-white rounded-br-none'
 							: 'bg-general text-slate-950 rounded-bl-none'
