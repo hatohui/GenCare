@@ -1,13 +1,13 @@
-using Application.DTOs.Zoom;
-using Application.Services;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Application.DTOs.Zoom;
+using Application.Repositories;
+using Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using Application.Repositories;
 
 namespace Infrastructure.Services;
 
@@ -26,7 +26,7 @@ public class ZoomService : IZoomService
         _configuration = configuration;
         _logger = logger;
         _accountRepository = accountRepository;
-        
+
         // Validate OAuth configuration on startup
         ValidateOAuthConfiguration();
     }
@@ -83,7 +83,12 @@ public class ZoomService : IZoomService
         return _accessToken;
     }
 
-    public async Task<ZoomMeetingResponse> CreateMeetingAsync(ZoomMeetingRequest request, string memberId, string staffId)
+    public async Task<ZoomMeetingResponse> CreateMeetingAsync
+    (
+        ZoomMeetingRequest request,
+        string memberId,
+        string staffId
+    )
     {
         try
         {
@@ -108,17 +113,16 @@ public class ZoomService : IZoomService
                     alternative_hosts = request.AlternativeHostsEmail
                 }
             };
-
             var json = JsonSerializer.Serialize(meetingRequest);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // Create meeting
             var response = await _httpClient.PostAsync($"https://api.zoom.us/v2/users/me/meetings", content);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogError("Failed to create Zoom meeting. Status: {StatusCode}, Error: {Error}", 
+                _logger.LogError("Failed to create Zoom meeting. Status: {StatusCode}, Error: {Error}",
                     response.StatusCode, errorContent);
                 throw new HttpRequestException($"Failed to create Zoom meeting: {response.StatusCode}");
             }
@@ -128,7 +132,7 @@ public class ZoomService : IZoomService
 
             // Create invite links for the meeting
             var meetingId = meetingData.GetProperty("id").GetInt64();
-            var inviteLinksResponse = await CreateInviteLinksAsync(meetingId.ToString(), memberId, staffId, 7200);
+            var inviteLinksResponse = await CreateInviteLinksAsync(meetingId.ToString(), memberId, staffId, 2 * 3600);
 
             // Build the response
             var zoomResponse = new ZoomMeetingResponse
@@ -202,7 +206,7 @@ public class ZoomService : IZoomService
             // The response contains an attendees array with individual invite links
             var attendeesArray = inviteData.GetProperty("attendees");
             var attendeeList = new List<string>();
-            
+
             foreach (var attendee in attendeesArray.EnumerateArray())
             {
                 if (attendee.TryGetProperty("join_url", out var joinUrlElement))
@@ -252,9 +256,9 @@ public class ZoomService : IZoomService
             }
 
             var token = GenerateJwtToken(apiKey, apiSecret);
-            _logger.LogInformation("JWT token generation test successful. Token preview: {TokenPreview}", 
+            _logger.LogInformation("JWT token generation test successful. Token preview: {TokenPreview}",
                 token?.Substring(0, Math.Min(50, token?.Length ?? 0)) + "...");
-            
+
             return token;
         }
         catch (Exception ex)
@@ -270,9 +274,9 @@ public class ZoomService : IZoomService
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(apiSecret);
-            
+
             _logger.LogInformation("API Secret length: {KeyLength} bytes", key.Length);
-            
+
             // Ensure the key is at least 32 bytes (256 bits) for HMAC-SHA256
             if (key.Length < 32)
             {
@@ -297,7 +301,7 @@ public class ZoomService : IZoomService
                 expires: DateTime.UtcNow.AddMinutes(30),
                 issuedAt: DateTime.UtcNow,
                 signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(key), 
+                    new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256
                 )
             );
@@ -313,4 +317,4 @@ public class ZoomService : IZoomService
             throw new InvalidOperationException($"Failed to generate JWT token: {ex.Message}");
         }
     }
-} 
+}

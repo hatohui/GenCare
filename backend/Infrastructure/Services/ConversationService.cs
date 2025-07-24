@@ -49,9 +49,9 @@ public class ConversationService(IConversationRepository conversationRepository,
         };
     }
 
-    public async Task<ViewConversationResponse> ViewConversationAsync(ViewConversationRequest request)
+    public async Task<ViewConversationResponse> ViewConversationAsync(Guid id)
     {
-        var conversation = await conversationRepository.GetByIdAsync(request.ConversationId);
+        var conversation = await conversationRepository.GetByIdAsync(id);
        
 
         return new ViewConversationResponse
@@ -91,9 +91,9 @@ public class ConversationService(IConversationRepository conversationRepository,
         };
     }
 
-    public async Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request)
+    public async Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request,Guid conversationId)
     {
-        var conversation = await conversationRepository.GetByIdAsync(request.ConversationId);
+        var conversation = await conversationRepository.GetByIdAsync(conversationId);
         if (conversation == null)
             return new EditConversationResponse { Success = false, Message = "Conversation not found." };
 

@@ -1,7 +1,8 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
+using Application.DTOs.Appointment.Request;
 using Application.DTOs.Auth.Requests;
 using Application.DTOs.Payment.Momo;
 using Application.DTOs.Payment.VNPay;
@@ -190,6 +191,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
+builder.Services.AddTransient<IValidator<AppointmentCreateRequest>, AppointmentCreateRequestValidator>();
 
 // ====== Application Services ======
 builder.Services.AddHangfireServer();
