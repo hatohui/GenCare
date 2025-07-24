@@ -3,6 +3,7 @@
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { useLocale } from '@/Hooks/useLocale'
+import FlorageBackground from './FlorageBackground'
 
 export default function ProcessSteps() {
 	const { t } = useLocale()
@@ -70,47 +71,19 @@ export default function ProcessSteps() {
 	]
 
 	return (
-		<section className='py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden pb-40'>
-			{/* Background decoration */}
-			<div className='absolute inset-0 opacity-5'>
-				<motion.div
-					animate={{
-						scale: [1, 1.1, 1],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 6,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute top-10 left-20 w-32 h-32 bg-main rounded-full blur-3xl'
-				></motion.div>
-				<motion.div
-					animate={{
-						scale: [1.1, 1, 1.1],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 8,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute bottom-10 right-20 w-40 h-40 bg-secondary rounded-full blur-3xl'
-				></motion.div>
-			</div>
-
-			<div className='relative z-10 max-w-7xl mx-auto px-8'>
+		<section className='py-20 relative overflow-hidden'>
+			<div className='absolute inset-0 bg-gradient-to-b from-main to-secondary -z-20'></div>
+			<FlorageBackground />
+			<div className='relative z-10 max-w-5xl mx-auto px-8'>
 				<motion.h2
 					initial={{ opacity: 0, y: 50 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, ease: 'easeOut' }}
-					className='text-5xl md:text-6xl font-bold text-center mb-20 text-secondary leading-tight'
+					className='text-4xl md:text-5xl font-bold text-center mb-24 text-general leading-tight'
 					viewport={{ once: true, amount: 0.3 }}
 				>
 					{t('landing.steps.process_title')}{' '}
-					<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>
-						{t('landing.steps.at_gencare')}
-					</span>
+					<span className='text-accent'>{t('landing.steps.at_gencare')}</span>
 				</motion.h2>
 
 				<div className='relative min-h-[700px]'>
@@ -135,7 +108,7 @@ export default function ProcessSteps() {
 								delay: 0.5 + i * 0.4, // Delay based on line animation progress
 								ease: 'easeOut',
 							}}
-							className={`relative flex items-center mb-20 ${
+							className={`relative flex items-center mb-10 ${
 								i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
 							}`}
 						>
@@ -161,10 +134,10 @@ export default function ProcessSteps() {
 									>
 										{item.icon}
 									</motion.div>
-									<h3 className='text-2xl font-bold mb-6 text-secondary leading-tight'>
+									<h3 className='text-xl font-bold mb-6 text-secondary leading-tight'>
 										{item.title}
 									</h3>
-									<p className='text-gray-600 leading-relaxed text-lg'>
+									<p className='text-gray-600 leading-relaxed text-md '>
 										{item.description}
 									</p>
 								</div>
@@ -187,7 +160,7 @@ export default function ProcessSteps() {
 									boxShadow: '0 0 30px rgba(59, 130, 246, 0.5)',
 									transition: { duration: 0.3 },
 								}}
-								className='absolute left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full border-4 border-white shadow-2xl flex items-center justify-center text-white font-bold text-2xl z-20 bg-gradient-to-r from-accent to-accent/80 backdrop-blur-sm'
+								className='absolute left-1/2 transform -translate-x-1/2 size-14 rounded-full border-2 border-white shadow-2xl flex items-center justify-center text-white font-bold text-2xl z-20 bg-gradient-to-r from-accent to-accent/80 backdrop-blur-sm'
 							>
 								<motion.span
 									initial={{ scale: 0 }}
@@ -223,7 +196,7 @@ export default function ProcessSteps() {
 							transition: { duration: 0.3, ease: 'easeOut' },
 						}}
 						whileTap={{ scale: 0.95 }}
-						className='px-10 py-5 bg-gradient-to-r from-main to-secondary text-white rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
+						className='px-10 py-5 bg-accent text-white rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
 					>
 						<span className='flex items-center justify-center gap-3'>
 							{t('landing.steps.get_started')}

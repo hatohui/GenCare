@@ -87,12 +87,10 @@ const LandingPart = () => {
 						{...animateStyle}
 					>
 						{!isClient ? (
-							// Server-side or initial render - show static version
 							<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
 								{t('landing.mainTitle')}
 							</span>
 						) : !typing ? (
-							// Client-side, animation not complete
 							<ClientHydration>
 								<TypedText
 									typeSpeed={10}
@@ -103,7 +101,6 @@ const LandingPart = () => {
 								<span>&nbsp;</span>
 							</ClientHydration>
 						) : (
-							// Client-side, animation complete
 							<>
 								<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
 									{t('landing.mainTitle')}
@@ -185,10 +182,9 @@ const LandingPart = () => {
 					/>
 				</motion.div>
 			</motion.div>
-			<FlorageBackground />
 			<object
 				data='/svgs/landingBase.svg'
-				className='absolute h-screen w-screen lg:w-auto top-0 right-0 -z-20 overflow-clip'
+				className='absolute h-screen w-screen lg:w-auto top-0 right-0 -z-50 overflow-clip'
 			/>
 		</div>
 	)

@@ -9,6 +9,7 @@ import TrustedBySection from '@/Components/Landing/TrustedBySection'
 import WhyChooseUsSection from '@/Components/Landing/WhyChooseUs'
 import BackToTop from '@/Components/Landing/BackToTop'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
+import BlogSection from '@/Components/Landing/Blogsection'
 
 const Page = () => {
 	return (
@@ -17,12 +18,11 @@ const Page = () => {
 			<TrustedBySection />
 			<WhyChooseUsSection />
 			<ServicesSection />
-			{/* <BlogSection /> */}
 			<TestimonialsSection />
-			<div className='abosolute -translate-y-[750px] z-10 h-0  '>
+			<div className='abosolute -translate-y-[750px] z-10 h-0 '>
 				<ProcessSteps />
 			</div>
-			<div className='abosolute translate-y-[1200px] z-10  '>
+			<div className='abosolute translate-y-[860px] z-10 h-0'>
 				<FooterSection />
 			</div>
 			<BackToTop />

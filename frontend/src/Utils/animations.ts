@@ -28,17 +28,17 @@ export const scaleIn = {
 export const cardVariants = {
 	initial: { opacity: 0, y: 40 },
 	whileInView: { opacity: 1, y: 0 },
-	whileHover: { y: -6, scale: 1.02, transition: { duration: 0.3 } },
+	whileHover: { y: -6, scale: 1.02, transition: { duration: 0.1 } },
 }
 
 export const itemVariants = {
 	initial: { opacity: 0, y: 20 },
 	whileInView: { opacity: 1, y: 0 },
-	whileHover: { y: -4, scale: 1.01, transition: { duration: 0.3 } },
+	whileHover: { y: -4, scale: 1.01, transition: { duration: 0.1 } },
 }
 
 export const iconVariants = {
-	whileHover: { scale: 1.05, rotate: 3, transition: { duration: 0.3 } },
+	whileHover: { scale: 1.05, rotate: 3, transition: { duration: 0.1 } },
 }
 
 export const textVariants = {

@@ -487,7 +487,7 @@ const vi: Record<string, string> = {
 	'landing.trusted.doctors.desc': '100% bác sĩ được cấp phép & xác thực',
 	'landing.trusted.booking.title': 'Đặt lịch nhanh',
 	'landing.trusted.booking.desc': 'Gặp bác sĩ trong vòng 15 phút',
-	'landing.trusted.flexible.title': 'Linh hoạt & tiết kiệm',
+	'landing.trusted.flexible.title': 'Tiết kiệm',
 	'landing.trusted.flexible.desc': 'Nhiều gói dịch vụ phù hợp nhu cầu',
 
 	// Footer

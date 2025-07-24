@@ -40,13 +40,14 @@ export default function TestimonialsSection() {
 	return (
 		<section
 			ref={targetRef}
-			className='relative py-24 h-[500vh] flex-col items-center justify-center text-center bg-gradient-to-b from-white to-gray-50 pb-40'
+			className='relative h-[600vh] flex-col items-center justify-center text-center pb-[1vh]'
 		>
 			<BlogSection />
+
 			<motion.div className='sticky top-0 translate-y-12 h-screen overflow-hidden flex flex-col items-center'>
 				<motion.h2
 					{...fadeInUp}
-					className='text-5xl md:text-6xl font-bold mb-16 text-secondary leading-tight'
+					className='text-4xl md:text-5xl font-bold mb-16 text-secondary leading-tight'
 				>
 					{t('testimonial.title')}{' '}
 					<span className='bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'>

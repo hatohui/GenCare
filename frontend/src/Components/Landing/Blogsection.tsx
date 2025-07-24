@@ -7,12 +7,13 @@ export default function BlogSection() {
 	const { t } = useLocale()
 
 	return (
-		<section className='snap-start py-20 bg-white text-center'>
+		<section className='snap-start relative py-20 min-h-screen text-center overflow-hidden'>
+			<div className='absolute inset-0 bg-main -z-20'></div>
 			<motion.h2
 				initial={{ opacity: 0, y: 50 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
-				className='text-4xl font-bold mb-12'
+				className='text-5xl font-bold text-general mb-12'
 			>
 				{t('blog.title')}
 			</motion.h2>
