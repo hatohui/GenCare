@@ -22,6 +22,17 @@ namespace Application.Repositories
         /// no associated payment in the PaymentHistories table with a status of "paid".
         /// </remarks>
         Task<List<UnpaidPurchaseInfo>> GetUnpaidPurchasesOverDaysAsync(int days, DateTime now);
+        /// <summary>  
+        /// Retrieves a list of appointments scheduled for today.  
+        /// </summary>  
+        /// <returns>  
+        /// A task representing the asynchronous operation, containing a list of <see cref="Appointment"/>  
+        /// entities scheduled for the current day, including related Member and Staff information.  
+        /// </returns>  
+        /// <remarks>  
+        /// This method queries appointments where the ScheduleAt date falls within today's date range  
+        /// and excludes soft-deleted appointments.  
+        /// </remarks>  
         Task<List<Appointment>> GetAppointmentsOfTodayAsync();
 
     }

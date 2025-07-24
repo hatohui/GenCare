@@ -15,6 +15,15 @@ public interface IReminderService
     /// await reminderService.SendUnpaidPurchaseRemindersAsync();
     /// </example>
     Task SendUnpaidPurchaseRemindersAsync();
-
+    /// <summary>  
+    /// Sends reminder emails to members and staff for appointments scheduled today.  
+    /// </summary>  
+    /// <remarks>  
+    /// This method queries for today's appointments (using <see cref="IReminderRepository"/>).  
+    /// For each appointment, it sends reminder emails to both the member and staff via <see cref="IEmailService"/>.  
+    /// </remarks>  
+    /// <returns>  
+    /// An asynchronous task that completes when all reminder emails have been sent.  
+    /// </returns>  
     Task SendTodayAppointmentRemindersAsync();
 }
