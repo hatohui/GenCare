@@ -35,7 +35,7 @@ public class CommentRepository(IApplicationDbContext dbContext) : ICommentReposi
     public async Task<int> GetCommentsCountByBlogIdAsync(Guid blogId)
     {
         return await dbContext.Comments
-            .CountAsync(c => c.BlogId == blogId);
+            .CountAsync(c => c.BlogId == blogId && !c.IsDeleted);
     }
 
     public async Task<List<Comment>> GetAll()

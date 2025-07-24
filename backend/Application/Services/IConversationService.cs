@@ -7,11 +7,11 @@ namespace Application.Services;
 public interface IConversationService
 {
     Task<CreateConversationResponse> CreateConversationAsync(CreateConversationRequest request);
-    Task<ViewConversationResponse> ViewConversationAsync(ViewConversationRequest request);
+    Task<ViewConversationResponse> ViewConversationAsync(Guid conversationId);
     Task<bool> EndConversationAsync(Guid conversationId);
     Task<List<Conversation>> GetPendingConversationsAsync();
     Task<ViewAllConversationResponse> ViewAllConversationAsync();
-    Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request);
+    Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request, Guid conversationId);
 
     Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId);
 
