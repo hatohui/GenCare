@@ -1,4 +1,6 @@
-﻿namespace Application.Repositories
+﻿using Domain.Entities;
+
+namespace Application.Repositories
 {
     public interface IReminderRepository
     {
@@ -20,6 +22,7 @@
         /// no associated payment in the PaymentHistories table with a status of "paid".
         /// </remarks>
         Task<List<UnpaidPurchaseInfo>> GetUnpaidPurchasesOverDaysAsync(int days, DateTime now);
+        Task<List<Appointment>> GetAppointmentsOfTodayAsync();
 
     }
 

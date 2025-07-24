@@ -1,5 +1,6 @@
 ﻿using Application.Repositories;
 using Domain.Abstractions;
+using Domain.Entities;
 
 namespace Infrastructure.Repositories;
 public class ReminderRepository(IApplicationDbContext context) : IReminderRepository
@@ -28,5 +29,16 @@ public class ReminderRepository(IApplicationDbContext context) : IReminderReposi
         ).ToListAsync();
 
         return result;
+    }
+
+    public async Task<List<Appointment>> GetAppointmentsOfTodayAsync()
+    {
+        var today = DateTime.Today;
+        var tomorrow = today.AddDays(1);
+        return await context.Appointments
+            .Where(a => a.ScheduleAt >= today && a.ScheduleAt < tomorrow && !a.IsDeleted)
+            .Include(a => a.Member)
+            .Include(a => a.Staff)
+            .ToListAsync();
     }
 }

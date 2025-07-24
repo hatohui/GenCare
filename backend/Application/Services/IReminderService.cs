@@ -15,4 +15,6 @@ public interface IReminderService
     /// await reminderService.SendUnpaidPurchaseRemindersAsync();
     /// </example>
     Task SendUnpaidPurchaseRemindersAsync();
+
+    Task SendTodayAppointmentRemindersAsync();
 }
