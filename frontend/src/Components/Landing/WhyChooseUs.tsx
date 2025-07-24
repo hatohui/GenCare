@@ -72,7 +72,7 @@ const WhyChooseUsSection = () => {
 
 	return (
 		<section className='py-24 pt-[15%] relative overflow-hidden pb-40'>
-			<div className='bg-main -z-20 from-general absolute inset-0'></div>
+			<div className='bg-gradient-to-b from-main to-secondary -z-20 absolute inset-0'></div>
 			<div className='relative z-10 max-w-7xl mx-auto px-8'>
 				<motion.div {...fadeInUp} className='text-center mb-20'>
 					<h2 className='text-5xl md:text-5xl font-bold mb-6 text-general leading-tight'>

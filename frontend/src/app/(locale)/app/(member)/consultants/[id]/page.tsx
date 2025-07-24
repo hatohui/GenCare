@@ -13,7 +13,7 @@ import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'motion/react'
 import { CldImage } from 'next-cloudinary'
 import { useLocale } from '@/Hooks/useLocale'
-import { isToday, parse } from 'date-fns'
+import { isToday } from 'date-fns'
 
 const timeSlots = [
 	'08:00',

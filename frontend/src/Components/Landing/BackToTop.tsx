@@ -98,7 +98,7 @@ const BackToTop = () => {
 					aria-label='Scroll to top'
 				>
 					{/* Main button with gradient background */}
-					<div className='relative w-14 h-14 bg-gradient-to-br from-main to-secondary rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center group-hover:from-secondary group-hover:to-main'>
+					<div className='relative w-14 h-14 border-1 border-white bg-gradient-to-br from-main to-secondary rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center group-hover:from-secondary group-hover:to-main'>
 						{/* Simplified background glow */}
 						<motion.div
 							variants={glowVariants}
@@ -110,7 +110,7 @@ const BackToTop = () => {
 						<motion.svg
 							className='w-6 h-6 text-accent relative z-10'
 							fill='none'
-							stroke='currentColor'
+							stroke='white'
 							viewBox='0 0 24 24'
 							variants={arrowVariants}
 							animate={isAnimating ? 'animating' : 'idle'}

@@ -1,11 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useAuthGuard } from '@/Hooks/Auth/useAuthGuard'
-import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
-import LoadingIcon from '@/Components/LoadingIcon'
-import BackgroundCircles from '@/Components/BackgroundCircles'
-import SideNav from '@/Components/Dashboard/Sidenav'
 import { useLocale } from '@/Hooks/useLocale'
 import { useGetMe } from '@/Services/account-service'
 import { useAccountStore } from '@/Hooks/useAccount'
@@ -18,7 +13,6 @@ export default function MemberLayout({
 }: {
 	children: React.ReactNode
 }) {
-	// Add authentication guard for member access
 	const [isClient, setIsClient] = useState(false)
 	const tokenStore = useToken()
 	const accountStore = useAccountStore()
@@ -43,7 +37,6 @@ export default function MemberLayout({
 	useEffect(() => {
 		if (!isClient) return
 
-		// If already logged out, do nothing
 		if (!token && !accountStore.data) {
 			setIsLoading(false)
 			return

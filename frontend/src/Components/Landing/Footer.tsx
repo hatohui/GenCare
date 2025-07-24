@@ -11,7 +11,7 @@ export default function FooterSection() {
 	return (
 		<footer className='bg-gradient-to-b from-main to-secondary border-t-2 border-white text-white relative overflow-hidden'>
 			{/* Background Pattern */}
-			<div className='absolute z-0 inset-0  floragebackground' />
+			<div className='absolute z-0 inset-0 batthernBackground' />
 
 			<div className='relative z-10 max-w-7xl mx-auto px-6 py-16'>
 				{/* Main Footer Content */}

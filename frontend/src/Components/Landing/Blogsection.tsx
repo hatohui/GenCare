@@ -24,7 +24,7 @@ export default function BlogSection() {
 						<motion.div
 							key={i}
 							whileHover={{ scale: 1.05 }}
-							className='bg-blue-50 p-6 rounded-xl shadow hover:shadow-xl transition border border-gray-100 flex flex-col justify-between'
+							className='bg-blue-50 p-6 rounded-xl shadow hover:shadow-xl border border-gray-100 flex flex-col justify-between'
 						>
 							<h3 className='text-lg font-bold mb-2'>
 								{t('blog.article')} {i + 1}

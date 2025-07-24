@@ -9,7 +9,6 @@ import {
 	cardVariants,
 	iconVariants,
 	buttonVariants,
-	backgroundGlow,
 } from '../../Utils/animations'
 
 export default function ServicesSection() {
@@ -23,12 +22,10 @@ export default function ServicesSection() {
 			<div className='relative z-10 max-w-7xl mx-auto px-8'>
 				<motion.h2
 					{...fadeInUp}
-					className='text-3xl md:text-5xl pt-20 font-bold mb-10 text-main leading-tight'
+					className='text-3xl md:text-5xl pt-20 font-bold pb-10 bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'
 				>
 					{t('landing.ourServices')}{' '}
-					<span className='text-accent font-bold'>
-						{t('landing.ourServicesEmphasis')}
-					</span>
+					<span className='font-bold'>{t('landing.ourServicesEmphasis')}</span>
 				</motion.h2>
 
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6'>
@@ -103,7 +100,7 @@ export default function ServicesSection() {
 						variants={buttonVariants}
 						whileHover='whileHover'
 						whileTap='whileTap'
-						className='px-8 py-4 bg-main text-white rounded-2xl font-semibold text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5'
+						className='px-8 py-4 bg-accent text-white rounded-2xl font-semibold text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5'
 					>
 						<span className='flex items-center justify-center gap-3'>
 							{t('landing.viewAllServices')}

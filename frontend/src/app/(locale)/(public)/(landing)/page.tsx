@@ -9,7 +9,6 @@ import TrustedBySection from '@/Components/Landing/TrustedBySection'
 import WhyChooseUsSection from '@/Components/Landing/WhyChooseUs'
 import BackToTop from '@/Components/Landing/BackToTop'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
-import BlogSection from '@/Components/Landing/Blogsection'
 
 const Page = () => {
 	return (

@@ -25,7 +25,6 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { useInView } from 'react-intersection-observer'
-import { motion } from 'framer-motion'
 
 // Tag suggestions (reuse from BlogForm)
 const TAG_SUGGESTIONS = [
