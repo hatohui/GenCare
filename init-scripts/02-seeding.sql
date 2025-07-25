@@ -204,6 +204,43 @@ WHERE email IN (
 'member29@example.com'
 );
 
+-- 13. Insert services
+INSERT INTO "service" (name, description, price, created_at, is_deleted)
+VALUES
+  ('Consultation', 'General health consultation', 200000, NOW(), FALSE),
+  ('Blood Test', 'Basic blood analysis', 100000, NOW(), FALSE),
+  ('X-ray', 'Radiological examination', 150000, NOW(), FALSE),
+  ('MRI Scan', 'Magnetic resonance imaging', 500000, NOW(), FALSE),
+  ('Ultrasound', 'Ultrasound examination', 250000, NOW(), FALSE),
+  ('ECG', 'Electrocardiogram test', 120000, NOW(), FALSE),
+  ('CT Scan', 'Computed tomography scan', 350000, NOW(), FALSE),
+  ('Vaccine', 'Vaccination for various diseases', 80000, NOW(), FALSE),
+  ('Physiotherapy', 'Physical therapy for rehabilitation', 300000, NOW(), FALSE),
+  ('Dental Cleaning', 'Routine dental cleaning', 75000, NOW(), FALSE),
+  ('Eye Exam', 'Comprehensive eye examination', 50000, NOW(), FALSE),
+  ('Hearing Test', 'Audiometric examination', 90000, NOW(), FALSE),
+  ('Cholesterol Test', 'Blood cholesterol level check', 60000, NOW(), FALSE),
+  ('Blood Pressure Monitoring', 'Monitor blood pressure levels', 40000, NOW(), FALSE),
+  ('Urine Test', 'Routine urine analysis', 45000, NOW(), FALSE),
+  ('Diabetes Screening', 'Blood sugar level test', 70000, NOW(), FALSE),
+  ('Surgery Consultation', 'Pre-surgery consultation', 150000, NOW(), FALSE),
+  ('Dermatology', 'Skin health consultation', 200000, NOW(), FALSE),
+  ('Psychological Counseling', 'Mental health consultation', 250000, NOW(), FALSE),
+  ('Allergy Test', 'Test for allergies', 110000, NOW(), FALSE),
+  ('Genetic Testing', 'Genetic disorder testing', 500000, NOW(), FALSE),
+  ('Blood Donation', 'Donate blood for hospital use', 200000, NOW(), FALSE),
+  ('HIV Test', 'Test for HIV infection', 90000, NOW(), FALSE),
+  ('Pregnancy Test', 'Test to confirm pregnancy', 50000, NOW(), FALSE),
+  ('Cancer Screening', 'General cancer screening', 300000, NOW(), FALSE),
+  ('Liver Function Test', 'Test for liver health', 80000, NOW(), FALSE),
+  ('Kidney Function Test', 'Test for kidney health', 80000, NOW(), FALSE),
+  ('Mental Health Screening', 'Screening for mental health conditions', 150000, NOW(), FALSE),
+  ('Surgical Procedure', 'Minor surgical procedures', 500000, NOW(), FALSE),
+  ('Weight Loss Consultation', 'Consultation for weight management', 200000, NOW(), FALSE),
+  ('Dietary Consultation', 'Nutrition and dietary advice', 120000, NOW(), FALSE),
+  ('Smoking Cessation Counseling', 'Support for quitting smoking', 100000, NOW(), FALSE),
+  ('Pain Management Consultation', 'Consultation for pain relief therapies', 250000, NOW(), FALSE);
+
 -- 14. Insert order_detail
   
 INSERT INTO "order_detail" (purchase_id, service_id, first_name, last_name, phone, date_of_birth, gender)
@@ -248,45 +285,6 @@ SELECT
   p.id, gen_random_uuid(), NOW(), 200000, 'paid', NOW() + INTERVAL '7 days', 'momo'
 FROM "purchase" p
 LIMIT all;
-
-
-
--- 13. Insert services
-INSERT INTO "service" (name, description, price, created_at, is_deleted)
-VALUES
-  ('Consultation', 'General health consultation', 200000, NOW(), FALSE),
-  ('Blood Test', 'Basic blood analysis', 100000, NOW(), FALSE),
-  ('X-ray', 'Radiological examination', 150000, NOW(), FALSE),
-  ('MRI Scan', 'Magnetic resonance imaging', 500000, NOW(), FALSE),
-  ('Ultrasound', 'Ultrasound examination', 250000, NOW(), FALSE),
-  ('ECG', 'Electrocardiogram test', 120000, NOW(), FALSE),
-  ('CT Scan', 'Computed tomography scan', 350000, NOW(), FALSE),
-  ('Vaccine', 'Vaccination for various diseases', 80000, NOW(), FALSE),
-  ('Physiotherapy', 'Physical therapy for rehabilitation', 300000, NOW(), FALSE),
-  ('Dental Cleaning', 'Routine dental cleaning', 75000, NOW(), FALSE),
-  ('Eye Exam', 'Comprehensive eye examination', 50000, NOW(), FALSE),
-  ('Hearing Test', 'Audiometric examination', 90000, NOW(), FALSE),
-  ('Cholesterol Test', 'Blood cholesterol level check', 60000, NOW(), FALSE),
-  ('Blood Pressure Monitoring', 'Monitor blood pressure levels', 40000, NOW(), FALSE),
-  ('Urine Test', 'Routine urine analysis', 45000, NOW(), FALSE),
-  ('Diabetes Screening', 'Blood sugar level test', 70000, NOW(), FALSE),
-  ('Surgery Consultation', 'Pre-surgery consultation', 150000, NOW(), FALSE),
-  ('Dermatology', 'Skin health consultation', 200000, NOW(), FALSE),
-  ('Psychological Counseling', 'Mental health consultation', 250000, NOW(), FALSE),
-  ('Allergy Test', 'Test for allergies', 110000, NOW(), FALSE),
-  ('Genetic Testing', 'Genetic disorder testing', 500000, NOW(), FALSE),
-  ('Blood Donation', 'Donate blood for hospital use', 200000, NOW(), FALSE),
-  ('HIV Test', 'Test for HIV infection', 90000, NOW(), FALSE),
-  ('Pregnancy Test', 'Test to confirm pregnancy', 50000, NOW(), FALSE),
-  ('Cancer Screening', 'General cancer screening', 300000, NOW(), FALSE),
-  ('Liver Function Test', 'Test for liver health', 80000, NOW(), FALSE),
-  ('Kidney Function Test', 'Test for kidney health', 80000, NOW(), FALSE),
-  ('Mental Health Screening', 'Screening for mental health conditions', 150000, NOW(), FALSE),
-  ('Surgical Procedure', 'Minor surgical procedures', 500000, NOW(), FALSE),
-  ('Weight Loss Consultation', 'Consultation for weight management', 200000, NOW(), FALSE),
-  ('Dietary Consultation', 'Nutrition and dietary advice', 120000, NOW(), FALSE),
-  ('Smoking Cessation Counseling', 'Support for quitting smoking', 100000, NOW(), FALSE),
-  ('Pain Management Consultation', 'Consultation for pain relief therapies', 2500s00, NOW(), FALSE);
 
 
 

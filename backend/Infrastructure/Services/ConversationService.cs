@@ -60,11 +60,23 @@ public class ConversationService(
     {
         var conversation = await conversationRepository.GetByIdAsync(id);
 
+        if (conversation == null)
+        {
+            return new ViewConversationResponse
+            {
+                ConversationId = Guid.Empty,
+                MemberId = Guid.Empty,
+                StaffId = null,
+                StartAt = null,
+                Status = false,
+            };
+        }
+
         return new ViewConversationResponse
         {
             ConversationId = conversation.Id,
             MemberId = conversation.MemberId,
-            //StaffId = conversation.StaffId,
+            StaffId = conversation.StaffId,
             StartAt = conversation.StartAt,
             Status = conversation.Status,
         };
@@ -74,8 +86,23 @@ public class ConversationService(
     {
         var conversation = await conversationRepository.GetByIdAsync(conversationId);
 
+        if (conversation == null)
+        {
+            return false;
+        }
+
         conversation.Status = false;
-        return await conversationRepository.UpdateAsync(conversation);
+        var result = await conversationRepository.UpdateAsync(conversation);
+
+        // Notify all participants in the conversation that it has ended
+        if (result)
+        {
+            await chatHub
+                .Clients.Group(conversationId.ToString())
+                .SendAsync("ConversationEnded", new { conversationId });
+        }
+
+        return result;
     }
 
     public async Task<ViewAllConversationResponse> ViewAllConversationAsync()
@@ -132,8 +159,36 @@ public class ConversationService(
             };
     }
 
-    public async Task<List<Conversation>> GetPendingConversationsAsync() =>
-        await conversationRepository.GetPendingConversationsAsync();
+    public async Task<PendingConversationsListResponse> GetPendingConversationsAsync()
+    {
+        var conversations = await conversationRepository.GetPendingConversationsAsync();
+
+        // Get member IDs and fetch member info separately to avoid circular references
+        var memberIds = conversations.Select(c => c.MemberId).Distinct().ToList();
+        var members = await Task.FromResult(
+            new Dictionary<Guid, (string? FirstName, string? LastName, string? Email)>()
+        );
+
+        // For now, we'll return without member details to test if the circular reference is fixed
+        var pendingConversations = conversations
+            .Select(c => new PendingConversationResponse
+            {
+                ConversationId = c.Id,
+                MemberId = c.MemberId,
+                MemberFirstName = null, // We'll add this back once we confirm the fix works
+                MemberLastName = null,
+                MemberEmail = null,
+                StartAt = c.StartAt,
+                Status = c.Status,
+            })
+            .ToList();
+
+        return new PendingConversationsListResponse
+        {
+            Conversations = pendingConversations,
+            TotalCount = pendingConversations.Count,
+        };
+    }
 
     public async Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId)
     {
@@ -243,5 +298,82 @@ public class ConversationService(
             Content = newMessage.Content,
             CreatedAt = newMessage.CreatedAt,
         };
+    }
+
+    public async Task<ViewAllConversationResponse> GetUserConversationHistoryAsync(Guid userId)
+    {
+        var conversations = await conversationRepository.GetConversationsByUserIdAsync(userId);
+        var conversationPayloads = new List<ConversationPayLoad>();
+
+        foreach (var conversation in conversations)
+        {
+            string? staffName = null;
+            string? staffAvatarUrl = null;
+            if (conversation.Staff != null)
+            {
+                staffName = $"{conversation.Staff.FirstName} {conversation.Staff.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(staffName))
+                {
+                    staffName = conversation.Staff.Email ?? "Healthcare Consultant";
+                }
+                staffAvatarUrl = conversation.Staff.AvatarUrl;
+            }
+
+            conversationPayloads.Add(
+                new ConversationPayLoad()
+                {
+                    ConversationId = conversation.Id,
+                    MemberId = conversation.MemberId,
+                    StaffId = conversation.StaffId,
+                    StaffName = staffName,
+                    StaffAvatarUrl = staffAvatarUrl,
+                    StartAt = conversation.StartAt,
+                    Status = conversation.Status,
+                }
+            );
+        }
+
+        return new ViewAllConversationResponse() { Conversations = conversationPayloads };
+    }
+
+    public async Task<ViewAllConversationResponse> GetConsultantConversationHistoryAsync(
+        Guid consultantId
+    )
+    {
+        var conversations = await conversationRepository.GetConversationsByStaffIdAsync(
+            consultantId
+        );
+        var conversationPayloads = new List<ConversationPayLoad>();
+
+        foreach (var conversation in conversations)
+        {
+            string? memberName = null;
+            string? memberAvatarUrl = null;
+            if (conversation.Member != null)
+            {
+                memberName =
+                    $"{conversation.Member.FirstName} {conversation.Member.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(memberName))
+                {
+                    memberName = conversation.Member.Email ?? "Patient";
+                }
+                memberAvatarUrl = conversation.Member.AvatarUrl;
+            }
+
+            conversationPayloads.Add(
+                new ConversationPayLoad()
+                {
+                    ConversationId = conversation.Id,
+                    MemberId = conversation.MemberId,
+                    StaffId = conversation.StaffId,
+                    MemberName = memberName,
+                    MemberAvatarUrl = memberAvatarUrl,
+                    StartAt = conversation.StartAt,
+                    Status = conversation.Status,
+                }
+            );
+        }
+
+        return new ViewAllConversationResponse() { Conversations = conversationPayloads };
     }
 }

@@ -26,7 +26,7 @@ public class ConversationController(IConversationService conversationService) : 
         return Ok(response);
     }
 
-    [HttpPost("{id}")]
+    [HttpPost("{id}/end")]
     public async Task<IActionResult> End(Guid id)
     {
         var result = await conversationService.EndConversationAsync(id);
@@ -36,12 +36,12 @@ public class ConversationController(IConversationService conversationService) : 
     [HttpGet("pending")]
     public async Task<IActionResult> GetPending()
     {
-        var conversations = await conversationService.GetPendingConversationsAsync();
-        return Ok(conversations);
+        var response = await conversationService.GetPendingConversationsAsync();
+        return Ok(response);
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Staff}")] // tai sao lai staff?
     public async Task<IActionResult> EditConversation(
         [FromBody] EditConversationRequest request,
         [FromRoute] Guid id
@@ -78,5 +78,28 @@ public class ConversationController(IConversationService conversationService) : 
             );
 
         return Ok(new { Success = true, Message = "Staff assigned successfully." });
+    }
+
+    [HttpGet("history")]
+    public async Task<IActionResult> GetUserConversationHistory()
+    {
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var userId = JwtHelper.GetAccountIdFromToken(token);
+
+        var response = await conversationService.GetUserConversationHistoryAsync(userId);
+        return Ok(response);
+    }
+
+    [HttpGet("consultant/history")]
+    [Authorize(Roles = $"{RoleNames.Staff}")]
+    public async Task<IActionResult> GetConsultantConversationHistory()
+    {
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var consultantId = JwtHelper.GetAccountIdFromToken(token);
+
+        var response = await conversationService.GetConsultantConversationHistoryAsync(
+            consultantId
+        );
+        return Ok(response);
     }
 }

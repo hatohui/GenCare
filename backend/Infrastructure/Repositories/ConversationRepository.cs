@@ -12,12 +12,11 @@ public class ConversationRepository(IApplicationDbContext dbContext) : IConversa
         return await dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<Conversation?> GetByIdAsync(Guid id)
-                 =>await dbContext.Conversations
-                         .Include(c => c.Member)
-                            .Include(c => c.Staff)
-                                .FirstOrDefaultAsync(c => c.Id == id);
-    
+    public async Task<Conversation?> GetByIdAsync(Guid id) =>
+        await dbContext
+            .Conversations.Include(c => c.Member)
+            .Include(c => c.Staff)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
     public async Task<bool> UpdateAsync(Conversation conversation)
     {
@@ -25,16 +24,33 @@ public class ConversationRepository(IApplicationDbContext dbContext) : IConversa
         return await dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<Conversation>> GetPendingConversationsAsync()
-                    => await dbContext.Conversations
-                            .Where(c => c.StaffId == Guid.Empty && !c.Status)
-                                 .Include(c => c.Member)
-                                     .ToListAsync();
+    public async Task<List<Conversation>> GetPendingConversationsAsync() =>
+        await dbContext
+            .Conversations.Where(c => c.StaffId == null && !c.Status)
+            .AsNoTracking()
+            .ToListAsync();
+
     public async Task<List<Conversation>> GetAllAsync()
     {
-        return await dbContext.Conversations
-            .Include(c => c.Member)
+        return await dbContext
+            .Conversations.Include(c => c.Member)
             .Include(c => c.Staff)
             .ToListAsync();
     }
+
+    public async Task<List<Conversation>> GetConversationsByUserIdAsync(Guid userId) =>
+        await dbContext
+            .Conversations.Include(c => c.Staff)
+            .Where(c => c.MemberId == userId || c.StaffId == userId)
+            .OrderByDescending(c => c.StartAt)
+            .AsNoTracking()
+            .ToListAsync();
+
+    public async Task<List<Conversation>> GetConversationsByStaffIdAsync(Guid staffId) =>
+        await dbContext
+            .Conversations.Include(c => c.Member)
+            .Where(c => c.StaffId == staffId)
+            .OrderByDescending(c => c.StartAt)
+            .AsNoTracking()
+            .ToListAsync();
 }

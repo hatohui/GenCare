@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS "birth_control" (
 ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "conversation" (
     "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    "staff_id" UUID NOT NULL,
+    "staff_id" UUID,
     "member_id" UUID NOT NULL,
     "start_at" TIMESTAMP,
     "status" BOOLEAN NOT NULL DEFAULT TRUE,
@@ -155,12 +155,13 @@ CREATE TABLE IF NOT EXISTS "purchase" (
 
 CREATE TABLE IF NOT EXISTS "payment_history" (
     "purchase_id" UUID PRIMARY KEY,
-    "transaction_id" VARCHAR(255) NOT NULL,
+    "transaction_id" VARCHAR(255),
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "amount" DECIMAL(18,2) NOT NULL,
-    "status" CHAR(10) NOT NULL DEFAULT 'pending',
+    "status" VARCHAR(10) NOT NULL DEFAULT 'pending',
     "expired_at" TIMESTAMP,
-    "payment_method" CHAR(10) NOT NULL DEFAULT 'bank',
+    "payment_method" VARCHAR(10) NOT NULL DEFAULT 'bank',
+    "pay_id" UUID,
     CONSTRAINT "fk_payment_history_purchase" FOREIGN KEY ("purchase_id") REFERENCES "purchase"("id") ON DELETE RESTRICT
 );
 

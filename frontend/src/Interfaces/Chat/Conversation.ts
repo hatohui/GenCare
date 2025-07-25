@@ -13,7 +13,7 @@ export interface CreateConversationResponse {
 
 export interface ViewConversationByIdResponse {
 	conversationId: string
-	staffId: string
+	staffId?: string
 	memberId: string
 	startAt: string
 	status: boolean
