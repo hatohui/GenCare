@@ -1,9 +1,9 @@
 'use client'
 
 import React from 'react'
-import { useAuthGuard } from '@/Hooks/Auth/useAuthGuard'
-import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
 import LoadingIcon from '@/Components/LoadingIcon'
+import useToken from '@/Hooks/Auth/useToken'
+import { forbidden } from 'next/navigation'
 
 export default function ProfileLayout({
 	children,
@@ -11,10 +11,10 @@ export default function ProfileLayout({
 	children: React.ReactNode
 }) {
 	// Add authentication guard for member access
-	const { isUserLoading } = useAuthGuard(PermissionLevel.member)
+	const { accessToken, isHydrated } = useToken()
 
 	// Show loading while authentication is being verified
-	if (isUserLoading) {
+	if (!isHydrated) {
 		return (
 			<div className='flex justify-center items-center min-h-[400px]'>
 				<div className='text-center'>
@@ -24,6 +24,8 @@ export default function ProfileLayout({
 			</div>
 		)
 	}
+
+	if (!accessToken) forbidden()
 
 	return <>{children}</>
 }

@@ -10,6 +10,7 @@ import {
 	iconVariants,
 	buttonVariants,
 } from '../../Utils/animations'
+import Image from 'next/image'
 
 export default function ServicesSection() {
 	const { data, isLoading } = useServiceByPage(1, 6, true, '')
@@ -46,7 +47,9 @@ export default function ServicesSection() {
 									className='w-12 h-12 mb-2 rounded-lg bg-general flex items-center justify-center shadow-sm overflow-hidden border border-general'
 								>
 									{service.imageUrls && service.imageUrls.length > 0 ? (
-										<img
+										<Image
+											width={48}
+											height={48}
 											src={service.imageUrls[0].url}
 											alt={service.name}
 											className='w-full h-full object-cover rounded-lg border border-general'

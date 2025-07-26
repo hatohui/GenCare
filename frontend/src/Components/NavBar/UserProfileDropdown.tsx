@@ -106,7 +106,7 @@ const UserProfileDropdown = ({ className, onTop }: NavComponentProps) => {
 				className={clsx(
 					'flex items-center gap-3 px-3 py-2 rounded-full transition-all duration-200',
 					'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20',
-					onTop ? 'text-gray-800' : 'text-white'
+					onTop ? 'text-gray-800 bg-general/50' : 'text-white'
 				)}
 				aria-label='User profile menu'
 				aria-expanded={isOpen}

@@ -1,5 +1,6 @@
 import { useState, useEffect, memo } from 'react'
 import { Circle, Timer } from 'lucide-react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface AppointmentCountdownProps {
 	scheduleAt: string
@@ -10,6 +11,7 @@ const AppointmentCountdownComponent = ({
 	scheduleAt,
 	isUpcoming,
 }: AppointmentCountdownProps) => {
+	const { t } = useLocale()
 	const [timeLeft, setTimeLeft] = useState('')
 	const [isLive, setIsLive] = useState(false)
 
@@ -21,32 +23,35 @@ const AppointmentCountdownComponent = ({
 			const minutesDiff = timeDiff / (1000 * 60)
 
 			if (minutesDiff <= 0 && minutesDiff > -60) {
-				// Meeting is happening now (up to 1 hour after start)
 				setIsLive(true)
-				setTimeLeft('ĐANG DIỄN RA')
+				setTimeLeft(t('appointment.live_now'))
 			} else if (minutesDiff > 0) {
-				// Meeting is in the future
 				setIsLive(false)
 				const hours = Math.floor(minutesDiff / 60)
 				const minutes = Math.floor(minutesDiff % 60)
 
 				if (hours > 0) {
-					setTimeLeft(`${hours}h ${minutes}p`)
+					setTimeLeft(
+						t('appointment.time_remaining_hours_minutes', {
+							0: hours.toString(),
+							1: minutes.toString(),
+						})
+					)
 				} else {
-					setTimeLeft(`${minutes} phút`)
+					setTimeLeft(
+						t('appointment.time_remaining_minutes', { 0: minutes.toString() })
+					)
 				}
 			} else {
-				// Meeting has passed
 				setIsLive(false)
-				setTimeLeft('ĐÃ KẾT THÚC')
+				setTimeLeft(t('appointment.ended'))
 			}
 		}
 
 		updateCountdown()
-		const interval = setInterval(updateCountdown, 1000) // Update every second
-
+		const interval = setInterval(updateCountdown, 1000)
 		return () => clearInterval(interval)
-	}, [scheduleAt])
+	}, [scheduleAt, t])
 
 	if (!isUpcoming && !isLive) return null
 

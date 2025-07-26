@@ -180,6 +180,7 @@ const vi: Record<string, string> = {
 	'date.just_now': 'Vừa xong',
 
 	// Common actions
+	'common.signout': 'Đăng xuất',
 	'action.save': 'Lưu',
 	'action.cancel': 'Hủy',
 	'action.delete': 'Xóa',
@@ -220,6 +221,13 @@ const vi: Record<string, string> = {
 	'common.delete': 'Xóa',
 	'common.edit': 'Sửa',
 	'common.add': 'Thêm',
+	'common.copied_to_clipboard': 'Đã sao chép vào clipboard',
+	'common.copy_failed': 'Sao chép thất bại',
+	'common.copy_member_id': 'Sao chép ID thành viên',
+	'common.invalid_date': 'Ngày không hợp lệ',
+	'common.account_id_required': 'ID tài khoản là bắt buộc',
+	'common.loading_conversations': 'Đang tải cuộc trò chuyện...',
+	'common.error_loading_conversations': 'Lỗi khi tải cuộc trò chuyện',
 	'common.view': 'Xem',
 	'common.update': 'Cập nhật',
 	'common.create': 'Tạo',
@@ -318,6 +326,91 @@ const vi: Record<string, string> = {
 	'chat.message': 'Tin nhắn',
 	'chat.send': 'Gửi',
 	'chat.widget.placeholder': 'Nhập tin nhắn của bạn...',
+	'chat.consultant_dashboard': 'Bảng điều khiển tư vấn viên',
+	'chat.pending': 'Đang chờ',
+	'chat.history': 'Lịch sử',
+	'chat.waiting_patients': 'Bệnh nhân đang chờ',
+	'chat.all_caught_up': 'Đã xử lý xong!',
+	'chat.no_patients_waiting':
+		'Hiện tại không có bệnh nhân nào đang chờ tư vấn.',
+	'chat.anonymous': 'Ẩn danh',
+	'chat.patient': 'Bệnh nhân',
+	'chat.no_email': 'Không có email',
+	'chat.waiting': 'Đang chờ',
+	'chat.joining': 'Đang tham gia...',
+	'chat.join_consultation': 'Tham gia tư vấn',
+	'chat.just_now': 'Vừa xong',
+	'chat.minutes_ago': '{0} phút trước',
+	'chat.hours_ago': '{0} giờ trước',
+	'chat.successfully_joined': 'Đã tham gia cuộc trò chuyện thành công!',
+	'chat.failed_to_join':
+		'Không thể tham gia cuộc trò chuyện. Vui lòng thử lại.',
+	'chat.patient_consultation': 'Tư vấn bệnh nhân',
+	'chat.connected': 'Đã kết nối',
+	'chat.connecting': 'Đang kết nối...',
+	'chat.ending': 'Đang kết thúc...',
+	'chat.end_chat': 'Kết thúc trò chuyện',
+	'chat.conversation_ended_successfully':
+		'Cuộc trò chuyện đã kết thúc thành công',
+	'chat.failed_to_end': 'Không thể kết thúc cuộc trò chuyện. Vui lòng thử lại.',
+	'chat.ready_to_help': 'Sẵn sàng giúp đỡ bệnh nhân này',
+	'chat.start_with_greeting':
+		'Bắt đầu cuộc trò chuyện bằng cách gửi lời chào chuyên nghiệp',
+	'chat.type_response': 'Nhập phản hồi của bạn...',
+	'chat.sending': 'Đang gửi',
+	'chat.failed_to_send': 'Không thể gửi tin nhắn. Vui lòng thử lại.',
+	'chat.select_conversation': 'Chọn cuộc trò chuyện',
+	'chat.choose_patient_conversation':
+		'Chọn cuộc trò chuyện với bệnh nhân từ thanh bên để bắt đầu trò chuyện',
+	'chat.messages': 'Tin nhắn',
+	'chat.start_new_conversation': 'Bắt đầu cuộc trò chuyện mới',
+	'chat.active': 'Đang hoạt động',
+	'chat.ended': 'Đã kết thúc',
+	'chat.no_pending_conversations': 'Không có cuộc trò chuyện đang chờ',
+	'chat.start_new_conversation_to_see':
+		'Bắt đầu cuộc trò chuyện mới để xem ở đây',
+	'chat.no_active_conversations': 'Không có cuộc trò chuyện đang hoạt động',
+	'chat.start_new_or_check_tabs':
+		'Bắt đầu cuộc trò chuyện mới hoặc kiểm tra các tab khác',
+	'chat.no_ended_conversations': 'Không có cuộc trò chuyện đã kết thúc',
+	'chat.complete_conversations_to_see':
+		'Hoàn thành một số cuộc trò chuyện để xem chúng ở đây',
+	'chat.no_conversations_yet': 'Chưa có cuộc trò chuyện nào',
+	'chat.start_first_conversation': 'Bắt đầu cuộc trò chuyện đầu tiên của bạn',
+	'chat.no_patient_conversations': 'Không có cuộc trò chuyện bệnh nhân nào',
+	'chat.start_new_conversation_title': 'Bắt đầu cuộc trò chuyện mới',
+	'chat.describe_health_concern':
+		'Mô tả vấn đề sức khỏe của bạn và kết nối với các chuyên gia tư vấn y tế có trình độ của chúng tôi',
+	'chat.how_can_we_help': 'Chúng tôi có thể giúp gì cho bạn hôm nay?',
+	'chat.describe_symptoms':
+		'Mô tả các triệu chứng, mối quan tâm hoặc câu hỏi của bạn...',
+	'chat.please_login': 'Vui lòng đăng nhập để bắt đầu cuộc trò chuyện',
+	'chat.enter_message_first':
+		'Vui lòng nhập tin nhắn để bắt đầu cuộc trò chuyện',
+	'chat.conversation_started':
+		'Cuộc trò chuyện đã bắt đầu! Đang chờ tư vấn viên...',
+	'chat.failed_to_start': 'Không thể bắt đầu cuộc trò chuyện',
+	'chat.starting': 'Đang bắt đầu...',
+	'chat.start_conversation': 'Bắt đầu trò chuyện',
+	'chat.waiting_for_consultant': 'Đang chờ tư vấn viên',
+	'chat.healthcare_consultant': 'Tư vấn viên y tế',
+	'chat.waiting_for_assignment': 'Đang chờ phân công...',
+	'chat.online': 'Trực tuyến',
+	'chat.conversation_ended_by_consultant':
+		'Tư vấn viên đã kết thúc cuộc trò chuyện',
+	'chat.waiting_consultant_to_join': 'Đang chờ tư vấn viên tham gia...',
+	'chat.message_delivered_when_connect':
+		'Tin nhắn của bạn sẽ được gửi khi họ kết nối',
+	'chat.type_your_message': 'Nhập tin nhắn của bạn...',
+	'chat.conversation_has_ended': 'Cuộc trò chuyện này đã kết thúc',
+	'chat.start_new_chat': 'Bắt đầu trò chuyện mới',
+	'chat.video_call': 'Gọi video',
+	'chat.video_call_with_consultant': 'Bắt đầu gọi video với tư vấn viên',
+	'chat.book_consultant': 'Đặt lịch',
+	'chat.book_this_consultant': 'Đặt lịch hẹn với tư vấn viên này',
+	'chat.video_call_feature_coming_soon': 'Tính năng gọi video sắp ra mắt!',
+	'chat.book_consultant_feature_coming_soon':
+		'Tính năng đặt lịch tư vấn viên sắp ra mắt!',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',
@@ -325,6 +418,7 @@ const vi: Record<string, string> = {
 	'consultant.experience': 'Kinh nghiệm',
 	'consultant.ratings': 'Đánh giá',
 	'consultant.book': 'Đặt lịch tư vấn',
+	'consultant.years_of_experience': '{0} năm kinh nghiệm',
 
 	// Test results
 	'test.results': 'Kết quả xét nghiệm',
@@ -334,6 +428,38 @@ const vi: Record<string, string> = {
 	'test.order_date': 'Ngày đặt',
 	'test.sample_date': 'Ngày lấy mẫu',
 	'test.result_date': 'Ngày trả kết quả',
+
+	// Birth Control
+	'birthControl.cycle_tracking': 'Theo Dõi Chu Kỳ',
+	'birthControl.select_cycle_start_date':
+		'Chọn ngày bắt đầu chu kỳ kinh nguyệt của bạn',
+	'birthControl.cycle_start_date': 'Ngày bắt đầu chu kỳ',
+	'birthControl.select_start_date_required':
+		'Vui lòng chọn ngày bắt đầu chu kỳ',
+	'birthControl.date_saved': 'Đã lưu ngày: {0}',
+	'birthControl.date_updated': 'Đã cập nhật ngày: {0}',
+	'birthControl.save_failed': 'Không thể lưu thông tin. Vui lòng thử lại sau.',
+	'birthControl.saving': 'Đang lưu...',
+	'birthControl.auto_save_info':
+		'Thông tin sẽ được lưu tự động khi bạn chọn ngày',
+	'birthControl.update_anytime': 'Bạn có thể cập nhật bất cứ lúc nào',
+
+	// Appointments
+	'appointment.live_now': 'ĐANG DIỄN RA',
+	'appointment.time_remaining_hours_minutes': '{0}h {1}p',
+	'appointment.time_remaining_minutes': '{0} phút',
+	'appointment.ended': 'ĐÃ KẾT THÚC',
+	'appointment.week': 'Tuần',
+	'appointment.previous_week': 'Tuần trước',
+	'appointment.current': 'Hiện tại',
+	'appointment.next_week': 'Tuần sau',
+	'appointment.no_appointments_this_week': 'Không có lịch hẹn trong tuần này',
+	'appointment.upcoming_appointments_info':
+		'Bạn có {0} lịch hẹn sắp tới. Nhấn nút',
+	'appointment.find_appointment': 'Tìm lịch',
+	'appointment.go_to_first_appointment': 'để đi đến tuần có lịch hẹn đầu tiên.',
+	'appointment.this_week': 'Tuần này',
+	'appointment.appointments_count': 'lịch hẹn',
 
 	// Payments
 	'payment.paid': 'Đã thanh toán',
@@ -556,6 +682,13 @@ const vi: Record<string, string> = {
 	'blog.loading_more': 'Đang tải thêm bài viết...',
 	'blog.scroll_to_load_more': 'Cuộn xuống để tải thêm',
 	'blog.all_posts_loaded': 'Bạn đã xem hết tất cả bài viết!',
+	'blog.login_to_comment': 'Bạn cần đăng nhập để bình luận',
+	'blog.add_comment': 'Thêm bình luận',
+	'blog.share_thoughts_placeholder':
+		'Chia sẻ suy nghĩ của bạn về bài viết này...',
+	'blog.logged_in_as': 'Đăng nhập với tư cách: {0}',
+	'blog.submitting': 'Đang gửi...',
+	'blog.submit_comment': 'Gửi bình luận',
 
 	// Home Page
 	'home.welcome': 'Chào mừng trở lại, {0}! 👋',
@@ -814,9 +947,7 @@ const vi: Record<string, string> = {
 	'appointment.join_now': 'THAM GIA NGAY',
 	'appointment.join': 'Tham gia',
 	'appointment.join_zoom': 'Tham gia cuộc họp',
-	'appointment.previous_week': 'Tuần trước',
 	'appointment.current_week': 'Hiện tại',
-	'appointment.next_week': 'Tuần sau',
 	'appointment.error_occurred': 'Oops! Có lỗi xảy ra',
 	'appointment.retry': 'Thử lại',
 	'appointment.processing': 'Đang xử lý...',

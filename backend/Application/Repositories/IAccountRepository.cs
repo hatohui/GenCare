@@ -57,7 +57,13 @@ public interface IAccountRepository
     /// <param name="role">The role name for filtering accounts.</param>
     /// <param name="active">The active status for filtering accounts.</param>
     /// <returns>A list of accounts matching the criteria.</returns>
-    Task<List<Account>> GetAccountsByPageAsync(int skip, int take, string? search, string? role, bool? active);
+    Task<List<Account>> GetAccountsByPageAsync(
+        int skip,
+        int take,
+        string? search,
+        string? role,
+        bool? active
+    );
 
     /// <summary>
     /// Retrieves the total count of accounts based on search criteria.
@@ -69,4 +75,11 @@ public interface IAccountRepository
     Task<int> GetTotalAccountCountAsync(string? search, string? role, bool? active);
 
     Task<List<Account>> GetAll();
+
+    /// <summary>
+    /// Retrieves multiple accounts by their unique identifiers.
+    /// </summary>
+    /// <param name="accountIds">The list of unique identifiers of the accounts.</param>
+    /// <returns>A list of accounts matching the provided IDs.</returns>
+    Task<List<Account>> GetAccountsByIdsAsync(IEnumerable<Guid> accountIds);
 }

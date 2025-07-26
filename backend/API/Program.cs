@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Api.Middlewares;
 using API.ActionFilters;
+using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Appointment.Request;
 using Application.DTOs.Auth.Requests;
@@ -27,7 +27,6 @@ using Microsoft.OpenApi.Models;
 
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
-
 
 //==============connect momo api===================== //
 builder.Services.Configure<MomoConfig>(options =>
@@ -191,7 +190,10 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<AccountLoginRequest>, AccountLoginRequestValidator>();
-builder.Services.AddTransient<IValidator<AppointmentCreateRequest>, AppointmentCreateRequestValidator>();
+builder.Services.AddTransient<
+    IValidator<AppointmentCreateRequest>,
+    AppointmentCreateRequestValidator
+>();
 
 // ====== Application Services ======
 builder.Services.AddHangfireServer();

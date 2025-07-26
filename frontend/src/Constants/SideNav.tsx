@@ -130,4 +130,10 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		svg: <MessageCircle size={20} />,
 		level: PermissionLevel.member,
 	},
+	{
+		label: 'nav.support',
+		to: '/app/support',
+		svg: <MessageCircle size={20} />,
+		level: PermissionLevel.consultant,
+	},
 ]

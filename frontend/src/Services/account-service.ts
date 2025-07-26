@@ -12,6 +12,7 @@ import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { Role } from '@/Utils/Permissions/isAllowedRole'
 import useToken from '@/Hooks/Auth/useToken'
 import { isTokenValid } from '@/Utils/Auth/isTokenValid'
+import toast from 'react-hot-toast'
 
 const accountApi = {
 	getMe: () => {
@@ -219,24 +220,21 @@ const accountApi = {
 				: null,
 		}
 
-		console.log('🌐 Account Service - Sending PUT request:', {
-			url: `/accounts/${id}`,
-			originalData: data,
-			transformedData: transformedData,
-		})
-
 		return axiosInstance
 			.put<any>(`/accounts/${id}`, transformedData)
 			.then(res => {
-				console.log('✅ Account Service - PUT response:', res.data)
 				return res.data || {}
 			})
 			.catch(err => {
-				console.error(
-					'❌ Account Service - PUT error:',
-					err.response?.data || err.message
+				toast.error(
+					`Failed to update account: ${
+						err.response?.data?.message || err.message
+					}`,
+					{
+						duration: 5000,
+						position: 'top-right',
+					}
 				)
-				throw err
 			})
 	},
 

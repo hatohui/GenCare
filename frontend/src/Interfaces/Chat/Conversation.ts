@@ -10,3 +10,11 @@ export interface CreateConversationResponse {
 	content: string
 	createdAt: string
 }
+
+export interface ViewConversationByIdResponse {
+	conversationId: string
+	staffId?: string
+	memberId: string
+	startAt: string
+	status: boolean
+}

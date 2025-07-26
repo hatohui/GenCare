@@ -15,8 +15,10 @@ import {
 	filterAppointmentsForWeek,
 	formatWeekRange,
 } from '@/Utils/Appointment/timeSlotHelpers'
+import { useLocale } from '@/Hooks/useLocale'
 
 export const AppointmentsTimetable = () => {
+	const { t, locale } = useLocale()
 	const [currentWeek, setCurrentWeek] = useState(new Date())
 	const { data, isLoading, error, refetch } = useAppointments()
 	const [pastTimeSlots, setPastTimeSlots] = useState<Set<string>>(new Set())
@@ -241,10 +243,10 @@ export const AppointmentsTimetable = () => {
 					transition={{ delay: 0.2 }}
 				>
 					<h1 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-						📅 Lịch hẹn của tôi
+						📅 {t('appointment.my_appointments')}
 					</h1>
 					<p className='text-gray-600 mt-1 text-sm sm:text-base'>
-						Tuần {formatWeekRange(startOfWeek, endOfWeek)}
+						{t('appointment.week')} {formatWeekRange(startOfWeek, endOfWeek)}
 					</p>
 				</motion.div>
 
@@ -260,7 +262,10 @@ export const AppointmentsTimetable = () => {
 						onClick={goToPreviousWeek}
 						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium'
 					>
-						← <span className='hidden sm:inline'>Tuần trước</span>
+						←{' '}
+						<span className='hidden sm:inline'>
+							{t('appointment.previous_week')}
+						</span>
 					</motion.button>
 
 					<motion.button
@@ -268,7 +273,8 @@ export const AppointmentsTimetable = () => {
 						onClick={goToCurrentWeek}
 						className='px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transition-all duration-200 shadow-md text-xs sm:text-sm font-medium'
 					>
-						🏠 <span className='hidden sm:inline'>Hiện tại</span>
+						🏠{' '}
+						<span className='hidden sm:inline'>{t('appointment.current')}</span>
 					</motion.button>
 
 					<motion.button
@@ -276,7 +282,10 @@ export const AppointmentsTimetable = () => {
 						onClick={goToNextWeek}
 						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium'
 					>
-						<span className='hidden sm:inline'>Tuần sau</span> →
+						<span className='hidden sm:inline'>
+							{t('appointment.next_week')}
+						</span>{' '}
+						→
 					</motion.button>
 
 					<AnimatePresence>
@@ -347,15 +356,16 @@ export const AppointmentsTimetable = () => {
 								<div className='text-yellow-600 text-2xl'>📅</div>
 								<div>
 									<h3 className='text-yellow-800 font-semibold'>
-										Không có lịch hẹn trong tuần này
+										{t('appointment.no_appointments_this_week')}
 									</h3>
 									<p className='text-yellow-700 text-sm mt-1'>
-										Bạn có {futureAppointments.length} lịch hẹn sắp tới. Nhấn
-										nút{' '}
+										{t('appointment.upcoming_appointments_info', {
+											0: futureAppointments.length.toString(),
+										})}{' '}
 										<span className='font-semibold text-green-600'>
-											&quot;🔍 Tìm lịch&quot;
+											&quot;🔍 {t('appointment.find_appointment')}&quot;
 										</span>{' '}
-										để đi đến tuần có lịch hẹn đầu tiên.
+										{t('appointment.go_to_first_appointment')}
 									</p>
 								</div>
 							</div>
@@ -417,14 +427,20 @@ export const AppointmentsTimetable = () => {
 										<div className='flex flex-col items-center space-y-1'>
 											<span className='text-xs text-gray-600'>
 												{new Date(day)
-													.toLocaleDateString('vi-VN', { weekday: 'short' })
+													.toLocaleDateString(
+														locale === 'vi' ? 'vi-VN' : 'en-US',
+														{ weekday: 'short' }
+													)
 													.toUpperCase()}
 											</span>
 											<span className='font-bold text-gray-900'>
-												{new Date(day).toLocaleDateString('vi-VN', {
-													day: '2-digit',
-													month: '2-digit',
-												})}
+												{new Date(day).toLocaleDateString(
+													locale === 'vi' ? 'vi-VN' : 'en-US',
+													{
+														day: '2-digit',
+														month: '2-digit',
+													}
+												)}
 											</span>
 										</div>
 									</motion.th>
@@ -532,11 +548,11 @@ export const AppointmentsTimetable = () => {
 						<div className='flex items-center space-x-3'>
 							<BarChart3 className='w-6 h-6 text-blue-600' />
 							<span className='text-gray-700'>
-								Tuần này:{' '}
+								{t('appointment.this_week')}:{' '}
 								<span className='font-bold text-blue-600 text-lg'>
 									{futureWeekAppointments.length}
 								</span>{' '}
-								lịch hẹn
+								{t('appointment.appointments_count')}
 							</span>
 						</div>
 						<div className='flex items-center space-x-3'>

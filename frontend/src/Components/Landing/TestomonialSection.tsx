@@ -87,7 +87,6 @@ export default function TestimonialsSection() {
 								height={500}
 							/>
 
-							{/* Enhanced Testimonial text overlay */}
 							<div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-8 z-10'>
 								<motion.p
 									variants={textVariants}
