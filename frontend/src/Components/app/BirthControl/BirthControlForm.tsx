@@ -11,22 +11,26 @@ import SingleDateCalendar from '@/Components/Scheduling/Calendar/Calendar'
 import { isSameDay } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import LoadingIcon from '@/Components/LoadingIcon'
-
-const birthControlSchema = z.object({
-	accountID: z.string().min(1, 'Account ID is required'),
-	startDate: z.date({
-		required_error: 'Vui lòng chọn ngày bắt đầu chu kỳ',
-		invalid_type_error: 'Ngày không hợp lệ',
-	}),
-})
-
-type BirthControlFormData = z.infer<typeof birthControlSchema>
+import { useLocale } from '@/Hooks/useLocale'
 
 interface BirthControlFormProps {
 	accountID: string
 }
 
 const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
+	const { t } = useLocale()
+
+	// Create schema with localized messages
+	const birthControlSchema = z.object({
+		accountID: z.string().min(1, t('common.account_id_required')),
+		startDate: z.date({
+			required_error: t('birthControl.select_start_date_required'),
+			invalid_type_error: t('common.invalid_date'),
+		}),
+	})
+
+	type BirthControlFormData = z.infer<typeof birthControlSchema>
+
 	const { setBirthControl } = useBirthControl()
 	const createBirthControl = useCreateBirthControl()
 	const updateBirthControl = useUpdateBirthControl()
@@ -61,7 +65,9 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 
 				// Update local state with the new data
 				setBirthControl(result)
-				toast.success(`Đã lưu ngày: ${date.toLocaleDateString('vi-VN')}`)
+				toast.success(
+					t('birthControl.date_saved', { 0: date.toLocaleDateString() })
+				)
 			} catch (error) {
 				// If create fails, try to update
 				try {
@@ -72,10 +78,12 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 
 					// Update local state with the updated data
 					setBirthControl(result)
-					toast.success(`Đã cập nhật ngày: ${date.toLocaleDateString('vi-VN')}`)
+					toast.success(
+						t('birthControl.date_updated', { 0: date.toLocaleDateString() })
+					)
 				} catch (updateError) {
 					console.error('Both create and update failed:', error, updateError)
-					toast.error('Không thể lưu thông tin. Vui lòng thử lại sau.')
+					toast.error(t('birthControl.save_failed'))
 				}
 			} finally {
 				setIsSaving(false)
@@ -110,16 +118,18 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 
 				{/* Header */}
 				<div className='text-center'>
-					<h2 className='text-2xl font-bold text-main mb-2'>Theo Dõi Chu Kỳ</h2>
+					<h2 className='text-2xl font-bold text-main mb-2'>
+						{t('birthControl.cycle_tracking')}
+					</h2>
 					<p className='text-gray-600 text-sm'>
-						Chọn ngày bắt đầu chu kỳ kinh nguyệt của bạn
+						{t('birthControl.select_cycle_start_date')}
 					</p>
 				</div>
 
 				{/* Date Selection */}
 				<div className='space-y-4'>
 					<label className='block text-sm font-medium text-gray-700'>
-						Ngày bắt đầu chu kỳ
+						{t('birthControl.cycle_start_date')}
 					</label>
 					<div className='relative'>
 						<SingleDateCalendar
@@ -131,7 +141,7 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 							<div className='absolute inset-0 bg-white/80 flex items-center justify-center rounded-[15px]'>
 								<div className='flex items-center gap-2 text-main'>
 									<LoadingIcon className='size-4' />
-									<span className='text-sm'>Đang lưu...</span>
+									<span className='text-sm'>{t('birthControl.saving')}</span>
 								</div>
 							</div>
 						)}
@@ -145,8 +155,8 @@ const BirthControlForm: React.FC<BirthControlFormProps> = ({ accountID }) => {
 
 				{/* Info */}
 				<div className='text-xs text-gray-500 text-center'>
-					<p>Thông tin sẽ được lưu tự động khi bạn chọn ngày</p>
-					<p>Bạn có thể cập nhật bất cứ lúc nào</p>
+					<p>{t('birthControl.auto_save_info')}</p>
+					<p>{t('birthControl.update_anytime')}</p>
 				</div>
 			</div>
 		</div>

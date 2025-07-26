@@ -80,11 +80,5 @@ export default function MemberLayout({
 		)
 	}
 
-	return (
-		<div className='flex flex-col md:flex-row md:overflow-hidden h-screen florageBackground relative'>
-			<main className='flex-1 p-7 h-full scroll-smooth overflow-scroll relative z-10'>
-				{children}
-			</main>
-		</div>
-	)
+	return <>{children}</>
 }

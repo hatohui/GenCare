@@ -18,7 +18,7 @@ const CustomerDetailPage = () => {
 	const { t } = useLocale()
 
 	return (
-		<main className='p-6 max-w-3xl mx-auto'>
+		<div className='p-6 max-w-3xl mx-auto'>
 			<h1 className='text-2xl font-bold mb-4'>{t('customer.details')}</h1>
 
 			<div className='bg-white shadow-md rounded-lg p-6 space-y-4 border'>
@@ -81,7 +81,7 @@ const CustomerDetailPage = () => {
 					<p className='text-gray-700 mt-1'>{customer.notes}</p>
 				</div>
 			</div>
-		</main>
+		</div>
 	)
 }
 

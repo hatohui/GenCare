@@ -13,14 +13,26 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 	const [messages, setMessages] = useState<SignalRMessage[]>([])
 	const [connected, setConnected] = useState(false)
 	const clientRef = useRef<ChatSignalRClient | null>(null)
+	const previousConversationIdRef = useRef<string>('')
+	const refetchMessagesRef = useRef<(() => void) | null>(null)
 
 	const sendMessageMutation = useSendMessage()
 	const deleteMessageMutation = useDeleteMessage()
 
-	// Fetch existing messages
-	const { data: existingMessages } = useMessagesByConversation(conversationId)
+	useEffect(() => {
+		if (conversationId !== previousConversationIdRef.current) {
+			setMessages([])
+			previousConversationIdRef.current = conversationId
+		}
+	}, [conversationId])
 
-	// Load existing messages when they're fetched
+	const { data: existingMessages, refetch: refetchMessages } =
+		useMessagesByConversation(conversationId)
+
+	useEffect(() => {
+		refetchMessagesRef.current = refetchMessages
+	}, [refetchMessages])
+
 	useEffect(() => {
 		if (existingMessages?.length) {
 			const formattedMessages = existingMessages.map((msg: any) => ({
@@ -28,58 +40,57 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 				content: msg.content,
 				createdBy: msg.createdBy,
 				createdAt: msg.createdAt,
-				media: msg.media || [],
+				media:
+					msg.mediaUrls?.map((url: string) => ({
+						url,
+						type: 'image',
+					})) || [],
 			}))
-			setMessages(formattedMessages)
+			setMessages(prev => {
+				if (prev.length === 0 || formattedMessages.length > prev.length) {
+					return formattedMessages
+				}
+				return prev
+			})
 		}
 	}, [existingMessages])
-
-	// Helper to add message with deduplication
-	const addMessage = useCallback((msg: SignalRMessage) => {
-		setMessages(prev => {
-			if (prev.some(m => m.messageId === msg.messageId)) return prev
-			return [...prev, msg]
-		})
-	}, [])
-
-	const onConversationEndedCallback = useCallback(
-		(endedConversationId: string) => {
-			console.log('🔚 Conversation ended via SignalR:', endedConversationId)
-			onConversationEnded?.()
-		},
-		[onConversationEnded]
-	)
 
 	useEffect(() => {
 		if (!token || !conversationId) return
 
-		const client = new ChatSignalRClient(token, conversationId)
+		const client = new ChatSignalRClient(conversationId)
 		clientRef.current = client
 
-		client.onReceiveMessage(addMessage)
+		client.onReceiveMessage((msg: SignalRMessage) => {
+			setMessages(prev => {
+				if (prev.some(m => m.messageId === msg.messageId)) return prev
+				return [...prev, msg]
+			})
+		})
+
 		client.onDeleteMessage(messageId => {
 			setMessages(prev => prev.filter(m => m.messageId !== messageId))
 		})
-		client.onConversationEnded(onConversationEndedCallback)
+
+		client.onConversationEnded(() => {
+			onConversationEnded?.()
+		})
 
 		let isMounted = true
 		client.start().then(() => {
 			if (isMounted) {
 				setConnected(true)
 				client.joinConversation(conversationId)
+				refetchMessagesRef.current?.()
 			}
 		})
 
 		return () => {
 			isMounted = false
-			client.onReceiveMessage(() => {}) // Remove handler
-			client.onDeleteMessage(() => {})
-			client.onConversationEnded(() => {})
 			client.stop()
 			setConnected(false)
-			setMessages([])
 		}
-	}, [token, conversationId, addMessage, onConversationEndedCallback])
+	}, [token, conversationId])
 
 	const sendMessage = useCallback(
 		async (content: string, mediaUrls: string[] = []) => {

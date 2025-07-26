@@ -1,10 +1,9 @@
 import { CreateConversationRequest } from '@/Interfaces/Chat/Conversation'
 import axiosInstance from '@/Utils/axios'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
 import { DEFAULT_API_URL } from '@/Constants/API'
 
-// ==== Interfaces ====
 export interface MediaItem {
 	url: string
 	type: string
@@ -24,19 +23,15 @@ export interface SendMessageRequest {
 	mediaUrls?: string[]
 }
 
-// ==== SignalR Client ====
 export class ChatSignalRClient {
 	private connection: signalR.HubConnection
-	private token: string
 	private receiveMessageCallback?: (msg: SignalRMessage) => void
 	private deleteMessageCallback?: (messageId: string) => void
 	private conversationEndedCallback?: (conversationId: string) => void
 
-	constructor(token: string, conversationId: string) {
-		this.token = token
-
+	constructor(conversationId: string) {
 		// const url = `https://api.gencare.site/hubs/chat?conversationId=${conversationId}&access_token=${token}`
-		const url = `http://localhost:8080/hubs/chat?conversationId=${conversationId}&access_token=${token}`
+		const url = `http://localhost:8080/hubs/chat?conversationId=${conversationId}`
 
 		this.connection = new signalR.HubConnectionBuilder()
 			.withUrl(url)
@@ -56,26 +51,22 @@ export class ChatSignalRClient {
 			this.deleteMessageCallback?.(data.messageId)
 		})
 
-		this.connection.on('ConversationEnded', (data: { conversationId: string }) => {
-			console.log('❌ Conversation ended:', data.conversationId)
-			this.conversationEndedCallback?.(data.conversationId)
-		})
+		this.connection.on(
+			'ConversationEnded',
+			(data: { conversationId: string }) => {
+				this.conversationEndedCallback?.(data.conversationId)
+			}
+		)
 
-		this.connection.on('JoinedConversation', (conversationId: string) => {
-			console.log('✅ Joined conversation:', conversationId)
-		})
-
-		this.connection.on('JoinedGroup', (group: string) => {
-			console.log('✅ Joined group:', group)
-		})
+		// this.connection.on('JoinedConversation', (conversationId: string) => {})
+		// this.connection.on('JoinedGroup', (group: string) => {})
 	}
 
 	async start(): Promise<void> {
 		try {
 			await this.connection.start()
-			console.log('🔌 SignalR connected')
 		} catch (err) {
-			console.error('❌ SignalR connection failed:', err)
+			console.error('SignalR connection failed:', err)
 		}
 	}
 
@@ -83,7 +74,7 @@ export class ChatSignalRClient {
 		try {
 			await this.connection.invoke('JoinConversation', conversationId)
 		} catch (err) {
-			console.error('❌ Failed to join conversation:', err)
+			console.error('Failed to join conversation:', err)
 		}
 	}
 
@@ -101,7 +92,6 @@ export class ChatSignalRClient {
 
 	async stop(): Promise<void> {
 		await this.connection.stop()
-		console.log('🛑 SignalR disconnected')
 	}
 }
 
@@ -126,7 +116,7 @@ const chatApi = {
 		axiosInstance.get(`/conversations/${conversationId}`).then(res => res.data),
 
 	getAllConversations: () =>
-		axiosInstance.get(`/conversations`).then(res => res.data),
+		axiosInstance.get(`/conversations`).then(res => res.data.conversations),
 
 	getUnassignedConversations: () =>
 		axiosInstance
@@ -134,7 +124,14 @@ const chatApi = {
 			.then(res => res.data.conversations),
 
 	getUserConversationHistory: () =>
-		axiosInstance.get('/conversations/history').then(res => res.data),
+		axiosInstance
+			.get('/conversations/history')
+			.then(res => res.data.conversations),
+
+	getConsultantConversationHistory: () =>
+		axiosInstance
+			.get('/conversations/consultant/history')
+			.then(res => res.data.conversations),
 
 	joinConversationAsConsultant: (conversationId: string) =>
 		axiosInstance.post(`/conversations/assign/${conversationId}`),
@@ -149,9 +146,17 @@ const chatApi = {
 }
 
 export const useCreateConversation = () => {
+	const queryClient = useQueryClient()
+
 	return useMutation({
 		mutationFn: (conversationData: CreateConversationRequest) =>
 			chatApi.createConversation(conversationData),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['userConversationHistory'] })
+			queryClient.invalidateQueries({
+				queryKey: ['consultantConversationHistory'],
+			})
+		},
 	})
 }
 
@@ -193,9 +198,17 @@ export const useJoinConversationAsConsultant = () => {
 }
 
 export const useEndConversation = () => {
+	const queryClient = useQueryClient()
+
 	return useMutation({
 		mutationFn: (conversationId: string) =>
 			chatApi.endConversation(conversationId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['userConversationHistory'] })
+			queryClient.invalidateQueries({
+				queryKey: ['consultantConversationHistory'],
+			})
+		},
 	})
 }
 
@@ -203,6 +216,13 @@ export const useUserConversationHistory = () => {
 	return useQuery({
 		queryKey: ['userConversationHistory'],
 		queryFn: chatApi.getUserConversationHistory,
+	})
+}
+
+export const useConsultantConversationHistory = () => {
+	return useQuery({
+		queryKey: ['consultantConversationHistory'],
+		queryFn: chatApi.getConsultantConversationHistory,
 	})
 }
 

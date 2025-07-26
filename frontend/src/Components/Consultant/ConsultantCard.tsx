@@ -3,6 +3,7 @@
 import { motion } from 'motion/react'
 import { Consultant } from '@/Interfaces/Account/Types/Consultant'
 import { CldImage } from 'next-cloudinary'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface ConsultantCardProps {
 	consultant: Consultant
@@ -13,17 +14,20 @@ export const ConsultantCard = ({
 	consultant,
 	onClick,
 }: ConsultantCardProps) => {
+	const { t } = useLocale()
+
 	const fullName =
-		`${consultant.firstName ?? ''} ${consultant.lastName ?? ''}`.trim() ?? 'N/A'
-	const genderText = consultant.gender ? 'Male' : 'Female'
+		`${consultant.firstName ?? ''} ${consultant.lastName ?? ''}`.trim() ??
+		t('common.not_available')
+	const genderText = consultant.gender ? t('common.male') : t('common.female')
 	const initials =
-		fullName !== 'N/A'
+		fullName !== t('common.not_available')
 			? fullName
 					.split(' ')
 					.map(n => n[0])
 					.join('')
 					.toUpperCase()
-			: 'N/A'
+			: t('common.not_available')
 
 	const handleClick = () => {
 		if (onClick) {
@@ -80,7 +84,11 @@ export const ConsultantCard = ({
 						<span className='w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-xs'>
 							👤
 						</span>
-						<span>{consultant.yearOfExperience} years of experience</span>
+						<span>
+							{t('consultant.years_of_experience', {
+								0: consultant.yearOfExperience,
+							})}
+						</span>
 					</div>
 				)}
 

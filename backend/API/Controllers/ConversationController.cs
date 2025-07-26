@@ -4,6 +4,7 @@ using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
@@ -91,7 +92,7 @@ public class ConversationController(IConversationService conversationService) : 
     }
 
     [HttpGet("consultant/history")]
-    [Authorize(Roles = $"{RoleNames.Staff}")]
+    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Consultant},{RoleNames.Admin}")]
     public async Task<IActionResult> GetConsultantConversationHistory()
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");

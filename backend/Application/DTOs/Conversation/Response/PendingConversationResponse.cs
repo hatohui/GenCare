@@ -7,6 +7,8 @@ public class PendingConversationResponse
     public string? MemberFirstName { get; set; }
     public string? MemberLastName { get; set; }
     public string? MemberEmail { get; set; }
+    public string? MemberName { get; set; }
+    public string? MemberAvatarUrl { get; set; }
     public DateTime? StartAt { get; set; }
     public bool Status { get; set; }
 }

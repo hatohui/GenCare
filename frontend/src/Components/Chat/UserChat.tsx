@@ -20,13 +20,20 @@ import {
 	Loader2,
 	User,
 	AlertCircle,
+	Video,
+	Calendar,
+	HelpCircle,
 } from 'lucide-react'
+import { useLocale } from '@/Hooks/useLocale'
+import { format } from 'date-fns'
+import { CldImage } from 'next-cloudinary'
 
 interface UserChatProps {
 	className?: string
 }
 
 const UserChat: React.FC<UserChatProps> = ({ className }) => {
+	const { t } = useLocale()
 	const [conversationId, setConversationId] = useState<string | null>(null)
 	const [inputMessage, setInputMessage] = useState('')
 	const [isConversationStarted, setIsConversationStarted] = useState(false)
@@ -39,6 +46,9 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		staffAvatarUrl?: string
 		status: boolean
 	} | null>(null)
+	const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'ended'>(
+		'pending'
+	)
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 
 	const { accessToken } = useToken()
@@ -50,10 +60,10 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 	const handleConversationEnded = useCallback(() => {
 		// Handle conversation ended by other party
 		setIsConversationStarted(false)
-		toast('The consultant has ended the conversation', {
+		toast(t('chat.conversation_ended_by_consultant'), {
 			icon: 'i',
 		})
-	}, [])
+	}, [t])
 
 	const { messages, connected, sendMessage, isLoading } = useChat(
 		conversationId || '',
@@ -70,12 +80,12 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 
 	const handleStartConversation = async () => {
 		if (!accessToken || !userData?.id) {
-			toast.error('Please login to start a conversation')
+			toast.error(t('chat.please_login'))
 			return
 		}
 
 		if (!inputMessage.trim()) {
-			toast.error('Please enter a message to start the conversation')
+			toast.error(t('chat.enter_message_first'))
 			return
 		}
 
@@ -91,9 +101,10 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 			setSelectedConversationId(newConversationId)
 			setIsConversationStarted(true)
 			setInputMessage('')
-			toast.success('Conversation started! Waiting for a consultant...')
+			setActiveTab('pending')
+			toast.success(t('chat.conversation_started'))
 		} catch (error) {
-			toast.error('Failed to start conversation')
+			toast.error(t('chat.failed_to_start'))
 			console.error('Failed to create conversation:', error)
 		}
 	}
@@ -114,6 +125,14 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 				staffAvatarUrl: conversation.staffAvatarUrl,
 				status: conversation.status,
 			})
+		} else {
+			// If conversation not found, set fallback data
+			setCurrentConversationData({
+				staffName: undefined,
+				staffId: undefined,
+				staffAvatarUrl: undefined,
+				status: true, // Assume active by default
+			})
 		}
 	}
 
@@ -123,6 +142,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		setIsConversationStarted(false)
 		setInputMessage('')
 		setCurrentConversationData(null)
+		setActiveTab('pending') // Switch to pending tab when starting new conversation
 	}
 
 	const handleSendMessage = async (e: React.FormEvent) => {
@@ -139,19 +159,33 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		try {
 			await endConversationMutation.mutateAsync(conversationId)
 			setIsConversationStarted(false)
-			toast.success('Conversation ended')
+			toast.success(t('chat.conversation_ended_successfully'))
 		} catch (error) {
-			toast.error('Failed to end conversation')
+			toast.error(t('chat.failed_to_end'))
 			console.error('Failed to end conversation:', error)
 		}
 	}
 
 	const formatMessageTime = (dateString: string) => {
-		return new Date(dateString).toLocaleTimeString([], {
-			hour: '2-digit',
-			minute: '2-digit',
-		})
+		try {
+			// Ensure the date string is treated as UTC by appending 'Z' if not present
+			const utcString = dateString.endsWith('Z') ? dateString : dateString + 'Z'
+			const utcDate = new Date(utcString)
+			return format(utcDate, 'HH:mm')
+		} catch {
+			return '--:--'
+		}
 	}
+
+	const handleVideoCall = useCallback(() => {
+		// TODO: Implement video call functionality
+		toast.success(t('chat.video_call_feature_coming_soon'))
+	}, [t])
+
+	const handleBookConsultant = useCallback(() => {
+		// TODO: Implement book consultant functionality
+		toast.success(t('chat.book_consultant_feature_coming_soon'))
+	}, [t])
 
 	const isConversationEnded = Boolean(
 		currentConversationData && !currentConversationData.status
@@ -165,14 +199,53 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 			<div className='w-80 border-r border-gray-200 flex flex-col'>
 				{/* Sidebar Header */}
 				<div className='p-4 border-b border-gray-200 bg-gray-50'>
-					<div className='flex items-center justify-between'>
-						<h3 className='font-semibold text-gray-800'>Messages</h3>
+					<div className='flex items-center justify-between mb-3'>
+						<h3 className='font-semibold text-gray-800'>
+							{t('chat.messages')}
+						</h3>
 						<button
 							onClick={handleStartNewConversation}
 							className='p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors'
-							title='Start new conversation'
+							title={t('chat.start_new_conversation')}
 						>
 							<Plus className='w-5 h-5' />
+						</button>
+					</div>
+
+					{/* Tab Toggle */}
+					<div className='flex bg-gray-200 rounded-lg p-1'>
+						<button
+							onClick={() => setActiveTab('pending')}
+							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+								activeTab === 'pending'
+									? 'bg-white text-blue-600 shadow-sm'
+									: 'text-gray-600 hover:text-gray-800'
+							}`}
+						>
+							<Clock className='w-3 h-3' />
+							<span>{t('chat.pending')}</span>
+						</button>
+						<button
+							onClick={() => setActiveTab('active')}
+							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+								activeTab === 'active'
+									? 'bg-white text-blue-600 shadow-sm'
+									: 'text-gray-600 hover:text-gray-800'
+							}`}
+						>
+							<MessageCircle className='w-3 h-3' />
+							<span>{t('chat.active')}</span>
+						</button>
+						<button
+							onClick={() => setActiveTab('ended')}
+							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+								activeTab === 'ended'
+									? 'bg-white text-blue-600 shadow-sm'
+									: 'text-gray-600 hover:text-gray-800'
+							}`}
+						>
+							<Stethoscope className='w-3 h-3' />
+							<span>{t('chat.ended')}</span>
 						</button>
 					</div>
 				</div>
@@ -183,6 +256,14 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 						onSelectConversation={handleSelectConversation}
 						selectedConversationId={selectedConversationId}
 						className='w-full'
+						filterByStatus={
+							activeTab === 'pending'
+								? undefined
+								: activeTab === 'active'
+								? true
+								: false
+						}
+						showPendingOnly={activeTab === 'pending'}
 					/>
 				</div>
 			</div>
@@ -198,25 +279,24 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 									<MessageCircle className='w-8 h-8 text-blue-600' />
 								</div>
 								<h2 className='text-xl font-semibold text-gray-800 mb-2'>
-									Start a New Conversation
+									{t('chat.start_new_conversation_title')}
 								</h2>
 								<p className='text-gray-600'>
-									Describe your health concern and get connected with our
-									qualified healthcare consultants
+									{t('chat.describe_health_concern')}
 								</p>
 							</div>
 
 							<div className='space-y-4'>
 								<div>
 									<label className='block text-sm font-medium text-gray-700 mb-2'>
-										How can we help you today?
+										{t('chat.how_can_we_help')}
 									</label>
 									<textarea
 										value={inputMessage}
 										onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
 											setInputMessage(e.target.value)
 										}
-										placeholder='Describe your symptoms, concerns, or questions...'
+										placeholder={t('chat.describe_symptoms')}
 										className='w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all'
 										rows={4}
 										disabled={createConversationMutation.isPending}
@@ -233,10 +313,10 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 									{createConversationMutation.isPending ? (
 										<div className='flex items-center justify-center space-x-2'>
 											<Loader2 className='w-4 h-4 animate-spin' />
-											<span>Starting...</span>
+											<span>{t('chat.starting')}</span>
 										</div>
 									) : (
-										'Start Conversation'
+										t('chat.start_conversation')
 									)}
 								</button>
 							</div>
@@ -250,7 +330,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 							<div className='flex items-center justify-between'>
 								<div className='flex items-center space-x-3'>
 									<div
-										className={`w-10 h-10 rounded-full flex items-center justify-center ${
+										className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ${
 											!currentConversationData?.staffId
 												? 'bg-yellow-500'
 												: currentConversationData.status
@@ -259,45 +339,32 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 										}`}
 									>
 										{currentConversationData?.staffAvatarUrl ? (
-											<img
+											<CldImage
 												src={currentConversationData.staffAvatarUrl}
+												width={40}
+												height={40}
 												alt={
 													currentConversationData.staffName || 'Staff Avatar'
 												}
-												className='w-full h-full rounded-full object-cover'
-												onError={e => {
-													// Hide the image and show fallback
-													e.currentTarget.style.display = 'none'
-													e.currentTarget.nextElementSibling?.setAttribute(
-														'style',
-														'display: block'
-													)
-												}}
+												className='w-10 h-10 rounded-full object-cover'
+												style={{ objectFit: 'cover' }}
 											/>
-										) : null}
-										<span
-											className={`text-white text-lg ${
-												currentConversationData?.staffAvatarUrl ? 'hidden' : ''
-											}`}
-											style={
-												currentConversationData?.staffAvatarUrl
-													? { display: 'none' }
-													: {}
-											}
-										>
-											{!currentConversationData?.staffId ? (
-												<Clock className='w-5 h-5' />
-											) : (
-												<Stethoscope className='w-5 h-5' />
-											)}
-										</span>
+										) : (
+											<span className='text-white text-lg'>
+												{!currentConversationData?.staffId ? (
+													<Clock className='w-5 h-5' />
+												) : (
+													<Stethoscope className='w-5 h-5' />
+												)}
+											</span>
+										)}
 									</div>
 									<div>
 										<h3 className='font-semibold text-gray-800'>
 											{currentConversationData?.staffName ||
 												(currentConversationData?.staffId
-													? 'Healthcare Consultant'
-													: 'Waiting for Consultant')}
+													? t('chat.healthcare_consultant')
+													: t('chat.waiting_for_consultant'))}
 										</h3>
 										<div className='flex items-center space-x-1'>
 											<div
@@ -311,25 +378,52 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 											></div>
 											<span className='text-xs text-gray-600'>
 												{isConversationEnded
-													? 'This conversation has been closed'
+													? t('chat.conversation_has_ended')
 													: !currentConversationData?.staffId
-													? 'Waiting for assignment...'
+													? t('chat.waiting_for_assignment')
 													: connected
-													? 'Online'
-													: 'Connecting...'}
+													? t('chat.online')
+													: t('chat.connecting')}
 											</span>
 										</div>
 									</div>
 								</div>
-								{!isConversationEnded && (
-									<button
-										onClick={handleEndConversation}
-										disabled={endConversationMutation.isPending}
-										className='px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors'
-									>
-										End Chat
-									</button>
-								)}
+								<div className='flex items-center space-x-2'>
+									{/* Action Buttons - Only show if consultant is assigned and conversation is active */}
+									{currentConversationData?.staffId && !isConversationEnded && (
+										<>
+											<button
+												onClick={handleVideoCall}
+												className='px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center space-x-1'
+												title={t('chat.video_call_with_consultant')}
+											>
+												<Video className='w-4 h-4' />
+												<span className='hidden sm:inline'>
+													{t('chat.video_call')}
+												</span>
+											</button>
+											<button
+												onClick={handleBookConsultant}
+												className='px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-1'
+												title={t('chat.book_this_consultant')}
+											>
+												<Calendar className='w-4 h-4' />
+												<span className='hidden sm:inline'>
+													{t('chat.book_consultant')}
+												</span>
+											</button>
+										</>
+									)}
+									{!isConversationEnded && (
+										<button
+											onClick={handleEndConversation}
+											disabled={endConversationMutation.isPending}
+											className='px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors'
+										>
+											{t('chat.end_chat')}
+										</button>
+									)}
+								</div>
 							</div>
 						</div>
 
@@ -342,10 +436,10 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 									</div>
 									<div>
 										<p className='text-gray-600 font-medium'>
-											Waiting for a consultant to join...
+											{t('chat.waiting_consultant_to_join')}
 										</p>
 										<p className='text-sm text-gray-500 mt-1'>
-											Your message will be delivered once they connect
+											{t('chat.message_delivered_when_connect')}
 										</p>
 									</div>
 								</div>
@@ -362,7 +456,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 										<div className='flex items-end space-x-2 max-w-[70%]'>
 											{message.createdBy !== userData?.id && (
 												<div
-													className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+													className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ${
 														!currentConversationData?.staffId
 															? 'bg-yellow-500'
 															: currentConversationData.status
@@ -371,48 +465,33 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 													}`}
 												>
 													{currentConversationData?.staffAvatarUrl ? (
-														<img
+														<CldImage
 															src={currentConversationData.staffAvatarUrl}
+															width={32}
+															height={32}
 															alt={
 																currentConversationData.staffName ||
 																'Staff Avatar'
 															}
-															className='w-full h-full rounded-full object-cover'
-															onError={e => {
-																// Hide the image and show fallback
-																e.currentTarget.style.display = 'none'
-																e.currentTarget.nextElementSibling?.setAttribute(
-																	'style',
-																	'display: block'
-																)
-															}}
+															className='w-8 h-8 rounded-full object-cover'
+															style={{ objectFit: 'cover' }}
 														/>
-													) : null}
-													<span
-														className={`text-white text-sm font-medium ${
-															currentConversationData?.staffAvatarUrl
-																? 'hidden'
-																: ''
-														}`}
-														style={
-															currentConversationData?.staffAvatarUrl
-																? { display: 'none' }
-																: {}
-														}
-													>
-														{currentConversationData?.staffName ? (
-															currentConversationData.staffName
-																.split(' ')
-																.map(n => n[0])
-																.join('')
-																.toUpperCase()
-																.slice(0, 2)
-														) : !currentConversationData?.staffId ? (
-															<Clock className='w-4 h-4' />
-														) : (
-															<Stethoscope className='w-4 h-4' />
-														)}
-													</span>
+													) : (
+														<span className='text-white text-sm font-medium'>
+															{currentConversationData?.staffName ? (
+																currentConversationData.staffName
+																	.split(' ')
+																	.map(n => n[0])
+																	.join('')
+																	.toUpperCase()
+																	.slice(0, 2)
+															) : !currentConversationData?.staffId ? (
+																<Clock className='w-4 h-4' />
+															) : (
+																<Stethoscope className='w-4 h-4' />
+															)}
+														</span>
+													)}
 												</div>
 											)}
 											<div
@@ -425,6 +504,41 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 												<p className='break-words leading-relaxed'>
 													{message.content}
 												</p>
+												{/* Media attachments */}
+												{message.media && message.media.length > 0 && (
+													<div className='mt-2 space-y-2'>
+														{message.media.map((mediaItem, index) => (
+															<div
+																key={index}
+																className='flex items-center space-x-2'
+															>
+																{mediaItem.type === 'image' ? (
+																	<img
+																		src={mediaItem.url}
+																		alt='Attachment'
+																		className='max-w-48 max-h-48 rounded-lg object-cover'
+																		onError={e => {
+																			e.currentTarget.style.display = 'none'
+																		}}
+																	/>
+																) : (
+																	<a
+																		href={mediaItem.url}
+																		target='_blank'
+																		rel='noopener noreferrer'
+																		className={`text-sm underline ${
+																			message.createdBy === userData?.id
+																				? 'text-blue-100 hover:text-white'
+																				: 'text-blue-600 hover:text-blue-800'
+																		}`}
+																	>
+																		📎 View attachment
+																	</a>
+																)}
+															</div>
+														))}
+													</div>
+												)}
 												<p
 													className={`text-xs mt-2 ${
 														message.createdBy === userData?.id
@@ -458,7 +572,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 									<div className='flex items-center justify-center mb-3'>
 										<AlertCircle className='w-5 h-5 text-gray-500 mr-2' />
 										<p className='text-gray-500 text-sm'>
-											This conversation has ended
+											{t('chat.conversation_has_ended')}
 										</p>
 									</div>
 									<button
@@ -466,7 +580,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 										className='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm flex items-center space-x-2 mx-auto'
 									>
 										<Plus className='w-4 h-4' />
-										<span>Start a new chat</span>
+										<span>{t('chat.start_new_chat')}</span>
 									</button>
 								</div>
 							) : (
@@ -478,7 +592,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 											onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 												setInputMessage(e.target.value)
 											}
-											placeholder='Type your message...'
+											placeholder={t('chat.type_your_message')}
 											disabled={isLoading || isConversationEnded}
 											className='w-full p-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:opacity-50'
 										/>
@@ -496,12 +610,12 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 										{isLoading ? (
 											<>
 												<Loader2 className='w-4 h-4 animate-spin' />
-												<span>Sending</span>
+												<span>{t('chat.sending')}</span>
 											</>
 										) : (
 											<>
 												<Send className='w-4 h-4' />
-												<span>Send</span>
+												<span>{t('chat.send')}</span>
 											</>
 										)}
 									</button>

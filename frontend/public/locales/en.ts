@@ -118,6 +118,13 @@ const en: Record<string, string> = {
 	'common.delete': 'Delete',
 	'common.edit': 'Edit',
 	'common.add': 'Add',
+	'common.copied_to_clipboard': 'Copied to clipboard',
+	'common.copy_failed': 'Failed to copy',
+	'common.copy_member_id': 'Copy Member ID',
+	'common.invalid_date': 'Invalid date',
+	'common.account_id_required': 'Account ID is required',
+	'common.loading_conversations': 'Loading conversations...',
+	'common.error_loading_conversations': 'Error loading conversations',
 	'common.view': 'View',
 	'common.update': 'Update',
 	'common.create': 'Create',
@@ -213,6 +220,87 @@ const en: Record<string, string> = {
 	'chat.message': 'Message',
 	'chat.send': 'Send',
 	'chat.widget.placeholder': 'Enter your message here...',
+	'chat.consultant_dashboard': 'Consultant Dashboard',
+	'chat.pending': 'Pending',
+	'chat.history': 'History',
+	'chat.waiting_patients': 'Waiting Patients',
+	'chat.all_caught_up': 'All caught up!',
+	'chat.no_patients_waiting': 'No patients waiting for consultation right now.',
+	'chat.anonymous': 'Anonymous',
+	'chat.patient': 'Patient',
+	'chat.no_email': 'No email',
+	'chat.waiting': 'Waiting',
+	'chat.joining': 'Joining...',
+	'chat.join_consultation': 'Join Consultation',
+	'chat.just_now': 'Just now',
+	'chat.minutes_ago': '{0}m ago',
+	'chat.hours_ago': '{0}h ago',
+	'chat.successfully_joined': 'Successfully joined the conversation!',
+	'chat.failed_to_join': 'Failed to join conversation. Please try again.',
+	'chat.patient_consultation': 'Patient Consultation',
+	'chat.connected': 'Connected',
+	'chat.connecting': 'Connecting...',
+	'chat.ending': 'Ending...',
+	'chat.end_chat': 'End Chat',
+	'chat.conversation_ended_successfully': 'Conversation ended successfully',
+	'chat.failed_to_end': 'Failed to end conversation. Please try again.',
+	'chat.ready_to_help': 'Ready to help this patient',
+	'chat.start_with_greeting':
+		'Start the conversation by sending a professional greeting',
+	'chat.type_response': 'Type your response...',
+	'chat.sending': 'Sending',
+	'chat.failed_to_send': 'Failed to send message. Please try again.',
+	'chat.select_conversation': 'Select a conversation',
+	'chat.choose_patient_conversation':
+		'Choose a patient conversation from the sidebar to start chatting',
+	'chat.messages': 'Messages',
+	'chat.start_new_conversation': 'Start new conversation',
+	'chat.active': 'Active',
+	'chat.ended': 'Ended',
+	'chat.no_pending_conversations': 'No pending conversations',
+	'chat.start_new_conversation_to_see':
+		'Start a new conversation to see it here',
+	'chat.no_active_conversations': 'No active conversations',
+	'chat.start_new_or_check_tabs':
+		'Start a new conversation or check other tabs',
+	'chat.no_ended_conversations': 'No ended conversations',
+	'chat.complete_conversations_to_see':
+		'Complete some conversations to see them here',
+	'chat.no_conversations_yet': 'No conversations yet',
+	'chat.start_first_conversation': 'Start your first conversation',
+	'chat.no_patient_conversations': 'No patient conversations available',
+	'chat.start_new_conversation_title': 'Start a New Conversation',
+	'chat.describe_health_concern':
+		'Describe your health concern and get connected with our qualified healthcare consultants',
+	'chat.how_can_we_help': 'How can we help you today?',
+	'chat.describe_symptoms': 'Describe your symptoms, concerns, or questions...',
+	'chat.please_login': 'Please login to start a conversation',
+	'chat.enter_message_first':
+		'Please enter a message to start the conversation',
+	'chat.conversation_started':
+		'Conversation started! Waiting for a consultant...',
+	'chat.failed_to_start': 'Failed to start conversation',
+	'chat.starting': 'Starting...',
+	'chat.start_conversation': 'Start Conversation',
+	'chat.waiting_for_consultant': 'Waiting for Consultant',
+	'chat.healthcare_consultant': 'Healthcare Consultant',
+	'chat.waiting_for_assignment': 'Waiting for assignment...',
+	'chat.online': 'Online',
+	'chat.conversation_ended_by_consultant':
+		'The consultant has ended the conversation',
+	'chat.waiting_consultant_to_join': 'Waiting for a consultant to join...',
+	'chat.message_delivered_when_connect':
+		'Your message will be delivered once they connect',
+	'chat.type_your_message': 'Type your message...',
+	'chat.conversation_has_ended': 'This conversation has ended',
+	'chat.start_new_chat': 'Start a new chat',
+	'chat.video_call': 'Video Call',
+	'chat.video_call_with_consultant': 'Start video call with consultant',
+	'chat.book_consultant': 'Book Consultant',
+	'chat.book_this_consultant': 'Book appointment with this consultant',
+	'chat.video_call_feature_coming_soon': 'Video call feature coming soon!',
+	'chat.book_consultant_feature_coming_soon':
+		'Book consultant feature coming soon!',
 
 	// Consultants
 	'consultant.details': 'Consultant Details',
@@ -220,6 +308,7 @@ const en: Record<string, string> = {
 	'consultant.experience': 'Experience',
 	'consultant.ratings': 'Ratings',
 	'consultant.book': 'Book Consultation',
+	'consultant.years_of_experience': '{0} years of experience',
 
 	// Test results
 	'test.results': 'Test Results',
@@ -229,6 +318,39 @@ const en: Record<string, string> = {
 	'test.order_date': 'Order Date',
 	'test.sample_date': 'Sample Date',
 	'test.result_date': 'Result Date',
+
+	// Birth Control
+	'birthControl.cycle_tracking': 'Cycle Tracking',
+	'birthControl.select_cycle_start_date':
+		'Select your menstrual cycle start date',
+	'birthControl.cycle_start_date': 'Cycle Start Date',
+	'birthControl.select_start_date_required': 'Please select a cycle start date',
+	'birthControl.date_saved': 'Date saved: {0}',
+	'birthControl.date_updated': 'Date updated: {0}',
+	'birthControl.save_failed':
+		'Unable to save information. Please try again later.',
+	'birthControl.saving': 'Saving...',
+	'birthControl.auto_save_info':
+		'Information will be saved automatically when you select a date',
+	'birthControl.update_anytime': 'You can update anytime',
+
+	// Appointments
+	'appointment.live_now': 'LIVE NOW',
+	'appointment.time_remaining_hours_minutes': '{0}h {1}m',
+	'appointment.time_remaining_minutes': '{0} minutes',
+	'appointment.ended': 'ENDED',
+	'appointment.week': 'Week',
+	'appointment.previous_week': 'Previous week',
+	'appointment.current': 'Current',
+	'appointment.next_week': 'Next week',
+	'appointment.no_appointments_this_week': 'No appointments this week',
+	'appointment.upcoming_appointments_info':
+		'You have {0} upcoming appointments. Click the',
+	'appointment.find_appointment': 'Find appointment',
+	'appointment.go_to_first_appointment':
+		'button to go to the first appointment week.',
+	'appointment.this_week': 'This week',
+	'appointment.appointments_count': 'appointments',
 
 	// Payments
 	'payment.paid': 'Paid',
@@ -540,6 +662,13 @@ const en: Record<string, string> = {
 	'blog.loading_more': 'Loading more posts...',
 	'blog.scroll_to_load_more': 'Scroll down to load more',
 	'blog.all_posts_loaded': 'You have seen all posts!',
+	'blog.login_to_comment': 'You need to login to comment',
+	'blog.add_comment': 'Add Comment',
+	'blog.share_thoughts_placeholder':
+		'Share your thoughts about this article...',
+	'blog.logged_in_as': 'Logged in as: {0}',
+	'blog.submitting': 'Submitting...',
+	'blog.submit_comment': 'Submit Comment',
 
 	// Home Page
 	'home.welcome': 'Welcome back, {0}! 👋',
@@ -795,9 +924,7 @@ const en: Record<string, string> = {
 	'appointment.join_now': 'JOIN NOW',
 	'appointment.join': 'Join',
 	'appointment.join_zoom': 'Join Meeting',
-	'appointment.previous_week': 'Previous Week',
 	'appointment.current_week': 'Current',
-	'appointment.next_week': 'Next Week',
 	'appointment.error_occurred': 'Oops! An error occurred',
 	'appointment.retry': 'Retry',
 	'appointment.processing': 'Processing...',

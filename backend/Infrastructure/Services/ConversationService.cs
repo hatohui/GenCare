@@ -13,7 +13,8 @@ public class ConversationService(
     IConversationRepository conversationRepository,
     IHubContext<ChatHub> chatHub,
     IMessageRepository messageRepository,
-    IMediaRepository mediaRepository
+    IMediaRepository mediaRepository,
+    IAccountRepository accountRepository
 ) : IConversationService
 {
     private static DateTime ToUnspecified(DateTime dt)
@@ -162,26 +163,46 @@ public class ConversationService(
     public async Task<PendingConversationsListResponse> GetPendingConversationsAsync()
     {
         var conversations = await conversationRepository.GetPendingConversationsAsync();
+        var pendingConversations = new List<PendingConversationResponse>();
 
-        // Get member IDs and fetch member info separately to avoid circular references
-        var memberIds = conversations.Select(c => c.MemberId).Distinct().ToList();
-        var members = await Task.FromResult(
-            new Dictionary<Guid, (string? FirstName, string? LastName, string? Email)>()
-        );
+        foreach (var conversation in conversations)
+        {
+            string? memberName = null;
+            string? memberAvatarUrl = null;
+            string? memberFirstName = null;
+            string? memberLastName = null;
+            string? memberEmail = null;
 
-        // For now, we'll return without member details to test if the circular reference is fixed
-        var pendingConversations = conversations
-            .Select(c => new PendingConversationResponse
+            // Fetch member account information using MemberId (which is actually AccountId)
+            var memberAccount = await accountRepository.GetAccountByIdAsync(conversation.MemberId);
+            if (memberAccount != null)
             {
-                ConversationId = c.Id,
-                MemberId = c.MemberId,
-                MemberFirstName = null, // We'll add this back once we confirm the fix works
-                MemberLastName = null,
-                MemberEmail = null,
-                StartAt = c.StartAt,
-                Status = c.Status,
-            })
-            .ToList();
+                memberFirstName = memberAccount.FirstName;
+                memberLastName = memberAccount.LastName;
+                memberEmail = memberAccount.Email;
+                memberName = $"{memberAccount.FirstName} {memberAccount.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(memberName))
+                {
+                    memberName = memberAccount.Email ?? "Patient";
+                }
+                memberAvatarUrl = memberAccount.AvatarUrl;
+            }
+
+            pendingConversations.Add(
+                new PendingConversationResponse
+                {
+                    ConversationId = conversation.Id,
+                    MemberId = conversation.MemberId,
+                    MemberFirstName = memberFirstName,
+                    MemberLastName = memberLastName,
+                    MemberEmail = memberEmail,
+                    MemberName = memberName,
+                    MemberAvatarUrl = memberAvatarUrl,
+                    StartAt = conversation.StartAt,
+                    Status = conversation.Status,
+                }
+            );
+        }
 
         return new PendingConversationsListResponse
         {
@@ -309,14 +330,36 @@ public class ConversationService(
         {
             string? staffName = null;
             string? staffAvatarUrl = null;
-            if (conversation.Staff != null)
+            string? memberName = null;
+            string? memberAvatarUrl = null;
+
+            // Fetch staff account information using StaffId (which is actually AccountId)
+            if (conversation.StaffId.HasValue)
             {
-                staffName = $"{conversation.Staff.FirstName} {conversation.Staff.LastName}".Trim();
-                if (string.IsNullOrWhiteSpace(staffName))
+                var staffAccount = await accountRepository.GetAccountByIdAsync(
+                    conversation.StaffId.Value
+                );
+                if (staffAccount != null)
                 {
-                    staffName = conversation.Staff.Email ?? "Healthcare Consultant";
+                    staffName = $"{staffAccount.FirstName} {staffAccount.LastName}".Trim();
+                    if (string.IsNullOrWhiteSpace(staffName))
+                    {
+                        staffName = staffAccount.Email ?? "Healthcare Consultant";
+                    }
+                    staffAvatarUrl = staffAccount.AvatarUrl;
                 }
-                staffAvatarUrl = conversation.Staff.AvatarUrl;
+            }
+
+            // Fetch member account information using MemberId (which is actually AccountId)
+            var memberAccount = await accountRepository.GetAccountByIdAsync(conversation.MemberId);
+            if (memberAccount != null)
+            {
+                memberName = $"{memberAccount.FirstName} {memberAccount.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(memberName))
+                {
+                    memberName = memberAccount.Email ?? "Patient";
+                }
+                memberAvatarUrl = memberAccount.AvatarUrl;
             }
 
             conversationPayloads.Add(
@@ -327,6 +370,8 @@ public class ConversationService(
                     StaffId = conversation.StaffId,
                     StaffName = staffName,
                     StaffAvatarUrl = staffAvatarUrl,
+                    MemberName = memberName,
+                    MemberAvatarUrl = memberAvatarUrl,
                     StartAt = conversation.StartAt,
                     Status = conversation.Status,
                 }
@@ -349,15 +394,37 @@ public class ConversationService(
         {
             string? memberName = null;
             string? memberAvatarUrl = null;
-            if (conversation.Member != null)
+
+            // Fetch member account information using MemberId (which is actually AccountId)
+            var memberAccount = await accountRepository.GetAccountByIdAsync(conversation.MemberId);
+            if (memberAccount != null)
             {
-                memberName =
-                    $"{conversation.Member.FirstName} {conversation.Member.LastName}".Trim();
+                memberName = $"{memberAccount.FirstName} {memberAccount.LastName}".Trim();
                 if (string.IsNullOrWhiteSpace(memberName))
                 {
-                    memberName = conversation.Member.Email ?? "Patient";
+                    memberName = memberAccount.Email ?? "Patient";
                 }
-                memberAvatarUrl = conversation.Member.AvatarUrl;
+                memberAvatarUrl = memberAccount.AvatarUrl;
+            }
+
+            string? staffName = null;
+            string? staffAvatarUrl = null;
+
+            // Fetch staff account information using StaffId (which is actually AccountId)
+            if (conversation.StaffId.HasValue)
+            {
+                var staffAccount = await accountRepository.GetAccountByIdAsync(
+                    conversation.StaffId.Value
+                );
+                if (staffAccount != null)
+                {
+                    staffName = $"{staffAccount.FirstName} {staffAccount.LastName}".Trim();
+                    if (string.IsNullOrWhiteSpace(staffName))
+                    {
+                        staffName = staffAccount.Email ?? "Healthcare Consultant";
+                    }
+                    staffAvatarUrl = staffAccount.AvatarUrl;
+                }
             }
 
             conversationPayloads.Add(
@@ -368,6 +435,8 @@ public class ConversationService(
                     StaffId = conversation.StaffId,
                     MemberName = memberName,
                     MemberAvatarUrl = memberAvatarUrl,
+                    StaffName = staffName,
+                    StaffAvatarUrl = staffAvatarUrl,
                     StartAt = conversation.StartAt,
                     Status = conversation.Status,
                 }
