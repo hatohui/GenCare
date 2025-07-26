@@ -13,7 +13,6 @@ const ChatArea = ({
 	isError,
 	userIcon,
 	consultantIcon,
-	withImage = true,
 }: {
 	history: Content[]
 	isPending: boolean

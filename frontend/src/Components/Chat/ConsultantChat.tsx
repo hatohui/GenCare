@@ -27,6 +27,7 @@ import {
 import { useLocale } from '@/Hooks/useLocale'
 import { format } from 'date-fns'
 import { CldImage } from 'next-cloudinary'
+import Image from 'next/image'
 
 interface ConsultantChatProps {
 	className?: string
@@ -202,7 +203,7 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 				toast.error(t('chat.failed_to_send'))
 			}
 		},
-		[inputMessage, selectedConversationId, sendMessage]
+		[inputMessage, selectedConversationId, sendMessage, t]
 	)
 
 	const formatUnassignedTime = useCallback(
@@ -557,7 +558,9 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 													<div className='mt-2 space-y-2'>
 														{message.media.map((media: any, index: number) => (
 															<div key={index} className='inline-block'>
-																<img
+																<Image
+																	width={200}
+																	height={200}
 																	src={media.url || media}
 																	alt={`Attachment ${index + 1}`}
 																	className='max-w-xs rounded-lg shadow-sm border border-gray-200'

@@ -11,8 +11,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 	const { data } = useAccountStore()
 	const router = useRouter()
 
-	if (!isAllowedRole(data?.role.name, PermissionLevel.consultant))
+	if (!isAllowedRole(data?.role.name, PermissionLevel.consultant)) {
 		router.push('/403')
+		return null
+	}
 
 	return <>{children}</>
 }

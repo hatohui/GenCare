@@ -4,7 +4,7 @@ import React from 'react'
 import { useConsultantConversationHistory } from '@/Services/chat-service'
 import { useLocale } from '@/Hooks/useLocale'
 import { format } from 'date-fns'
-import { Clock, User, MessageCircle } from 'lucide-react'
+import { User, MessageCircle } from 'lucide-react'
 import { CldImage } from 'next-cloudinary'
 
 interface ConsultantConversationHistoryProps {

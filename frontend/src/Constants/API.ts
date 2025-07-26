@@ -1,5 +1,4 @@
-// export const DEFAULT_API_URL = 'https://api.gencare.site/api'
-export const DEFAULT_API_URL = 'http://localhost:8080/api'
+export const DEFAULT_API_URL = 'https://api.gencare.site/api'
 
 // Payment callback URLs
 export const PAYMENT_SUCCESS_URL =

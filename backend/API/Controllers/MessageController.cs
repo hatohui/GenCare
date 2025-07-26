@@ -13,7 +13,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
     /// Controller for handling message-related API endpoints.
     /// </summary>
     [HttpPost]
-    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Consultant}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Consultant},{RoleNames.Admin}")]
     public async Task<IActionResult> Create([FromBody] MessageCreateRequest request)
     {
         var accessToken = HttpContext
@@ -38,7 +38,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
     }
 
     [HttpDelete("{messageId}")]
-    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Consultant}")]
+    [Authorize(Roles = $"{RoleNames.Member},{RoleNames.Consultant},{RoleNames.Admin}")]
     public async Task<IActionResult> DeleteMessage(Guid messageId)
     {
         var accessToken = Request.Headers.Authorization.ToString().Replace("Bearer ", "");

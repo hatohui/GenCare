@@ -165,6 +165,13 @@ public class ConversationService(
         var conversations = await conversationRepository.GetPendingConversationsAsync();
         var pendingConversations = new List<PendingConversationResponse>();
 
+        // Get all unique member IDs
+        var memberIds = conversations.Select(c => c.MemberId).Distinct().ToList();
+
+        // Fetch all accounts in one query
+        var accounts = await accountRepository.GetAccountsByIdsAsync(memberIds);
+        var accountDict = accounts.ToDictionary(a => a.Id);
+
         foreach (var conversation in conversations)
         {
             string? memberName = null;
@@ -173,9 +180,7 @@ public class ConversationService(
             string? memberLastName = null;
             string? memberEmail = null;
 
-            // Fetch member account information using MemberId (which is actually AccountId)
-            var memberAccount = await accountRepository.GetAccountByIdAsync(conversation.MemberId);
-            if (memberAccount != null)
+            if (accountDict.TryGetValue(conversation.MemberId, out var memberAccount))
             {
                 memberFirstName = memberAccount.FirstName;
                 memberLastName = memberAccount.LastName;
@@ -270,7 +275,6 @@ public class ConversationService(
             UpdatedBy = accountId,
         };
 
-        // Prepare media files if any
         var mediaList = new List<Media>();
         if (request.MediaUrls != null && request.MediaUrls.Any())
         {
@@ -280,7 +284,7 @@ public class ConversationService(
                     new Media
                     {
                         Url = url,
-                        Type = "Image", // Assuming image for now
+                        Type = "Image",
                         MessageId = newMessage.Id,
                         CreatedBy = accountId,
                         CreatedAt = newMessage.CreatedAt,
@@ -326,6 +330,18 @@ public class ConversationService(
         var conversations = await conversationRepository.GetConversationsByUserIdAsync(userId);
         var conversationPayloads = new List<ConversationPayLoad>();
 
+        // Collect all unique account IDs
+        var memberIds = conversations.Select(c => c.MemberId).Distinct();
+        var staffIds = conversations
+            .Where(c => c.StaffId.HasValue)
+            .Select(c => c.StaffId!.Value)
+            .Distinct();
+        var allAccountIds = memberIds.Concat(staffIds).Distinct().ToList();
+
+        // Fetch all accounts in one query
+        var accounts = await accountRepository.GetAccountsByIdsAsync(allAccountIds);
+        var accountDict = accounts.ToDictionary(a => a.Id);
+
         foreach (var conversation in conversations)
         {
             string? staffName = null;
@@ -334,25 +350,21 @@ public class ConversationService(
             string? memberAvatarUrl = null;
 
             // Fetch staff account information using StaffId (which is actually AccountId)
-            if (conversation.StaffId.HasValue)
+            if (
+                conversation.StaffId.HasValue
+                && accountDict.TryGetValue(conversation.StaffId.Value, out var staffAccount)
+            )
             {
-                var staffAccount = await accountRepository.GetAccountByIdAsync(
-                    conversation.StaffId.Value
-                );
-                if (staffAccount != null)
+                staffName = $"{staffAccount.FirstName} {staffAccount.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(staffName))
                 {
-                    staffName = $"{staffAccount.FirstName} {staffAccount.LastName}".Trim();
-                    if (string.IsNullOrWhiteSpace(staffName))
-                    {
-                        staffName = staffAccount.Email ?? "Healthcare Consultant";
-                    }
-                    staffAvatarUrl = staffAccount.AvatarUrl;
+                    staffName = staffAccount.Email ?? "Healthcare Consultant";
                 }
+                staffAvatarUrl = staffAccount.AvatarUrl;
             }
 
             // Fetch member account information using MemberId (which is actually AccountId)
-            var memberAccount = await accountRepository.GetAccountByIdAsync(conversation.MemberId);
-            if (memberAccount != null)
+            if (accountDict.TryGetValue(conversation.MemberId, out var memberAccount))
             {
                 memberName = $"{memberAccount.FirstName} {memberAccount.LastName}".Trim();
                 if (string.IsNullOrWhiteSpace(memberName))
@@ -390,14 +402,25 @@ public class ConversationService(
         );
         var conversationPayloads = new List<ConversationPayLoad>();
 
+        // Collect all unique account IDs
+        var memberIds = conversations.Select(c => c.MemberId).Distinct();
+        var staffIds = conversations
+            .Where(c => c.StaffId.HasValue)
+            .Select(c => c.StaffId!.Value)
+            .Distinct();
+        var allAccountIds = memberIds.Concat(staffIds).Distinct().ToList();
+
+        // Fetch all accounts in one query
+        var accounts = await accountRepository.GetAccountsByIdsAsync(allAccountIds);
+        var accountDict = accounts.ToDictionary(a => a.Id);
+
         foreach (var conversation in conversations)
         {
             string? memberName = null;
             string? memberAvatarUrl = null;
 
             // Fetch member account information using MemberId (which is actually AccountId)
-            var memberAccount = await accountRepository.GetAccountByIdAsync(conversation.MemberId);
-            if (memberAccount != null)
+            if (accountDict.TryGetValue(conversation.MemberId, out var memberAccount))
             {
                 memberName = $"{memberAccount.FirstName} {memberAccount.LastName}".Trim();
                 if (string.IsNullOrWhiteSpace(memberName))
@@ -411,20 +434,17 @@ public class ConversationService(
             string? staffAvatarUrl = null;
 
             // Fetch staff account information using StaffId (which is actually AccountId)
-            if (conversation.StaffId.HasValue)
+            if (
+                conversation.StaffId.HasValue
+                && accountDict.TryGetValue(conversation.StaffId.Value, out var staffAccount)
+            )
             {
-                var staffAccount = await accountRepository.GetAccountByIdAsync(
-                    conversation.StaffId.Value
-                );
-                if (staffAccount != null)
+                staffName = $"{staffAccount.FirstName} {staffAccount.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(staffName))
                 {
-                    staffName = $"{staffAccount.FirstName} {staffAccount.LastName}".Trim();
-                    if (string.IsNullOrWhiteSpace(staffName))
-                    {
-                        staffName = staffAccount.Email ?? "Healthcare Consultant";
-                    }
-                    staffAvatarUrl = staffAccount.AvatarUrl;
+                    staffName = staffAccount.Email ?? "Healthcare Consultant";
                 }
+                staffAvatarUrl = staffAccount.AvatarUrl;
             }
 
             conversationPayloads.Add(

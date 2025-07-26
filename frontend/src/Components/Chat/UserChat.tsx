@@ -22,11 +22,11 @@ import {
 	AlertCircle,
 	Video,
 	Calendar,
-	HelpCircle,
 } from 'lucide-react'
 import { useLocale } from '@/Hooks/useLocale'
 import { format } from 'date-fns'
 import { CldImage } from 'next-cloudinary'
+import Image from 'next/image'
 
 interface UserChatProps {
 	className?: string
@@ -513,7 +513,9 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 																className='flex items-center space-x-2'
 															>
 																{mediaItem.type === 'image' ? (
-																	<img
+																	<Image
+																		width={200}
+																		height={200}
 																		src={mediaItem.url}
 																		alt='Attachment'
 																		className='max-w-48 max-h-48 rounded-lg object-cover'

@@ -2,7 +2,6 @@ import { CreateConversationRequest } from '@/Interfaces/Chat/Conversation'
 import axiosInstance from '@/Utils/axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
-import { DEFAULT_API_URL } from '@/Constants/API'
 
 export interface MediaItem {
 	url: string
@@ -30,8 +29,7 @@ export class ChatSignalRClient {
 	private conversationEndedCallback?: (conversationId: string) => void
 
 	constructor(conversationId: string) {
-		// const url = `https://api.gencare.site/hubs/chat?conversationId=${conversationId}&access_token=${token}`
-		const url = `http://localhost:8080/hubs/chat?conversationId=${conversationId}`
+		const url = `https://api.gencare.site/hubs/chat?conversationId=${conversationId}`
 
 		this.connection = new signalR.HubConnectionBuilder()
 			.withUrl(url)
@@ -108,7 +106,7 @@ const chatApi = {
 	getConnection: (conversationId: string) =>
 		new signalR.HubConnectionBuilder()
 			.withUrl(
-				`http://localhost:8080/hubs/chat?conversationId=${conversationId}`
+				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`
 			)
 			.build(),
 
