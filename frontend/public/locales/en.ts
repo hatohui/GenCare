@@ -541,6 +541,7 @@ const en: Record<string, string> = {
 	'nav.analytics': 'Analytics',
 	'nav.payments': 'Payments List',
 	'nav.testResults': 'Test Results',
+	'nav.support': 'Support',
 
 	// Profile
 	'profile.title': 'Profile',

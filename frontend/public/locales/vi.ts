@@ -524,6 +524,7 @@ const vi: Record<string, string> = {
 
 	// Navigation
 	'nav.home': 'Trang chủ',
+	'nav.support': 'Hỗ trợ khách hàng',
 	'nav.services': 'Dịch vụ',
 	'nav.appointments': 'Lịch hẹn',
 	'nav.consultants': 'Tư vấn viên',
