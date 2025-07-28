@@ -8,6 +8,7 @@ export type CreateSlotRequest = {
 export type CreateSlotResponse = {
 	success: boolean
 	message: string
+	slotId?: string
 }
 export type GetSlotResponse = {
 	slots: Array<{
@@ -35,6 +36,7 @@ export type GetSlotResponse = {
 	}>
 }
 export type UpdateSlotRequest = {
+	slotId: string
 	no?: number
 	startTime?: string
 	endTime?: string

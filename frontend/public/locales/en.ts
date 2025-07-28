@@ -539,6 +539,7 @@ const en: Record<string, string> = {
 	'nav.accounts': 'Accounts List',
 	'nav.slots': 'Work Slots',
 	'nav.schedules': 'Schedules',
+	'nav.schedule': 'My Schedule',
 	'nav.analytics': 'Analytics',
 	'nav.payments': 'Payments List',
 	'nav.testResults': 'Test Results',
@@ -769,6 +770,10 @@ const en: Record<string, string> = {
 	'appointment.booking.notes': 'Notes (optional)',
 	'appointment.booking.notesPlaceholder':
 		'E.g. symptoms, language preference, etc.',
+	'appointment.booking.selectDateFirst':
+		'Please select a date first to see available time slots.',
+	'appointment.booking.noAvailableSlots':
+		'No available time slots for this date.',
 
 	// Testimonials
 	'testimonials.author1.name': 'Nguyen Van A',
@@ -1071,6 +1076,24 @@ const en: Record<string, string> = {
 	'recentActivity.minutes_ago': '{count} minutes ago',
 	'recentActivity.hours_ago': '{count} hours ago',
 	'recentActivity.invalid_time': 'Invalid time',
+
+	// Schedule
+	'schedule.my_schedule': 'My Schedule',
+	'schedule.loading': 'Loading your schedule...',
+	'schedule.no_schedule_assigned': 'No Schedule Assigned',
+	'schedule.no_schedule_description':
+		"You haven't been assigned to any time slots for this week. Please check with your manager for slot assignments.",
+	'schedule.available': 'Available',
+	'schedule.booked': 'Booked',
+	'schedule.not_assigned': 'Not Assigned',
+	'schedule.past': 'Past',
+	'schedule.today': 'Today',
+	'schedule.previous_week': 'Previous Week',
+	'schedule.next_week': 'Next Week',
+	'schedule.no_appointments_scheduled': 'No appointments scheduled',
+	'schedule.available_for_slot': "You're available for this time slot",
+	'schedule.slot_details': 'Slot {0} Details',
+	'schedule.appointments_count': 'Appointments ({0})',
 }
 
 export default en

@@ -8,22 +8,17 @@ import React from 'react'
 import Calendar from '@/Components/Scheduling/Calendar/Calendar'
 import { useConsultantStore } from '@/Components/Consultant/ConsultantContext'
 import { useCreateAppointmentWithZoom } from '@/Services/appointment-service'
+import { useSchedulesByConsultant } from '@/Services/schedule-services'
 import { convertToISOString, formatDateForDisplay } from '@/Utils/dateTime'
 import { toast } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'motion/react'
 import { CldImage } from 'next-cloudinary'
 import { useLocale } from '@/Hooks/useLocale'
-import { isToday } from 'date-fns'
-
-const timeSlots = [
-	'08:00',
-	'10:00',
-	'12:00',
-	'14:00',
-	'16:00',
-	'18:00',
-	'20:00',
-]
+import { isToday, format, isSameDay } from 'date-fns'
+import {
+	WORKING_SLOTS,
+	getSlotWeekRange,
+} from '@/Utils/SlotHelpers/slotTimeHelpers'
 
 const BookConsultantPage = () => {
 	const { t } = useLocale()
@@ -39,12 +34,48 @@ const BookConsultantPage = () => {
 	const [selectedTime, setSelectedTime] = React.useState<string | null>(null)
 	const [notes, setNotes] = React.useState('')
 
+	// Get consultant's schedule for the selected date
+	const selectedWeekRange = selectedDate ? getSlotWeekRange(selectedDate) : null
+	const scheduleQuery = useSchedulesByConsultant(
+		consultantId,
+		selectedWeekRange?.startOfWeek.toISOString() || '',
+		selectedWeekRange?.endOfWeek.toISOString() || ''
+	)
+
 	// Loading states
 	const isLoading = isUserLoading || createAppointmentMutation.isPending
 
 	// For disabling past time slots
 	const now = new Date()
 	const isSelectedToday = selectedDate && isToday(selectedDate)
+
+	// Get available time slots for the selected date
+	const availableTimeSlots = React.useMemo(() => {
+		if (!selectedDate || !scheduleQuery.data?.slots) {
+			return []
+		}
+
+		// Find slots assigned to this consultant for the selected date
+		const assignedSlots = scheduleQuery.data.slots.filter(slot => {
+			const slotDate = new Date(slot.startAt)
+			return isSameDay(slotDate, selectedDate)
+		})
+
+		// Convert to time slot format
+		return assignedSlots
+			.map(slot => {
+				const workingSlot = WORKING_SLOTS.find(ws => ws.no === slot.no)
+				return workingSlot ? workingSlot.startTime : null
+			})
+			.filter(Boolean) as string[]
+	}, [selectedDate, scheduleQuery.data])
+
+	// Reset selected time when date changes or available slots change
+	React.useEffect(() => {
+		if (selectedTime && !availableTimeSlots.includes(selectedTime)) {
+			setSelectedTime(null)
+		}
+	}, [availableTimeSlots, selectedTime])
 
 	if (isUserLoading || (isUserLoading && !consultantFromContext)) {
 		return <div className='h-full w-full center-all'>{t('common.loading')}</div>
@@ -225,43 +256,56 @@ const BookConsultantPage = () => {
 						<label className='text-sm font-medium text-gray-700 mb-1 block'>
 							{t('appointment.booking.chooseTime')}
 						</label>
-						<div className='grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3'>
-							{timeSlots.map((slot, idx) => {
-								let slotDisabled = isLoading
-								if (isSelectedToday) {
-									const [h, m] = slot.split(':').map(Number)
-									const slotDate = new Date(selectedDate as Date)
-									slotDate.setHours(h, m, 0, 0)
-									if (slotDate < now) slotDisabled = true
-								}
-								return (
-									<motion.button
-										key={slot}
-										onClick={() => setSelectedTime(slot)}
-										disabled={slotDisabled}
-										initial={{ opacity: 0, scale: 0.8 }}
-										animate={{ opacity: 1, scale: 1 }}
-										transition={{ duration: 0.3, delay: 0.6 + idx * 0.1 }}
-										whileHover={{
-											scale: 1.05,
-											boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
-											transition: { duration: 0.2 },
-										}}
-										whileTap={{ scale: 0.95 }}
-										className={clsx(
-											'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
-											selectedTime === slot
-												? 'bg-blue-500 text-white border-blue-600'
-												: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
-											slotDisabled &&
-												'opacity-50 cursor-not-allowed bg-gray-200 text-gray-400'
-										)}
-									>
-										{slot}
-									</motion.button>
-								)
-							})}
-						</div>
+
+						{!selectedDate ? (
+							<div className='text-sm text-gray-500 py-4 text-center'>
+								{t('appointment.booking.selectDateFirst')}
+							</div>
+						) : availableTimeSlots.length === 0 ? (
+							<div className='text-sm text-gray-500 py-4 text-center'>
+								{scheduleQuery.isLoading
+									? t('common.loading')
+									: t('appointment.booking.noAvailableSlots')}
+							</div>
+						) : (
+							<div className='grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3'>
+								{availableTimeSlots.map((slot, idx) => {
+									let slotDisabled = isLoading
+									if (isSelectedToday) {
+										const [h, m] = slot.split(':').map(Number)
+										const slotDate = new Date(selectedDate as Date)
+										slotDate.setHours(h, m, 0, 0)
+										if (slotDate < now) slotDisabled = true
+									}
+									return (
+										<motion.button
+											key={slot}
+											onClick={() => setSelectedTime(slot)}
+											disabled={slotDisabled}
+											initial={{ opacity: 0, scale: 0.8 }}
+											animate={{ opacity: 1, scale: 1 }}
+											transition={{ duration: 0.3, delay: 0.6 + idx * 0.1 }}
+											whileHover={{
+												scale: 1.05,
+												boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
+												transition: { duration: 0.2 },
+											}}
+											whileTap={{ scale: 0.95 }}
+											className={clsx(
+												'py-2 px-3 text-sm rounded-lg border text-center transition-colors',
+												selectedTime === slot
+													? 'bg-blue-500 text-white border-blue-600'
+													: 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50',
+												slotDisabled &&
+													'opacity-50 cursor-not-allowed bg-gray-200 text-gray-400'
+											)}
+										>
+											{slot}
+										</motion.button>
+									)
+								})}
+							</div>
+						)}
 					</motion.div>
 
 					{/* Notes */}

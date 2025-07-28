@@ -35,16 +35,18 @@ export type ScheduleByConsultantResponse = {
 
 //view all /api/schedules?startAt={str}&endAt={str}
 export type ScheduleListResponse = Array<{
-	slots: Array<{
-		accounts: Array<{
-			id: string
-			email: string
-			firstName?: string
-			lastName?: string
-			phoneNumber?: string
-		}>
-		no: number
-		startAt: string // ISO Date string
-		endAt: string // ISO Date string
+	scheduleId: string
+	accounts: Array<{
+		id: string
+		email: string
+		firstName?: string
+		lastName?: string
+		phoneNumber?: string
+		dateOfBirth?: string
+		gender?: boolean
+		avatarUrl?: string | null
 	}>
+	no: number
+	startAt: string
+	endAt: string
 }>

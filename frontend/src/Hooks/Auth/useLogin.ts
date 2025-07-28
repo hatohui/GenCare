@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { AxiosError } from 'axios'
 
 import useToken from '@/Hooks/Auth/useToken'
@@ -20,6 +20,8 @@ import { TokenData } from '@/Interfaces/Auth/Schema/token'
 export const useLogin = () => {
 	const [isLoggingIn, setIsLoggingIn] = useState(false)
 	const [formError, setFormError] = useState<string>('')
+	const params = useParams()
+	const error = params ? params['error'] : undefined
 	const tokenStore = useToken()
 
 	const router = useRouter()
@@ -79,7 +81,7 @@ export const useLogin = () => {
 	)
 
 	useEffect(() => {
-		if (token && isTokenValid(token).valid) {
+		if (!error && token && isTokenValid(token).valid) {
 			postLoginRedirect(token)
 		}
 	}, [token, postLoginRedirect])

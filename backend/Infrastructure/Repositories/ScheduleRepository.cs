@@ -20,12 +20,14 @@ public class ScheduleRepository(IApplicationDbContext dbContext) : IScheduleRepo
 
     public async Task<List<Schedule>> GetAll()
     {
-        return await dbContext.Schedules.ToListAsync();
+        return await dbContext.Schedules.Include(s => s.Slot).Include(s => s.Account).ToListAsync();
     }
 
     public async Task<Schedule?> GetById(Guid id)
     {
-        return await dbContext.Schedules.Include(s => s.Slot).FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
+        return await dbContext
+            .Schedules.Include(s => s.Slot)
+            .FirstOrDefaultAsync(s => Guid.Equals(s.Id, id));
     }
 
     public async Task Update(Schedule s)

@@ -5,7 +5,6 @@ import {
 	User,
 	Heart,
 	Calendar,
-	Clock,
 	DollarSign,
 	MessageCircle,
 	ClipboardList,
@@ -56,12 +55,6 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		label: 'nav.services',
 		to: '/dashboard/services',
 		svg: <ClipboardList size={20} />,
-		level: PermissionLevel.manager,
-	},
-	{
-		label: 'nav.slots',
-		to: '/dashboard/slots',
-		svg: <Clock size={20} />,
 		level: PermissionLevel.manager,
 	},
 	{
