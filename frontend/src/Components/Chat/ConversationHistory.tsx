@@ -5,7 +5,7 @@ import { useUserConversationHistory } from '@/Services/chat-service'
 import { useLocale } from '@/Hooks/useLocale'
 import { Clock, MessageCircle, Stethoscope } from 'lucide-react'
 import { format } from 'date-fns'
-import Image from 'next/image'
+import { CldImage } from 'next-cloudinary'
 
 interface ConversationHistoryProps {
 	onSelectConversation?: (conversationId: string) => void
@@ -190,14 +190,13 @@ const ConversationHistory: React.FC<ConversationHistoryProps> = ({
 								}`}
 							>
 								{conversation.staffAvatarUrl ? (
-									<Image
+									<CldImage
 										width={40}
 										height={40}
 										src={conversation.staffAvatarUrl}
 										alt={conversation.staffName || 'Staff Avatar'}
 										className='w-full h-full rounded-full object-cover'
 										onError={e => {
-											// Hide the image and show fallback
 											e.currentTarget.style.display = 'none'
 											e.currentTarget.nextElementSibling?.setAttribute(
 												'style',

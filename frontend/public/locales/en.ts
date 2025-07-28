@@ -301,6 +301,7 @@ const en: Record<string, string> = {
 	'chat.video_call_feature_coming_soon': 'Video call feature coming soon!',
 	'chat.book_consultant_feature_coming_soon':
 		'Book consultant feature coming soon!',
+	'chat.show_pending': 'Show pending',
 
 	// Consultants
 	'consultant.details': 'Consultant Details',

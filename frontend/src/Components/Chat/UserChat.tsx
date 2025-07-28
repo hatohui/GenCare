@@ -22,6 +22,7 @@ import {
 	AlertCircle,
 	Video,
 	Calendar,
+	ChevronDown,
 } from 'lucide-react'
 import { useLocale } from '@/Hooks/useLocale'
 import { format } from 'date-fns'
@@ -46,9 +47,8 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		staffAvatarUrl?: string
 		status: boolean
 	} | null>(null)
-	const [activeTab, setActiveTab] = useState<'pending' | 'active' | 'ended'>(
-		'pending'
-	)
+	const [activeTab, setActiveTab] = useState<'active' | 'ended'>('active')
+	const [showPending, setShowPending] = useState(false)
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 
 	const { accessToken } = useToken()
@@ -101,7 +101,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 			setSelectedConversationId(newConversationId)
 			setIsConversationStarted(true)
 			setInputMessage('')
-			setActiveTab('pending')
+			setActiveTab('active')
 			toast.success(t('chat.conversation_started'))
 		} catch (error) {
 			toast.error(t('chat.failed_to_start'))
@@ -142,7 +142,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		setIsConversationStarted(false)
 		setInputMessage('')
 		setCurrentConversationData(null)
-		setActiveTab('pending') // Switch to pending tab when starting new conversation
+		setActiveTab('active') // Switch to active tab when starting new conversation
 	}
 
 	const handleSendMessage = async (e: React.FormEvent) => {
@@ -187,6 +187,13 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		toast.success(t('chat.book_consultant_feature_coming_soon'))
 	}, [t])
 
+	// Get pending conversations count
+	const getPendingCount = useCallback(() => {
+		return (
+			conversationHistory?.filter((conv: any) => !conv.staffId)?.length || 0
+		)
+	}, [conversationHistory])
+
 	const isConversationEnded = Boolean(
 		currentConversationData && !currentConversationData.status
 	)
@@ -215,17 +222,6 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 					{/* Tab Toggle */}
 					<div className='flex bg-gray-200 rounded-lg p-1'>
 						<button
-							onClick={() => setActiveTab('pending')}
-							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
-								activeTab === 'pending'
-									? 'bg-white text-blue-600 shadow-sm'
-									: 'text-gray-600 hover:text-gray-800'
-							}`}
-						>
-							<Clock className='w-3 h-3' />
-							<span>{t('chat.pending')}</span>
-						</button>
-						<button
 							onClick={() => setActiveTab('active')}
 							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
 								activeTab === 'active'
@@ -252,19 +248,63 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 
 				{/* Conversation List */}
 				<div className='flex-1 overflow-y-auto'>
-					<ConversationHistory
-						onSelectConversation={handleSelectConversation}
-						selectedConversationId={selectedConversationId}
-						className='w-full'
-						filterByStatus={
-							activeTab === 'pending'
-								? undefined
-								: activeTab === 'active'
-								? true
-								: false
-						}
-						showPendingOnly={activeTab === 'pending'}
-					/>
+					{activeTab === 'active' ? (
+						<div className='flex flex-col h-full'>
+							{/* Active Conversations */}
+							<ConversationHistory
+								onSelectConversation={handleSelectConversation}
+								selectedConversationId={selectedConversationId}
+								className='flex-shrink-0'
+								filterByStatus={true}
+								showPendingOnly={false}
+							/>
+
+							{/* Collapsible Pending Section */}
+							{getPendingCount() > 0 && (
+								<div className='border-t border-gray-200 flex-shrink-0'>
+									<button
+										onClick={() => setShowPending(!showPending)}
+										className='w-full p-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-between'
+									>
+										<div className='flex items-center space-x-2'>
+											<Clock className='w-4 h-4 text-gray-500' />
+											<span>
+												{t('chat.show_pending')} ({getPendingCount()})
+											</span>
+										</div>
+										<div
+											className={`transform transition-transform ${
+												showPending ? 'rotate-180' : ''
+											}`}
+										>
+											<ChevronDown className='w-4 h-4 text-gray-500' />
+										</div>
+									</button>
+
+									{showPending && (
+										<div className='border-t border-gray-100'>
+											<ConversationHistory
+												onSelectConversation={handleSelectConversation}
+												selectedConversationId={selectedConversationId}
+												className='max-h-48 overflow-y-auto'
+												filterByStatus={undefined}
+												showPendingOnly={true}
+											/>
+										</div>
+									)}
+								</div>
+							)}
+						</div>
+					) : (
+						/* Ended Conversations */
+						<ConversationHistory
+							onSelectConversation={handleSelectConversation}
+							selectedConversationId={selectedConversationId}
+							className='w-full'
+							filterByStatus={false}
+							showPendingOnly={false}
+						/>
+					)}
 				</div>
 			</div>
 

@@ -411,6 +411,7 @@ const vi: Record<string, string> = {
 	'chat.video_call_feature_coming_soon': 'Tính năng gọi video sắp ra mắt!',
 	'chat.book_consultant_feature_coming_soon':
 		'Tính năng đặt lịch tư vấn viên sắp ra mắt!',
+	'chat.show_pending': 'Hiển thị chờ xử lý',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',
