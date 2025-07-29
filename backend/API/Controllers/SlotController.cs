@@ -4,6 +4,7 @@ using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
+
 [ApiController]
 [Route("api/slots")]
 public class SlotController(ISlotService slotService) : ControllerBase
@@ -28,10 +29,8 @@ public class SlotController(ISlotService slotService) : ControllerBase
     // DELETE: api/Slot
     [HttpDelete("{id}")]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    public async Task<IActionResult> DeleteSlot([FromRoute]Guid id)
+    public async Task<IActionResult> DeleteSlot([FromRoute] Guid id)
     {
-       
-    
         var response = await slotService.DeleteSlot(id);
         return Ok(response);
     }

@@ -8,7 +8,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 
 const scheduleApi = {
-	// Private API - requires authentication
 	getAll: (startAt?: string, endAt?: string) => {
 		const params = new URLSearchParams()
 		if (startAt) params.append('startAt', startAt)
@@ -41,10 +40,8 @@ const scheduleApi = {
 		axiosInstance.post('/schedules', data).then(res => res.status), // Return status code (201)
 
 	// Private API - requires authentication
-	update: (scheduleId: string, data: UpdateScheduleRequest) => {
-		return axiosInstance
-			.put(`/schedules/${scheduleId}`, data)
-			.then(res => res.status) // Return status code (204)
+	update: (data: UpdateScheduleRequest) => {
+		return axiosInstance.put('/schedules', data).then(res => res.status) // Return status code (204)
 	},
 
 	// Private API - requires authentication
@@ -95,13 +92,7 @@ export const useCreateSchedule = () => {
  */
 export const useUpdateSchedule = () => {
 	return useMutation({
-		mutationFn: ({
-			scheduleId,
-			data,
-		}: {
-			scheduleId: string
-			data: UpdateScheduleRequest
-		}) => scheduleApi.update(scheduleId, data),
+		mutationFn: (data: UpdateScheduleRequest) => scheduleApi.update(data),
 	})
 }
 

@@ -538,6 +538,7 @@ const vi: Record<string, string> = {
 	'nav.blog': 'Bài viết',
 	'nav.contact': 'Liên hệ',
 	'nav.goToApp': 'Đi tới ứng dụng',
+	'nav.goToDashboard': 'Đi tới bảng điều khiển',
 	'nav.menu': 'Menu',
 	'nav.expand': 'Mở rộng thanh bên',
 	'nav.collapse': 'Thu gọn thanh bên',
@@ -791,6 +792,10 @@ const vi: Record<string, string> = {
 	'appointment.booking.notes': 'Ghi chú (tùy chọn)',
 	'appointment.booking.notesPlaceholder':
 		'Ví dụ: triệu chứng, ngôn ngữ ưa thích, v.v.',
+	'appointment.booking.selectDateFirst':
+		'Vui lòng chọn ngày trước để xem khung giờ có sẵn.',
+	'appointment.booking.noAvailableSlots':
+		'Không có khung giờ nào có sẵn cho ngày này.',
 
 	// Testimonials
 	'testimonials.author1.name': 'Nguyễn Văn A',
@@ -1065,6 +1070,24 @@ const vi: Record<string, string> = {
 	'contact.info.email': 'Email',
 	'contact.info.note':
 		'Chúng tôi sẽ phản hồi bạn sớm nhất có thể. Nếu cần gấp, vui lòng gọi hotline.',
+
+	// Schedule
+	'schedule.my_schedule': 'Lịch Trình Của Tôi',
+	'schedule.loading': 'Đang tải lịch trình của bạn...',
+	'schedule.no_schedule_assigned': 'Chưa Được Phân Công',
+	'schedule.no_schedule_description':
+		'Bạn chưa được phân công vào bất kỳ khung giờ nào trong tuần này. Vui lòng liên hệ với quản lý để được phân công.',
+	'schedule.available': 'Sẵn sàng',
+	'schedule.booked': 'Đã đặt',
+	'schedule.not_assigned': 'Chưa phân công',
+	'schedule.past': 'Đã qua',
+	'schedule.today': 'Hôm nay',
+	'schedule.previous_week': 'Tuần trước',
+	'schedule.next_week': 'Tuần sau',
+	'schedule.no_appointments_scheduled': 'Không có cuộc hẹn nào',
+	'schedule.available_for_slot': 'Bạn có sẵn cho khung giờ này',
+	'schedule.slot_details': 'Chi tiết ca {0}',
+	'schedule.appointments_count': 'Cuộc hẹn ({0})',
 }
 
 export default vi
