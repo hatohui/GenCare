@@ -39,7 +39,6 @@ public class AccountService(
         var role =
             await roleRepo.GetRoleByNameAsync("Member")
             ?? throw new AppException(400, "Role 'Member' not found");
-      
 
         //create new user account
         var user = new Account
@@ -699,5 +698,43 @@ public class AccountService(
             Consultants = consultantInfoModels,
         };
         return response;
+    }
+
+    public async Task<ConsultantInfoModel?> GetConsultantByIdAsync(Guid consultantId)
+    {
+        // Get the account by ID
+        var account = await accountRepo.GetAccountByIdAsync(consultantId);
+
+        if (account == null || account.IsDeleted)
+            return null;
+
+        // Check if the account is a consultant with staff info
+        if (
+            account.Role.Name.ToLower() != RoleNames.Consultant.ToLower()
+            || account.StaffInfo == null
+        )
+            return null;
+
+        // Get department by id
+        var department = await departmentRepo.GetDepartmentByIdAsync(
+            account.StaffInfo.DepartmentId
+        );
+
+        return new ConsultantInfoModel()
+        {
+            Id = account.Id.ToString("D"),
+            Role = account.Role.Name,
+            Email = account.Email,
+            FirstName = account.FirstName,
+            LastName = account.LastName,
+            Gender = account.Gender,
+            PhoneNumber = account.Phone,
+            DateOfBirth = account.DateOfBirth,
+            AvatarUrl = account.AvatarUrl,
+            Degree = account.StaffInfo?.Degree ?? string.Empty,
+            YearOfExperience = account.StaffInfo?.YearOfExperience ?? 0,
+            Biography = account.StaffInfo?.Biography,
+            Department = department?.Name ?? string.Empty,
+        };
     }
 }

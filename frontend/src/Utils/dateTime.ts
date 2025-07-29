@@ -11,8 +11,8 @@ import { vi } from 'date-fns/locale'
 /**
  * Converts a date and time string to ISO string using date-fns
  * @param date - The selected date
- * @param timeString - Time string in format "HH:MM AM/PM" (e.g., "08:00 AM", "03:30 PM")
- * @returns ISO string
+ * @param timeString - Time string in format "HH:MM" (e.g., "08:00", "15:30")
+ * @returns ISO string in UTC format
  */
 export const convertToISOString = (date: Date, timeString: string): string => {
 	// Parse the time string using date-fns (24h format)
@@ -30,13 +30,14 @@ export const convertToISOString = (date: Date, timeString: string): string => {
 	const minutes = parsedTime.getMinutes()
 
 	// Create a new date object with the selected date and time using date-fns
+	// This creates a date in the user's local timezone
 	const appointmentDate = setMilliseconds(
 		setSeconds(setMinutes(setHours(date, hours), minutes), 0),
 		0
 	)
 
-	// Return ISO string without timezone conversion to preserve local time
-	return format(appointmentDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+	// Convert to UTC ISO string - this will properly handle timezone conversion
+	return appointmentDate.toISOString()
 }
 
 /**

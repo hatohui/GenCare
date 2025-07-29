@@ -4,16 +4,18 @@ import { AppointmentCountdown } from './AppointmentCountdown'
 import { Bell, Clock, User, Check, X, Loader2, Video } from 'lucide-react'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { parseUTCToLocal } from '@/Utils/Appointment/timeSlotHelpers'
 
 interface AppointmentCellProps {
 	appointments: Appointment[]
 	isHighlighted?: boolean
 }
 
-// Helper function to check if appointment is within 60 minutes
+// Helper function to check if appointment is within 60 minutes (properly handling UTC)
 const isWithin60Minutes = (scheduleAt: string): boolean => {
 	const now = new Date()
-	const appointmentTime = new Date(scheduleAt)
+	// Parse UTC time and convert to local time for comparison
+	const appointmentTime = parseUTCToLocal(scheduleAt)
 	const timeDiff = appointmentTime.getTime() - now.getTime()
 	const minutesDiff = timeDiff / (1000 * 60)
 

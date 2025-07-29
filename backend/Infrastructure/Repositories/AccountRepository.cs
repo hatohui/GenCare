@@ -39,6 +39,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         return await dbContext
             .Accounts.Include(a => a.Role)
             .Include(a => a.StaffInfo)
+            .Include(a => a.Schedules)
             .FirstOrDefaultAsync(a => a.Id == accountId);
     }
 

@@ -10,22 +10,37 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class ScheduleService(IScheduleRepository scheduleRepository,
-                             IAccountRepository accountRepository,
-                             ISlotRepository slotRepository) : IScheduleService
+public class ScheduleService(
+    IScheduleRepository scheduleRepository,
+    IAccountRepository accountRepository,
+    ISlotRepository slotRepository
+) : IScheduleService
 {
     public async Task AddScheduleAsync(ScheduleCreateRequest request)
     {
-        await scheduleRepository.Add(new Schedule()
+        // Check if schedule already exists for this slot and account combination
+        var existingSchedules = await scheduleRepository.GetAll();
+        var duplicateSchedule = existingSchedules.FirstOrDefault(s =>
+            s.SlotId == Guid.Parse(request.SlotId) && s.AccountId == Guid.Parse(request.AccountId)
+        );
+
+        if (duplicateSchedule != null)
+        {
+            throw new AppException(400, "Consultant is already assigned to this slot");
+        }
+
+        var newSchedule = new Schedule()
         {
             SlotId = Guid.Parse(request.SlotId),
-            AccountId = Guid.Parse(request.AccountId)
-        });
+            AccountId = Guid.Parse(request.AccountId),
+        };
+
+        await scheduleRepository.Add(newSchedule);
     }
 
     public async Task DeleteScheduleAsync(string scheduleId)
     {
-        Schedule? s = scheduleRepository.GetById(Guid.Parse(scheduleId)).Result;
+        Schedule? s = await scheduleRepository.GetById(Guid.Parse(scheduleId));
         if (s == null)
         {
             throw new AppException(400, "Schedule not found");
@@ -33,54 +48,64 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
         await scheduleRepository.Delete(s);
     }
 
-    public async Task<List<AllScheduleViewResponse>> GetAllScheduleAsync(DateTime? startAt, DateTime? endAt)
+    public async Task<List<AllScheduleViewResponse>> GetAllScheduleAsync(
+        DateTime? startAt,
+        DateTime? endAt
+    )
     {
-        //get all slot
-        var slots = await slotRepository.GetAll();
-        slots = slots.OrderBy(s => s.No).ToList();
+        // Get all schedules with their related slot and account data
+        var schedules = await scheduleRepository.GetAll();
+
+        // Filter by date range if provided
         if (startAt != null && endAt != null)
         {
-            slots = slots.Where(s => s.StartAt >= startAt && s.EndAt <= endAt).ToList();
+            schedules = schedules
+                .Where(s => s.Slot.StartAt >= startAt && s.Slot.EndAt <= endAt)
+                .ToList();
         }
-        //get schedule list of all slots
-        //get account of each schedule
 
         List<AllScheduleViewResponse> rs = new();
-        foreach (var slot in slots)
-        {//duyệt qua từng slot
-            List<AccountResponseModel> accounts = new();
-            foreach (var schedule in slot.Schedules)//duyệt qua từng sche của từng slot
-                                                    //để lấy từng account tương ứng
+
+        foreach (var schedule in schedules)
+        {
+            var account = await accountRepository.GetAccountByIdAsync(schedule.AccountId);
+            if (account != null)
             {
-                var account = await accountRepository.GetAccountByIdAsync(schedule.AccountId);//lay acc
-                if (account != null)
-                {
-                    //sau khi lấy được acc thì chúng ta chuyển nó sang model rồi add
-                    //nó vào account list -> cần account list để bỏ vào trong response
-                    accounts.Add(new AccountResponseModel()
+                rs.Add(
+                    new AllScheduleViewResponse()
                     {
-                        Id = account.Id.ToString("D"),
-                        Email = account.Email,
-                        PhoneNumber = account.Phone,
-                        FirstName = account.FirstName,
-                        LastName = account.LastName
-                    });
-                }
+                        ScheduleId = schedule.Id,
+                        Accounts = new List<AccountResponseModel>
+                        {
+                            new AccountResponseModel()
+                            {
+                                Id = account.Id.ToString("D"),
+                                Email = account.Email,
+                                PhoneNumber = account.Phone,
+                                FirstName = account.FirstName,
+                                LastName = account.LastName,
+                                DateOfBirth = account.DateOfBirth?.ToString("yyyy-MM-dd"),
+                                Gender = account.Gender,
+                                AvatarUrl = account.AvatarUrl,
+                            },
+                        },
+                        No = schedule.Slot.No,
+                        StartAt = schedule.Slot.StartAt,
+                        EndAt = schedule.Slot.EndAt,
+                    }
+                );
             }
-            //sau khi đã lấy được account list của từng slot thì chúng ta se add nao va slot
-            rs.Add(new AllScheduleViewResponse()
-            {
-                Acccounts = accounts,
-                No = slot.No,
-                StartAt = slot.StartAt,
-                EndAt = slot.EndAt
-            });
         }
-        //rs
+
         return rs;
     }
 
-    public async Task<ScheduleViewResponse> GetScheduleAsync(string accessToken, string id, DateTime? startAt, DateTime? endAt)
+    public async Task<ScheduleViewResponse> GetScheduleAsync(
+        string accessToken,
+        string id,
+        DateTime? startAt,
+        DateTime? endAt
+    )
     {
         {
             //check authen
@@ -94,16 +119,27 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
             string roleToken = JwtHelper.GetRoleFromToken(accessToken);
             bool check = false;
             //if staff or consultant --> only view their own schedule
-            if (roleToken.ToLower() == RoleNames.Staff.ToLower() ||
-                roleToken.ToLower() == RoleNames.Consultant.ToLower())
+            if (
+                roleToken.ToLower() == RoleNames.Staff.ToLower()
+                || roleToken.ToLower() == RoleNames.Consultant.ToLower()
+            )
             {
-                if (idToken.ToString("D") == id) check = true;
+                if (idToken.ToString("D") == id)
+                    check = true;
+            }
+            //if member --> can view consultant schedules for booking appointments
+            if (roleToken.ToLower() == RoleNames.Member.ToLower())
+            {
+                if (account.Role.Name.ToLower() == RoleNames.Consultant.ToLower())
+                    check = true;
             }
             //if manager --> view schedule of staff and consultant
             if (roleToken.ToLower() == RoleNames.Manager.ToLower())
             {
-                if (account.Role.Name.ToLower() == RoleNames.Staff ||
-                    account.Role.Name.ToLower() == RoleNames.Consultant)
+                if (
+                    account.Role.Name.ToLower() == RoleNames.Staff
+                    || account.Role.Name.ToLower() == RoleNames.Consultant
+                )
                     check = true;
             }
             //if admin --> view schedule of all
@@ -128,28 +164,37 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
 
             foreach (var schedule in schedules)
             {
-                var s = slotRepository.GetById(schedule.SlotId);
+                var slot = await slotRepository.GetById(schedule.SlotId);
+
+                // Skip if slot not found
+                if (slot == null)
+                    continue;
+
                 //check time of slot
                 if (startAt != null && endAt != null)
                 {
-                    if (s.Result!.StartAt >= startAt && s.Result!.EndAt <= endAt)
+                    if (slot.StartAt >= startAt && slot.EndAt <= endAt)
                     {
-                        rs.Slots.Add(new SlotResponseModel()
-                        {
-                            No = s.Result == null ? default : s.Result.No,
-                            EndAt = s.Result == null ? default : s.Result.EndAt,
-                            StartAt = s.Result == null ? default : s.Result.StartAt
-                        });
+                        rs.Slots.Add(
+                            new SlotResponseModel()
+                            {
+                                No = slot.No,
+                                EndAt = slot.EndAt,
+                                StartAt = slot.StartAt,
+                            }
+                        );
                     }
                 }
                 else
                 {
-                    rs.Slots.Add(new SlotResponseModel()
-                    {
-                        No = s.Result == null ? default : s.Result.No,
-                        EndAt = s.Result == null ? default : s.Result.EndAt,
-                        StartAt = s.Result == null ? default : s.Result.StartAt
-                    });
+                    rs.Slots.Add(
+                        new SlotResponseModel()
+                        {
+                            No = slot.No,
+                            EndAt = slot.EndAt,
+                            StartAt = slot.StartAt,
+                        }
+                    );
                 }
             }
             return rs;
@@ -158,7 +203,7 @@ public class ScheduleService(IScheduleRepository scheduleRepository,
 
     public async Task UpdateScheduleAsync(ScheduleUpdateRequest request)
     {
-        Schedule? s = scheduleRepository.GetById(Guid.Parse(request.ScheduleId)).Result;
+        Schedule? s = await scheduleRepository.GetById(Guid.Parse(request.ScheduleId));
         if (s == null)
         {
             throw new AppException(400, "Schedule not found");

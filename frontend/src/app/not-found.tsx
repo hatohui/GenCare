@@ -13,7 +13,7 @@ export default function NotFound() {
 			/>
 			<Link
 				href='/'
-				className='absolute top-8 left-8 flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 transition-all duration-200 hover:scale-105 hover:shadow-lg'
+				className='absolute top-8 left-8 flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg backdrop-blur-sm text-white bg-accent hover:bg-accent/60 border border-white/20 transition-all duration-200 hover:scale-105 hover:shadow-lg'
 			>
 				<svg
 					className='w-4 h-4'
