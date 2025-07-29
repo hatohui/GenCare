@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Appointment.Request;
 using Application.DTOs.Auth.Requests;
@@ -326,6 +326,7 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<RateLimitMiddleware>();
 
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontendOrigins");
 app.UseAuthentication();
