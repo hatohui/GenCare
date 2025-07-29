@@ -104,9 +104,7 @@ const chatApi = {
 	deleteMessage: (messageId: string) =>
 		axiosInstance.delete(`/messages/${messageId}`),
 
-	getConnection: (conversationId: string) => {
-		const { accessToken } = useToken()
-
+	getConnection: (conversationId: string, accessToken?: string) => {
 		return new signalR.HubConnectionBuilder()
 			.withUrl(
 				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`,
@@ -175,8 +173,10 @@ export const useDeleteMessage = () => {
 	})
 }
 
-export const useConnection = (conversationId: string) =>
-	chatApi.getConnection(conversationId)
+export const useConnection = (conversationId: string) => {
+	const { accessToken } = useToken()
+	return chatApi.getConnection(conversationId, accessToken || undefined)
+}
 
 export const useAllConversations = () => {
 	return useQuery({
