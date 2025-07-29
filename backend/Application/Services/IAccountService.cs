@@ -66,4 +66,6 @@ public interface IAccountService
 
     Task<ProfileViewModel> GetProfileAsync(Guid accountId);
     Task<ConsultantInfoGetResponse> GetConsultantProfile(int page, int count, string? search);
+
+    Task<bool> CheckEmailExist(string email);
 }
