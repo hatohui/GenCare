@@ -709,11 +709,12 @@ public class AccountService(
         }
         //get account by email
         var account = await accountRepo.GetByEmailAsync(email);
-        if(account is null) //email does not exist
+        if (account is null) //email does not exist
         {
             return false;
         }
         return true;
+    }
 
     public async Task<ConsultantInfoModel?> GetConsultantByIdAsync(Guid consultantId)
     {
