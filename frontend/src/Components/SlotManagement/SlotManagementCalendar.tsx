@@ -29,10 +29,7 @@ import {
 	WORKING_SLOTS,
 	formatSlotTimeRange,
 } from '@/Utils/SlotHelpers/slotTimeHelpers'
-import {
-	getSlotStatus,
-	getAssignedConsultantsForSlot,
-} from '@/Utils/SlotHelpers/slotAvailabilityHelpers'
+import { getSlotStatus } from '@/Utils/SlotHelpers/slotAvailabilityHelpers'
 import AssignConsultantModal from './AssignConsultantModal'
 import SlotDetailsModal from './SlotDetailsModal'
 import { CreateSlotRequest } from '@/Interfaces/Slot/Schema/slot'
@@ -112,28 +109,6 @@ const SlotManagementCalendar = ({
 		else {
 			setIsAssignModalOpen(true)
 		}
-	}
-
-	const createNewSchedule = (
-		slotId: string | undefined,
-		consultantId: string | undefined
-	) => {
-		const newSchedule: CreateScheduleRequest = {
-			slotId: slotId || '',
-			accountId: consultantId || '',
-		}
-
-		createScheduleMutation.mutate(newSchedule, {
-			onSuccess: () => {
-				toast.success('Schedule created successfully!')
-				schedulesQuery.refetch()
-			},
-			onError: (error: any) => {
-				toast.error(
-					error?.response?.data?.message || 'Failed to create schedule'
-				)
-			},
-		})
 	}
 
 	const handleAssignConsultant = async (consultantIds: string[]) => {

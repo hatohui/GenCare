@@ -8,7 +8,6 @@ COPY Domain/Domain.csproj ./Domain/
 COPY Infrastructure/Infrastructure.csproj ./Infrastructure/
 RUN dotnet restore API/API.csproj --packages /src/.nuget/packages --verbosity minimal
 
-# Copy the rest of the source code
 COPY . .
 WORKDIR /src/API
 RUN dotnet publish -c Release -o /app/publish --no-restore --packages /src/.nuget/packages

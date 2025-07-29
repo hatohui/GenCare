@@ -525,6 +525,7 @@ const en: Record<string, string> = {
 	'nav.blog': 'Blog',
 	'nav.contact': 'Contact',
 	'nav.goToApp': 'Go to App',
+	'nav.goToDashboard': 'Go to Dashboard',
 	'nav.menu': 'Menu',
 	'nav.expand': 'Expand sidebar',
 	'nav.collapse': 'Collapse sidebar',

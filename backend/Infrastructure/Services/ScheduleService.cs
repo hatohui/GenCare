@@ -127,6 +127,12 @@ public class ScheduleService(
                 if (idToken.ToString("D") == id)
                     check = true;
             }
+            //if member --> can view consultant schedules for booking appointments
+            if (roleToken.ToLower() == RoleNames.Member.ToLower())
+            {
+                if (account.Role.Name.ToLower() == RoleNames.Consultant.ToLower())
+                    check = true;
+            }
             //if manager --> view schedule of staff and consultant
             if (roleToken.ToLower() == RoleNames.Manager.ToLower())
             {

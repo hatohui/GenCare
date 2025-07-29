@@ -2,7 +2,6 @@ import {
 	Home,
 	BarChart2,
 	Users,
-	User,
 	Heart,
 	Calendar,
 	DollarSign,
@@ -11,6 +10,8 @@ import {
 	UserCheck,
 	BookOpen,
 	TestTube,
+	ArrowLeftRight,
+	LayoutDashboard,
 } from 'lucide-react'
 import { RouterButtonProps } from '@/Components/NavBar/RouterButton'
 import { PermissionLevel } from '@/Utils/Permissions/isAllowedRole'
@@ -21,6 +22,18 @@ export type SideNavButtonProp = RouterButtonProps & {
 }
 
 export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
+	{
+		label: 'nav.goToApp',
+		to: '/app',
+		svg: <ArrowLeftRight size={20} />,
+		level: PermissionLevel.manager,
+	},
+	{
+		label: 'nav.goToDashboard',
+		to: '/dashboard',
+		svg: <LayoutDashboard size={20} />,
+		level: PermissionLevel.staff,
+	},
 	{
 		label: 'nav.home',
 		to: '/dashboard',
@@ -44,12 +57,6 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		to: '/dashboard/accounts',
 		svg: <Users size={20} />,
 		level: PermissionLevel.manager,
-	},
-	{
-		label: 'nav.customers',
-		to: '/app/customers',
-		svg: <User size={20} />,
-		level: PermissionLevel.consultant,
 	},
 	{
 		label: 'nav.services',

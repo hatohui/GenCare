@@ -538,6 +538,7 @@ const vi: Record<string, string> = {
 	'nav.blog': 'Bài viết',
 	'nav.contact': 'Liên hệ',
 	'nav.goToApp': 'Đi tới ứng dụng',
+	'nav.goToDashboard': 'Đi tới bảng điều khiển',
 	'nav.menu': 'Menu',
 	'nav.expand': 'Mở rộng thanh bên',
 	'nav.collapse': 'Thu gọn thanh bên',

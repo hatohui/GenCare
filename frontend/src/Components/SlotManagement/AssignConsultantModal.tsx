@@ -236,10 +236,10 @@ const AssignConsultantModal = ({
 																	<Mail className='w-3 h-3' />
 																	<span>{consultant.email}</span>
 																</div>
-																{consultant.phone && (
+																{consultant.phoneNumber && (
 																	<div className='flex items-center space-x-1'>
 																		<Phone className='w-3 h-3' />
-																		<span>{consultant.phone}</span>
+																		<span>{consultant.phoneNumber}</span>
 																	</div>
 																)}
 															</div>

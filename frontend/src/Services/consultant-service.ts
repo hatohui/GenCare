@@ -6,14 +6,20 @@ export interface ConsultantAccount {
 	email: string
 	firstName: string
 	lastName: string
-	phone: string
-	roleId: string
+	phoneNumber: string
+	gender: boolean
+	dateOfBirth?: string
+	roleId?: string
 	role?: {
 		id: string
 		name: string
 	}
-	isDeleted: boolean
+	isDeleted?: boolean
 	avatarUrl?: string
+	degree: string
+	yearOfExperience: number
+	biography?: string
+	department: string
 }
 
 export interface GetConsultantsResponse {
@@ -37,7 +43,7 @@ const consultantApi = {
 
 	getConsultantById: (id: string) => {
 		return axiosInstance
-			.get<ConsultantAccount>(`/accounts/${id}`)
+			.get<ConsultantAccount>(`/accounts/consultants/${id}`)
 			.then(res => res.data)
 	},
 }

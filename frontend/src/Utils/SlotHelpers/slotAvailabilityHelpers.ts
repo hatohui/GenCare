@@ -112,16 +112,17 @@ export const getAppointmentsForSlot = (
 	const slot = WORKING_SLOTS.find(s => s.no === slotNo)
 	if (!slot) return []
 
+	console.log('getAppointmentsForSlot:', { appointments })
+	console.log('time:', new Date('2025-07-29T08:00:00'))
+
 	const startTime = addHours(day, parseInt(slot.startTime.split(':')[0]))
-	const endTime = addHours(day, parseInt(slot.endTime.split(':')[0]))
 
-	return appointments.filter(appointment => {
-		if (appointment.isDeleted) return false
-
-		// Use improved time handling with 'Z' suffix for UTC parsing
+	const result = appointments.filter(appointment => {
 		const appointmentDate = new Date(appointment.scheduleAt + 'Z')
-		return appointmentDate >= startTime && appointmentDate < endTime
+		return startTime == appointmentDate
 	})
+
+	return result
 }
 
 /**

@@ -8,7 +8,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import axiosInstance from '@/Utils/axios'
 
 const scheduleApi = {
-	// Private API - requires authentication
 	getAll: (startAt?: string, endAt?: string) => {
 		const params = new URLSearchParams()
 		if (startAt) params.append('startAt', startAt)

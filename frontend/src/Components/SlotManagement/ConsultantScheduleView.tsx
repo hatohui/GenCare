@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { format, addDays } from 'date-fns'
+import { addDays } from 'date-fns'
 import clsx from 'clsx'
 import {
 	Calendar,
@@ -15,7 +15,7 @@ import {
 	X,
 } from 'lucide-react'
 import { useSchedulesByConsultant } from '@/Services/schedule-services'
-import { useAppointments } from '@/Services/appointment-service'
+import { useConsultantAppointments } from '@/Services/appointment-service'
 import { useLocale } from '@/Hooks/useLocale'
 import {
 	getSlotWeekRange,
@@ -35,7 +35,7 @@ interface ConsultantScheduleViewProps {
 const ConsultantScheduleView = ({
 	consultantId,
 }: ConsultantScheduleViewProps) => {
-	const { t } = useLocale()
+	const { t, locale } = useLocale()
 	const [currentWeek, setCurrentWeek] = useState(new Date())
 	const [selectedSlot, setSelectedSlot] = useState<{
 		day: Date
@@ -53,16 +53,12 @@ const ConsultantScheduleView = ({
 		startOfWeek.toISOString(),
 		endOfWeek.toISOString()
 	)
-	const appointmentsQuery = useAppointments()
+	const appointmentsQuery = useConsultantAppointments(consultantId)
 	const schedule = scheduleQuery.data
 
-	const consultantAppointments = useMemo(() => {
-		const allAppointments = appointmentsQuery.data || []
-		return allAppointments.filter(
-			(appointment: Appointment) =>
-				appointment.staffId === consultantId && !appointment.isDeleted
-		)
-	}, [appointmentsQuery.data, consultantId])
+	const consultantAppointments = appointmentsQuery.data || []
+
+	console.log('selectedSlot:', consultantAppointments)
 
 	const assignedSlots = useMemo(() => {
 		const slots = new Set<string>()
@@ -70,11 +66,10 @@ const ConsultantScheduleView = ({
 		if (schedule?.slots) {
 			schedule.slots.forEach(slot => {
 				const slotDate = new Date(slot.startAt)
-				const dayKey = format(slotDate, 'yyyy-MM-dd')
+				const dayKey = slotDate.toLocaleDateString('sv-SE') // yyyy-MM-dd
 				const slotKey = `${dayKey}-${slot.no}`
 				slots.add(slotKey)
 			})
-		} else {
 		}
 
 		return slots
@@ -95,7 +90,7 @@ const ConsultantScheduleView = ({
 
 	// Check if consultant is assigned to a slot
 	const isAssignedToSlot = (day: Date, slotNo: number): boolean => {
-		const dayKey = format(day, 'yyyy-MM-dd')
+		const dayKey = day.toLocaleDateString('sv-SE') // yyyy-MM-dd
 		const slotKey = `${dayKey}-${slotNo}`
 		return assignedSlots.has(slotKey)
 	}
@@ -103,6 +98,7 @@ const ConsultantScheduleView = ({
 	// Get slot status
 	const getSlotStatus = (day: Date, slotNo: number) => {
 		const isAssigned = isAssignedToSlot(day, slotNo)
+
 		const slotAppointments = getAppointmentsForSlot(
 			day,
 			slotNo,
@@ -345,12 +341,25 @@ const ConsultantScheduleView = ({
 										key={day.toISOString()}
 										className='p-4 bg-gray-50 text-center font-semibold text-gray-700 border-r border-gray-200 last:border-r-0'
 									>
-										<div className='text-sm'>{format(day, 'EEE')}</div>
+										<div className='text-sm'>
+											{day
+												.toLocaleDateString(
+													locale === 'vi' ? 'vi-VN' : 'en-US',
+													{ weekday: 'short' }
+												)
+												.toUpperCase()}
+										</div>
 										<div className='text-lg font-bold mt-1'>
-											{format(day, 'd')}
+											{day.toLocaleDateString(
+												locale === 'vi' ? 'vi-VN' : 'en-US',
+												{ day: '2-digit' }
+											)}
 										</div>
 										<div className='text-xs text-gray-500 mt-1'>
-											{format(day, 'MMM')}
+											{day.toLocaleDateString(
+												locale === 'vi' ? 'vi-VN' : 'en-US',
+												{ month: 'short' }
+											)}
 										</div>
 									</div>
 								))}
@@ -453,7 +462,7 @@ const ConsultantScheduleView = ({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'
+						className='fixed inset-0 bg-black/30 z-50 backdrop-blur-md bg-opacity-50 flex items-center justify-center p-4'
 						onClick={e => {
 							if (e.target === e.currentTarget) {
 								setSelectedSlot(null)
@@ -471,13 +480,20 @@ const ConsultantScheduleView = ({
 								<div className='flex items-center justify-between'>
 									<div>
 										<h3 className='text-lg font-semibold text-gray-900'>
-											{t('schedule.slot_details').replace(
-												'{0}',
-												selectedSlot.slotNo.toString()
-											)}
+											{t('schedule.slot_details', {
+												0: selectedSlot.slotNo.toString(),
+											})}
 										</h3>
 										<p className='text-sm text-gray-600'>
-											{format(selectedSlot.day, 'EEEE, MMMM d, yyyy')}
+											{selectedSlot.day.toLocaleDateString(
+												locale === 'vi' ? 'vi-VN' : 'en-US',
+												{
+													weekday: 'long',
+													year: 'numeric',
+													month: 'long',
+													day: 'numeric',
+												}
+											)}
 										</p>
 									</div>
 									<button
@@ -504,10 +520,9 @@ const ConsultantScheduleView = ({
 								) : (
 									<div>
 										<h4 className='font-medium text-gray-900 mb-4'>
-											{t('schedule.appointments_count').replace(
-												'{0}',
-												selectedSlot.appointments.length.toString()
-											)}
+											{t('schedule.appointments_count', {
+												0: selectedSlot.appointments.length.toString(),
+											})}
 										</h4>
 										<div className='space-y-3'>
 											{selectedSlot.appointments.map(appointment => (
@@ -521,10 +536,18 @@ const ConsultantScheduleView = ({
 																{appointment.memberName}
 															</h5>
 															<p className='text-sm text-gray-600'>
-																{format(
-																	new Date(appointment.scheduleAt),
-																	'h:mm a'
-																)}
+																{(() => {
+																	// Parse as UTC, then display in local time
+																	const d = new Date(
+																		appointment.scheduleAt.endsWith('Z')
+																			? appointment.scheduleAt
+																			: appointment.scheduleAt + 'Z'
+																	)
+																	return d.toLocaleTimeString(
+																		locale === 'vi' ? 'vi-VN' : 'en-US',
+																		{ hour: '2-digit', minute: '2-digit' }
+																	)
+																})()}
 															</p>
 														</div>
 														<span
@@ -537,7 +560,7 @@ const ConsultantScheduleView = ({
 																	: 'bg-red-100 text-red-800'
 															}`}
 														>
-															{appointment.status}
+															{t(`appointment.status.${appointment.status}`)}
 														</span>
 													</div>
 													{appointment.joinUrl && (
