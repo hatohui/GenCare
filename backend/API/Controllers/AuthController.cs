@@ -206,4 +206,19 @@ public class AuthController
         var response = await accountService.ResetPasswordAsync(request);
         return Ok(response);
     }
+
+    [HttpPost("check-email")]
+    public async Task<IActionResult> CheckEmailExist(string email)
+    {
+        if(string.IsNullOrWhiteSpace(email))
+        {
+            return BadRequest("Email is required.");
+        }
+        var exists = await accountService.CheckEmailExist(email);
+        if(!exists)
+        {
+            return NotFound("Email does not exist.");
+        }
+        return Ok();
+    }
 }
