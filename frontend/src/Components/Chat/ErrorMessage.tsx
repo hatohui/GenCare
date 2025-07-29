@@ -1,7 +1,9 @@
 'use client'
 import { motion } from 'motion/react'
+import { useLocale } from '@/Hooks/useLocale'
 
 const ErrorMessage = () => {
+	const { t } = useLocale()
 	const bubbleVariants = {
 		initial: { opacity: 0, scale: 0.95, y: 10 },
 		animate: {
@@ -34,7 +36,7 @@ const ErrorMessage = () => {
 				className='text-xs sm:text-sm text-red-500 bg-red-100/50 px-4 py-2 rounded-full'
 				variants={textVariants}
 			>
-				An error occurred. Please try again.
+				{t('ai.chat.error_occurred')}
 			</motion.p>
 		</motion.div>
 	)

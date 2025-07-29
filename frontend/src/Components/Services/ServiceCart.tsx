@@ -3,8 +3,10 @@ import { motion } from 'motion/react'
 import { BookingListVSG } from '../SVGs'
 import { useRouter } from 'next/navigation'
 import useToken from '@/Hooks/Auth/useToken'
+import { useLocale } from '@/Hooks/useLocale'
 
 export const BookingButton = () => {
+	const { t } = useLocale()
 	const router = useRouter()
 	const { accessToken } = useToken()
 
@@ -28,7 +30,7 @@ export const BookingButton = () => {
 				transition={{ duration: 0.3 }}
 				className='whitespace-nowrap font-medium text-sm'
 			>
-				Booking của tôi
+				{t('service.my_bookings')}
 			</motion.span>
 			<BookingListVSG className='size-7 hover:scale-110 duration-150' />
 		</motion.button>

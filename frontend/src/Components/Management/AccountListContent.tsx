@@ -3,6 +3,7 @@
 import React from 'react'
 import ItemCard from './ItemCard'
 import { Account } from '@/Interfaces/Auth/Types/Account'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface AccountListProps {
 	accounts: Account[]
@@ -23,13 +24,15 @@ const AccountListContent = ({
 	handleRestore,
 	handleUpdate,
 }: AccountListProps) => {
+	const { t } = useLocale()
+
 	// Show loading state
 	if (isFetching || isLoading) {
 		return (
 			<div className='flex-1 flex items-center justify-center pt-20'>
 				<div className='text-center'>
 					<div className='animate-pulse text-lg font-medium text-slate-700'>
-						Đang tải dữ liệu...
+						{t('management.loading_data')}
 					</div>
 				</div>
 			</div>

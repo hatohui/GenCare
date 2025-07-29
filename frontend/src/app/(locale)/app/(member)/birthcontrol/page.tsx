@@ -10,8 +10,10 @@ import LoadingIcon from '@/Components/LoadingIcon'
 import { motion } from 'motion/react'
 import { getMonth, getYear, format } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import { useLocale } from '@/Hooks/useLocale'
 
 const Page = () => {
+	const { t } = useLocale()
 	const { data: account } = useAccountStore()
 	const {
 		data: getBirthControl,
@@ -51,7 +53,9 @@ const Page = () => {
 			<div className='flex justify-center items-center min-h-[400px]'>
 				<div className='text-center'>
 					<LoadingIcon className='mx-auto mb-4' />
-					<p className='text-gray-600'>Đang tải thông tin chu kỳ...</p>
+					<p className='text-gray-600'>
+						{t('birthControl.loading_cycle_info')}
+					</p>
 				</div>
 			</div>
 		)
@@ -66,11 +70,10 @@ const Page = () => {
 				className='text-center mb-8'
 			>
 				<h1 className='text-3xl font-bold text-main mb-2'>
-					Dự Đoán Chu Kỳ Kinh Nguyệt
+					{t('birthControl.menstrual_cycle_prediction')}
 				</h1>
 				<p className='text-gray-600'>
-					Quản lý và theo dõi chu kỳ kinh nguyệt của bạn một cách an toàn và
-					chính xác
+					{t('birthControl.manage_track_cycle_safely')}
 				</p>
 			</motion.div>
 
@@ -79,11 +82,10 @@ const Page = () => {
 				<div className='text-center max-w-md mx-auto p-6'>
 					<div className='text-red-500 text-6xl mb-4'>⚠️</div>
 					<h3 className='text-xl font-semibold text-gray-800 mb-2'>
-						Không thể tải thông tin chu kỳ từ máy chủ
+						{t('birthControl.cannot_load_cycle_info')}
 					</h3>
 					<p className='text-gray-600 mb-4'>
-						Đã xảy ra lỗi khi tải thông tin chu kỳ. Bạn vẫn có thể sử dụng các
-						chức năng khác trên trang này.
+						{t('birthControl.error_loading_cycle')}
 					</p>
 				</div>
 			)}
@@ -110,13 +112,15 @@ const Page = () => {
 					<div className='bg-white p-6 rounded-[30px] shadow-sm border border-gray-200'>
 						{/* Calendar Header */}
 						<div className='flex items-center justify-between mb-6'>
-							<h2 className='text-2xl font-bold text-main'>Lịch Chu Kỳ</h2>
+							<h2 className='text-2xl font-bold text-main'>
+								{t('birthControl.cycle_calendar')}
+							</h2>
 							<div className='flex items-center gap-3'>
 								<button
 									onClick={handlePreviousMonth}
 									className='bg-main hover:bg-main/90 text-white px-4 py-2 rounded-[20px] transition-colors text-sm font-medium'
 								>
-									← Tháng trước
+									{t('birthControl.previous_month')}
 								</button>
 								<div className='text-lg font-semibold text-gray-800 min-w-[120px] text-center'>
 									{format(new Date(year, month), 'MMMM', {
@@ -128,7 +132,7 @@ const Page = () => {
 									onClick={handleNextMonth}
 									className='bg-main hover:bg-main/90 text-white px-4 py-2 rounded-[20px] transition-colors text-sm font-medium'
 								>
-									Tháng sau →
+									{t('birthControl.next_month')}
 								</button>
 							</div>
 						</div>
@@ -147,25 +151,29 @@ const Page = () => {
 				className='bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-[30px] border border-blue-200'
 			>
 				<h2 className='text-xl font-bold text-main mb-4'>
-					Thông Tin Về Phương Pháp Theo Dõi Chu Kỳ
+					{t('birthControl.tracking_method_info')}
 				</h2>
 				<div className='grid md:grid-cols-2 gap-6 text-sm text-gray-700'>
 					<div className='space-y-3'>
-						<h3 className='font-semibold text-gray-800'>Cách Hoạt Động:</h3>
+						<h3 className='font-semibold text-gray-800'>
+							{t('birthControl.how_it_works')}
+						</h3>
 						<ul className='space-y-2 list-disc list-inside'>
-							<li>Theo dõi ngày bắt đầu chu kỳ kinh nguyệt</li>
-							<li>Tính toán các pha an toàn và không an toàn</li>
-							<li>Dự đoán ngày rụng trứng</li>
-							<li>Cung cấp thông tin để lập kế hoạch</li>
+							<li>{t('birthControl.track_menstrual_start')}</li>
+							<li>{t('birthControl.calculate_safe_unsafe')}</li>
+							<li>{t('birthControl.predict_ovulation')}</li>
+							<li>{t('birthControl.provide_planning_info')}</li>
 						</ul>
 					</div>
 					<div className='space-y-3'>
-						<h3 className='font-semibold text-gray-800'>Lưu Ý Quan Trọng:</h3>
+						<h3 className='font-semibold text-gray-800'>
+							{t('birthControl.important_notes')}
+						</h3>
 						<ul className='space-y-2 list-disc list-inside'>
-							<li>Phương pháp này chỉ mang tính tham khảo</li>
-							<li>Không đảm bảo 100% hiệu quả tránh thai</li>
-							<li>Nên kết hợp với các biện pháp khác</li>
-							<li>Tham khảo ý kiến bác sĩ khi cần thiết</li>
+							<li>{t('birthControl.reference_only')}</li>
+							<li>{t('birthControl.not_100_effective')}</li>
+							<li>{t('birthControl.combine_with_other_methods')}</li>
+							<li>{t('birthControl.consult_doctor')}</li>
 						</ul>
 					</div>
 				</div>

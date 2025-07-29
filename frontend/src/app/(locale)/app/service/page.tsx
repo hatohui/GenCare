@@ -9,8 +9,10 @@ import ServiceList from '@/Components/app/services/ServiceList'
 import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'motion/react'
 import { toast } from 'react-hot-toast'
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function Page() {
+	const { t } = useLocale()
 	const searchParams = useSearchParams()
 	const router = useRouter()
 	const pathname = usePathname()
@@ -36,15 +38,15 @@ export default function Page() {
 			router.push(`${pathname}?${params.toString()}`)
 		} catch (error) {
 			console.error('Error updating sort:', error)
-			toast.error('Có lỗi xảy ra khi sắp xếp. Vui lòng thử lại.')
+			toast.error(t('service.page.sort_error'))
 		}
 	}
 
 	const getSortButtonText = () => {
 		const orderByPrice = searchParams?.get('orderByPrice')
-		if (orderByPrice === 'true') return 'Giá tăng dần ↑'
-		if (orderByPrice === 'false') return 'Giá giảm dần ↓'
-		return 'Sắp xếp giá'
+		if (orderByPrice === 'true') return t('service.page.price_ascending')
+		if (orderByPrice === 'false') return t('service.page.price_descending')
+		return t('service.page.sort_by_price')
 	}
 
 	return (
@@ -64,19 +66,23 @@ export default function Page() {
 									onClick={() => router.back()}
 									className='hover:text-main transition-colors'
 								>
-									← Quay lại
+									{t('service.page.go_back')}
 								</button>
 							</li>
 							<li>/</li>
-							<li className='text-main font-medium'>Dịch vụ</li>
+							<li className='text-main font-medium'>
+								{t('service.page.services')}
+							</li>
 						</ol>
 					</nav>
 
 					{/* Page Title */}
 					<div className='text-center mb-6'>
-						<h1 className='text-3xl font-bold text-main mb-2'>Dịch Vụ Y Tế</h1>
+						<h1 className='text-3xl font-bold text-main mb-2'>
+							{t('service.page.healthcare_services')}
+						</h1>
 						<p className='text-gray-600'>
-							Khám phá các dịch vụ chăm sóc sức khỏe chất lượng cao
+							{t('service.page.discover_quality_healthcare')}
 						</p>
 					</div>
 				</div>
@@ -136,10 +142,13 @@ export default function Page() {
 				{(searchParams?.get('search') || searchParams?.get('orderByPrice')) && (
 					<div className='mb-6'>
 						<div className='flex items-center gap-2 text-sm text-gray-600'>
-							<span>Bộ lọc hiện tại:</span>
+							<span>{t('service.page.current_filters')}</span>
 							{searchParams?.get('search') && (
 								<span className='bg-main/10 text-main px-3 py-1 rounded-full'>
-									Tìm kiếm: {searchParams?.get('search')}
+									{t('service.page.search_term').replace(
+										'{0}',
+										searchParams.get('search') || ''
+									)}
 								</span>
 							)}
 							{searchParams?.get('orderByPrice') && (
@@ -153,7 +162,7 @@ export default function Page() {
 								}
 								className='text-red-500 hover:text-red-700 text-sm underline'
 							>
-								Xóa tất cả
+								{t('service.page.clear_all')}
 							</button>
 						</div>
 					</div>

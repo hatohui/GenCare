@@ -2,6 +2,7 @@ import { CreateConversationRequest } from '@/Interfaces/Chat/Conversation'
 import axiosInstance from '@/Utils/axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
+import useToken from '@/Hooks/Auth/useToken'
 
 export interface MediaItem {
 	url: string
@@ -103,12 +104,14 @@ const chatApi = {
 	deleteMessage: (messageId: string) =>
 		axiosInstance.delete(`/messages/${messageId}`),
 
-	getConnection: (conversationId: string) =>
-		new signalR.HubConnectionBuilder()
+	getConnection: (conversationId: string, accessToken?: string) => {
+		return new signalR.HubConnectionBuilder()
 			.withUrl(
-				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`
+				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`,
+				{ accessTokenFactory: () => accessToken || '' }
 			)
-			.build(),
+			.build()
+	},
 
 	viewConversationById: (conversationId: string) =>
 		axiosInstance.get(`/conversations/${conversationId}`).then(res => res.data),
@@ -170,8 +173,10 @@ export const useDeleteMessage = () => {
 	})
 }
 
-export const useConnection = (conversationId: string) =>
-	chatApi.getConnection(conversationId)
+export const useConnection = (conversationId: string) => {
+	const { accessToken } = useToken()
+	return chatApi.getConnection(conversationId, accessToken || undefined)
+}
 
 export const useAllConversations = () => {
 	return useQuery({

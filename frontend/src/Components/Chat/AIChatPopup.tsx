@@ -2,11 +2,13 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAiChat } from '@/Hooks/Chat/useAIChat'
+import { useLocale } from '@/Hooks/useLocale'
 import ChatArea from './ChatArea'
 import ChatControl from './ChatControl'
 
 const AIChatPopup = () => {
 	const [open, setOpen] = useState(false)
+	const { t } = useLocale()
 	const {
 		history,
 		inputValue,
@@ -27,7 +29,7 @@ const AIChatPopup = () => {
 				animate={{ opacity: 1, scale: 1 }}
 				whileHover={{ scale: 1.08 }}
 				whileTap={{ scale: 0.95 }}
-				aria-label='Open AI Chat'
+				aria-label={t('ai.chat.open')}
 			>
 				<svg
 					xmlns='http://www.w3.org/2000/svg'
@@ -65,7 +67,7 @@ const AIChatPopup = () => {
 							<button
 								className='absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold z-10'
 								onClick={() => setOpen(false)}
-								aria-label='Close AI Chat'
+								aria-label={t('ai.chat.close')}
 							>
 								×
 							</button>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
 import { useAccountStore } from '@/Hooks/useAccount'
+import { useLocale } from '@/Hooks/useLocale'
 
 // Dynamically import BlogForm to prevent SSR issues with Cloudinary
 const BlogForm = dynamic(
@@ -29,6 +30,7 @@ import type { BlogCreateInput } from '@/Components/Blogs/BlogForm'
 
 const BlogEditPage = ({ params }: { params: Promise<{ id: string }> }) => {
 	const { id } = React.use(params)
+	const { t } = useLocale()
 	const [imageUrls, setImageUrls] = React.useState<string[]>([])
 	const { data: blog, isLoading } = useGetBlogById(id)
 	const updateBlog = useUpdateBlog()
@@ -95,7 +97,7 @@ const BlogEditPage = ({ params }: { params: Promise<{ id: string }> }) => {
 							onClick={() => router.push('/blog')}
 							className='px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors'
 						>
-							Quay lại diễn đàn
+							{t('blog.back_to_forum')}
 						</button>
 					</div>
 				</div>
@@ -144,7 +146,7 @@ const BlogEditPage = ({ params }: { params: Promise<{ id: string }> }) => {
 								Không thể cập nhật bài viết
 							</h3>
 							<p className='text-red-700 text-sm'>
-								Đã xảy ra lỗi. Vui lòng thử lại sau.
+								{t('error.occurred_try_again')}
 							</p>
 						</div>
 					</div>
@@ -155,7 +157,7 @@ const BlogEditPage = ({ params }: { params: Promise<{ id: string }> }) => {
 			<div className='max-w-7xl mx-auto px-6 pb-10'>
 				<div className='mb-6'>
 					<h1 className='text-3xl font-bold text-gray-900 mb-2'>
-						Chỉnh sửa bài viết
+						{t('blog.edit_post_title')}
 					</h1>
 					<p className='text-gray-600'>
 						Cập nhật nội dung và thông tin của bài viết

@@ -326,6 +326,7 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<RateLimitMiddleware>();
 
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontendOrigins");
 app.UseAuthentication();
@@ -333,6 +334,6 @@ app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<ChatHub>("/hubs/chat").RequireCors("AllowFrontendOrigins");
 
 await app.RunAsync(); //test

@@ -7,6 +7,7 @@ import StatusLight, { Status } from '../StatusLight'
 import EditModal from './EditModal'
 import ConfirmationModal from '../Common/ConfirmationModal'
 import { Account } from '@/Interfaces/Auth/Types/Account'
+import { useLocale } from '@/Hooks/useLocale'
 
 export type ItemCardProps<T extends object> = {
 	id: string
@@ -44,6 +45,7 @@ const ItemCard = <T extends object>({
 	modalType = 'account',
 }: ItemCardProps<T>) => {
 	const router = useRouter()
+	const { t } = useLocale()
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 	const [isUpdating, setIsUpdating] = useState(false)
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
@@ -210,10 +212,20 @@ const ItemCard = <T extends object>({
 				isOpen={isConfirmationOpen}
 				onClose={() => setIsConfirmationOpen(false)}
 				onConfirm={handleConfirmation}
-				confirmText={currentAction === 'delete' ? 'Delete' : 'Restore'}
-				cancelText='Cancel'
-				title={`Are you sure you want to ${currentAction} this item?`}
-				message={`This action will ${currentAction} the item. Do you want to proceed?`}
+				confirmText={
+					currentAction === 'delete' ? t('common.delete') : t('common.restore')
+				}
+				cancelText={t('common.cancel')}
+				title={
+					currentAction === 'delete'
+						? t('confirmation.are_you_sure_delete')
+						: t('confirmation.are_you_sure_restore')
+				}
+				message={
+					currentAction === 'delete'
+						? t('confirmation.action_will_delete')
+						: t('confirmation.action_will_restore')
+				}
 			/>
 		</>
 	)

@@ -14,7 +14,11 @@ namespace API.Controllers;
 /// </summary>
 [Route("api/appointments")]
 [ApiController]
-public class AppointmentController(IAppointmentService appointmentService, IZoomService zoomService, IConfiguration configuration) : ControllerBase
+public class AppointmentController(
+    IAppointmentService appointmentService,
+    IZoomService zoomService,
+    IConfiguration configuration
+) : ControllerBase
 {
     /// <summary>
     /// Creates a new appointment.
@@ -23,7 +27,9 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
     /// <returns>A <see cref="CreatedResult"/> if successful.</returns>
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateAppointmentAsync([FromBody] AppointmentCreateRequest request)
+    public async Task<IActionResult> CreateAppointmentAsync(
+        [FromBody] AppointmentCreateRequest request
+    )
     {
         //get access token
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
@@ -41,7 +47,9 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
     /// <returns>Appointment details with Zoom meeting information.</returns>
     [HttpPost("with-zoom")]
     [Authorize]
-    public async Task<IActionResult> CreateAppointmentWithZoomAsync([FromBody] AppointmentCreateRequest request)
+    public async Task<IActionResult> CreateAppointmentWithZoomAsync(
+        [FromBody] AppointmentCreateRequest request
+    )
     {
         try
         {
@@ -49,9 +57,12 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
             var accessToken = AuthHelper.GetAccessToken(HttpContext);
             //get id
             var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
-            
+
             // Create appointment with Zoom meeting using the service
-            var zoomMeeting = await appointmentService.CreateAppointmentWithZoomAsync(request, accountId.ToString(""));
+            var zoomMeeting = await appointmentService.CreateAppointmentWithZoomAsync(
+                request,
+                accountId.ToString("")
+            );
 
             // Return the Zoom meeting details
             var response = new
@@ -66,8 +77,8 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
                     duration = zoomMeeting.Duration,
                     joinUrl = zoomMeeting.JoinUrl,
                     startUrl = zoomMeeting.StartUrl,
-                    password = zoomMeeting.Password
-                }
+                    password = zoomMeeting.Password,
+                },
             };
 
             return Ok(response);
@@ -83,7 +94,9 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
     /// </summary>
     /// <returns>A list of all appointments.</returns>
     [HttpGet]
-       [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Member},{RoleNames.Staff},{RoleNames.Consultant}")]
+    [Authorize(
+        Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Member},{RoleNames.Staff},{RoleNames.Consultant}"
+    )]
     public async Task<IActionResult> ViewAllAppointment()
     {
         //get access token
@@ -91,7 +104,9 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
         //get id
         var accountId = JwtHelper.GetAccountIdFromToken(accessToken);
         //call service
-        var appointments = await appointmentService.ViewAllAppointmentsAsync(accountId.ToString("D"));
+        var appointments = await appointmentService.ViewAllAppointmentsAsync(
+            accountId.ToString("D")
+        );
         return Ok(appointments);
     }
 
@@ -103,7 +118,10 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
     /// <returns>No content if successful.</returns>
     [HttpPut("{id}")]
     [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
-    public async Task<IActionResult> UpdateAppointment([FromBody] AppointmentUpdateRequest request, [FromRoute] string id)
+    public async Task<IActionResult> UpdateAppointment(
+        [FromBody] AppointmentUpdateRequest request,
+        [FromRoute] string id
+    )
     {
         //get access token
         var accessToken = AuthHelper.GetAccessToken(HttpContext);
@@ -131,14 +149,19 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = $"{RoleNames.Staff},{RoleNames.Member},{RoleNames.Admin},{RoleNames.Manager}")]
+    [Authorize(
+        Roles = $"{RoleNames.Staff},{RoleNames.Member},{RoleNames.Admin},{RoleNames.Manager}"
+    )]
     public async Task<IActionResult> GetAppoinmentById([FromRoute] string id)
     {
         //get access token from header
         var access = AuthHelper.GetAccessToken(HttpContext);
         //get id from access
         var accountId = JwtHelper.GetAccountIdFromToken(access);
-        var response = await appointmentService.ViewAppointmentByIdAsync(id, accountId.ToString("D"));
+        var response = await appointmentService.ViewAppointmentByIdAsync(
+            id,
+            accountId.ToString("D")
+        );
         return Ok(response);
     }
 
@@ -161,10 +184,14 @@ public class AppointmentController(IAppointmentService appointmentService, IZoom
                 hasClientId = !string.IsNullOrEmpty(clientId),
                 hasClientSecret = !string.IsNullOrEmpty(clientSecret),
                 hasAccountId = !string.IsNullOrEmpty(accountId),
-                clientIdPreview = clientId?.Substring(0, Math.Min(10, clientId?.Length ?? 0)) + "...",
-                clientSecretPreview = clientSecret?.Substring(0, Math.Min(10, clientSecret?.Length ?? 0)) + "...",
+                clientIdPreview = clientId?.Substring(0, Math.Min(10, clientId?.Length ?? 0))
+                    + "...",
+                clientSecretPreview = clientSecret?.Substring(
+                    0,
+                    Math.Min(10, clientSecret?.Length ?? 0)
+                ) + "...",
                 accountId = accountId,
-                message = "Check the logs for detailed OAuth token generation information"
+                message = "Check the logs for detailed OAuth token generation information",
             };
 
             return Ok(response);
