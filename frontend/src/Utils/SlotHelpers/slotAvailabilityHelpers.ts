@@ -31,7 +31,14 @@ export const isSlotAvailable = (
 	const hasAppointments = appointments.some(appointment => {
 		if (appointment.isDeleted) return false
 
-		const appointmentDate = new Date(appointment.scheduleAt + 'Z')
+		// Parse appointment time - handle both with and without timezone
+		let appointmentDate: Date
+		if (appointment.scheduleAt.includes('Z')) {
+			appointmentDate = new Date(appointment.scheduleAt)
+		} else {
+			appointmentDate = new Date(appointment.scheduleAt + 'Z')
+		}
+
 		return appointmentDate >= startTime && appointmentDate < endTime
 	})
 
@@ -71,8 +78,20 @@ export const getAssignedConsultantsForSlot = (
 	const endTime = addHours(day, parseInt(slot.endTime.split(':')[0]))
 
 	return schedules.filter(schedule => {
-		const scheduleStart = new Date(schedule.startAt + 'Z')
-		const scheduleEnd = new Date(schedule.endAt + 'Z')
+		// Parse schedule times - handle both with and without timezone
+		let scheduleStart: Date, scheduleEnd: Date
+
+		if (schedule.startAt.includes('Z')) {
+			scheduleStart = new Date(schedule.startAt)
+		} else {
+			scheduleStart = new Date(schedule.startAt + 'Z')
+		}
+
+		if (schedule.endAt.includes('Z')) {
+			scheduleEnd = new Date(schedule.endAt)
+		} else {
+			scheduleEnd = new Date(schedule.endAt + 'Z')
+		}
 
 		return (
 			schedule.no === slotNo &&
@@ -112,14 +131,23 @@ export const getAppointmentsForSlot = (
 	const slot = WORKING_SLOTS.find(s => s.no === slotNo)
 	if (!slot) return []
 
-	console.log('getAppointmentsForSlot:', { appointments })
-	console.log('time:', new Date('2025-07-29T08:00:00'))
-
-	const startTime = addHours(day, parseInt(slot.startTime.split(':')[0]))
+	// Create the slot start and end times for the given day
+	const slotStartTime = addHours(day, parseInt(slot.startTime.split(':')[0]))
+	const slotEndTime = addHours(day, parseInt(slot.endTime.split(':')[0]))
 
 	const result = appointments.filter(appointment => {
-		const appointmentDate = new Date(appointment.scheduleAt + 'Z')
-		return startTime == appointmentDate
+		if (appointment.isDeleted) return false
+
+		// Parse appointment time - handle both with and without timezone
+		let appointmentDate: Date
+		if (appointment.scheduleAt.includes('Z')) {
+			appointmentDate = new Date(appointment.scheduleAt)
+		} else {
+			appointmentDate = new Date(appointment.scheduleAt + 'Z')
+		}
+
+		// Check if appointment falls within this slot's time range
+		return appointmentDate >= slotStartTime && appointmentDate < slotEndTime
 	})
 
 	return result

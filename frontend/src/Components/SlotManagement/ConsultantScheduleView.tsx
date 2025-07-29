@@ -58,15 +58,24 @@ const ConsultantScheduleView = ({
 
 	const consultantAppointments = appointmentsQuery.data || []
 
-	console.log('selectedSlot:', consultantAppointments)
-
 	const assignedSlots = useMemo(() => {
 		const slots = new Set<string>()
 
 		if (schedule?.slots) {
 			schedule.slots.forEach(slot => {
-				const slotDate = new Date(slot.startAt)
-				const dayKey = slotDate.toLocaleDateString('sv-SE') // yyyy-MM-dd
+				// Parse slot date - handle both with and without timezone
+				let slotDate: Date
+				if (slot.startAt.includes('Z')) {
+					slotDate = new Date(slot.startAt)
+				} else {
+					slotDate = new Date(slot.startAt + 'Z')
+				}
+
+				// Use UTC date to avoid timezone issues
+				const year = slotDate.getUTCFullYear()
+				const month = (slotDate.getUTCMonth() + 1).toString().padStart(2, '0')
+				const day = slotDate.getUTCDate().toString().padStart(2, '0')
+				const dayKey = `${year}-${month}-${day}`
 				const slotKey = `${dayKey}-${slot.no}`
 				slots.add(slotKey)
 			})
@@ -90,7 +99,11 @@ const ConsultantScheduleView = ({
 
 	// Check if consultant is assigned to a slot
 	const isAssignedToSlot = (day: Date, slotNo: number): boolean => {
-		const dayKey = day.toLocaleDateString('sv-SE') // yyyy-MM-dd
+		// Use UTC date to match the assignedSlots format
+		const year = day.getUTCFullYear()
+		const month = (day.getUTCMonth() + 1).toString().padStart(2, '0')
+		const dayStr = day.getUTCDate().toString().padStart(2, '0')
+		const dayKey = `${year}-${month}-${dayStr}`
 		const slotKey = `${dayKey}-${slotNo}`
 		return assignedSlots.has(slotKey)
 	}

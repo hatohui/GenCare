@@ -6,7 +6,7 @@ import { useAppointments } from '@/Services/appointment-service'
 import { AppointmentCell } from './AppointmentCell'
 import { CurrentTimeLine } from './CurrentTimeLine'
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
-import { Clock, Briefcase, Moon, BarChart3, TrendingUp } from 'lucide-react'
+import { Clock, Briefcase, BarChart3, TrendingUp } from 'lucide-react'
 import {
 	getWeekRange,
 	getWeekDays,
@@ -457,9 +457,7 @@ export const AppointmentsTimetable = () => {
 							transition={{ delay: 0.8, duration: 0.5 }}
 						>
 							{timeSlots.map((timeSlot, index) => {
-								// Show all time slots, but visually distinguish working hours
-								const isWorkingHours =
-									timeSlot >= '08:00' && timeSlot <= '22:00'
+								// All time slots shown are now business hours
 								return (
 									<motion.tr
 										key={timeSlot}
@@ -472,23 +470,15 @@ export const AppointmentsTimetable = () => {
 											initial={{ opacity: 0, x: -10 }}
 											animate={{ opacity: 1, x: 0 }}
 											transition={{ delay: 1 + index * 0.02 }}
-											className={`px-2 sm:px-4 py-2 text-xs sm:text-sm font-bold border-r border-gray-200 sticky left-0 z-20 transition-all duration-200 shadow-md sticky-time-col ${
-												isWorkingHours
-													? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-900'
-													: 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700'
-											}`}
+											className='px-2 sm:px-4 py-2 text-xs sm:text-sm font-bold border-r border-gray-200 sticky left-0 z-20 transition-all duration-200 shadow-md sticky-time-col bg-gradient-to-r from-blue-50 to-blue-100 text-blue-900'
 											style={{
 												width: '100px',
 												minWidth: '100px',
 												maxWidth: '100px',
 											}}
 										>
-											<span className='flex items-center space-x-2'>
-												{isWorkingHours ? (
-													<Briefcase className='w-4 h-4' />
-												) : (
-													<Moon className='w-4 h-4' />
-												)}
+											<span className='flex items-center space-x-2 p-4'>
+												<Briefcase className='w-4 h-4' />
 												<span>{timeSlot}</span>
 											</span>
 										</motion.td>
