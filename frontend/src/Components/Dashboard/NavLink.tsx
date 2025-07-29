@@ -28,7 +28,10 @@ export default function NavLinks({
 		return <div className='w-full text-center animate-pulse'>Loading...</div>
 
 	const currentRoot = pathname?.split('/')[1]
-	const links = getNavOptionsFromRole(data.role.name, currentRoot ?? '')
+
+	const links = getNavOptionsFromRole(data.role.name, currentRoot ?? '').filter(
+		link => !(data.role.name === 'admin' && link.label === 'nav.chat')
+	)
 
 	return (
 		<>

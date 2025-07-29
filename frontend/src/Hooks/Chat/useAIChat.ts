@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Content } from '@google/genai'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
@@ -34,41 +34,39 @@ export const useAiChat = () => {
 			parts: [{ text: inputValue }],
 		}
 
+		// Add user message to history immediately
 		setHistory(prev => [...prev, userMessage])
 
 		const query: GeminiQuery = {
 			message: inputValue,
-			history,
+			history: [...history, userMessage],
 		}
 
-		mutation.mutate(query)
+		mutation.mutate(query, {
+			onSuccess: (response: GoogleAiResponse) => {
+				setHistory(prev => {
+					if ('message' in response) {
+						return [
+							...prev,
+							{ role: 'model', parts: [{ text: response.message }] },
+						]
+					}
+					return prev
+				})
+			},
+			onError: () => {
+				setHistory(prev => [
+					...prev,
+					{
+						role: 'model',
+						parts: [{ text: 'Error: Failed to get response from AI' }],
+					},
+				])
+			},
+		})
 		setInputValue('')
 		inputRef.current?.focus()
 	}, [inputValue, history, mutation])
-
-	useEffect(() => {
-		if (mutation.data) {
-			const response = mutation.data as GoogleAiResponse
-			if ('message' in response) {
-				setHistory(prev => [
-					...prev,
-					{ role: 'model', parts: [{ text: response.message }] },
-				])
-			}
-		}
-	}, [mutation.data])
-
-	useEffect(() => {
-		if (mutation.isError) {
-			setHistory(prev => [
-				...prev,
-				{
-					role: 'model',
-					parts: [{ text: 'Error: Failed to get response from AI' }],
-				},
-			])
-		}
-	}, [mutation.isError])
 
 	return {
 		history,

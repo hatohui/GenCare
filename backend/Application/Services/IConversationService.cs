@@ -9,13 +9,21 @@ public interface IConversationService
     Task<CreateConversationResponse> CreateConversationAsync(CreateConversationRequest request);
     Task<ViewConversationResponse> ViewConversationAsync(Guid conversationId);
     Task<bool> EndConversationAsync(Guid conversationId);
-    Task<List<Conversation>> GetPendingConversationsAsync();
+    Task<PendingConversationsListResponse> GetPendingConversationsAsync();
     Task<ViewAllConversationResponse> ViewAllConversationAsync();
-    Task<EditConversationResponse> EditConversationAsync(EditConversationRequest request, Guid conversationId);
+    Task<EditConversationResponse> EditConversationAsync(
+        EditConversationRequest request,
+        Guid conversationId
+    );
 
     Task<bool> AssignStaffToConversationAsync(Guid conversationId, Guid staffId);
 
-    Task<InitConversationResponse> InitConversationWithMessageAsync(InitConversationWithMessage request,
-        string accessToken);
+    Task<InitConversationResponse> InitConversationWithMessageAsync(
+        InitConversationWithMessage request,
+        string accessToken
+    );
+
+    Task<ViewAllConversationResponse> GetUserConversationHistoryAsync(Guid userId);
+
+    Task<ViewAllConversationResponse> GetConsultantConversationHistoryAsync(Guid consultantId);
 }
-    

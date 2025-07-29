@@ -50,7 +50,7 @@ export const ChatSessionPrompt: Content[] = [
 		role: 'user',
 		parts: [
 			{
-				text: `You automatically detect the user's language. If they speak Vietnamese, respond fully in Vietnamese. If they use English, continue in English.`,
+				text: `You automatically detect the user's language. If they speak Vietnamese, respond fully in Vietnamese. If they use English, continue in English. Including the first word.`,
 			},
 		],
 	},

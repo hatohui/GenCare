@@ -10,11 +10,13 @@ const ChatMessage = ({
 	isUser,
 	userIcon,
 	consultantIcon,
+	withImage = true,
 }: {
 	entry: Content
 	isUser: boolean
 	userIcon?: string
 	consultantIcon?: string
+	withImage?: boolean
 }) => {
 	const text = entry.parts?.[0].text || ''
 	const bubbleVariants = {
@@ -53,7 +55,11 @@ const ChatMessage = ({
 			animate={{ opacity: 1 }}
 			transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
 		>
-			<div className='flex items-start gap-2 sm:gap-3'>
+			<div
+				className={`flex gap-2 sm:gap-3 w-full items-start ${
+					isUser ? 'justify-end' : 'justify-start'
+				}`}
+			>
 				{!isUser &&
 					(consultantIcon ? (
 						<motion.div variants={iconVariants}>
@@ -72,7 +78,7 @@ const ChatMessage = ({
 					))}
 				<motion.div
 					className={clsx(
-						'max-w-[85%] sm:max-w-[70%] px-3 py-1.5 rounded-xl shadow-md',
+						'px-3 py-1.5 max-w-[50%] rounded-xl shadow-md',
 						isUser
 							? 'bg-accent text-white rounded-br-none'
 							: 'bg-general text-slate-950 rounded-bl-none'
@@ -115,20 +121,24 @@ const ChatMessage = ({
 					</motion.div>
 				</motion.div>
 				{isUser &&
-					(userIcon ? (
-						<motion.div variants={iconVariants}>
-							<CldImage
-								src={userIcon}
-								alt='User icon'
-								className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5'
-								width={36}
-								height={36}
-							/>
-						</motion.div>
+					(withImage ? (
+						userIcon ? (
+							<motion.div variants={iconVariants}>
+								<CldImage
+									src={userIcon}
+									alt='User icon'
+									className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5'
+									width={36}
+									height={36}
+								/>
+							</motion.div>
+						) : (
+							<motion.div variants={iconVariants}>
+								<FallBackUserImage className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5' />
+							</motion.div>
+						)
 					) : (
-						<motion.div variants={iconVariants}>
-							<FallBackUserImage className='w-8 h-8 sm:w-9 sm:h-9 rounded-full mt-1.5' />
-						</motion.div>
+						<div className='mt-1.5'></div>
 					))}
 			</div>
 		</motion.div>

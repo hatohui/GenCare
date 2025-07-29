@@ -48,7 +48,7 @@ const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 
 			{data?.avatarUrl ? (
 				<CldImage
-					className='rounded-full bg-amber-50 object-cover'
+					className='rounded-full w-[30] h-[30] bg-amber-50 object-cover'
 					src={data?.avatarUrl}
 					alt='avatar'
 					width={30}
@@ -70,9 +70,7 @@ const UserProfile = ({ collapsed = false }: { collapsed?: boolean }) => {
 				</div>
 			)}
 
-			{!collapsed && (
-				<OptionSVG className='hover:bg-black-500 absolute right-1 top-1/2 -translate-y-1/2' />
-			)}
+			{!collapsed && <OptionSVG className='hover:bg-black-500' />}
 		</div>
 	)
 }

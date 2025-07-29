@@ -39,7 +39,9 @@ public interface IAccountService
 
     Task<(string AccessToken, string RefreshToken)> RefreshAccessTokenAsync(string oldRefreshToken);
 
-    Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(GoogleJsonWebSignature.Payload payload);
+    Task<(string AccessToken, string RefreshToken)> LoginWithGoogleAsync(
+        GoogleJsonWebSignature.Payload payload
+    );
 
     /// <summary>
     /// Creates a new staff account.
@@ -53,7 +55,10 @@ public interface IAccountService
 
     Task<AccountViewModel?> GetAccountByIdAsync(Guid accountId);
 
-    Task<DeleteAccountResponse> DeleteAccountAsync(DeleteAccountRequest request, string accessToken);
+    Task<DeleteAccountResponse> DeleteAccountAsync(
+        DeleteAccountRequest request,
+        string accessToken
+    );
 
     /// <summary>
     /// Updates an existing user account.
@@ -66,4 +71,5 @@ public interface IAccountService
 
     Task<ProfileViewModel> GetProfileAsync(Guid accountId);
     Task<ConsultantInfoGetResponse> GetConsultantProfile(int page, int count, string? search);
+    Task<ConsultantInfoModel?> GetConsultantByIdAsync(Guid consultantId);
 }

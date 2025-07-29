@@ -19,6 +19,7 @@ const ChatArea = ({
 	isError: boolean
 	userIcon?: string
 	consultantIcon?: string
+	withImage?: boolean
 }) => {
 	const chatContainerRef = useRef<HTMLDivElement>(null)
 	const [showScrollButton, setShowScrollButton] = useState(false)
@@ -64,20 +65,26 @@ const ChatArea = ({
 		<div className='relative flex-1 scroll-bar overflow-scroll'>
 			<motion.div
 				ref={chatContainerRef}
-				className='flex-1 overflow-y-auto space-y-5 px-3 sm:px-5 py-8 scroll-bar'
+				className='flex-1 overflow-y-auto min-h-full px-3 space-y-3 sm:px-5 py-8 scroll-bar'
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
 			>
-				{history.map((entry, index) => (
-					<ChatMessage
-						key={index}
-						entry={entry}
-						isUser={entry.role === 'user'}
-						userIcon={userIcon}
-						consultantIcon={consultantIcon}
-					/>
-				))}
+				{history.length > 0 ? (
+					history.map((entry, index) => (
+						<ChatMessage
+							key={`${entry.role}-${index}`}
+							entry={entry}
+							isUser={entry.role === 'user'}
+							userIcon={userIcon}
+							consultantIcon={consultantIcon}
+						/>
+					))
+				) : (
+					<div className='text-center h-full center-all text-gray-500'>
+						No messages yet, be the first to send a message!
+					</div>
+				)}
 				{isPending && <LoadingMessage consultantIcon={consultantIcon} />}
 				{isError && <ErrorMessage />}
 			</motion.div>

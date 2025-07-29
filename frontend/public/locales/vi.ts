@@ -180,6 +180,7 @@ const vi: Record<string, string> = {
 	'date.just_now': 'Vừa xong',
 
 	// Common actions
+	'common.signout': 'Đăng xuất',
 	'action.save': 'Lưu',
 	'action.cancel': 'Hủy',
 	'action.delete': 'Xóa',
@@ -220,6 +221,13 @@ const vi: Record<string, string> = {
 	'common.delete': 'Xóa',
 	'common.edit': 'Sửa',
 	'common.add': 'Thêm',
+	'common.copied_to_clipboard': 'Đã sao chép vào clipboard',
+	'common.copy_failed': 'Sao chép thất bại',
+	'common.copy_member_id': 'Sao chép ID thành viên',
+	'common.invalid_date': 'Ngày không hợp lệ',
+	'common.account_id_required': 'ID tài khoản là bắt buộc',
+	'common.loading_conversations': 'Đang tải cuộc trò chuyện...',
+	'common.error_loading_conversations': 'Lỗi khi tải cuộc trò chuyện',
 	'common.view': 'Xem',
 	'common.update': 'Cập nhật',
 	'common.create': 'Tạo',
@@ -317,6 +325,93 @@ const vi: Record<string, string> = {
 	'chat.thinking': 'Đang suy nghĩ...',
 	'chat.message': 'Tin nhắn',
 	'chat.send': 'Gửi',
+	'chat.widget.placeholder': 'Nhập tin nhắn của bạn...',
+	'chat.consultant_dashboard': 'Bảng điều khiển tư vấn viên',
+	'chat.pending': 'Đang chờ',
+	'chat.history': 'Lịch sử',
+	'chat.waiting_patients': 'Bệnh nhân đang chờ',
+	'chat.all_caught_up': 'Đã xử lý xong!',
+	'chat.no_patients_waiting':
+		'Hiện tại không có bệnh nhân nào đang chờ tư vấn.',
+	'chat.anonymous': 'Ẩn danh',
+	'chat.patient': 'Bệnh nhân',
+	'chat.no_email': 'Không có email',
+	'chat.waiting': 'Đang chờ',
+	'chat.joining': 'Đang tham gia...',
+	'chat.join_consultation': 'Tham gia tư vấn',
+	'chat.just_now': 'Vừa xong',
+	'chat.minutes_ago': '{0} phút trước',
+	'chat.hours_ago': '{0} giờ trước',
+	'chat.successfully_joined': 'Đã tham gia cuộc trò chuyện thành công!',
+	'chat.failed_to_join':
+		'Không thể tham gia cuộc trò chuyện. Vui lòng thử lại.',
+	'chat.patient_consultation': 'Tư vấn bệnh nhân',
+	'chat.connected': 'Đã kết nối',
+	'chat.connecting': 'Đang kết nối...',
+	'chat.ending': 'Đang kết thúc...',
+	'chat.end_chat': 'Kết thúc trò chuyện',
+	'chat.conversation_ended_successfully':
+		'Cuộc trò chuyện đã kết thúc thành công',
+	'chat.failed_to_end': 'Không thể kết thúc cuộc trò chuyện. Vui lòng thử lại.',
+	'chat.ready_to_help': 'Sẵn sàng giúp đỡ bệnh nhân này',
+	'chat.start_with_greeting':
+		'Bắt đầu cuộc trò chuyện bằng cách gửi lời chào chuyên nghiệp',
+	'chat.type_response': 'Nhập phản hồi của bạn...',
+	'chat.sending': 'Đang gửi',
+	'chat.failed_to_send': 'Không thể gửi tin nhắn. Vui lòng thử lại.',
+	'chat.select_conversation': 'Chọn cuộc trò chuyện',
+	'chat.choose_patient_conversation':
+		'Chọn cuộc trò chuyện với bệnh nhân từ thanh bên để bắt đầu trò chuyện',
+	'chat.messages': 'Tin nhắn',
+	'chat.start_new_conversation': 'Bắt đầu cuộc trò chuyện mới',
+	'chat.active': 'Đang hoạt động',
+	'chat.ended': 'Đã kết thúc',
+	'chat.no_pending_conversations': 'Không có cuộc trò chuyện đang chờ',
+	'chat.start_new_conversation_to_see':
+		'Bắt đầu cuộc trò chuyện mới để xem ở đây',
+	'chat.no_active_conversations': 'Không có cuộc trò chuyện đang hoạt động',
+	'chat.start_new_or_check_tabs':
+		'Bắt đầu cuộc trò chuyện mới hoặc kiểm tra các tab khác',
+	'chat.no_ended_conversations': 'Không có cuộc trò chuyện đã kết thúc',
+	'chat.complete_conversations_to_see':
+		'Hoàn thành một số cuộc trò chuyện để xem chúng ở đây',
+	'chat.no_conversations_yet': 'Chưa có cuộc trò chuyện nào',
+	'chat.start_first_conversation': 'Bắt đầu cuộc trò chuyện đầu tiên của bạn',
+	'chat.no_patient_conversations': 'Không có cuộc trò chuyện bệnh nhân nào',
+	'chat.start_new_conversation_title': 'Bắt đầu cuộc trò chuyện mới',
+	'chat.describe_health_concern':
+		'Mô tả vấn đề sức khỏe của bạn và kết nối với các chuyên gia tư vấn y tế có trình độ của chúng tôi',
+	'chat.how_can_we_help': 'Chúng tôi có thể giúp gì cho bạn hôm nay?',
+	'chat.describe_symptoms':
+		'Mô tả các triệu chứng, mối quan tâm hoặc câu hỏi của bạn...',
+	'chat.please_login': 'Vui lòng đăng nhập để bắt đầu cuộc trò chuyện',
+	'chat.enter_message_first':
+		'Vui lòng nhập tin nhắn để bắt đầu cuộc trò chuyện',
+	'chat.conversation_started':
+		'Cuộc trò chuyện đã bắt đầu! Đang chờ tư vấn viên...',
+	'chat.failed_to_start': 'Không thể bắt đầu cuộc trò chuyện',
+	'chat.starting': 'Đang bắt đầu...',
+	'chat.start_conversation': 'Bắt đầu trò chuyện',
+	'chat.waiting_for_consultant': 'Đang chờ tư vấn viên',
+	'chat.healthcare_consultant': 'Tư vấn viên y tế',
+	'chat.waiting_for_assignment': 'Đang chờ phân công...',
+	'chat.online': 'Trực tuyến',
+	'chat.conversation_ended_by_consultant':
+		'Tư vấn viên đã kết thúc cuộc trò chuyện',
+	'chat.waiting_consultant_to_join': 'Đang chờ tư vấn viên tham gia...',
+	'chat.message_delivered_when_connect':
+		'Tin nhắn của bạn sẽ được gửi khi họ kết nối',
+	'chat.type_your_message': 'Nhập tin nhắn của bạn...',
+	'chat.conversation_has_ended': 'Cuộc trò chuyện này đã kết thúc',
+	'chat.start_new_chat': 'Bắt đầu trò chuyện mới',
+	'chat.video_call': 'Gọi video',
+	'chat.video_call_with_consultant': 'Bắt đầu gọi video với tư vấn viên',
+	'chat.book_consultant': 'Đặt lịch',
+	'chat.book_this_consultant': 'Đặt lịch hẹn với tư vấn viên này',
+	'chat.video_call_feature_coming_soon': 'Tính năng gọi video sắp ra mắt!',
+	'chat.book_consultant_feature_coming_soon':
+		'Tính năng đặt lịch tư vấn viên sắp ra mắt!',
+	'chat.show_pending': 'Hiển thị chờ xử lý',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',
@@ -324,6 +419,7 @@ const vi: Record<string, string> = {
 	'consultant.experience': 'Kinh nghiệm',
 	'consultant.ratings': 'Đánh giá',
 	'consultant.book': 'Đặt lịch tư vấn',
+	'consultant.years_of_experience': '{0} năm kinh nghiệm',
 
 	// Test results
 	'test.results': 'Kết quả xét nghiệm',
@@ -333,6 +429,38 @@ const vi: Record<string, string> = {
 	'test.order_date': 'Ngày đặt',
 	'test.sample_date': 'Ngày lấy mẫu',
 	'test.result_date': 'Ngày trả kết quả',
+
+	// Birth Control
+	'birthControl.cycle_tracking': 'Theo Dõi Chu Kỳ',
+	'birthControl.select_cycle_start_date':
+		'Chọn ngày bắt đầu chu kỳ kinh nguyệt của bạn',
+	'birthControl.cycle_start_date': 'Ngày bắt đầu chu kỳ',
+	'birthControl.select_start_date_required':
+		'Vui lòng chọn ngày bắt đầu chu kỳ',
+	'birthControl.date_saved': 'Đã lưu ngày: {0}',
+	'birthControl.date_updated': 'Đã cập nhật ngày: {0}',
+	'birthControl.save_failed': 'Không thể lưu thông tin. Vui lòng thử lại sau.',
+	'birthControl.saving': 'Đang lưu...',
+	'birthControl.auto_save_info':
+		'Thông tin sẽ được lưu tự động khi bạn chọn ngày',
+	'birthControl.update_anytime': 'Bạn có thể cập nhật bất cứ lúc nào',
+
+	// Appointments
+	'appointment.live_now': 'ĐANG DIỄN RA',
+	'appointment.time_remaining_hours_minutes': '{0}h {1}p',
+	'appointment.time_remaining_minutes': '{0} phút',
+	'appointment.ended': 'ĐÃ KẾT THÚC',
+	'appointment.week': 'Tuần',
+	'appointment.previous_week': 'Tuần trước',
+	'appointment.current': 'Hiện tại',
+	'appointment.next_week': 'Tuần sau',
+	'appointment.no_appointments_this_week': 'Không có lịch hẹn trong tuần này',
+	'appointment.upcoming_appointments_info':
+		'Bạn có {0} lịch hẹn sắp tới. Nhấn nút',
+	'appointment.find_appointment': 'Tìm lịch',
+	'appointment.go_to_first_appointment': 'để đi đến tuần có lịch hẹn đầu tiên.',
+	'appointment.this_week': 'Tuần này',
+	'appointment.appointments_count': 'lịch hẹn',
 
 	// Payments
 	'payment.paid': 'Đã thanh toán',
@@ -397,6 +525,7 @@ const vi: Record<string, string> = {
 
 	// Navigation
 	'nav.home': 'Trang chủ',
+	'nav.support': 'Hỗ trợ khách hàng',
 	'nav.services': 'Dịch vụ',
 	'nav.appointments': 'Lịch hẹn',
 	'nav.consultants': 'Tư vấn viên',
@@ -409,6 +538,7 @@ const vi: Record<string, string> = {
 	'nav.blog': 'Bài viết',
 	'nav.contact': 'Liên hệ',
 	'nav.goToApp': 'Đi tới ứng dụng',
+	'nav.goToDashboard': 'Đi tới bảng điều khiển',
 	'nav.menu': 'Menu',
 	'nav.expand': 'Mở rộng thanh bên',
 	'nav.collapse': 'Thu gọn thanh bên',
@@ -426,11 +556,20 @@ const vi: Record<string, string> = {
 	'nav.analytics': 'Phân tích',
 	'nav.payments': 'DS Thanh toán',
 	'nav.testResults': 'Kết quả xét nghiệm',
+	'nav.customers': 'Khách hàng',
+	'nav.schedule': 'Lịch trình',
 
 	// Profile
 	'profile.title': 'Hồ sơ cá nhân',
 	'profile.settings': 'Cài đặt',
 	'profile.no_account_data': 'Không tìm thấy dữ liệu tài khoản.',
+	'profile.full_name': 'Họ và tên',
+	'profile.email': 'Email',
+	'profile.phone_number': 'Số điện thoại',
+	'profile.date_of_birth': 'Ngày sinh',
+	'profile.gender': 'Giới tính',
+	'profile.avatar': 'Ảnh đại diện',
+	'profile.role': 'Vai trò',
 
 	// Language
 	'language.select': 'Chọn ngôn ngữ',
@@ -478,7 +617,7 @@ const vi: Record<string, string> = {
 	'landing.trusted.doctors.desc': '100% bác sĩ được cấp phép & xác thực',
 	'landing.trusted.booking.title': 'Đặt lịch nhanh',
 	'landing.trusted.booking.desc': 'Gặp bác sĩ trong vòng 15 phút',
-	'landing.trusted.flexible.title': 'Linh hoạt & tiết kiệm',
+	'landing.trusted.flexible.title': 'Tiết kiệm',
 	'landing.trusted.flexible.desc': 'Nhiều gói dịch vụ phù hợp nhu cầu',
 
 	// Footer
@@ -514,6 +653,45 @@ const vi: Record<string, string> = {
 	'blog.sampleText':
 		'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, ipsa.',
 	'blog.readMore': 'Đọc Thêm',
+	'blog.confirm_delete': 'Bạn có chắc chắn muốn xóa bài viết này?',
+	'blog.delete_failed': 'Xóa bài viết thất bại.',
+	'blog.comments': 'bình luận',
+	'blog.likes': 'lượt thích',
+	'blog.edit_post': 'Chỉnh sửa bài viết',
+	'blog.delete_post': 'Xóa bài viết',
+	'blog.forum_title': 'Diễn Đàn Sức Khỏe GenCare',
+	'blog.forum_subtitle':
+		'Thảo luận, chia sẻ và học hỏi từ cộng đồng chuyên gia y tế và người quan tâm đến sức khỏe.',
+	'blog.create_post': 'Tạo bài viết mới',
+	'blog.knowledge_forum': 'DIỄN ĐÀN CHIA SẺ KIẾN THỨC Y TẾ',
+	'blog.recommended': 'NÊN ĐỌC',
+	'blog.count_posts': '{count} bài viết',
+	'blog.recent_posts': 'Bài viết gần đây',
+	'blog.categories': 'Thể loại',
+	'blog.category_health': 'Sức khỏe & Thể chất',
+	'blog.category_lifestyle': 'Lối sống',
+	'blog.category_medical': 'Y tế',
+	'blog.category_nutrition': 'Dinh dưỡng',
+	'blog.category_psychology': 'Tâm lý',
+	'blog.tags': 'Gắn thẻ',
+	'blog.clear_tag_filter': 'Xóa bộ lọc thẻ',
+	'blog.clear': 'Xóa',
+	'blog.tags_feature_in_progress': 'Tính năng này đang được phát triển',
+	'blog.load_failed': 'Không thể tải bài viết',
+	'blog.load_failed_desc':
+		'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.',
+	'blog.no_posts': 'Chưa có bài viết nào',
+	'blog.be_first_to_share': 'Hãy là người đầu tiên chia sẻ kiến thức y tế!',
+	'blog.loading_more': 'Đang tải thêm bài viết...',
+	'blog.scroll_to_load_more': 'Cuộn xuống để tải thêm',
+	'blog.all_posts_loaded': 'Bạn đã xem hết tất cả bài viết!',
+	'blog.login_to_comment': 'Bạn cần đăng nhập để bình luận',
+	'blog.add_comment': 'Thêm bình luận',
+	'blog.share_thoughts_placeholder':
+		'Chia sẻ suy nghĩ của bạn về bài viết này...',
+	'blog.logged_in_as': 'Đăng nhập với tư cách: {0}',
+	'blog.submitting': 'Đang gửi...',
+	'blog.submit_comment': 'Gửi bình luận',
 
 	// Home Page
 	'home.welcome': 'Chào mừng trở lại, {0}! 👋',
@@ -614,6 +792,10 @@ const vi: Record<string, string> = {
 	'appointment.booking.notes': 'Ghi chú (tùy chọn)',
 	'appointment.booking.notesPlaceholder':
 		'Ví dụ: triệu chứng, ngôn ngữ ưa thích, v.v.',
+	'appointment.booking.selectDateFirst':
+		'Vui lòng chọn ngày trước để xem khung giờ có sẵn.',
+	'appointment.booking.noAvailableSlots':
+		'Không có khung giờ nào có sẵn cho ngày này.',
 
 	// Testimonials
 	'testimonials.author1.name': 'Nguyễn Văn A',
@@ -643,6 +825,7 @@ const vi: Record<string, string> = {
 	'management.account.edit': 'Chỉnh sửa tài khoản',
 	'management.account.first_name': 'Tên',
 	'management.account.last_name': 'Họ',
+	'management.account.full_name': 'Họ và tên',
 	'management.account.email': 'Email',
 	'management.account.phone_number': 'Số điện thoại',
 	'management.account.gender': 'Giới tính',
@@ -673,6 +856,10 @@ const vi: Record<string, string> = {
 	'management.account.edit_profile_picture': 'Chỉnh sửa ảnh đại diện',
 	'management.account.staff_info_appears':
 		'Thông tin nhân viên sẽ xuất hiện khi chọn vai trò nhân viên',
+	'management.account.management_title': 'Quản lý tài khoản',
+	'management.account.management_subtitle':
+		'Tìm kiếm và quản lý tài khoản người dùng',
+	'management.account.actions': 'Tác vụ',
 
 	// Management - Services
 	'management.service.create': 'Tạo dịch vụ',
@@ -767,9 +954,7 @@ const vi: Record<string, string> = {
 	'appointment.join_now': 'THAM GIA NGAY',
 	'appointment.join': 'Tham gia',
 	'appointment.join_zoom': 'Tham gia cuộc họp',
-	'appointment.previous_week': 'Tuần trước',
 	'appointment.current_week': 'Hiện tại',
-	'appointment.next_week': 'Tuần sau',
 	'appointment.error_occurred': 'Oops! Có lỗi xảy ra',
 	'appointment.retry': 'Thử lại',
 	'appointment.processing': 'Đang xử lý...',
@@ -801,6 +986,36 @@ const vi: Record<string, string> = {
 		'Xem chi tiết thanh toán cho {firstName} {lastName}',
 	'staff.redirecting': 'Đang chuyển hướng...',
 	'staff.view_payments': 'Xem thanh toán',
+	'staff.payments.title': 'Quản Lý Thanh Toán',
+	'staff.payments.subtitle': 'Xem và quản lý thanh toán của khách hàng',
+	'staff.tests.title': 'Quản Lý Kết Quả Xét Nghiệm',
+	'staff.tests.subtitle': 'Xem và quản lý kết quả xét nghiệm của khách hàng',
+	'staff.tests.showing': 'Hiển thị {from} - {to} trong tổng số {total} kết quả',
+	'staff.tests.load_error': 'Không thể tải danh sách đơn hàng.',
+	'staff.tests.order_id': 'Mã đơn',
+	'staff.tests.customer_name': 'Tên khách hàng',
+	'staff.tests.service': 'Dịch vụ',
+	'staff.tests.created_at': 'Ngày tạo',
+	'staff.tests.status': 'Trạng thái',
+	'staff.tests.actions': 'Hành động',
+	'staff.tests.view_result': 'Xem kết quả',
+	'staff.tests.view': 'Xem',
+	'staff.tests.edit_result': 'Chỉnh sửa kết quả',
+	'staff.tests.edit': 'Sửa',
+	'staff.tests.result_title': 'Kết quả xét nghiệm',
+	'staff.tests.loading_result': 'Đang tải kết quả...',
+	'staff.tests.data_error_title': 'Lỗi tải dữ liệu',
+	'staff.tests.data_error_message':
+		'Không thể tải kết quả xét nghiệm. Vui lòng thử lại sau.',
+	'staff.tests.total_summary_title': 'Tổng quan kết quả',
+	'staff.tests.test_parameters': 'thông số xét nghiệm',
+	'staff.tests.normal_flag': 'Bình thường',
+	'staff.tests.high_flag': 'Cao',
+	'staff.tests.low_flag': 'Thấp',
+	'staff.tests.value': 'Giá trị',
+	'staff.tests.reference_range': 'Tham chiếu',
+	'staff.tests.no_data_title': 'Chưa có dữ liệu',
+	'staff.tests.no_data_message': 'Kết quả xét nghiệm chưa được cập nhật.',
 
 	// Consultant
 	'consultant.search_placeholder':
@@ -836,6 +1051,43 @@ const vi: Record<string, string> = {
 	'lab.table.status': 'Trạng thái',
 	'lab.table.actions': 'Hành động',
 	'lab.table.view_details': 'Xem chi tiết',
+
+	// Contact Page
+	'contact.title': 'Liên hệ',
+	'contact.subtitle':
+		'Chúng tôi rất mong nhận được phản hồi từ bạn! Điền vào biểu mẫu hoặc liên hệ qua thông tin bên dưới.',
+	'contact.form.name': 'Tên của bạn',
+	'contact.form.name_placeholder': 'Nhập tên của bạn',
+	'contact.form.email': 'Email của bạn',
+	'contact.form.email_placeholder': 'Nhập địa chỉ email',
+	'contact.form.message': 'Nội dung',
+	'contact.form.message_placeholder': 'Nhập nội dung liên hệ...',
+	'contact.form.send': 'Gửi liên hệ',
+	'contact.form.sending': 'Đang gửi...',
+	'contact.form.success': 'Cảm ơn bạn! Chúng tôi đã nhận được liên hệ của bạn.',
+	'contact.info.address': 'Địa chỉ',
+	'contact.info.phone': 'Điện thoại',
+	'contact.info.email': 'Email',
+	'contact.info.note':
+		'Chúng tôi sẽ phản hồi bạn sớm nhất có thể. Nếu cần gấp, vui lòng gọi hotline.',
+
+	// Schedule
+	'schedule.my_schedule': 'Lịch Trình Của Tôi',
+	'schedule.loading': 'Đang tải lịch trình của bạn...',
+	'schedule.no_schedule_assigned': 'Chưa Được Phân Công',
+	'schedule.no_schedule_description':
+		'Bạn chưa được phân công vào bất kỳ khung giờ nào trong tuần này. Vui lòng liên hệ với quản lý để được phân công.',
+	'schedule.available': 'Sẵn sàng',
+	'schedule.booked': 'Đã đặt',
+	'schedule.not_assigned': 'Chưa phân công',
+	'schedule.past': 'Đã qua',
+	'schedule.today': 'Hôm nay',
+	'schedule.previous_week': 'Tuần trước',
+	'schedule.next_week': 'Tuần sau',
+	'schedule.no_appointments_scheduled': 'Không có cuộc hẹn nào',
+	'schedule.available_for_slot': 'Bạn có sẵn cho khung giờ này',
+	'schedule.slot_details': 'Chi tiết ca {0}',
+	'schedule.appointments_count': 'Cuộc hẹn ({0})',
 }
 
 export default vi

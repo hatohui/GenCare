@@ -29,15 +29,17 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> GetByEmailAsync(string email)
     {
-        return await dbContext.Accounts.Include(a => a.Role)
+        return await dbContext
+            .Accounts.Include(a => a.Role)
             .FirstOrDefaultAsync(a => a.Email.ToLower() == email.ToLower());
     }
 
     public async Task<Account?> GetAccountByIdAsync(Guid accountId)
     {
-        return await dbContext.Accounts
-            .Include(a => a.Role)
+        return await dbContext
+            .Accounts.Include(a => a.Role)
             .Include(a => a.StaffInfo)
+            .Include(a => a.Schedules)
             .FirstOrDefaultAsync(a => a.Id == accountId);
     }
 
@@ -49,8 +51,7 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<Account?> DeleteAccountByAccountId(Guid userId)
     {
-        var account = await dbContext.Accounts
-            .FirstOrDefaultAsync(a => a.Id == userId);
+        var account = await dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == userId);
 
         if (account == null)
         {
@@ -67,19 +68,24 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
         return account;
     }
-    public async Task<List<Account>> GetAccountsByPageAsync(int skip, int pageSize, string? search, string? role, bool? active)
+
+    public async Task<List<Account>> GetAccountsByPageAsync(
+        int skip,
+        int pageSize,
+        string? search,
+        string? role,
+        bool? active
+    )
     {
-        var query = dbContext.Accounts
-            .Include(a => a.Role)
-            .AsNoTracking()
-            .AsQueryable();
+        var query = dbContext.Accounts.Include(a => a.Role).AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(search))
         {
             var loweredSearch = search.ToLower();
             query = query.Where(a =>
-                a.Email.ToLower().Contains(loweredSearch) ||
-                a.FirstName.ToLower().Contains(loweredSearch) ||
-                a.LastName.ToLower().Contains(loweredSearch));
+                a.Email.ToLower().Contains(loweredSearch)
+                || a.FirstName.ToLower().Contains(loweredSearch)
+                || a.LastName.ToLower().Contains(loweredSearch)
+            );
         }
         if (!string.IsNullOrWhiteSpace(role))
         {
@@ -104,9 +110,10 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
         {
             var loweredSearch = search.ToLower();
             query = query.Where(a =>
-                a.Email.ToLower().Contains(loweredSearch) ||
-                a.FirstName.ToLower().Contains(loweredSearch) ||
-                a.LastName.ToLower().Contains(loweredSearch));
+                a.Email.ToLower().Contains(loweredSearch)
+                || a.FirstName.ToLower().Contains(loweredSearch)
+                || a.LastName.ToLower().Contains(loweredSearch)
+            );
         }
         if (!string.IsNullOrWhiteSpace(role))
         {
@@ -122,9 +129,18 @@ public class AccountRepository(IApplicationDbContext dbContext) : IAccountReposi
 
     public async Task<List<Account>> GetAll()
     {
-        return await dbContext.Accounts
-            .Include(a => a.Role)
+        return await dbContext
+            .Accounts.Include(a => a.Role)
             .Include(a => a.StaffInfo)
+            .ToListAsync();
+    }
+
+    public async Task<List<Account>> GetAccountsByIdsAsync(IEnumerable<Guid> accountIds)
+    {
+        return await dbContext
+            .Accounts.Include(a => a.Role)
+            .Include(a => a.StaffInfo)
+            .Where(a => accountIds.Contains(a.Id))
             .ToListAsync();
     }
 }

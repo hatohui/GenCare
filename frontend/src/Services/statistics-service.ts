@@ -15,9 +15,10 @@ const statisticsApi = {
 			.then(res => res.data)
 			.catch(error => {
 				if (error.response?.status === 401) {
-					throw new Error('Unauthorized access to admin statistics')
+					console.warn('Unauthorized access to admin statistics')
+				} else {
+					console.error('Error fetching admin statistics:', error)
 				}
-				throw error
 			})
 	},
 

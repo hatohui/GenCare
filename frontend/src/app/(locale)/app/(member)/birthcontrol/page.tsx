@@ -66,7 +66,7 @@ const Page = () => {
 				className='text-center mb-8'
 			>
 				<h1 className='text-3xl font-bold text-main mb-2'>
-					Theo Dõi Chu Kỳ Kinh Nguyệt
+					Dự Đoán Chu Kỳ Kinh Nguyệt
 				</h1>
 				<p className='text-gray-600'>
 					Quản lý và theo dõi chu kỳ kinh nguyệt của bạn một cách an toàn và

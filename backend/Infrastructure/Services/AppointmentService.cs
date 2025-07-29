@@ -10,9 +10,11 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class AppointmentService(IAccountRepository accountRepository,
+public class AppointmentService(
+    IAccountRepository accountRepository,
     IAppointmentRepository appointmentRepository,
-    IZoomService zoomService) : IAppointmentService
+    IZoomService zoomService
+) : IAppointmentService
 {
     public async Task CreateAppointmentAsync(AppointmentCreateRequest request, string accessId)
     {
@@ -45,7 +47,10 @@ public class AppointmentService(IAccountRepository accountRepository,
         await appointmentRepository.Add(appointment);
     }
 
-    public async Task<ZoomMeetingResponse> CreateAppointmentWithZoomAsync(AppointmentCreateRequest request, string accessId)
+    public async Task<ZoomMeetingResponse> CreateAppointmentWithZoomAsync(
+        AppointmentCreateRequest request,
+        string accessId
+    )
     {
         // Validate member & staff ID
         var member = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.MemberId));
@@ -56,13 +61,18 @@ public class AppointmentService(IAccountRepository accountRepository,
             throw new AppException(404, "staff id is invalid");
 
         // Define time slot
-        var slotStart = request.ScheduleAt.Kind == DateTimeKind.Local
-        ? request.ScheduleAt
-        : request.ScheduleAt.ToLocalTime();
+        var slotStart =
+            request.ScheduleAt.Kind == DateTimeKind.Local
+                ? request.ScheduleAt
+                : request.ScheduleAt.ToLocalTime();
 
         // Check for overlapping appointments
         var staffId = Guid.Parse(request.StaffId);
-        var overlappingAppointments = await appointmentRepository.GetOverlappedAppointmentsForStaff(staffId, slotStart, 120);
+        var overlappingAppointments = await appointmentRepository.GetOverlappedAppointmentsForStaff(
+            staffId,
+            slotStart,
+            120
+        );
 
         var isOverlapped = overlappingAppointments.Count > 0;
 
@@ -81,13 +91,17 @@ public class AppointmentService(IAccountRepository accountRepository,
             WaitingRoom = true,
             HostVideo = true,
             ParticipantVideo = true,
-            Audio = true
+            Audio = true,
         };
 
         ZoomMeetingResponse zoomMeeting;
         try
         {
-            zoomMeeting = await zoomService.CreateMeetingAsync(zoomRequest, request.MemberId, request.StaffId);
+            zoomMeeting = await zoomService.CreateMeetingAsync(
+                zoomRequest,
+                request.MemberId,
+                request.StaffId
+            );
         }
         catch (Exception ex)
         {
@@ -99,7 +113,7 @@ public class AppointmentService(IAccountRepository accountRepository,
         {
             Member = member,
             Staff = staff,
-            ScheduleAt = slotStart,
+            ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
             JoinUrl = zoomMeeting.JoinUrl,
             CreatedBy = Guid.Parse(accessId),
             Status = AppointmentStatus.Booked,
@@ -109,7 +123,6 @@ public class AppointmentService(IAccountRepository accountRepository,
 
         return zoomMeeting;
     }
-
 
     public async Task DeleteAppointmentAsync(string appointmentId, string deleteId)
     {
@@ -121,13 +134,17 @@ public class AppointmentService(IAccountRepository accountRepository,
         }
         //mark as deleted
         appointment.IsDeleted = true;
-        appointment.DeletedAt = DateTime.Now;
+        appointment.DeletedAt = DateTime.UtcNow;
         appointment.DeletedBy = Guid.Parse(deleteId);
 
         await appointmentRepository.Update(appointment);
     }
 
-    public async Task UpdateAppointmentAsync(AppointmentUpdateRequest request, string appointmentId, string updateId)
+    public async Task UpdateAppointmentAsync(
+        AppointmentUpdateRequest request,
+        string appointmentId,
+        string updateId
+    )
     {
         //get appointment by id
         var appointment = await appointmentRepository.GetById(appointmentId);
@@ -146,9 +163,15 @@ public class AppointmentService(IAccountRepository accountRepository,
             var staff = await accountRepository.GetAccountByIdAsync(Guid.Parse(request.StaffId));
             appointment.Staff = staff ?? throw new AppException(404, "staff id is invalid");
         }
-        if (request.ScheduleAt != null) appointment.ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt.Value, DateTimeKind.Unspecified);
-        if (request.JoinUrl != null) appointment.JoinUrl = request.JoinUrl;
-        appointment.UpdatedAt = DateTime.Now;
+        if (request.ScheduleAt != null)
+            appointment.ScheduleAt = DateTime.SpecifyKind(
+                request.ScheduleAt.Value,
+                DateTimeKind.Unspecified
+            );
+        if (request.JoinUrl != null)
+            appointment.JoinUrl = request.JoinUrl;
+        appointment.Status = AppointmentStatus.Cancelled;
+        appointment.UpdatedAt = DateTime.UtcNow;
         appointment.UpdatedBy = Guid.Parse(updateId);
         //update appointment
         await appointmentRepository.Update(appointment);
@@ -172,28 +195,36 @@ public class AppointmentService(IAccountRepository accountRepository,
         List<AllAppointmentViewResponse> rs = new();
         foreach (var appointment in list)
         {
-            rs.Add(new AllAppointmentViewResponse
-            {
-                Id = appointment.Id.ToString("D"),
-                MemberId = appointment.Member.Id.ToString("D"),
-                MemberName = $"{appointment.Member.FirstName} {appointment.Member.LastName}",
-                StaffId = appointment.Staff.Id.ToString("D"),
-                StaffName = $"{appointment.Staff.FirstName} {appointment.Staff.LastName}",
-                ScheduleAt = appointment.ScheduleAt,
-                JoinUrl = appointment.JoinUrl,
-                IsDeleted = appointment.IsDeleted,
-                Status = appointment.Status
-            });
+            rs.Add(
+                new AllAppointmentViewResponse
+                {
+                    Id = appointment.Id.ToString("D"),
+                    MemberId = appointment.Member.Id.ToString("D"),
+                    MemberName = $"{appointment.Member.FirstName} {appointment.Member.LastName}",
+                    StaffId = appointment.Staff.Id.ToString("D"),
+                    StaffName = $"{appointment.Staff.FirstName} {appointment.Staff.LastName}",
+                    ScheduleAt = appointment.ScheduleAt,
+                    JoinUrl = appointment.JoinUrl,
+                    IsDeleted = appointment.IsDeleted,
+                    Status = appointment.Status,
+                }
+            );
         }
         //if account is member or staff, filter appointments
         if (isLow)
         {
-            rs = rs.Where(a => a.MemberId == account.Id.ToString("D") || a.StaffId == account.Id.ToString("D")).ToList();
+            rs = rs.Where(a =>
+                    a.MemberId == account.Id.ToString("D") || a.StaffId == account.Id.ToString("D")
+                )
+                .ToList();
         }
         return rs;
     }
 
-    public async Task<AppointmentViewResponse> ViewAppointmentByIdAsync(string appointmentId, string accountId)
+    public async Task<AppointmentViewResponse> ViewAppointmentByIdAsync(
+        string appointmentId,
+        string accountId
+    )
     {
         //get account by id
         var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
@@ -222,7 +253,7 @@ public class AppointmentService(IAccountRepository accountRepository,
             ScheduleAt = appointment.ScheduleAt,
             JoinUrl = appointment.JoinUrl,
             IsDeleted = appointment.IsDeleted,
-            Status = appointment.Status
+            Status = appointment.Status,
         };
 
         //if account is member or staff, check if appointment is for them

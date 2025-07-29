@@ -77,6 +77,7 @@ const en: Record<string, string> = {
 	'date.just_now': 'Just now',
 
 	// Common actions
+	'common.signout': 'Sign Out',
 	'action.save': 'Save',
 	'action.cancel': 'Cancel',
 	'action.delete': 'Delete',
@@ -86,6 +87,16 @@ const en: Record<string, string> = {
 	'action.view_details': 'View Details',
 
 	// Common
+	'common.dateOfBirth': 'Date of Birth',
+	'common.gender': 'Gender',
+	'common.female': 'Female',
+	'common.male': 'Male',
+	'common.email': 'Email',
+	'common.password': 'Password',
+	'common.firstName': 'First Name',
+	'common.lastName': 'Last Name',
+	'common.confirmPassword': 'Confirm Password',
+	'common.phoneNumber': 'Phone Number',
 	'common.getHelp': 'Get Help',
 	'common.loading': 'Loading...',
 	'common.loading_data': 'Loading data...',
@@ -107,6 +118,13 @@ const en: Record<string, string> = {
 	'common.delete': 'Delete',
 	'common.edit': 'Edit',
 	'common.add': 'Add',
+	'common.copied_to_clipboard': 'Copied to clipboard',
+	'common.copy_failed': 'Failed to copy',
+	'common.copy_member_id': 'Copy Member ID',
+	'common.invalid_date': 'Invalid date',
+	'common.account_id_required': 'Account ID is required',
+	'common.loading_conversations': 'Loading conversations...',
+	'common.error_loading_conversations': 'Error loading conversations',
 	'common.view': 'View',
 	'common.update': 'Update',
 	'common.create': 'Create',
@@ -124,8 +142,6 @@ const en: Record<string, string> = {
 	'common.try_again': 'Try Again',
 	'common.go_back': 'Go Back',
 	'common.actions': 'Actions',
-	'common.email': 'Email',
-	'common.password': 'Password',
 
 	// Consultant
 	'consultant.failed_to_load': 'Failed to load consultants',
@@ -203,6 +219,89 @@ const en: Record<string, string> = {
 	'chat.thinking': 'Thinking...',
 	'chat.message': 'Message',
 	'chat.send': 'Send',
+	'chat.widget.placeholder': 'Enter your message here...',
+	'chat.consultant_dashboard': 'Consultant Dashboard',
+	'chat.pending': 'Pending',
+	'chat.history': 'History',
+	'chat.waiting_patients': 'Waiting Patients',
+	'chat.all_caught_up': 'All caught up!',
+	'chat.no_patients_waiting': 'No patients waiting for consultation right now.',
+	'chat.anonymous': 'Anonymous',
+	'chat.patient': 'Patient',
+	'chat.no_email': 'No email',
+	'chat.waiting': 'Waiting',
+	'chat.joining': 'Joining...',
+	'chat.join_consultation': 'Join Consultation',
+	'chat.just_now': 'Just now',
+	'chat.minutes_ago': '{0}m ago',
+	'chat.hours_ago': '{0}h ago',
+	'chat.successfully_joined': 'Successfully joined the conversation!',
+	'chat.failed_to_join': 'Failed to join conversation. Please try again.',
+	'chat.patient_consultation': 'Patient Consultation',
+	'chat.connected': 'Connected',
+	'chat.connecting': 'Connecting...',
+	'chat.ending': 'Ending...',
+	'chat.end_chat': 'End Chat',
+	'chat.conversation_ended_successfully': 'Conversation ended successfully',
+	'chat.failed_to_end': 'Failed to end conversation. Please try again.',
+	'chat.ready_to_help': 'Ready to help this patient',
+	'chat.start_with_greeting':
+		'Start the conversation by sending a professional greeting',
+	'chat.type_response': 'Type your response...',
+	'chat.sending': 'Sending',
+	'chat.failed_to_send': 'Failed to send message. Please try again.',
+	'chat.select_conversation': 'Select a conversation',
+	'chat.choose_patient_conversation':
+		'Choose a patient conversation from the sidebar to start chatting',
+	'chat.messages': 'Messages',
+	'chat.start_new_conversation': 'Start new conversation',
+	'chat.active': 'Active',
+	'chat.ended': 'Ended',
+	'chat.no_pending_conversations': 'No pending conversations',
+	'chat.start_new_conversation_to_see':
+		'Start a new conversation to see it here',
+	'chat.no_active_conversations': 'No active conversations',
+	'chat.start_new_or_check_tabs':
+		'Start a new conversation or check other tabs',
+	'chat.no_ended_conversations': 'No ended conversations',
+	'chat.complete_conversations_to_see':
+		'Complete some conversations to see them here',
+	'chat.no_conversations_yet': 'No conversations yet',
+	'chat.start_first_conversation': 'Start your first conversation',
+	'chat.no_patient_conversations': 'No patient conversations available',
+	'chat.start_new_conversation_title': 'Start a New Conversation',
+	'chat.describe_health_concern':
+		'Describe your health concern and get connected with our qualified healthcare consultants',
+	'chat.how_can_we_help': 'How can we help you today?',
+	'chat.describe_symptoms': 'Describe your symptoms, concerns, or questions...',
+	'chat.please_login': 'Please login to start a conversation',
+	'chat.enter_message_first':
+		'Please enter a message to start the conversation',
+	'chat.conversation_started':
+		'Conversation started! Waiting for a consultant...',
+	'chat.failed_to_start': 'Failed to start conversation',
+	'chat.starting': 'Starting...',
+	'chat.start_conversation': 'Start Conversation',
+	'chat.waiting_for_consultant': 'Waiting for Consultant',
+	'chat.healthcare_consultant': 'Healthcare Consultant',
+	'chat.waiting_for_assignment': 'Waiting for assignment...',
+	'chat.online': 'Online',
+	'chat.conversation_ended_by_consultant':
+		'The consultant has ended the conversation',
+	'chat.waiting_consultant_to_join': 'Waiting for a consultant to join...',
+	'chat.message_delivered_when_connect':
+		'Your message will be delivered once they connect',
+	'chat.type_your_message': 'Type your message...',
+	'chat.conversation_has_ended': 'This conversation has ended',
+	'chat.start_new_chat': 'Start a new chat',
+	'chat.video_call': 'Video Call',
+	'chat.video_call_with_consultant': 'Start video call with consultant',
+	'chat.book_consultant': 'Book Consultant',
+	'chat.book_this_consultant': 'Book appointment with this consultant',
+	'chat.video_call_feature_coming_soon': 'Video call feature coming soon!',
+	'chat.book_consultant_feature_coming_soon':
+		'Book consultant feature coming soon!',
+	'chat.show_pending': 'Show pending',
 
 	// Consultants
 	'consultant.details': 'Consultant Details',
@@ -210,6 +309,7 @@ const en: Record<string, string> = {
 	'consultant.experience': 'Experience',
 	'consultant.ratings': 'Ratings',
 	'consultant.book': 'Book Consultation',
+	'consultant.years_of_experience': '{0} years of experience',
 
 	// Test results
 	'test.results': 'Test Results',
@@ -219,6 +319,39 @@ const en: Record<string, string> = {
 	'test.order_date': 'Order Date',
 	'test.sample_date': 'Sample Date',
 	'test.result_date': 'Result Date',
+
+	// Birth Control
+	'birthControl.cycle_tracking': 'Cycle Tracking',
+	'birthControl.select_cycle_start_date':
+		'Select your menstrual cycle start date',
+	'birthControl.cycle_start_date': 'Cycle Start Date',
+	'birthControl.select_start_date_required': 'Please select a cycle start date',
+	'birthControl.date_saved': 'Date saved: {0}',
+	'birthControl.date_updated': 'Date updated: {0}',
+	'birthControl.save_failed':
+		'Unable to save information. Please try again later.',
+	'birthControl.saving': 'Saving...',
+	'birthControl.auto_save_info':
+		'Information will be saved automatically when you select a date',
+	'birthControl.update_anytime': 'You can update anytime',
+
+	// Appointments
+	'appointment.live_now': 'LIVE NOW',
+	'appointment.time_remaining_hours_minutes': '{0}h {1}m',
+	'appointment.time_remaining_minutes': '{0} minutes',
+	'appointment.ended': 'ENDED',
+	'appointment.week': 'Week',
+	'appointment.previous_week': 'Previous week',
+	'appointment.current': 'Current',
+	'appointment.next_week': 'Next week',
+	'appointment.no_appointments_this_week': 'No appointments this week',
+	'appointment.upcoming_appointments_info':
+		'You have {0} upcoming appointments. Click the',
+	'appointment.find_appointment': 'Find appointment',
+	'appointment.go_to_first_appointment':
+		'button to go to the first appointment week.',
+	'appointment.this_week': 'This week',
+	'appointment.appointments_count': 'appointments',
 
 	// Payments
 	'payment.paid': 'Paid',
@@ -361,7 +494,15 @@ const en: Record<string, string> = {
 	'auth.error_occurred': 'Error occurred.',
 	'auth.user_not_authenticated': 'User not authenticated.',
 	'auth.verifyingUser': 'Verifying user...',
-
+	// Register form specific
+	// Register form specific
+	'auth.register.titleStep1': 'Register Account (Step 1)',
+	'auth.register.titleStep2': 'Register Account (Step 2)',
+	'auth.register.nextStep': 'Go to Step 2',
+	'auth.register.backStep': 'Back to Step 1',
+	'auth.register.agreeToTerms': 'I agree to the terms of service',
+	'auth.register.submit': 'Register',
+	'auth.alreadyHaveAccount': 'Already have an account?',
 	// Reset Password
 	'auth.resetPassword.title': 'Reset Your Password',
 	'auth.resetPassword.submit': 'Reset Password',
@@ -384,6 +525,7 @@ const en: Record<string, string> = {
 	'nav.blog': 'Blog',
 	'nav.contact': 'Contact',
 	'nav.goToApp': 'Go to App',
+	'nav.goToDashboard': 'Go to Dashboard',
 	'nav.menu': 'Menu',
 	'nav.expand': 'Expand sidebar',
 	'nav.collapse': 'Collapse sidebar',
@@ -398,9 +540,11 @@ const en: Record<string, string> = {
 	'nav.accounts': 'Accounts List',
 	'nav.slots': 'Work Slots',
 	'nav.schedules': 'Schedules',
+	'nav.schedule': 'My Schedule',
 	'nav.analytics': 'Analytics',
 	'nav.payments': 'Payments List',
 	'nav.testResults': 'Test Results',
+	'nav.support': 'Support',
 
 	// Profile
 	'profile.title': 'Profile',
@@ -449,11 +593,11 @@ const en: Record<string, string> = {
 	'landing.trusted.support247.desc': 'Connect with doctors anytime, anywhere',
 	'landing.trusted.rating.title': '4.9',
 	'landing.trusted.rating.desc': 'Rated by over 5,000 patients',
-	'landing.trusted.doctors.title': 'Trusted Doctors',
+	'landing.trusted.doctors.title': 'Trusted',
 	'landing.trusted.doctors.desc': '100% licensed & verified doctors',
 	'landing.trusted.booking.title': 'Quick Booking',
 	'landing.trusted.booking.desc': 'Meet doctors within 15 minutes',
-	'landing.trusted.flexible.title': 'Flexible & Affordable',
+	'landing.trusted.flexible.title': 'Affordable',
 	'landing.trusted.flexible.desc':
 		'Multiple service packages to fit your needs',
 
@@ -490,6 +634,45 @@ const en: Record<string, string> = {
 	'blog.sampleText':
 		'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, ipsa.',
 	'blog.readMore': 'Read More',
+	'blog.confirm_delete': 'Are you sure you want to delete this post?',
+	'blog.delete_failed': 'Failed to delete blog post.',
+	'blog.comments': 'comments',
+	'blog.likes': 'likes',
+	'blog.edit_post': 'Edit post',
+	'blog.delete_post': 'Delete post',
+	'blog.forum_title': 'GenCare Health Forum',
+	'blog.forum_subtitle':
+		'Discuss, share, and learn from a community of health experts and enthusiasts.',
+	'blog.create_post': 'Create new post',
+	'blog.knowledge_forum': 'HEALTH KNOWLEDGE FORUM',
+	'blog.recommended': 'Recommended',
+	'blog.count_posts': '{count} posts',
+	'blog.recent_posts': 'Recent Posts',
+	'blog.categories': 'Categories',
+	'blog.category_health': 'Health & Fitness',
+	'blog.category_lifestyle': 'Lifestyle',
+	'blog.category_medical': 'Medical',
+	'blog.category_nutrition': 'Nutrition',
+	'blog.category_psychology': 'Psychology',
+	'blog.tags': 'Tags',
+	'blog.clear_tag_filter': 'Clear tag filter',
+	'blog.clear': 'Clear',
+	'blog.tags_feature_in_progress': 'This feature is under development',
+	'blog.load_failed': 'Failed to load posts',
+	'blog.load_failed_desc':
+		'An error occurred while loading data. Please try again later.',
+	'blog.no_posts': 'No posts yet',
+	'blog.be_first_to_share': 'Be the first to share health knowledge!',
+	'blog.loading_more': 'Loading more posts...',
+	'blog.scroll_to_load_more': 'Scroll down to load more',
+	'blog.all_posts_loaded': 'You have seen all posts!',
+	'blog.login_to_comment': 'You need to login to comment',
+	'blog.add_comment': 'Add Comment',
+	'blog.share_thoughts_placeholder':
+		'Share your thoughts about this article...',
+	'blog.logged_in_as': 'Logged in as: {0}',
+	'blog.submitting': 'Submitting...',
+	'blog.submit_comment': 'Submit Comment',
 
 	// Home Page
 	'home.welcome': 'Welcome back, {0}! 👋',
@@ -588,6 +771,10 @@ const en: Record<string, string> = {
 	'appointment.booking.notes': 'Notes (optional)',
 	'appointment.booking.notesPlaceholder':
 		'E.g. symptoms, language preference, etc.',
+	'appointment.booking.selectDateFirst':
+		'Please select a date first to see available time slots.',
+	'appointment.booking.noAvailableSlots':
+		'No available time slots for this date.',
 
 	// Testimonials
 	'testimonials.author1.name': 'Nguyen Van A',
@@ -617,6 +804,7 @@ const en: Record<string, string> = {
 	'management.account.edit': 'Edit Account',
 	'management.account.first_name': 'First Name',
 	'management.account.last_name': 'Last Name',
+	'management.account.full_name': 'Full Name',
 	'management.account.email': 'Email',
 	'management.account.phone_number': 'Phone Number',
 	'management.account.gender': 'Gender',
@@ -647,6 +835,9 @@ const en: Record<string, string> = {
 	'management.account.edit_profile_picture': 'Edit Profile Picture',
 	'management.account.staff_info_appears':
 		'Staff information will appear when a staff role is selected',
+	'management.account.management_title': 'Account Management',
+	'management.account.management_subtitle': 'Search and manage user accounts',
+	'management.account.actions': 'Actions',
 
 	// Management - Services
 	'management.service.create': 'Create Service',
@@ -741,9 +932,7 @@ const en: Record<string, string> = {
 	'appointment.join_now': 'JOIN NOW',
 	'appointment.join': 'Join',
 	'appointment.join_zoom': 'Join Meeting',
-	'appointment.previous_week': 'Previous Week',
 	'appointment.current_week': 'Current',
-	'appointment.next_week': 'Next Week',
 	'appointment.error_occurred': 'Oops! An error occurred',
 	'appointment.retry': 'Retry',
 	'appointment.processing': 'Processing...',
@@ -775,6 +964,36 @@ const en: Record<string, string> = {
 		'View payment details for {firstName} {lastName}',
 	'staff.redirecting': 'Redirecting...',
 	'staff.view_payments': 'View payments',
+	'staff.payments.title': 'Payment Management',
+	'staff.payments.subtitle': 'View and manage customer payments',
+	'staff.tests.title': 'Test Results Management',
+	'staff.tests.subtitle': 'View and manage customer test results',
+	'staff.tests.showing': 'Showing {from} - {to} of {total} results',
+	'staff.tests.load_error': 'Unable to load order list.',
+	'staff.tests.order_id': 'Order ID',
+	'staff.tests.customer_name': 'Customer Name',
+	'staff.tests.service': 'Service',
+	'staff.tests.created_at': 'Created At',
+	'staff.tests.status': 'Status',
+	'staff.tests.actions': 'Actions',
+	'staff.tests.view_result': 'View result',
+	'staff.tests.view': 'View',
+	'staff.tests.edit_result': 'Edit result',
+	'staff.tests.edit': 'Edit',
+	'staff.tests.result_title': 'Test Result',
+	'staff.tests.loading_result': 'Loading result...',
+	'staff.tests.data_error_title': 'Data Load Error',
+	'staff.tests.data_error_message':
+		'Unable to load test result. Please try again later.',
+	'staff.tests.total_summary_title': 'Result Summary',
+	'staff.tests.test_parameters': 'test parameters',
+	'staff.tests.normal_flag': 'Normal',
+	'staff.tests.high_flag': 'High',
+	'staff.tests.low_flag': 'Low',
+	'staff.tests.value': 'Value',
+	'staff.tests.reference_range': 'Reference Range',
+	'staff.tests.no_data_title': 'No Data',
+	'staff.tests.no_data_message': 'Test result not updated yet.',
 
 	// Consultant
 	'consultant.search_placeholder':
@@ -831,6 +1050,51 @@ const en: Record<string, string> = {
 	'lab.table.status': 'Status',
 	'lab.table.actions': 'Actions',
 	'lab.table.view_details': 'View Details',
+
+	// Contact
+	'contact.title': 'Contact Us',
+	'contact.subtitle':
+		"We'd love to hear from you! Fill out the form or reach us via the information below.",
+	'contact.form.name': 'Your Name',
+	'contact.form.name_placeholder': 'Enter your name',
+	'contact.form.email': 'Your Email',
+	'contact.form.email_placeholder': 'Enter your email address',
+	'contact.form.message': 'Message',
+	'contact.form.message_placeholder': 'Type your message here...',
+	'contact.form.send': 'Send Message',
+	'contact.form.sending': 'Sending...',
+	'contact.form.success': 'Thank you! Your message has been sent.',
+	'contact.info.address': 'Address',
+	'contact.info.phone': 'Phone',
+	'contact.info.email': 'Email',
+	'contact.info.note':
+		'Our team will get back to you as soon as possible. For urgent matters, please call our hotline.',
+	'recentActivity.title': 'Recent Activity',
+	'recentActivity.see_all': 'See all',
+	'recentActivity.see_more': 'See {count} more activities',
+	'recentActivity.empty': 'No recent activity',
+	'recentActivity.just_now': 'Just now',
+	'recentActivity.minutes_ago': '{count} minutes ago',
+	'recentActivity.hours_ago': '{count} hours ago',
+	'recentActivity.invalid_time': 'Invalid time',
+
+	// Schedule
+	'schedule.my_schedule': 'My Schedule',
+	'schedule.loading': 'Loading your schedule...',
+	'schedule.no_schedule_assigned': 'No Schedule Assigned',
+	'schedule.no_schedule_description':
+		"You haven't been assigned to any time slots for this week. Please check with your manager for slot assignments.",
+	'schedule.available': 'Available',
+	'schedule.booked': 'Booked',
+	'schedule.not_assigned': 'Not Assigned',
+	'schedule.past': 'Past',
+	'schedule.today': 'Today',
+	'schedule.previous_week': 'Previous Week',
+	'schedule.next_week': 'Next Week',
+	'schedule.no_appointments_scheduled': 'No appointments scheduled',
+	'schedule.available_for_slot': "You're available for this time slot",
+	'schedule.slot_details': 'Slot {0} Details',
+	'schedule.appointments_count': 'Appointments ({0})',
 }
 
 export default en

@@ -3,7 +3,6 @@ import React, { useState, useMemo, useEffect } from 'react'
 import TypedText from '../TypedText'
 import Image from 'next/image'
 import AnimatedLink from '../MotionLink'
-import FlorageBackground from './FlorageBackground'
 import { usePathname } from 'next/navigation'
 import { useLocale } from '../../Hooks/useLocale'
 import ClientHydration from '../ClientHydration'
@@ -87,12 +86,10 @@ const LandingPart = () => {
 						{...animateStyle}
 					>
 						{!isClient ? (
-							// Server-side or initial render - show static version
 							<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
 								{t('landing.mainTitle')}
 							</span>
 						) : !typing ? (
-							// Client-side, animation not complete
 							<ClientHydration>
 								<TypedText
 									typeSpeed={10}
@@ -103,7 +100,6 @@ const LandingPart = () => {
 								<span>&nbsp;</span>
 							</ClientHydration>
 						) : (
-							// Client-side, animation complete
 							<>
 								<span className='bg-gradient-to-r from-slate-950 to-main bg-clip-text text-transparent'>
 									{t('landing.mainTitle')}
@@ -125,7 +121,7 @@ const LandingPart = () => {
 
 					<div className='flex justify-center lg:justify-start w-full mt-8 mb-16'>
 						<AnimatedLink
-							className='px-6 py-4 bg-gradient-to-r from-accent to-accent/80 border-2 border-white/60 shadow-2xl hover:shadow-[0_0_32px_8px_rgba(16,185,129,0.25)] hover:border-accent/80 focus:outline-none focus:ring-4 focus:ring-accent/30 rounded-full font-bold text-sm text-white transition-all duration-300 flex items-center gap-3 backdrop-blur-xl hover:scale-105 active:scale-95'
+							className='px-6 py-4 md:ml-5 bg-gradient-to-r from-accent to-accent/80 border-2 border-white/60 shadow-2xl hover:shadow-[0_0_32px_8px_rgba(16,185,129,0.25)] hover:border-accent/80 focus:outline-none focus:ring-4 focus:ring-accent/30 rounded-full font-bold text-sm text-white transition-all duration-300 flex items-center gap-3 backdrop-blur-xl hover:scale-105 active:scale-95'
 							href='/register'
 							style={{ zIndex: 10 }}
 							{...buttonVariants}
@@ -185,10 +181,9 @@ const LandingPart = () => {
 					/>
 				</motion.div>
 			</motion.div>
-			<FlorageBackground />
 			<object
 				data='/svgs/landingBase.svg'
-				className='absolute h-screen w-screen lg:w-auto top-0 right-0 -z-20 overflow-clip'
+				className='absolute h-screen w-screen lg:w-auto top-0 right-0 -z-50 overflow-clip'
 			/>
 		</div>
 	)

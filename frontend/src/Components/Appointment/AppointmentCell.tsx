@@ -2,16 +2,20 @@ import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
 import { AnimatePresence } from 'motion/react'
 import { AppointmentCountdown } from './AppointmentCountdown'
 import { Bell, Clock, User, Check, X, Loader2, Video } from 'lucide-react'
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
+import { parseUTCToLocal } from '@/Utils/Appointment/timeSlotHelpers'
 
 interface AppointmentCellProps {
 	appointments: Appointment[]
 	isHighlighted?: boolean
 }
 
-// Helper function to check if appointment is within 60 minutes
+// Helper function to check if appointment is within 60 minutes (properly handling UTC)
 const isWithin60Minutes = (scheduleAt: string): boolean => {
 	const now = new Date()
-	const appointmentTime = new Date(scheduleAt)
+	// Parse UTC time and convert to local time for comparison
+	const appointmentTime = parseUTCToLocal(scheduleAt)
 	const timeDiff = appointmentTime.getTime() - now.getTime()
 	const minutesDiff = timeDiff / (1000 * 60)
 
@@ -28,6 +32,8 @@ export const AppointmentCell = ({
 	appointments,
 	isHighlighted = false,
 }: AppointmentCellProps) => {
+	const [showModal, setShowModal] = useState(false)
+
 	if (appointments.length === 0) {
 		return (
 			<div
@@ -40,6 +46,135 @@ export const AppointmentCell = ({
 		)
 	}
 
+	if (appointments.length > 1) {
+		return (
+			<div
+				className={`h-16 sm:h-20 border-r border-gray-100 relative transition-colors duration-300 overflow-visible flex items-center justify-center cursor-pointer ${
+					isHighlighted
+						? 'animate-pulse-ring border-2 border-yellow-400 z-20'
+						: ''
+				}`}
+				onClick={() => setShowModal(true)}
+			>
+				<div className='flex flex-col items-center w-full'>
+					<span className='text-base font-semibold text-blue-700'>
+						{appointments.length} lịch hẹn
+					</span>
+					<span className='inline-block bg-blue-600 text-white text-sm rounded-full px-3 py-1 mt-2'>
+						Nhấn để xem
+					</span>
+				</div>
+				{showModal &&
+					createPortal(
+						<div
+							className='fixed inset-0 z-999 flex items-center justify-center bg-black/50 backdrop-blur-sm'
+							onClick={() => setShowModal(false)}
+						>
+							<div
+								className='bg-white rounded-3xl shadow-2xl border border-gray-200 max-w-2xl w-full mx-4 overflow-y-auto max-h-[95vh] relative'
+								onClick={e => e.stopPropagation()}
+							>
+								<button
+									className='absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-3xl font-bold'
+									onClick={() => setShowModal(false)}
+									aria-label='Đóng'
+								>
+									×
+								</button>
+								<div className='p-8'>
+									<h3 className='text-3xl font-bold mb-8 text-blue-700 text-center'>
+										Danh sách lịch hẹn ({appointments.length})
+									</h3>
+									<ul className='divide-y divide-gray-200'>
+										{appointments.map(appointment => {
+											const isUpcoming = isWithin60Minutes(
+												appointment.scheduleAt
+											)
+											const hasJoinUrl =
+												appointment.joinUrl && !appointment.isDeleted
+											const status = (appointment.status || '')
+												.toString()
+												.trim()
+												.toLowerCase()
+											return (
+												<li
+													key={appointment.id}
+													className='py-6 flex flex-col gap-3 text-lg'
+												>
+													<div className='flex items-center gap-4'>
+														<User className='w-6 h-6 text-gray-500' />
+														<span
+															className='font-semibold text-xl text-gray-800 truncate'
+															title={appointment.staffName}
+														>
+															{appointment.staffName}
+														</span>
+													</div>
+													<div className='flex items-center gap-3 text-base text-gray-600'>
+														<Clock className='w-5 h-5' />
+														{new Date(
+															appointment.scheduleAt
+														).toLocaleTimeString('vi-VN', {
+															hour: '2-digit',
+															minute: '2-digit',
+														})}
+													</div>
+													<div className='flex items-center gap-4 mt-3'>
+														{hasJoinUrl && (
+															<button
+																onClick={() =>
+																	window.open(appointment.joinUrl, '_blank')
+																}
+																className={`px-6 py-2 rounded-xl text-lg font-bold flex items-center gap-2 shadow-sm transition-all duration-200 ${
+																	isUpcoming
+																		? 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+																		: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+																}`}
+															>
+																{isUpcoming ? (
+																	<Bell className='w-5 h-5' />
+																) : (
+																	<Video className='w-5 h-5' />
+																)}
+																<span>
+																	{isUpcoming ? 'THAM GIA NGAY' : 'Tham gia'}
+																</span>
+															</button>
+														)}
+														<span
+															className={`inline-flex items-center px-4 py-2 text-lg font-medium rounded-full shadow-sm ${
+																status === 'confirmed' || status === 'booked'
+																	? 'bg-green-500 text-white'
+																	: status === 'pending'
+																	? 'bg-yellow-500 text-white'
+																	: status === 'cancelled'
+																	? 'bg-red-500 text-white'
+																	: 'bg-gray-500 text-white'
+															}`}
+														>
+															{status === 'booked'
+																? 'Đã đặt'
+																: status === 'confirmed'
+																? 'Xác nhận'
+																: status === 'pending'
+																? 'Chờ'
+																: 'Hủy'}
+														</span>
+													</div>
+												</li>
+											)
+										})}
+									</ul>
+								</div>
+							</div>
+						</div>,
+						document.body
+					)}
+			</div>
+		)
+	}
+
+	// Default: single appointment, show as before
 	return (
 		<div
 			className={`h-16 sm:h-20 border-r border-gray-100 relative transition-colors duration-300 overflow-visible flex items-stretch ${

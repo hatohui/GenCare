@@ -4,6 +4,13 @@ import { useServiceByPage } from '@/Services/service-services'
 import { motion } from 'motion/react'
 import { LoadingSkeleton } from '../Skeletons'
 import { useLocale } from '../../Hooks/useLocale'
+import {
+	fadeInUp,
+	cardVariants,
+	iconVariants,
+	buttonVariants,
+} from '../../Utils/animations'
+import Image from 'next/image'
 
 export default function ServicesSection() {
 	const { data, isLoading } = useServiceByPage(1, 6, true, '')
@@ -12,101 +19,63 @@ export default function ServicesSection() {
 	if (isLoading) return <LoadingSkeleton />
 
 	return (
-		<section className='snap-start py-24 bg-gradient-to-b from-general to-main text-center relative overflow-hidden pb-40'>
-			{/* Background decoration */}
-			<div className='absolute inset-0 opacity-5'>
-				<motion.div
-					animate={{
-						scale: [1, 1.2, 1],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 8,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute top-20 left-10 w-40 h-40 bg-white rounded-full blur-3xl'
-				></motion.div>
-				<motion.div
-					animate={{
-						scale: [1.2, 1, 1.2],
-						opacity: [0.05, 0.1, 0.05],
-					}}
-					transition={{
-						duration: 10,
-						repeat: Infinity,
-						ease: 'easeInOut',
-					}}
-					className='absolute bottom-20 right-10 w-48 h-48 bg-white rounded-full blur-3xl'
-				></motion.div>
-			</div>
-
+		<section className='snap-start text-center relative h-fit overflow-hidden pb-20'>
 			<div className='relative z-10 max-w-7xl mx-auto px-8'>
 				<motion.h2
-					initial={{ opacity: 0, y: 50 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, ease: 'easeOut' }}
-					className='text-5xl md:text-6xl font-bold mb-16 text-white leading-tight'
+					{...fadeInUp}
+					className='text-3xl md:text-5xl pt-20 font-bold pb-10 bg-gradient-to-r from-main to-secondary bg-clip-text text-transparent'
 				>
 					{t('landing.ourServices')}{' '}
-					<span className='bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent'>
-						{t('landing.ourServicesEmphasis')}
-					</span>
+					<span className='font-bold'>{t('landing.ourServicesEmphasis')}</span>
 				</motion.h2>
 
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 py-4'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6'>
 					{data?.services.map((service, index) => (
 						<motion.div
 							key={service.id}
-							initial={{ opacity: 0, y: 60 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{
-								duration: 0.8,
-								delay: index * 0.1,
-								ease: 'easeOut',
-							}}
-							whileHover={{
-								scale: 1.05,
-								y: -8,
-								transition: { duration: 0.3, ease: 'easeOut' },
-							}}
-							className='group relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100/50 flex flex-col justify-between overflow-hidden'
+							variants={cardVariants}
+							initial='initial'
+							whileInView='whileInView'
+							whileHover='whileHover'
+							transition={{ delay: index * 0.1 }}
+							className='group relative bg-white p-5 rounded-xl shadow-md hover:shadow-lg border border-general flex flex-col justify-between overflow-hidden min-h-[220px]'
 						>
-							{/* Subtle gradient overlay */}
-							<div className='absolute inset-0 bg-gradient-to-br from-transparent via-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
-
-							<div className='relative z-10 mb-8'>
+							<div className='relative z-10 mb-3 flex flex-col items-center'>
+								{/* Service Image/Icon */}
 								<motion.div
-									className='w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-secondary to-main rounded-3xl flex items-center justify-center text-3xl shadow-lg group-hover:shadow-xl transition-all duration-500'
-									whileHover={{
-										scale: 1.1,
-										rotate: 5,
-										transition: { duration: 0.3 },
-									}}
+									variants={iconVariants}
+									className='w-12 h-12 mb-2 rounded-lg bg-general flex items-center justify-center shadow-sm overflow-hidden border border-general'
 								>
-									🚑
+									{service.imageUrls && service.imageUrls.length > 0 ? (
+										<Image
+											width={48}
+											height={48}
+											src={service.imageUrls[0].url}
+											alt={service.name}
+											className='w-full h-full object-cover rounded-lg border border-general'
+										/>
+									) : (
+										<span className='text-lg'>🚑</span>
+									)}
 								</motion.div>
-								<h3 className='text-xl font-bold mb-4 text-secondary group-hover:text-main transition-colors duration-500 leading-tight'>
+								<h3 className='text-xs font-semibold mb-1 text-main group-hover:text-accent transition-colors duration-500 leading-tight'>
 									{service.name}
 								</h3>
-								<p className='text-gray-600 text-base leading-relaxed'>
+								<p className='text-text text-[11px] leading-relaxed line-clamp-2'>
 									{service.description}
 								</p>
 							</div>
 
 							<motion.button
-								whileHover={{
-									scale: 1.05,
-									boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-									transition: { duration: 0.3 },
-								}}
-								whileTap={{ scale: 0.95 }}
-								className='self-center px-8 py-4 bg-gradient-to-r from-accent to-accent/80 rounded-2xl text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+								variants={buttonVariants}
+								whileHover='whileHover'
+								whileTap='whileTap'
+								className='self-center px-4 py-1.5 bg-main rounded-lg text-white font-medium shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 mt-2'
 							>
 								<span className='flex items-center justify-center gap-2'>
 									{t('landing.viewDetails')}
 									<svg
-										className='w-4 h-4'
+										className='w-3 h-3'
 										fill='none'
 										stroke='currentColor'
 										viewBox='0 0 24 24'
@@ -120,28 +89,21 @@ export default function ServicesSection() {
 									</svg>
 								</span>
 							</motion.button>
-
-							{/* Decorative border */}
-							<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100'></div>
 						</motion.div>
 					))}
 				</div>
 
 				{/* Bottom CTA */}
 				<motion.div
-					initial={{ opacity: 0, y: 40 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+					{...fadeInUp}
+					transition={{ delay: 0.3 }}
 					className='text-center mt-16'
 				>
 					<motion.button
-						whileHover={{
-							scale: 1.05,
-							boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
-							transition: { duration: 0.3, ease: 'easeOut' },
-						}}
-						whileTap={{ scale: 0.95 }}
-						className='px-10 py-5 bg-white text-main rounded-3xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'
+						variants={buttonVariants}
+						whileHover='whileHover'
+						whileTap='whileTap'
+						className='px-8 py-4 bg-accent text-white rounded-2xl font-semibold text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5'
 					>
 						<span className='flex items-center justify-center gap-3'>
 							{t('landing.viewAllServices')}
