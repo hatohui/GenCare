@@ -170,4 +170,19 @@ public class AccountController(IAccountService accountService) : ControllerBase
         var response = await accountService.GetConsultantProfile(page, count, search);
         return Ok(response);
     }
+
+    [HttpGet("consultants/{id}")]
+    [Authorize] // Allow all authenticated users (including members) to access consultant details
+    public async Task<IActionResult> GetConsultantById([FromRoute] string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return BadRequest("Consultant ID is required.");
+
+        var result = await accountService.GetConsultantByIdAsync(Guid.Parse(id));
+
+        if (result == null)
+            return NotFound("Consultant not found.");
+
+        return Ok(result);
+    }
 }

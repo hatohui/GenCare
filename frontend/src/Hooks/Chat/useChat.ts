@@ -90,7 +90,7 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 			client.stop()
 			setConnected(false)
 		}
-	}, [token, conversationId])
+	}, [token, conversationId, onConversationEnded])
 
 	const sendMessage = useCallback(
 		async (content: string, mediaUrls: string[] = []) => {

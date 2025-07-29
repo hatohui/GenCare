@@ -21,9 +21,9 @@ const slotApi = {
 			.then(res => res.data),
 
 	// Private API - requires authentication (admin)
-	update: (id: string, data: UpdateSlotRequest) => {
+	update: (data: UpdateSlotRequest) => {
 		return axiosInstance
-			.put<UpdateSlotResponse>(`/slots/${id}`, data)
+			.put<UpdateSlotResponse>('/slots', data)
 			.then(res => res.data)
 	},
 
@@ -60,8 +60,7 @@ export const useCreateSlot = () => {
  */
 export const useUpdateSlot = () => {
 	return useMutation({
-		mutationFn: ({ id, data }: { id: string; data: UpdateSlotRequest }) =>
-			slotApi.update(id, data),
+		mutationFn: (data: UpdateSlotRequest) => slotApi.update(data),
 	})
 }
 

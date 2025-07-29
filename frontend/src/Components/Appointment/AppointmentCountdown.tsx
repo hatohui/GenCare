@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react'
 import { Circle, Timer } from 'lucide-react'
 import { useLocale } from '@/Hooks/useLocale'
+import { parseUTCToLocal } from '@/Utils/Appointment/timeSlotHelpers'
 
 interface AppointmentCountdownProps {
 	scheduleAt: string
@@ -18,7 +19,8 @@ const AppointmentCountdownComponent = ({
 	useEffect(() => {
 		const updateCountdown = () => {
 			const now = new Date()
-			const appointmentTime = new Date(scheduleAt)
+			// Parse UTC time and convert to local time for countdown calculation
+			const appointmentTime = parseUTCToLocal(scheduleAt)
 			const timeDiff = appointmentTime.getTime() - now.getTime()
 			const minutesDiff = timeDiff / (1000 * 60)
 

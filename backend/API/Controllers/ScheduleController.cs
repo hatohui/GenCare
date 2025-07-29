@@ -3,6 +3,7 @@ using Application.Helpers;
 using Application.Services;
 using Domain.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
@@ -35,8 +36,12 @@ public class ScheduleController(IScheduleService scheduleService) : ControllerBa
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin},{RoleNames.Staff},{RoleNames.Consultant}")]
-    public async Task<IActionResult> GetSchedule([FromRoute] string id, [FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt)
+    [Authorize] // Allow all authenticated users (including members) to access schedules
+    public async Task<IActionResult> GetSchedule(
+        [FromRoute] string id,
+        [FromQuery] DateTime? startAt,
+        [FromQuery] DateTime? endAt
+    )
     {
         //get access token from header
         string accessToken = AuthHelper.GetAccessToken(HttpContext);
@@ -45,8 +50,11 @@ public class ScheduleController(IScheduleService scheduleService) : ControllerBa
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{RoleNames.Manager},{RoleNames.Admin}")]
-    public async Task<IActionResult> GetAllSchedule([FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt)
+    [Authorize]
+    public async Task<IActionResult> GetAllSchedule(
+        [FromQuery] DateTime? startAt,
+        [FromQuery] DateTime? endAt
+    )
     {
         var response = await scheduleService.GetAllScheduleAsync(startAt, endAt);
         return Ok(response);

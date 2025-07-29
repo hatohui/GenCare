@@ -14,6 +14,7 @@ import {
 	groupAppointmentsByDateTime,
 	filterAppointmentsForWeek,
 	formatWeekRange,
+	parseUTCToLocal,
 } from '@/Utils/Appointment/timeSlotHelpers'
 import { useLocale } from '@/Hooks/useLocale'
 
@@ -86,11 +87,12 @@ export const AppointmentsTimetable = () => {
 		[pastTimeSlots]
 	)
 
-	// Helper function to check if an appointment is in the future
+	// Helper function to check if an appointment is in the future (properly handling UTC)
 	const isAppointmentInFuture = useCallback(
 		(appointment: Appointment): boolean => {
 			const now = new Date()
-			const appointmentDate = new Date(appointment.scheduleAt)
+			// Parse UTC time and compare with current local time
+			const appointmentDate = parseUTCToLocal(appointment.scheduleAt)
 			return appointmentDate > now
 		},
 		[]
@@ -124,15 +126,15 @@ export const AppointmentsTimetable = () => {
 
 	const goToFirstAppointmentWeek = useCallback(() => {
 		if (futureAppointments && futureAppointments.length > 0) {
-			// Find the earliest future appointment date
+			// Find the earliest future appointment date (properly handling UTC)
 			const earliest = futureAppointments.reduce(
 				(min: Appointment, curr: Appointment) => {
-					return new Date(curr.scheduleAt) < new Date(min.scheduleAt)
-						? curr
-						: min
+					const minDate = parseUTCToLocal(min.scheduleAt)
+					const currDate = parseUTCToLocal(curr.scheduleAt)
+					return currDate < minDate ? curr : min
 				}
 			)
-			const earliestDate = new Date(earliest.scheduleAt)
+			const earliestDate = parseUTCToLocal(earliest.scheduleAt)
 			setCurrentWeek(earliestDate)
 
 			// Highlight the slot for a few seconds
@@ -455,6 +457,7 @@ export const AppointmentsTimetable = () => {
 							transition={{ delay: 0.8, duration: 0.5 }}
 						>
 							{timeSlots.map((timeSlot, index) => {
+								// Show all time slots, but visually distinguish working hours
 								const isWorkingHours =
 									timeSlot >= '08:00' && timeSlot <= '22:00'
 								return (
@@ -496,7 +499,6 @@ export const AppointmentsTimetable = () => {
 											const isSlotPast = isTimeSlotPast(day, timeSlot)
 											const isSlotHighlighted =
 												highlightedSlot === `${dateKey}-${timeSlot}`
-
 											return (
 												<motion.td
 													key={`${dateKey}-${timeSlot}`}
