@@ -2,6 +2,7 @@ import { CreateConversationRequest } from '@/Interfaces/Chat/Conversation'
 import axiosInstance from '@/Utils/axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
+import useToken from '@/Hooks/Auth/useToken'
 
 export interface MediaItem {
 	url: string
@@ -103,12 +104,16 @@ const chatApi = {
 	deleteMessage: (messageId: string) =>
 		axiosInstance.delete(`/messages/${messageId}`),
 
-	getConnection: (conversationId: string) =>
-		new signalR.HubConnectionBuilder()
+	getConnection: (conversationId: string) => {
+		const { accessToken } = useToken()
+
+		return new signalR.HubConnectionBuilder()
 			.withUrl(
-				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`
+				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`,
+				{ accessTokenFactory: () => accessToken || '' }
 			)
-			.build(),
+			.build()
+	},
 
 	viewConversationById: (conversationId: string) =>
 		axiosInstance.get(`/conversations/${conversationId}`).then(res => res.data),

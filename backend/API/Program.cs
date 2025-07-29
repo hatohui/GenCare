@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Api.Middlewares;
 using API.ActionFilters;
+using Api.Middlewares;
 using API.Middlewares;
 using Application.DTOs.Appointment.Request;
 using Application.DTOs.Auth.Requests;
@@ -334,6 +334,6 @@ app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<ChatHub>("/hubs/chat").RequireCors("AllowFrontendOrigins");
 
 await app.RunAsync(); //test
