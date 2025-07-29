@@ -22,12 +22,14 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 	onConfirm,
 	title,
 	message,
-	confirmText = 'Confirm',
-	cancelText = 'Cancel',
+	confirmText,
+	cancelText,
 	isDangerous = false,
 	isLoading = false,
 }) => {
 	const { t } = useLocale()
+	const finalConfirmText = confirmText || t('common.confirm')
+	const finalCancelText = cancelText || t('common.cancel')
 	const modalRef = useRef<HTMLDivElement>(null)
 	const firstFocusableRef = useRef<HTMLButtonElement>(null)
 
@@ -150,9 +152,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 						onClick={onClose}
 						disabled={isLoading}
 						className='flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm'
-						aria-label={`${cancelText} and close dialog`}
+						aria-label={`${finalCancelText} and close dialog`}
 					>
-						{cancelText}
+						{finalCancelText}
 					</motion.button>
 					<motion.button
 						whileHover={{ scale: 1.02 }}
@@ -164,7 +166,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 								? 'bg-red-600 hover:bg-red-700 text-white'
 								: 'bg-blue-600 hover:bg-blue-700 text-white'
 						}`}
-						aria-label={`${confirmText} action`}
+						aria-label={`${finalConfirmText} action`}
 					>
 						{isLoading ? (
 							<div className='flex items-center justify-center gap-2'>
@@ -172,7 +174,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 								{t('common.processing')}
 							</div>
 						) : (
-							confirmText
+							finalConfirmText
 						)}
 					</motion.button>
 				</div>

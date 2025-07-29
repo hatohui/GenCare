@@ -1,4 +1,5 @@
 import FloatingLabelInput from '../Form/FloatingLabel'
+import { useLocale } from '@/Hooks/useLocale'
 
 export default function ServiceSearch({
 	search,
@@ -9,6 +10,8 @@ export default function ServiceSearch({
 		reset: () => void
 	}
 }) {
+	const { t } = useLocale()
+
 	return (
 		<div className='px-6 py-4 flex items-center gap-4 w-full'>
 			<svg
@@ -26,14 +29,14 @@ export default function ServiceSearch({
 				/>
 			</svg>
 			<FloatingLabelInput
-				label='Tìm kiếm dịch vụ'
+				label={t('service.search_services')}
 				id='search-service'
 				autocomplete='off'
 				{...search}
 				className='w-full max-w-xl'
 			/>
 			<button className='rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors'>
-				Tìm kiếm
+				{t('service.search')}
 			</button>
 		</div>
 	)

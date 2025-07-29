@@ -6,8 +6,10 @@ import React, { useEffect, useState } from 'react'
 import { ServiceCard } from './ServiceCard'
 import Pagination from '../Management/Pagination'
 import { useSearchParams } from 'next/navigation'
+import { useLocale } from '@/Hooks/useLocale'
 
 const ServiceList = () => {
+	const { t } = useLocale()
 	const searchParams = useSearchParams()
 	const [page, setPage] = useState<number>(1)
 	const [orderByPrice, setOrderByPrice] = useState<boolean>(false)
@@ -32,7 +34,7 @@ const ServiceList = () => {
 			<div className='flex items-center justify-center pt-20 min-h-96'>
 				<div className='text-center'>
 					<div className='animate-pulse text-lg font-medium text-slate-700'>
-						Đang tải dữ liệu...
+						{t('service.loading_data')}
 					</div>
 				</div>
 			</div>
@@ -44,7 +46,7 @@ const ServiceList = () => {
 		return (
 			<div className='flex items-center justify-center pt-20 min-h-96'>
 				<div className='text-center text-red-500 font-medium'>
-					Error fetching data.
+					{t('service.error_fetching_data')}
 				</div>
 			</div>
 		)
@@ -54,7 +56,9 @@ const ServiceList = () => {
 	if (data?.services.length === 0) {
 		return (
 			<div className='flex items-center justify-center pt-20 min-h-96'>
-				<div className='text-center text-slate-500'>No data found.</div>
+				<div className='text-center text-slate-500'>
+					{t('service.no_data_found')}
+				</div>
 			</div>
 		)
 	}

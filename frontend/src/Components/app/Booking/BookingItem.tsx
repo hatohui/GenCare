@@ -82,7 +82,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 			window.URL.revokeObjectURL(url)
 		} catch (error) {
 			console.error('Error downloading PDF:', error)
-			toast.error('Lỗi khi tải PDF. Vui lòng thử lại.')
+			toast.error(t('booking.pdf_download_error'))
 		} finally {
 			setIsExporting(false)
 		}
@@ -118,7 +118,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const handleVnpayPayment = async () => {
 		// Check if purchaseId exists
 		if (!booking.purchaseId) {
-			toast.error('Không tìm thấy thông tin đặt dịch vụ')
+			toast.error(t('booking.payment_info_not_found'))
 			return
 		}
 
@@ -134,7 +134,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 					if (data) {
 						window.location.href = data
 					} else {
-						toast.error('Không thể tạo liên kết thanh toán')
+						toast.error(t('booking.payment_link_failed'))
 					}
 				},
 				onError: error => {
@@ -143,7 +143,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 			})
 		} catch (error) {
 			console.error('VNPay payment failed:', error)
-			toast.error('Thanh toán VNPay thất bại. Vui lòng thử lại.')
+			toast.error(t('booking.vnpay_payment_failed'))
 		}
 	}
 
@@ -187,7 +187,7 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 								{t('booking.booking_date')}: {formatDate(booking.createdAt)}
 							</p>
 							<p>
-								Trạng thái:
+								{t('booking.status_label')}:
 								<span
 									className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
 										booking.status
@@ -218,7 +218,9 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 									className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 								>
 									<DownloadSVG className='size-4' />
-									{isExporting ? 'Đang tải...' : 'Tải PDF'}
+									{isExporting
+										? t('booking.downloading')
+										: t('booking.download_pdf')}
 								</button>
 							</>
 						) : (
@@ -243,8 +245,8 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 										</div>
 									)}
 									{momoPayMutation.isPending
-										? 'Đang xử lý...'
-										: 'Thanh toán MoMo'}
+										? t('booking.processing')
+										: t('booking.pay_momo')}
 								</button>
 								<button
 									onClick={handleVnpayPayment}
@@ -265,8 +267,8 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 										</div>
 									)}
 									{vnpayPayMutation.isPending
-										? 'Đang xử lý...'
-										: 'Thanh toán VNPay'}
+										? t('booking.processing')
+										: t('booking.pay_vnpay')}
 								</button>
 								<button
 									onClick={handleDelete}

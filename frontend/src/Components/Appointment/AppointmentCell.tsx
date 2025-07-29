@@ -5,6 +5,7 @@ import { Bell, Clock, User, Check, X, Loader2, Video } from 'lucide-react'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { parseUTCToLocal } from '@/Utils/Appointment/timeSlotHelpers'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface AppointmentCellProps {
 	appointments: Appointment[]
@@ -32,6 +33,7 @@ export const AppointmentCell = ({
 	appointments,
 	isHighlighted = false,
 }: AppointmentCellProps) => {
+	const { t } = useLocale()
 	const [showModal, setShowModal] = useState(false)
 
 	if (appointments.length === 0) {
@@ -137,7 +139,9 @@ export const AppointmentCell = ({
 																	<Video className='w-5 h-5' />
 																)}
 																<span>
-																	{isUpcoming ? 'THAM GIA NGAY' : 'Tham gia'}
+																	{isUpcoming
+																		? t('appointment.join_now_urgent')
+																		: t('appointment.join_now_simple')}
 																</span>
 															</button>
 														)}
@@ -153,12 +157,12 @@ export const AppointmentCell = ({
 															}`}
 														>
 															{status === 'booked'
-																? 'Đã đặt'
+																? t('appointment.status.booked')
 																: status === 'confirmed'
-																? 'Xác nhận'
+																? t('appointment.status.confirmed')
 																: status === 'pending'
-																? 'Chờ'
-																: 'Hủy'}
+																? t('appointment.status.pending')
+																: t('appointment.status.cancelled')}
 														</span>
 													</div>
 												</li>
@@ -325,10 +329,14 @@ export const AppointmentCell = ({
 										<Video className='w-4 h-4' />
 									)}
 									<span className='hidden sm:inline'>
-										{isUpcoming ? 'THAM GIA NGAY' : 'Tham gia'}
+										{isUpcoming
+											? t('appointment.join_now_urgent')
+											: t('appointment.join_now_simple')}
 									</span>
 									<span className='sm:hidden'>
-										{isUpcoming ? 'JOIN NOW' : 'Join'}
+										{isUpcoming
+											? t('appointment.join_now_urgent')
+											: t('appointment.join_now_simple')}
 									</span>
 								</button>
 							)}

@@ -85,7 +85,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 				}
 			} else if (paymentMethod === 'vnpay') {
 				if (!purchaseId) {
-					toast.error('Không tìm thấy thông tin đặt dịch vụ')
+					toast.error(t('booking.payment_info_not_found'))
 					return
 				}
 				await new Promise(res => setTimeout(res, 800))
@@ -94,11 +94,11 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 					if (vnpayResult) {
 						window.location.href = vnpayResult
 					} else {
-						toast.error('Không thể tạo liên kết thanh toán')
+						toast.error(t('booking.payment_link_failed'))
 					}
 				} catch (error) {
 					console.error('VNPay payment failed:', error)
-					toast.error('Thanh toán VNPay thất bại. Vui lòng thử lại.')
+					toast.error(t('booking.vnpay_payment_failed'))
 				}
 			} else {
 				toast.success(t('booking.booking_success'))
@@ -244,7 +244,9 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 									<div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center'>
 										<span className='text-white font-bold text-sm'>V</span>
 									</div>
-									<span className='font-medium'>Thanh toán ngay với VNPay</span>
+									<span className='font-medium'>
+										{t('booking.pay_now_vnpay')}
+									</span>
 								</div>
 							</label>
 							<label className='flex items-center space-x-3 cursor-pointer'>
@@ -275,8 +277,7 @@ const BookServiceForm: React.FC<BookServiceFormProps> = ({ serviceId }) => {
 						{paymentMethod === 'vnpay' && (
 							<div className='mt-3 p-3 bg-blue-50 border border-blue-200 rounded-[15px]'>
 								<p className='text-sm text-blue-700'>
-									Bạn sẽ được chuyển đến trang thanh toán VNPay sau khi xác nhận
-									đặt dịch vụ.
+									{t('booking.vnpay_description')}
 								</p>
 							</div>
 						)}

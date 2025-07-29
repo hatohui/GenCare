@@ -67,11 +67,14 @@ const vi: Record<string, string> = {
 	'booking.payment_method': 'Phương thức thanh toán',
 	'booking.pay_with_momo': 'Thanh toán ngay với MoMo',
 	'booking.pay_later': 'Thanh toán sau',
+	'booking.pay_now_vnpay': 'Thanh toán ngay với VNPay',
 	'booking.total': 'Tổng tiền',
 	'booking.momo_description': 'Bạn sẽ được chuyển đến trang thanh toán MoMo',
 	'booking.momo_description2': 'sau khi xác nhận đặt dịch vụ.',
 	'booking.pay_later_description':
 		'Bạn có thể thanh toán sau khi đặt dịch vụ thành công.',
+	'booking.vnpay_description':
+		'Bạn sẽ được chuyển đến trang thanh toán VNPay sau khi xác nhận đặt dịch vụ.',
 	'booking.confirm_booking': 'Xác nhận đặt dịch vụ',
 	'booking.payment': 'Thanh Toán',
 	'booking.select_payment_method':
@@ -109,6 +112,32 @@ const vi: Record<string, string> = {
 	'booking.back': '← Quay lại',
 	'booking.book_service': 'Đặt dịch vụ',
 	'booking.deleting': 'Đang xóa...',
+	'booking.pdf_download_error': 'Lỗi khi tải PDF. Vui lòng thử lại.',
+	'booking.payment_info_not_found': 'Không tìm thấy thông tin đặt dịch vụ',
+	'booking.payment_link_failed': 'Không thể tạo liên kết thanh toán',
+	'booking.vnpay_payment_failed':
+		'Thanh toán VNPay thất bại. Vui lòng thử lại.',
+	'booking.status_label': 'Trạng thái',
+	'booking.downloading': 'Đang tải...',
+	'booking.download_pdf': 'Tải PDF',
+	'booking.processing': 'Đang xử lý...',
+	'booking.pay_momo': 'Thanh toán MoMo',
+	'booking.pay_vnpay': 'Thanh toán VNPay',
+
+	// Test Results
+	'test.results_title': 'Kết quả xét nghiệm',
+	'test.general_results': 'Kết quả xét nghiệm tổng quát',
+	'test.loading_results': 'Đang tải kết quả...',
+	'test.loading_error': 'Lỗi khi tải kết quả.',
+	'test.no_results': 'Không có kết quả xét nghiệm.',
+	'test.generated_on': 'Kết quả được tạo vào:',
+	'test.view_details': 'Xem chi tiết',
+	'test.undefined': 'Không xác định',
+	'test.all_normal_message':
+		'Tất cả các chỉ số đều trong giới hạn bình thường. Sức khỏe tổng thể tốt.',
+	'test.abnormal': 'Bất thường',
+	'test.borderline': 'Giới hạn',
+	'test.summary': 'Tóm tắt',
 
 	// Service page
 	'service.details': 'Chi tiết dịch vụ',
@@ -1088,6 +1117,138 @@ const vi: Record<string, string> = {
 	'schedule.available_for_slot': 'Bạn có sẵn cho khung giờ này',
 	'schedule.slot_details': 'Chi tiết ca {0}',
 	'schedule.appointments_count': 'Cuộc hẹn ({0})',
+
+	// AI Chat
+	'ai.chat.open': 'Mở trò chuyện AI',
+	'ai.chat.close': 'Đóng trò chuyện AI',
+	'ai.chat.no_messages':
+		'Chưa có tin nhắn nào, hãy là người đầu tiên gửi tin nhắn!',
+	'ai.chat.error_occurred':
+		'Đã xảy ra lỗi khi xử lý yêu cầu của bạn. Vui lòng thử lại.',
+
+	// Blog Pages
+	'blog.back_to_forum': 'Quay lại diễn đàn',
+	'blog.edit_post_title': 'Chỉnh sửa bài viết',
+	'blog.login_to_like': 'Đăng nhập để thích bài viết',
+
+	// Test Results
+	'test.status.completed': 'Đã hoàn thành',
+	'test.status.incomplete': 'Chưa hoàn thành',
+	'test.expand': 'Mở rộng',
+	'test.collapse': 'Thu gọn',
+
+	// Appointments
+	'appointment.join_now_urgent': 'THAM GIA NGAY',
+	'appointment.join_now_simple': 'Tham gia',
+
+	// Loading states
+	'loading.default': 'Đang tải...',
+	'error.loading_data': 'Lỗi khi tải dữ liệu. Vui lòng thử lại.',
+	'error.no_data_found':
+		'Không tìm thấy dữ liệu. Vui lòng tải lại trang và thử lại.',
+
+	// Appointment status
+	'appointment.status.booked': 'Đã đặt',
+	'appointment.status.confirmed': 'Xác nhận',
+	'appointment.status.pending': 'Chờ',
+	'appointment.status.cancelled': 'Hủy',
+
+	// Confirmation messages
+	'confirmation.are_you_sure_delete': 'Bạn có chắc chắn muốn xóa mục này?',
+	'confirmation.are_you_sure_restore':
+		'Bạn có chắc chắn muốn khôi phục mục này?',
+	'confirmation.action_will_delete':
+		'Hành động này sẽ xóa mục. Bạn có muốn tiếp tục?',
+	'confirmation.action_will_restore':
+		'Hành động này sẽ khôi phục mục. Bạn có muốn tiếp tục?',
+
+	// Birth Control
+	'birthControl.loading_cycle_info': 'Đang tải thông tin chu kỳ...',
+	'birthControl.menstrual_cycle_prediction': 'Dự Đoán Chu Kỳ Kinh Nguyệt',
+	'birthControl.manage_track_cycle_safely':
+		'Quản lý và theo dõi chu kỳ kinh nguyệt của bạn một cách an toàn và chính xác',
+	'birthControl.cannot_load_cycle_info':
+		'Không thể tải thông tin chu kỳ từ máy chủ',
+	'birthControl.error_loading_cycle':
+		'Đã xảy ra lỗi khi tải thông tin chu kỳ. Bạn vẫn có thể sử dụng các chức năng khác trên trang này.',
+	'birthControl.cycle_calendar': 'Lịch Chu Kỳ',
+	'birthControl.previous_month': '← Tháng trước',
+	'birthControl.next_month': 'Tháng sau →',
+	'birthControl.no_cycle_data': 'Chưa có dữ liệu chu kỳ',
+	'birthControl.select_start_date_to_view':
+		'Vui lòng chọn ngày bắt đầu chu kỳ để xem lịch',
+	'birthControl.ovulation_day':
+		'Ngày rụng trứng – Khả năng thụ thai cao nhất 🌸',
+	'birthControl.menstrual_phase': 'Pha hành kinh – Ngày có kinh nguyệt',
+	'birthControl.unsafe_phase': 'Pha không an toàn – Khả năng thụ thai cao',
+	'birthControl.safe_phase': 'Pha an toàn – Khả năng thụ thai thấp',
+	'birthControl.menstrual_period': 'Pha kinh nguyệt',
+	'birthControl.unsafe': 'Không an toàn',
+	'birthControl.ovulation': 'Rụng trứng 🌸',
+	'birthControl.safe': 'An toàn',
+	'birthControl.tracking_method_info':
+		'Thông Tin Về Phương Pháp Theo Dõi Chu Kỳ',
+	'birthControl.how_it_works': 'Cách Hoạt Động:',
+	'birthControl.track_menstrual_start':
+		'Theo dõi ngày bắt đầu chu kỳ kinh nguyệt',
+	'birthControl.calculate_safe_unsafe':
+		'Tính toán các pha an toàn và không an toàn',
+	'birthControl.predict_ovulation': 'Dự đoán ngày rụng trứng',
+	'birthControl.provide_planning_info': 'Cung cấp thông tin để lập kế hoạch',
+	'birthControl.important_notes': 'Lưu Ý Quan Trọng:',
+	'birthControl.reference_only': 'Phương pháp này chỉ mang tính tham khảo',
+	'birthControl.not_100_effective': 'Không đảm bảo 100% hiệu quả tránh thai',
+	'birthControl.combine_with_other_methods':
+		'Nên kết hợp với các biện pháp khác',
+	'birthControl.consult_doctor': 'Tham khảo ý kiến bác sĩ khi cần thiết',
+	'birthControl.important_note': 'Lưu ý quan trọng:',
+	'birthControl.phases_calculated_relatively':
+		'Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸) thường rơi vào giữa khoảng không an toàn. Phương pháp này không đảm bảo 100% hiệu quả tránh thai.',
+
+	// Weekdays (short)
+	'weekdays.sun': 'CN',
+	'weekdays.mon': 'T2',
+	'weekdays.tue': 'T3',
+	'weekdays.wed': 'T4',
+	'weekdays.thu': 'T5',
+	'weekdays.fri': 'T6',
+	'weekdays.sat': 'T7',
+
+	// Service components
+	'service.loading_data': 'Đang tải dữ liệu...',
+	'service.error_fetching_data': 'Lỗi khi tải dữ liệu.',
+	'service.no_data_found': 'Không tìm thấy dữ liệu.',
+	'service.search_services': 'Tìm kiếm dịch vụ',
+	'service.search': 'Tìm kiếm',
+	'service.my_bookings': 'Booking của tôi',
+
+	// Blog error messages
+	'blog.cannot_load_post': 'Không thể tải bài viết',
+	'blog.error_loading_data':
+		'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.',
+	'blog.try_again': 'Thử lại',
+	'blog.go_back': 'Quay lại',
+
+	// Service pages
+	'service.page.go_back': '← Quay lại',
+	'service.page.services': 'Dịch vụ',
+	'service.page.healthcare_services': 'Dịch Vụ Y Tế',
+	'service.page.discover_quality_healthcare':
+		'Khám phá các dịch vụ chăm sóc sức khỏe chất lượng cao',
+	'service.page.sort_error': 'Có lỗi xảy ra khi sắp xếp. Vui lòng thử lại.',
+	'service.page.price_ascending': 'Giá tăng dần ↑',
+	'service.page.price_descending': 'Giá giảm dần ↓',
+	'service.page.sort_by_price': 'Sắp xếp giá',
+	'service.page.current_filters': 'Bộ lọc hiện tại:',
+	'service.page.search_term': 'Tìm kiếm: {0}',
+	'service.page.clear_all': 'Xóa tất cả',
+
+	// Common error messages
+	'error.occurred_try_again': 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
+	'error.cannot_delete_post': 'Không thể xóa bài viết',
+
+	// Management loading states
+	'management.loading_data': 'Đang tải dữ liệu...',
 }
 
 export default vi

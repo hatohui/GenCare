@@ -31,10 +31,12 @@ import {
 import { useAccountStore } from '@/Hooks/useAccount'
 import CommentForm from '@/Components/Blogs/CommentForm'
 import CommentItem from '@/Components/Blogs/CommentItem'
+import { useLocale } from '@/Hooks/useLocale'
 
 const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 	const router = useRouter()
 	const { id } = use(params)
+	const { t } = useLocale()
 	const { data: blog, isLoading, error } = useGetBlogById(id)
 	const deleteBlog = useDeleteBlog()
 	const { data: user } = useAccountStore()
@@ -141,23 +143,21 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 					<div className='bg-white rounded-lg p-8'>
 						<div className='text-6xl mb-4'>❌</div>
 						<h2 className='text-2xl font-bold text-gray-900 mb-2'>
-							Không thể tải bài viết
+							{t('blog.cannot_load_post')}
 						</h2>
-						<p className='text-gray-600 mb-4'>
-							Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
-						</p>
+						<p className='text-gray-600 mb-4'>{t('blog.error_loading_data')}</p>
 						<div className='flex gap-4 justify-center'>
 							<button
 								onClick={() => window.location.reload()}
 								className='px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors'
 							>
-								Thử lại
+								{t('blog.try_again')}
 							</button>
 							<button
 								onClick={() => router.back()}
 								className='px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors'
 							>
-								Quay lại
+								{t('blog.go_back')}
 							</button>
 						</div>
 					</div>
@@ -217,10 +217,10 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 						<AlertCircle className='w-5 h-5 text-red-600' />
 						<div>
 							<h3 className='font-semibold text-red-800'>
-								Không thể xóa bài viết
+								{t('error.cannot_delete_post')}
 							</h3>
 							<p className='text-red-700 text-sm'>
-								Đã xảy ra lỗi. Vui lòng thử lại sau.
+								{t('error.occurred_try_again')}
 							</p>
 						</div>
 					</div>
@@ -313,7 +313,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 								className='w-full flex items-center gap-2 p-3 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors'
 							>
 								<ArrowLeft className='w-4 h-4' />
-								Quay lại diễn đàn
+								{t('blog.back_to_forum')}
 							</button>
 
 							{/* Edit/Delete Buttons for Admin/Staff/Manager */}
@@ -324,7 +324,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 										className='w-full flex items-center gap-2 p-3 bg-main text-white rounded-lg hover:bg-main/80 transition-colors'
 									>
 										<Edit className='w-4 h-4' />
-										Chỉnh sửa bài viết
+										{t('blog.edit_post_title')}
 									</button>
 									<button
 										onClick={handleDelete}

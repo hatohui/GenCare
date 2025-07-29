@@ -15,6 +15,7 @@ import {
 } from 'date-fns'
 import { motion } from 'framer-motion'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface CalendarProps {
 	cycle: BirthControlDates | null
@@ -23,6 +24,8 @@ interface CalendarProps {
 }
 
 export default function Calendar({ year, month, cycle }: CalendarProps) {
+	const { t } = useLocale()
+
 	const parseWithShift = (isoStr: string) => {
 		try {
 			const parsed = parseISO(isoStr)
@@ -50,9 +53,11 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 			<div className='flex items-center justify-center py-12'>
 				<div className='text-center'>
 					<div className='text-gray-400 text-4xl mb-4'>📅</div>
-					<p className='text-gray-600 mb-2'>Chưa có dữ liệu chu kỳ</p>
+					<p className='text-gray-600 mb-2'>
+						{t('birthControl.no_cycle_data')}
+					</p>
 					<p className='text-sm text-gray-500'>
-						Vui lòng chọn ngày bắt đầu chu kỳ để xem lịch
+						{t('birthControl.select_start_date_to_view')}
 					</p>
 				</div>
 			</div>
@@ -112,20 +117,20 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 			// Check for ovulation day
 			if (format(day, 'yyyy-MM-dd') === format(ovulationDay, 'yyyy-MM-dd')) {
 				bgClass = 'bg-yellow-400'
-				title = 'Ngày rụng trứng – Khả năng thụ thai cao nhất 🌸'
+				title = t('birthControl.ovulation_day')
 				ovulationIcon = '🌸'
 			} else if (inInterval(day, menstrualStartDate, menstrualEndDate)) {
 				bgClass = 'bg-red-200'
-				title = 'Pha hành kinh – Ngày có kinh nguyệt'
+				title = t('birthControl.menstrual_phase')
 			} else if (inInterval(day, startUnsafeDate, endUnsafeDate)) {
 				bgClass = 'bg-yellow-300'
-				title = 'Pha không an toàn – Khả năng thụ thai cao'
+				title = t('birthControl.unsafe_phase')
 			} else if (
 				inInterval(day, startSafeDate, endSafeDate) ||
 				inInterval(day, secondSafeStart, secondSafeEnd)
 			) {
 				bgClass = 'bg-blue-200'
-				title = 'Pha an toàn – Khả năng thụ thai thấp'
+				title = t('birthControl.safe_phase')
 			}
 
 			week.push(
@@ -162,7 +167,15 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 	}
 
 	// Weekdays for the calendar
-	const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+	const weekdays = [
+		t('weekdays.sun'),
+		t('weekdays.mon'),
+		t('weekdays.tue'),
+		t('weekdays.wed'),
+		t('weekdays.thu'),
+		t('weekdays.fri'),
+		t('weekdays.sat'),
+	]
 
 	return (
 		<div className='space-y-4'>
@@ -182,30 +195,26 @@ export default function Calendar({ year, month, cycle }: CalendarProps) {
 			<div className='grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mt-6 text-gray-700'>
 				<div className='flex items-center gap-2'>
 					<div className='w-4 h-4 rounded bg-red-200 border border-gray-300' />
-					<span>Pha kinh nguyệt</span>
+					<span>{t('birthControl.menstrual_period')}</span>
 				</div>
 				<div className='flex items-center gap-2'>
 					<div className='w-4 h-4 rounded bg-yellow-300 border border-gray-300' />
-					<span>Không an toàn</span>
+					<span>{t('birthControl.unsafe')}</span>
 				</div>
 				<div className='flex items-center gap-2'>
 					<div className='w-4 h-4 rounded bg-yellow-400 border border-gray-300' />
-					<span>Rụng trứng 🌸</span>
+					<span>{t('birthControl.ovulation')}</span>
 				</div>
 				<div className='flex items-center gap-2'>
 					<div className='w-4 h-4 rounded bg-blue-200 border border-gray-300' />
-					<span>An toàn</span>
+					<span>{t('birthControl.safe')}</span>
 				</div>
 			</div>
 
 			{/* Note for users */}
 			<div className='mt-4 p-3 bg-blue-50 rounded-[15px] text-xs text-blue-700'>
-				<p className='font-medium mb-1'>Lưu ý quan trọng:</p>
-				<p>
-					Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸)
-					thường rơi vào giữa khoảng không an toàn. Phương pháp này không đảm
-					bảo 100% hiệu quả tránh thai.
-				</p>
+				<p className='font-medium mb-1'>{t('birthControl.important_note')}</p>
+				<p>{t('birthControl.phases_calculated_relatively')}</p>
 			</div>
 		</div>
 	)

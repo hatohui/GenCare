@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Content } from '@google/genai'
 import { motion } from 'framer-motion'
+import { useLocale } from '@/Hooks/useLocale'
 import ChatMessage from './ChatMessage'
 import ErrorMessage from './ErrorMessage'
 import LoadingMessage from './LoadingMessage'
@@ -21,6 +22,7 @@ const ChatArea = ({
 	consultantIcon?: string
 	withImage?: boolean
 }) => {
+	const { t } = useLocale()
 	const chatContainerRef = useRef<HTMLDivElement>(null)
 	const [showScrollButton, setShowScrollButton] = useState(false)
 	const wasAtBottomRef = useRef(true)
@@ -82,7 +84,7 @@ const ChatArea = ({
 					))
 				) : (
 					<div className='text-center h-full center-all text-gray-500'>
-						No messages yet, be the first to send a message!
+						{t('ai.chat.no_messages')}
 					</div>
 				)}
 				{isPending && <LoadingMessage consultantIcon={consultantIcon} />}

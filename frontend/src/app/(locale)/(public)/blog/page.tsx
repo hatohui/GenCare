@@ -159,7 +159,7 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 									router.push('/login')
 								}}
 								className='flex items-center hover:text-red-500 transition-colors'
-								title='Đăng nhập để thích bài viết'
+								title={t('blog.login_to_like')}
 							>
 								<Heart className='w-4 h-4 mr-1' />
 								<span>
