@@ -174,7 +174,7 @@ export const AppointmentsTimetable = () => {
 					transition={{ delay: 0.2 }}
 					className='text-gray-600 text-lg font-medium'
 				>
-					Đang tải lịch hẹn...
+					{t('appointment.loading_appointments')}
 				</motion.span>
 				<motion.div
 					initial={{ scaleX: 0 }}
@@ -206,7 +206,7 @@ export const AppointmentsTimetable = () => {
 						😔
 					</motion.div>
 					<div className='text-xl font-bold text-gray-800'>
-						Oops! Có lỗi xảy ra
+						{t('appointment.error_occurred')}
 					</div>
 					<div className='text-sm text-gray-600 max-w-md'>{error.message}</div>
 				</motion.div>
@@ -219,7 +219,7 @@ export const AppointmentsTimetable = () => {
 					className='px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transition-all duration-200 shadow-lg font-medium flex items-center space-x-2'
 				>
 					<span>🔄</span>
-					<span>Thử lại</span>
+					<span>{t('appointment.try_again')}</span>
 				</motion.button>
 			</motion.div>
 		)
@@ -326,11 +326,13 @@ export const AppointmentsTimetable = () => {
 								🔍{' '}
 								<span className='hidden sm:inline'>
 									{futureWeekAppointments.length === 0
-										? 'Đi đến lịch hẹn'
-										: 'Tìm lịch'}
+										? t('appointment.go_to_appointment')
+										: t('appointment.find_appointment')}
 								</span>
 								<span className='sm:hidden'>
-									{futureWeekAppointments.length === 0 ? 'Tìm' : 'Tìm'}
+									{futureWeekAppointments.length === 0
+										? t('appointment.find')
+										: t('appointment.find')}
 								</span>
 							</motion.button>
 						)}
@@ -412,7 +414,9 @@ export const AppointmentsTimetable = () => {
 									}}
 								>
 									<Clock className='w-4 h-4 inline mr-2' />
-									<span className='hidden sm:inline'>Thời gian</span>
+									<span className='hidden sm:inline'>
+										{t('appointment.time')}
+									</span>
 								</motion.th>
 								{weekDays.map((day, index) => (
 									<motion.th
@@ -560,11 +564,11 @@ export const AppointmentsTimetable = () => {
 						<div className='flex items-center space-x-3'>
 							<TrendingUp className='w-6 h-6 text-purple-600' />
 							<span className='text-gray-700'>
-								Sắp tới:{' '}
+								{t('appointment.upcoming')}:{' '}
 								<span className='font-bold text-purple-600 text-lg'>
 									{futureAppointments?.length || 0}
 								</span>{' '}
-								lịch hẹn
+								{t('appointment.upcoming_appointments')}
 							</span>
 						</div>
 					</motion.div>
@@ -587,7 +591,7 @@ export const AppointmentsTimetable = () => {
 								className='w-3 h-3 bg-green-500 rounded-full'
 							></motion.div>
 							<span className='text-xs sm:text-sm text-gray-700 font-medium'>
-								Đã xác nhận
+								{t('appointment.confirmed')}
 							</span>
 						</motion.div>
 
@@ -603,7 +607,7 @@ export const AppointmentsTimetable = () => {
 								className='w-3 h-3 bg-yellow-500 rounded-full'
 							></motion.div>
 							<span className='text-xs sm:text-sm text-gray-700 font-medium'>
-								Chờ xác nhận
+								{t('appointment.pending_confirmation')}
 							</span>
 						</motion.div>
 
@@ -619,7 +623,7 @@ export const AppointmentsTimetable = () => {
 								className='w-3 h-3 bg-red-500 rounded-full'
 							></motion.div>
 							<span className='text-xs sm:text-sm text-gray-700 font-medium'>
-								Đã hủy
+								{t('appointment.cancelled')}
 							</span>
 						</motion.div>
 					</motion.div>

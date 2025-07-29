@@ -50,6 +50,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 	const [activeTab, setActiveTab] = useState<'active' | 'ended'>('active')
 	const [showPending, setShowPending] = useState(false)
 	const messagesEndRef = useRef<HTMLDivElement>(null)
+	const inputRef = useRef<HTMLInputElement>(null)
 
 	const { accessToken } = useToken()
 	const { data: userData } = useGetMe()
@@ -58,7 +59,6 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 	const endConversationMutation = useEndConversation()
 
 	const handleConversationEnded = useCallback(() => {
-		// Handle conversation ended by other party
 		setIsConversationStarted(false)
 		toast(t('chat.conversation_ended_by_consultant'), {
 			icon: 'i',
@@ -145,12 +145,34 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		setActiveTab('active') // Switch to active tab when starting new conversation
 	}
 
+	// Add key handler for Enter key
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault()
+			if (
+				inputMessage.trim() &&
+				conversationId &&
+				!isLoading &&
+				!isConversationEnded
+			) {
+				// Create a synthetic form event
+				const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
+				handleSendMessage(syntheticEvent)
+			}
+		}
+	}
+
 	const handleSendMessage = async (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!inputMessage.trim() || !conversationId) return
 
 		await sendMessage(inputMessage)
 		setInputMessage('')
+
+		// Focus back on input after sending message
+		setTimeout(() => {
+			inputRef.current?.focus()
+		}, 100)
 	}
 
 	const handleEndConversation = async () => {
@@ -197,6 +219,15 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 	const isConversationEnded = Boolean(
 		currentConversationData && !currentConversationData.status
 	)
+
+	// Auto-focus input when conversation starts
+	useEffect(() => {
+		if (isConversationStarted && !isConversationEnded) {
+			setTimeout(() => {
+				inputRef.current?.focus()
+			}, 100)
+		}
+	}, [isConversationStarted, isConversationEnded])
 
 	return (
 		<div
@@ -629,11 +660,13 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 								<form onSubmit={handleSendMessage} className='flex space-x-3'>
 									<div className='flex-1 relative'>
 										<input
+											ref={inputRef}
 											type='text'
 											value={inputMessage}
 											onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 												setInputMessage(e.target.value)
 											}
+											onKeyDown={handleKeyDown}
 											placeholder={t('chat.type_your_message')}
 											disabled={isLoading || isConversationEnded}
 											className='w-full p-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:opacity-50'

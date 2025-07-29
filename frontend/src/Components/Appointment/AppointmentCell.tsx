@@ -235,7 +235,7 @@ export const AppointmentCell = ({
 										style={{ zIndex: 1 }}
 									>
 										<Bell className='w-3 h-3' />
-										<span>Sắp đến giờ hẹn, bấm để tham gia</span>
+										<span>{t('appointment.upcoming_notification')}</span>
 									</div>
 								)}
 								{/* Countdown Timer */}
@@ -287,22 +287,22 @@ export const AppointmentCell = ({
 											{status === 'booked' ? (
 												<>
 													<Check className='w-3 h-3 mr-2' />
-													Đã đặt
+													{t('appointment.status.booked')}
 												</>
 											) : status === 'confirmed' ? (
 												<>
 													<Check className='w-3 h-3 mr-2' />
-													Xác nhận
+													{t('appointment.status.confirmed')}
 												</>
 											) : status === 'pending' ? (
 												<>
 													<Loader2 className='w-3 h-3 mr-2' />
-													Chờ
+													{t('appointment.status.pending')}
 												</>
 											) : (
 												<>
 													<X className='w-3 h-3 mr-2' />
-													Hủy
+													{t('appointment.status.cancelled')}
 												</>
 											)}
 										</span>

@@ -2,7 +2,7 @@ import { CreateConversationRequest } from '@/Interfaces/Chat/Conversation'
 import axiosInstance from '@/Utils/axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
-import useToken from '@/Hooks/Auth/useToken'
+import ConnectionHealthMonitor from '@/Utils/Chat/ConnectionHealthMonitor'
 
 export interface MediaItem {
 	url: string
@@ -28,52 +28,107 @@ export class ChatSignalRClient {
 	private receiveMessageCallback?: (msg: SignalRMessage) => void
 	private deleteMessageCallback?: (messageId: string) => void
 	private conversationEndedCallback?: (conversationId: string) => void
+	private isStarted = false
+	private isDestroyed = false
+	private healthMonitor?: ConnectionHealthMonitor
+	private healthChangeCallback?: (isHealthy: boolean) => void
 
-	constructor(conversationId: string) {
+	constructor(conversationId: string, accessToken?: string) {
 		const url = `https://api.gencare.site/hubs/chat?conversationId=${conversationId}`
 
 		this.connection = new signalR.HubConnectionBuilder()
-			.withUrl(url)
-			.withAutomaticReconnect()
-			.configureLogging(signalR.LogLevel.Information)
+			.withUrl(url, {
+				accessTokenFactory: () => accessToken || '',
+			})
+			.withAutomaticReconnect({
+				nextRetryDelayInMilliseconds: retryContext => {
+					// Exponential backoff with max 30 seconds
+					const delay = Math.min(
+						1000 * Math.pow(2, retryContext.previousRetryCount),
+						30000
+					)
+					console.log(
+						`SignalR reconnect attempt ${
+							retryContext.previousRetryCount + 1
+						}, delay: ${delay}ms`
+					)
+					return delay
+				},
+			})
+			.configureLogging(signalR.LogLevel.Warning) // Reduce logging to warnings only
 			.build()
 
+		this.healthMonitor = new ConnectionHealthMonitor(this.connection)
 		this.registerEvents()
 	}
 
 	private registerEvents(): void {
 		this.connection.on('ReceiveMessage', (message: SignalRMessage) => {
-			this.receiveMessageCallback?.(message)
+			if (!this.isDestroyed) {
+				this.receiveMessageCallback?.(message)
+			}
 		})
 
 		this.connection.on('DeleteMessage', (data: { messageId: string }) => {
-			this.deleteMessageCallback?.(data.messageId)
+			if (!this.isDestroyed) {
+				this.deleteMessageCallback?.(data.messageId)
+			}
 		})
 
 		this.connection.on(
 			'ConversationEnded',
 			(data: { conversationId: string }) => {
-				this.conversationEndedCallback?.(data.conversationId)
+				if (!this.isDestroyed) {
+					this.conversationEndedCallback?.(data.conversationId)
+				}
 			}
 		)
 
-		// this.connection.on('JoinedConversation', (conversationId: string) => {})
-		// this.connection.on('JoinedGroup', (group: string) => {})
+		// Connection state handlers
+		this.connection.onclose(error => {
+			console.log('SignalR connection closed', error)
+			this.isStarted = false
+		})
+
+		this.connection.onreconnecting(error => {
+			console.log('SignalR reconnecting...', error)
+		})
+
+		this.connection.onreconnected(connectionId => {
+			console.log('SignalR reconnected', connectionId)
+		})
 	}
 
 	async start(): Promise<void> {
+		if (this.isStarted || this.isDestroyed) {
+			return
+		}
+
 		try {
 			await this.connection.start()
+			this.isStarted = true
+			console.log('SignalR connection started successfully')
+
+			// Start health monitoring
+			this.healthMonitor?.start(this.healthChangeCallback)
 		} catch (err) {
 			console.error('SignalR connection failed:', err)
+			this.isStarted = false
+			throw err
 		}
 	}
 
 	async joinConversation(conversationId: string): Promise<void> {
+		if (!this.isStarted || this.isDestroyed) {
+			throw new Error('Connection not started or destroyed')
+		}
+
 		try {
 			await this.connection.invoke('JoinConversation', conversationId)
+			console.log(`Joined conversation: ${conversationId}`)
 		} catch (err) {
 			console.error('Failed to join conversation:', err)
+			throw err
 		}
 	}
 
@@ -89,8 +144,39 @@ export class ChatSignalRClient {
 		this.conversationEndedCallback = callback
 	}
 
+	onHealthChange(callback: (isHealthy: boolean) => void): void {
+		this.healthChangeCallback = callback
+	}
+
 	async stop(): Promise<void> {
-		await this.connection.stop()
+		if (this.isDestroyed) {
+			return
+		}
+
+		this.isDestroyed = true
+		this.isStarted = false
+
+		// Stop health monitoring
+		this.healthMonitor?.stop()
+
+		try {
+			await this.connection.stop()
+			console.log('SignalR connection stopped')
+		} catch (err) {
+			console.error('Error stopping SignalR connection:', err)
+		}
+	}
+
+	get connectionState(): signalR.HubConnectionState {
+		return this.connection.state
+	}
+
+	get isConnected(): boolean {
+		return (
+			this.connection.state === signalR.HubConnectionState.Connected &&
+			this.isStarted &&
+			!this.isDestroyed
+		)
 	}
 }
 
@@ -110,6 +196,17 @@ const chatApi = {
 				`https://api.gencare.site/hubs/chat?conversationId=${conversationId}`,
 				{ accessTokenFactory: () => accessToken || '' }
 			)
+			.withAutomaticReconnect({
+				nextRetryDelayInMilliseconds: retryContext => {
+					// Exponential backoff with max 30 seconds
+					const delay = Math.min(
+						1000 * Math.pow(2, retryContext.previousRetryCount),
+						30000
+					)
+					return delay
+				},
+			})
+			.configureLogging(signalR.LogLevel.Warning)
 			.build()
 	},
 
@@ -173,10 +270,8 @@ export const useDeleteMessage = () => {
 	})
 }
 
-export const useConnection = (conversationId: string) => {
-	const { accessToken } = useToken()
-	return chatApi.getConnection(conversationId, accessToken || undefined)
-}
+// Removed useConnection hook to prevent multiple connection instances
+// Use ChatSignalRClient directly in useChat hook instead
 
 export const useAllConversations = () => {
 	return useQuery({

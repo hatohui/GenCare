@@ -61,6 +61,7 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 	)
 
 	const messagesEndRef = useRef<HTMLDivElement>(null)
+	const inputRef = useRef<HTMLInputElement>(null)
 	const { data: userData } = useGetMe()
 
 	const { messages, sendMessage, isLoading, connected } = useChat(
@@ -198,12 +199,32 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 			try {
 				await sendMessage(inputMessage)
 				setInputMessage('')
+
+				// Focus back on input after sending message
+				setTimeout(() => {
+					inputRef.current?.focus()
+				}, 100)
 			} catch (error) {
 				console.error('Failed to send message:', error)
 				toast.error(t('chat.failed_to_send'))
 			}
 		},
 		[inputMessage, selectedConversationId, sendMessage, t]
+	)
+
+	// Add key handler for Enter key
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && !e.shiftKey) {
+				e.preventDefault()
+				if (inputMessage.trim() && selectedConversationId && !isLoading) {
+					// Create a synthetic form event
+					const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
+					handleSendMessage(syntheticEvent)
+				}
+			}
+		},
+		[inputMessage, selectedConversationId, isLoading, handleSendMessage]
 	)
 
 	const formatUnassignedTime = useCallback(
@@ -248,6 +269,15 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 			}
 		}
 	}, [selectedConversationDetails?.memberId, t])
+
+	// Auto-focus input when conversation is selected
+	useEffect(() => {
+		if (selectedConversationId) {
+			setTimeout(() => {
+				inputRef.current?.focus()
+			}, 100)
+		}
+	}, [selectedConversationId])
 
 	return (
 		<div
@@ -597,11 +627,13 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 							<form onSubmit={handleSendMessage} className='flex space-x-3'>
 								<div className='flex-1 relative'>
 									<input
+										ref={inputRef}
 										type='text'
 										value={inputMessage}
 										onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 											setInputMessage(e.target.value)
 										}
+										onKeyDown={handleKeyDown}
 										placeholder={t('chat.type_response')}
 										disabled={isLoading}
 										className='w-full p-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all'

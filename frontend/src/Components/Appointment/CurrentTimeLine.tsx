@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
 import { Clock } from 'lucide-react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface CurrentTimeLineProps {
 	timeSlots: string[]
@@ -19,6 +20,7 @@ export const CurrentTimeLine = ({
 	weekDays,
 	onTimeSlotStatusChange,
 }: CurrentTimeLineProps) => {
+	const { t } = useLocale()
 	const [currentTime, setCurrentTime] = useState(new Date())
 	const [tableDimensions, setTableDimensions] = useState<{
 		timeColumnWidth: number
@@ -291,7 +293,9 @@ export const CurrentTimeLine = ({
 							}}
 							transition={{ duration: 2, repeat: Infinity }}
 							className='absolute left-1/2 -translate-x-1/2 -top-4 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg border-2 border-white flex items-center gap-2'
-							title={`Thời gian hiện tại: ${timeLineData.currentTimeString}`}
+							title={`${t('appointment.current_time')}: ${
+								timeLineData.currentTimeString
+							}`}
 						>
 							<Clock className='w-4 h-4' />
 							{timeLineData.currentTimeString}

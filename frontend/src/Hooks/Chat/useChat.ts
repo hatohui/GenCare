@@ -15,6 +15,8 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 	const clientRef = useRef<ChatSignalRClient | null>(null)
 	const previousConversationIdRef = useRef<string>('')
 	const refetchMessagesRef = useRef<(() => void) | null>(null)
+	const connectionAttemptRef = useRef<number>(0)
+	const maxConnectionAttempts = 5
 
 	const sendMessageMutation = useSendMessage()
 	const deleteMessageMutation = useDeleteMessage()
@@ -22,6 +24,7 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 	useEffect(() => {
 		if (conversationId !== previousConversationIdRef.current) {
 			setMessages([])
+			connectionAttemptRef.current = 0 // Reset connection attempts for new conversation
 			previousConversationIdRef.current = conversationId
 		}
 	}, [conversationId])
@@ -58,7 +61,7 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 	useEffect(() => {
 		if (!token || !conversationId) return
 
-		const client = new ChatSignalRClient(conversationId)
+		const client = new ChatSignalRClient(conversationId, token)
 		clientRef.current = client
 
 		client.onReceiveMessage((msg: SignalRMessage) => {
@@ -77,18 +80,54 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 		})
 
 		let isMounted = true
-		client.start().then(() => {
-			if (isMounted) {
-				setConnected(true)
-				client.joinConversation(conversationId)
-				refetchMessagesRef.current?.()
+
+		const startConnection = async () => {
+			if (connectionAttemptRef.current >= maxConnectionAttempts) {
+				console.warn(
+					`Max connection attempts (${maxConnectionAttempts}) reached for conversation ${conversationId}`
+				)
+				return
 			}
-		})
+
+			connectionAttemptRef.current++
+
+			try {
+				await client.start()
+				if (isMounted && client.isConnected) {
+					setConnected(true)
+					await client.joinConversation(conversationId)
+					refetchMessagesRef.current?.()
+					connectionAttemptRef.current = 0 // Reset on successful connection
+				}
+			} catch (error) {
+				console.error(
+					`Failed to start chat connection (attempt ${connectionAttemptRef.current}):`,
+					error
+				)
+				if (isMounted) {
+					setConnected(false)
+					// Exponential backoff for retry
+					if (connectionAttemptRef.current < maxConnectionAttempts) {
+						const retryDelay = Math.min(
+							1000 * Math.pow(2, connectionAttemptRef.current - 1),
+							10000
+						)
+						setTimeout(() => {
+							if (isMounted) {
+								startConnection()
+							}
+						}, retryDelay)
+					}
+				}
+			}
+		}
+
+		startConnection()
 
 		return () => {
 			isMounted = false
-			client.stop()
 			setConnected(false)
+			client.stop().catch(err => console.error('Error stopping client:', err))
 		}
 	}, [token, conversationId, onConversationEnded])
 
@@ -122,11 +161,12 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 
 	return {
 		messages,
-		connected,
+		connected: connected && clientRef.current?.isConnected,
 		sendMessage,
 		deleteMessage,
 		client: clientRef.current,
 		isLoading: sendMessageMutation.isPending || deleteMessageMutation.isPending,
+		connectionState: clientRef.current?.connectionState,
 	}
 }
 
