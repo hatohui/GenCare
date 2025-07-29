@@ -10,9 +10,12 @@ using Domain.Exceptions;
 
 namespace Infrastructure.Services;
 
-public class AppointmentService(IAccountRepository accountRepository,
+public class AppointmentService
+(
+    IAccountRepository accountRepository,
     IAppointmentRepository appointmentRepository,
-    IZoomService zoomService) : IAppointmentService
+    IZoomService zoomService
+) : IAppointmentService
 {
     public async Task CreateAppointmentAsync(AppointmentCreateRequest request, string accessId)
     {
@@ -39,7 +42,7 @@ public class AppointmentService(IAccountRepository accountRepository,
             Staff = staff,
             ScheduleAt = DateTime.SpecifyKind(request.ScheduleAt, DateTimeKind.Unspecified),
             CreatedBy = Guid.Parse(accessId),
-            Status = AppointmentStatus.Booked,
+            Status = AppointmentStatus.Booked.Trim(),
         };
         //save appointment
         await appointmentRepository.Add(appointment);
@@ -102,7 +105,7 @@ public class AppointmentService(IAccountRepository accountRepository,
             ScheduleAt = slotStart,
             JoinUrl = zoomMeeting.JoinUrl,
             CreatedBy = Guid.Parse(accessId),
-            Status = AppointmentStatus.Booked,
+            Status = AppointmentStatus.Booked.Trim(),
         };
 
         await appointmentRepository.Add(appointment);
@@ -114,11 +117,7 @@ public class AppointmentService(IAccountRepository accountRepository,
     public async Task DeleteAppointmentAsync(string appointmentId, string deleteId)
     {
         //get appointment by id
-        var appointment = await appointmentRepository.GetById(appointmentId);
-        if (appointment == null)
-        {
-            throw new AppException(404, "Appointment not found");
-        }
+        var appointment = await appointmentRepository.GetById(appointmentId) ?? throw new AppException(404, "Appointment not found");
         //mark as deleted
         appointment.IsDeleted = true;
         appointment.DeletedAt = DateTime.Now;
@@ -130,11 +129,7 @@ public class AppointmentService(IAccountRepository accountRepository,
     public async Task UpdateAppointmentAsync(AppointmentUpdateRequest request, string appointmentId, string updateId)
     {
         //get appointment by id
-        var appointment = await appointmentRepository.GetById(appointmentId);
-        if (appointment == null)
-        {
-            throw new AppException(404, "Appointment not found");
-        }
+        var appointment = await appointmentRepository.GetById(appointmentId) ?? throw new AppException(404, "Appointment not found");
         //edit
         if (request.MemberId != null)
         {
@@ -157,15 +152,11 @@ public class AppointmentService(IAccountRepository accountRepository,
     public async Task<List<AllAppointmentViewResponse>> ViewAllAppointmentsAsync(string accountId)
     {
         //get account by id
-        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
-        if (account == null)
-        {
-            throw new AppException(404, "Account not found");
-        }
+        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId)) ?? throw new AppException(404, "Account not found");
         //check authorization
         bool isLow = false;
         string role = account.Role!.Name.ToLower();
-        if (role == RoleNames.Member.ToLower() || role == RoleNames.Staff.ToLower())
+        if (role.Equals(RoleNames.Member, StringComparison.CurrentCultureIgnoreCase) || role == RoleNames.Staff.ToLower())
             isLow = true;
         //create response
         var list = await appointmentRepository.GetAll();
@@ -182,13 +173,13 @@ public class AppointmentService(IAccountRepository accountRepository,
                 ScheduleAt = appointment.ScheduleAt,
                 JoinUrl = appointment.JoinUrl,
                 IsDeleted = appointment.IsDeleted,
-                Status = appointment.Status
+                Status = appointment.Status.Trim()
             });
         }
         //if account is member or staff, filter appointments
         if (isLow)
         {
-            rs = rs.Where(a => a.MemberId == account.Id.ToString("D") || a.StaffId == account.Id.ToString("D")).ToList();
+            rs = [.. rs.Where(a => a.MemberId == account.Id.ToString("D") || a.StaffId == account.Id.ToString("D"))];
         }
         return rs;
     }
@@ -196,22 +187,14 @@ public class AppointmentService(IAccountRepository accountRepository,
     public async Task<AppointmentViewResponse> ViewAppointmentByIdAsync(string appointmentId, string accountId)
     {
         //get account by id
-        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
-        if (account == null)
-        {
-            throw new AppException(404, "Account not found");
-        }
+        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId)) ?? throw new AppException(404, "Account not found");
         //check authorization
         bool isLow = false;
         string role = account.Role!.Name.ToLower();
-        if (role == RoleNames.Member.ToLower() || role == RoleNames.Staff.ToLower())
+        if (role.Equals(RoleNames.Member, StringComparison.CurrentCultureIgnoreCase) || role.Equals(RoleNames.Staff, StringComparison.CurrentCultureIgnoreCase))
             isLow = true;
         //get appointment by id
-        var appointment = await appointmentRepository.GetById(appointmentId);
-        if (appointment == null)
-        {
-            throw new AppException(404, "Appoinment not found");
-        }
+        var appointment = await appointmentRepository.GetById(appointmentId) ?? throw new AppException(404, "Appoinment not found");
         //create response
         var response = new AppointmentViewResponse()
         {
@@ -222,7 +205,7 @@ public class AppointmentService(IAccountRepository accountRepository,
             ScheduleAt = appointment.ScheduleAt,
             JoinUrl = appointment.JoinUrl,
             IsDeleted = appointment.IsDeleted,
-            Status = appointment.Status
+            Status = appointment.Status.Trim()
         };
 
         //if account is member or staff, check if appointment is for them
