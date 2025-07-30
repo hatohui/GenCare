@@ -24,4 +24,52 @@ public class StatisticController(IStatisticService statisticService) : Controlle
         var response = await statisticService.GetAdminStatistic();
         return Ok(response);
     }
+
+    [HttpGet("dashboard")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetDashboardStatistic()
+    {
+        var response = await statisticService.GetDashboardStatistic();
+        return Ok(response);
+    }
+
+    [HttpGet("revenue-data")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetRevenue()
+    {
+        var response = await statisticService.GetDailyRevenueAsync();
+        return Ok(response);
+    }
+
+    [HttpGet("user-growth")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetUserGrowth()
+    {
+        var response = await statisticService.GetDailyUserGrowth();
+        return Ok(response);
+    }
+
+    [HttpGet("top-services")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetTopServices()
+    {
+        var response = await statisticService.GetServiceStatistic();
+        return Ok(response);
+    }
+
+    [HttpGet("payment")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetPayment()
+    {
+        var response = await statisticService.GetPaymentStatistic();
+        return Ok(response);
+    }
+
+    [HttpGet("users")]
+    [Authorize(Roles = $"{RoleNames.Admin}")]
+    public async Task<IActionResult> GetUsers()
+    {
+        var response = await statisticService.GetUserStatistic();
+        return Ok(response);
+    }
 }
