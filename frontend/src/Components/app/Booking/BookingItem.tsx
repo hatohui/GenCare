@@ -29,8 +29,6 @@ const BookingItem: React.FC<BookingItemProps> = ({ booking }) => {
 	const { t } = useLocale()
 
 	// Debug: Log the booking data to check purchaseId
-	console.log('BookingItem - booking data:', booking)
-	console.log('BookingItem - purchaseId:', booking.purchaseId)
 
 	const momoPayMutation = useMomoPay()
 	const vnpayPayMutation = useVnpayPay()

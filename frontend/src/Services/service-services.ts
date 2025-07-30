@@ -57,11 +57,11 @@ const serviceApi = {
 			params.append('includeDeleted', includeDeleted.toString())
 		if (sortByAlphabetical) params.append('sortByAlphabetical', 'true')
 
-		const query = `/api/services/all?${params.toString()}`
-
-		return axiosInstance.get<GetServiceByPageAdminResponse>(query).then(res => {
-			return res.data
-		})
+		return axiosInstance
+			.get<GetServiceByPageAdminResponse>(`services/all?${params.toString()}`)
+			.then(res => {
+				return res.data
+			})
 	},
 
 	getById: (id: string) =>
@@ -71,20 +71,18 @@ const serviceApi = {
 
 	create: (data: any) =>
 		axiosInstance
-			.post<CreateServiceApiResponse>('/api/services', data)
+			.post<CreateServiceApiResponse>('/services', data)
 			.then(res => res.data),
 
 	update: (id: string, data: UpdateServiceApiRequest) => {
-		console.log(`/services/${id}`)
-
 		return axiosInstance
-			.put<UpdateServiceApiResponse>(`/api/services/${id}`, data)
+			.put<UpdateServiceApiResponse>(`/services/${id}`, data)
 			.then(res => res.data)
 	},
 
 	delete: (id: string) =>
 		axiosInstance
-			.delete<DeleteServiceApiResponse>(`/api/services/${id}`)
+			.delete<DeleteServiceApiResponse>(`/services/${id}`)
 			.then(res => res.data),
 }
 
@@ -176,10 +174,10 @@ export const useServiceById = (id: string) => {
 	return useQuery({
 		queryKey: ['service', id],
 		queryFn: () => serviceApi.getById(id),
-		staleTime: 5 * 60 * 1000,
-		refetchOnWindowFocus: false,
-		refetchOnMount: false,
-		refetchOnReconnect: false,
+		staleTime: 0, // Always fetch fresh data for detail view
+		refetchOnWindowFocus: true, // Refetch when user returns to tab
+		refetchOnMount: true, // Always refetch when component mounts
+		refetchOnReconnect: true, // Refetch when internet reconnects
 		enabled: !!id,
 	})
 }

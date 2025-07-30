@@ -16,7 +16,6 @@ const Page = () => {
 	if (!data) {
 		return <div>{t('profile.no_account_data')}</div>
 	}
-	console.log(data)
 
 	return (
 		<div className='mx-auto'>
