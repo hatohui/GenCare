@@ -14,12 +14,9 @@ import { useLocale } from '@/Hooks/useLocale'
 
 const Page = () => {
 	const { t } = useLocale()
-	const { data: account } = useAccountStore()
-	const {
-		data: getBirthControl,
-		isLoading,
-		error,
-	} = useGetBirthControl(account?.id || '')
+	const { data: account, isLoading: accountLoading } = useAccountStore()
+	const { data: getBirthControl, isLoading: birthControlLoading } =
+		useGetBirthControl(account?.id || '')
 	const { birthControl, setBirthControl } = useBirthControl()
 
 	useEffect(() => {
@@ -48,7 +45,7 @@ const Page = () => {
 		}
 	}
 
-	if (isLoading) {
+	if (accountLoading || birthControlLoading) {
 		return (
 			<div className='flex justify-center items-center min-h-[400px]'>
 				<div className='text-center'>
@@ -77,71 +74,70 @@ const Page = () => {
 				</p>
 			</motion.div>
 
-			{/* Show error if present */}
-			{error && (
+			{/* Main Content */}
+			{account ? (
+				<div className='grid lg:grid-cols-3 gap-6'>
+					{/* Form Section */}
+					<motion.div
+						initial={{ opacity: 0, x: -20 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ delay: 0.1 }}
+						className='lg:col-span-1'
+					>
+						<BirthControlForm accountID={account.id} />
+					</motion.div>
+
+					{/* Calendar Section */}
+					<motion.div
+						initial={{ opacity: 0, x: 20 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ delay: 0.2 }}
+						className='lg:col-span-2'
+					>
+						<div className='bg-white p-6 rounded-[30px] shadow-sm border border-gray-200'>
+							{/* Calendar Header */}
+							<div className='flex items-center justify-between mb-6'>
+								<h2 className='text-2xl font-bold text-main'>
+									{t('birthControl.cycle_calendar')}
+								</h2>
+								<div className='flex items-center gap-3'>
+									<button
+										onClick={handlePreviousMonth}
+										className='bg-main hover:bg-main/90 text-white px-4 py-2 rounded-[20px] transition-colors text-sm font-medium'
+									>
+										{t('birthControl.previous_month')}
+									</button>
+									<div className='text-lg font-semibold text-gray-800 min-w-[120px] text-center'>
+										{format(new Date(year, month), 'MMMM', {
+											locale: vi,
+										})}{' '}
+										{year}
+									</div>
+									<button
+										onClick={handleNextMonth}
+										className='bg-main hover:bg-main/90 text-white px-4 py-2 rounded-[20px] transition-colors text-sm font-medium'
+									>
+										{t('birthControl.next_month')}
+									</button>
+								</div>
+							</div>
+
+							{/* Calendar */}
+							<Calendar year={year} month={month} cycle={birthControl} />
+						</div>
+					</motion.div>
+				</div>
+			) : (
 				<div className='text-center max-w-md mx-auto p-6'>
-					<div className='text-red-500 text-6xl mb-4'>⚠️</div>
+					<div className='text-gray-400 text-4xl mb-4'>👤</div>
 					<h3 className='text-xl font-semibold text-gray-800 mb-2'>
-						{t('birthControl.cannot_load_cycle_info')}
+						{t('birthControl.account_required')}
 					</h3>
-					<p className='text-gray-600 mb-4'>
-						{t('birthControl.error_loading_cycle')}
+					<p className='text-gray-600'>
+						{t('birthControl.please_login_to_access')}
 					</p>
 				</div>
 			)}
-
-			{/* Main Content */}
-			<div className='grid lg:grid-cols-3 gap-6'>
-				{/* Form Section */}
-				<motion.div
-					initial={{ opacity: 0, x: -20 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ delay: 0.1 }}
-					className='lg:col-span-1'
-				>
-					<BirthControlForm accountID={account?.id || ''} />
-				</motion.div>
-
-				{/* Calendar Section */}
-				<motion.div
-					initial={{ opacity: 0, x: 20 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ delay: 0.2 }}
-					className='lg:col-span-2'
-				>
-					<div className='bg-white p-6 rounded-[30px] shadow-sm border border-gray-200'>
-						{/* Calendar Header */}
-						<div className='flex items-center justify-between mb-6'>
-							<h2 className='text-2xl font-bold text-main'>
-								{t('birthControl.cycle_calendar')}
-							</h2>
-							<div className='flex items-center gap-3'>
-								<button
-									onClick={handlePreviousMonth}
-									className='bg-main hover:bg-main/90 text-white px-4 py-2 rounded-[20px] transition-colors text-sm font-medium'
-								>
-									{t('birthControl.previous_month')}
-								</button>
-								<div className='text-lg font-semibold text-gray-800 min-w-[120px] text-center'>
-									{format(new Date(year, month), 'MMMM', {
-										locale: vi,
-									})}{' '}
-									{year}
-								</div>
-								<button
-									onClick={handleNextMonth}
-									className='bg-main hover:bg-main/90 text-white px-4 py-2 rounded-[20px] transition-colors text-sm font-medium'
-								>
-									{t('birthControl.next_month')}
-								</button>
-							</div>
-						</div>
-
-						{/* Calendar */}
-						<Calendar year={year} month={month} cycle={birthControl} />
-					</div>
-				</motion.div>
-			</div>
 
 			{/* Information Section */}
 			<motion.div

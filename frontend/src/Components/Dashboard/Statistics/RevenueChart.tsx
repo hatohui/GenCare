@@ -4,6 +4,7 @@ import { RevenueData } from '@/Interfaces/Statistics/Types/Statistics'
 import { motion } from 'motion/react'
 import React from 'react'
 import FormatCurrency from '@/Components/FormatCurrency'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface RevenueChartProps {
 	data: RevenueData[]
@@ -11,10 +12,12 @@ interface RevenueChartProps {
 }
 
 const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
+	const { t } = useLocale()
+
 	if (!data || data.length === 0) {
 		return (
 			<div className='flex items-center justify-center h-64 bg-gray-50 rounded-[20px]'>
-				<p className='text-gray-500'>Không có dữ liệu doanh thu</p>
+				<p className='text-gray-500'>{t('statistics.noRevenueData')}</p>
 			</div>
 		)
 	}
@@ -49,11 +52,13 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 		>
 			<div className='flex items-center justify-between mb-6'>
 				<div>
-					<h3 className='text-lg font-semibold text-gray-800'>Doanh Thu</h3>
+					<h3 className='text-lg font-semibold text-gray-800'>
+						{t('statistics.revenue')}
+					</h3>
 					<p className='text-sm text-gray-600'>
-						{period === 'week' && 'Tuần này'}
-						{period === 'month' && 'Tháng này'}
-						{period === 'year' && 'Năm nay'}
+						{period === 'week' && t('statistics.thisWeek')}
+						{period === 'month' && t('statistics.thisMonth')}
+						{period === 'year' && t('statistics.thisYear')}
 					</p>
 				</div>
 				<div className='text-right'>
@@ -62,14 +67,18 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 							amount={data.reduce((sum, item) => sum + item.revenue, 0)}
 						/>
 					</p>
-					<p className='text-sm text-gray-600'>Tổng doanh thu</p>
+					<p className='text-sm text-gray-600'>
+						{t('statistics.totalRevenue')}
+					</p>
 				</div>
 			</div>
 
 			<div className='space-y-4'>
 				{/* Revenue Bars */}
 				<div className='space-y-2'>
-					<p className='text-sm font-medium text-gray-700'>Doanh thu</p>
+					<p className='text-sm font-medium text-gray-700'>
+						{t('statistics.revenue')}
+					</p>
 					<div className='overflow-x-auto'>
 						<div
 							className='flex items-end gap-2 h-32'
@@ -101,7 +110,9 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 
 				{/* Bookings Line */}
 				<div className='space-y-2'>
-					<p className='text-sm font-medium text-gray-700'>Số lượng đặt lịch</p>
+					<p className='text-sm font-medium text-gray-700'>
+						{t('statistics.bookingCount')}
+					</p>
 					<div className='overflow-x-auto'>
 						<div
 							className='flex items-end gap-2 h-16'
@@ -133,11 +144,15 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period }) => {
 			<div className='flex items-center justify-center gap-6 mt-6 pt-4 border-t border-gray-100'>
 				<div className='flex items-center gap-2'>
 					<div className='w-3 h-3 bg-main rounded'></div>
-					<span className='text-xs text-gray-600'>Doanh thu</span>
+					<span className='text-xs text-gray-600'>
+						{t('statistics.revenue')}
+					</span>
 				</div>
 				<div className='flex items-center gap-2'>
 					<div className='w-3 h-3 bg-accent rounded'></div>
-					<span className='text-xs text-gray-600'>Đặt lịch</span>
+					<span className='text-xs text-gray-600'>
+						{t('statistics.bookings')}
+					</span>
 				</div>
 			</div>
 		</motion.div>

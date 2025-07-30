@@ -142,6 +142,7 @@ const en: Record<string, string> = {
 	'common.try_again': 'Try Again',
 	'common.go_back': 'Go Back',
 	'common.actions': 'Actions',
+	'common.refresh': 'Refresh',
 
 	// Consultant
 	'consultant.failed_to_load': 'Failed to load consultants',
@@ -203,6 +204,7 @@ const en: Record<string, string> = {
 	'form.invalid': 'Invalid input',
 	'form.notes': 'Notes',
 	'form.language_preference': 'Language preference',
+	'form.email': 'Email',
 
 	// Birth control
 	'birthcontrol.tracking': 'Birth Control Tracking',
@@ -555,6 +557,11 @@ const en: Record<string, string> = {
 	'auth.resetPassword.retryIn': 'Retry in {seconds}s',
 	'auth.resetPassword.success':
 		'Password reset successful. You will be redirected to login shortly.',
+	'auth.sendResetEmail': 'Send Reset Email',
+	'auth.resetEmailSent': 'Reset email sent successfully!',
+	'auth.forgotPasswordDescription':
+		'Enter your email address and we will send you a link to reset your password.',
+	'auth.backToLogin': 'Back to login',
 
 	// Navigation
 	'nav.home': 'Home',
@@ -758,6 +765,7 @@ const en: Record<string, string> = {
 	'member.booking.no_bookings_description':
 		'You have no bookings yet. Explore our services and book now!',
 	'member.booking.explore_services': 'Explore Services',
+	'member.booking.retry': 'Retry',
 
 	// Statistics page
 	'statistics.loadingData': 'Loading statistics data...',
@@ -786,6 +794,28 @@ const en: Record<string, string> = {
 	'statistics.needsProcessing': 'Needs processing',
 	'statistics.testResults': 'Test Results',
 	'statistics.completed': 'Completed',
+	'statistics.newUsers': 'New Users',
+	'statistics.userGrowth': 'User Growth',
+	'statistics.thisWeek': 'This Week',
+	'statistics.thisMonth': 'This Month',
+	'statistics.thisYear': 'This Year',
+	'statistics.noUserGrowthData': 'No user growth data available',
+	'statistics.noRevenueData': 'No revenue data available',
+	'statistics.noServiceData': 'No service data available',
+	'statistics.metric': 'Metric',
+	'statistics.value': 'Value',
+	'statistics.serviceName': 'Service Name',
+	'statistics.rating': 'Rating',
+	'statistics.performance': 'Performance',
+	'statistics.avgRating': 'Avg. Rating',
+	'statistics.userStatistics': 'User Statistics',
+	'statistics.paymentStatistics': 'Payment Statistics',
+	'statistics.serviceStatistics': 'Service Statistics',
+	'statistics.testStatistics': 'Test Statistics',
+	'statistics.activeUsers': 'Active Users',
+	'statistics.managers': 'Managers',
+	'statistics.staff': 'Staff',
+	'statistics.recentActivity': 'Recent Activity',
 
 	// Payment callback page
 	'payment.callback.success': 'Payment successful!',
@@ -1223,6 +1253,9 @@ const en: Record<string, string> = {
 	'birthControl.important_note': 'Important note:',
 	'birthControl.phases_calculated_relatively':
 		'Phases are calculated relatively for reference. Ovulation day (🌸) usually falls in the middle of the unsafe period. This method is not guaranteed 100% effective for contraception.',
+	'birthControl.account_required': 'Account Required',
+	'birthControl.please_login_to_access':
+		'Please log in to access this feature.',
 
 	// Weekdays (short)
 	'weekdays.sun': 'SUN',

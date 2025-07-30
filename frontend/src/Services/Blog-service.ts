@@ -3,6 +3,7 @@ import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	Blog,
 	Blogs,
+	Comments,
 	CreateBlog,
 	CreateComment,
 } from '@/Interfaces/Blogs/Types/Blogs'
@@ -32,12 +33,18 @@ const blogApi = {
 			Count: count.toString(),
 		})
 
-		if (search) params.append('Search', search)
-		if (tags) params.append('Tags', tags)
+		if (search && search.trim()) params.append('Search', search.trim())
+		if (tags && tags.trim()) params.append('Tags', tags.trim())
+
+		const url = `${BLOG_URL}?${params.toString()}`
+		console.log('Fetching blogs:', { url, page, count, search, tags })
 
 		return axios
-			.get<Blogs>(`${BLOG_URL}?${params.toString()}`)
-			.then(res => res.data)
+			.get<Blogs>(url)
+			.then(res => {
+				console.log('Blogs API response:', res.data)
+				return res.data
+			})
 			.catch(error => {
 				console.error('Failed to fetch blogs:', error)
 				throw error
@@ -66,7 +73,9 @@ const blogApi = {
 	},
 	// Comments API
 	GetComments: (blogId: string) => {
-		return axios.get(`${COMMENT_URL}?blogId=${blogId}`).then(res => res.data)
+		return axios
+			.get<Comments>(`${COMMENT_URL}?blogId=${blogId}`)
+			.then(res => res.data)
 	},
 	CreateComment: (header: string, data: CreateComment) => {
 		return axios
@@ -106,6 +115,7 @@ export const useGetBlogById = (id: string) => {
 	return useQuery({
 		queryKey: ['blog', id],
 		queryFn: () => blogApi.GetBlogById(id),
+		enabled: !!id,
 	})
 }
 
@@ -118,6 +128,7 @@ export const useGetBlogs = (
 	return useQuery({
 		queryKey: ['blogs', page, count, search, tags],
 		queryFn: () => blogApi.GetBlogs(page, count, search, tags),
+		enabled: page > 0 && count > 0,
 	})
 }
 
@@ -132,8 +143,9 @@ export const useInfiniteBlogs = (
 			blogApi.GetBlogs(pageParam, count, search, tags),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage, allPages) => {
+			// Check if we have more data to fetch
 			// If the last page has fewer items than the count, we've reached the end
-			if (lastPage.length < count) {
+			if (!lastPage || lastPage.length < count) {
 				return undefined
 			}
 			return allPages.length + 1
@@ -144,6 +156,9 @@ export const useInfiniteBlogs = (
 			}
 			return allPages.length - 1
 		},
+		enabled: count > 0,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
 	})
 }
 
@@ -247,7 +262,7 @@ export const useLikeBlog = () => {
 			// Optimistically update the blog
 			queryClient.setQueryData(['blog', id], (old: any) => {
 				if (old) {
-					return { ...old, like: (old.like || 0) + 1 }
+					return { ...old, likes: (old.likes || 0) + 1 }
 				}
 				return old
 			})
@@ -256,7 +271,7 @@ export const useLikeBlog = () => {
 			queryClient.setQueryData(['blogs'], (old: any) => {
 				if (old && Array.isArray(old)) {
 					return old.map((blog: any) =>
-						blog.id === id ? { ...blog, like: (blog.like || 0) + 1 } : blog
+						blog.id === id ? { ...blog, likes: (blog.likes || 0) + 1 } : blog
 					)
 				}
 				return old
@@ -269,7 +284,9 @@ export const useLikeBlog = () => {
 						...old,
 						pages: old.pages.map((page: any) =>
 							page.map((blog: any) =>
-								blog.id === id ? { ...blog, like: (blog.like || 0) + 1 } : blog
+								blog.id === id
+									? { ...blog, likes: (blog.likes || 0) + 1 }
+									: blog
 							)
 						),
 					}
@@ -309,7 +326,35 @@ export const useLikeComment = () => {
 
 	return useMutation({
 		mutationFn: (id: string) => blogApi.LikeComment(header, id),
-		onSuccess: () => {
+		onMutate: async id => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({ queryKey: ['comments'] })
+
+			// Snapshot the previous value
+			const previousComments = queryClient.getQueryData(['comments'])
+
+			// Optimistically update the comment
+			queryClient.setQueryData(['comments'], (old: any) => {
+				if (old && Array.isArray(old)) {
+					return old.map((comment: any) =>
+						comment.id === id
+							? { ...comment, likes: (comment.likes || 0) + 1 }
+							: comment
+					)
+				}
+				return old
+			})
+
+			return { previousComments }
+		},
+		onError: (err, id, context) => {
+			// Rollback on error
+			if (context?.previousComments) {
+				queryClient.setQueryData(['comments'], context.previousComments)
+			}
+		},
+		onSettled: () => {
+			// Always refetch after error or success
 			queryClient.invalidateQueries({ queryKey: ['comments'] })
 			queryClient.invalidateQueries({ queryKey: ['blogs'] })
 			queryClient.invalidateQueries({ queryKey: ['infinite-blogs'] })

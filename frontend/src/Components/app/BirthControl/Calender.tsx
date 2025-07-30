@@ -13,7 +13,7 @@ import {
 	isValid,
 	getMonth,
 } from 'date-fns'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { BirthControlDates } from '@/Interfaces/BirthControl/Types/BirthControl'
 import { useLocale } from '@/Hooks/useLocale'
 

@@ -2,10 +2,8 @@
 
 import { useState } from 'react'
 import z4 from 'zod/v4'
-import {
-	RegisterFormData,
-	RegisterFormSchema,
-} from '@/Interfaces/Auth/Schema/register'
+import { z } from 'zod/v4'
+import { RegisterFormData } from '@/Interfaces/Auth/Schema/register'
 import FloatingLabel, { FloatingLabelErrorData } from '../Form/FloatingLabel'
 import GoogleLoginButton from './GoogleLoginButton'
 import SubmitButton from './SubmitButton'
@@ -20,6 +18,52 @@ export type RegisterComponentProps = {
 	className?: string
 	handleLogin: (response: OauthResponse) => void
 }
+
+// Step 1 validation schema
+const Step1Schema = z
+	.object({
+		firstName: z
+			.string()
+			.min(1, { message: 'Tên là mục bắt buộc.' })
+			.regex(/^[\p{L}\s]+$/u, {
+				message: 'Trong mục tên không được có kí tự đặc biệt',
+			}),
+		lastName: z
+			.string()
+			.min(1, { message: 'Họ là mục bắt buộc' })
+			.regex(/^[\p{L}\s]+$/u, {
+				message: 'Trong mục họ không được có kí tự đặc biệt',
+			}),
+		email: z.email({ message: 'Email không hợp lệ' }),
+		password: z
+			.string()
+			.min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
+		confirmPassword: z.string(),
+		phoneNumber: z.string().regex(/^(0|\+84)(\s?[2-9])+([0-9]{8})\b/, {
+			message: 'Số điện thoại không hợp lệ',
+		}),
+	})
+	.refine(
+		data =>
+			data.password === data.confirmPassword && data.confirmPassword !== '',
+		{
+			message: 'Mật khẩu không khớp',
+			path: ['confirmPassword'],
+		}
+	)
+
+// Step 2 validation schema
+const Step2Schema = z.object({
+	dateOfBirth: z.coerce
+		.date({ message: 'Ngày sinh là mục bắt buộc' })
+		.refine(date => date < new Date(), {
+			message: 'Ngày sinh phải là ngày trong quá khứ',
+		}),
+	gender: z.boolean(),
+	agreeToTerms: z.boolean().refine(val => val === true, {
+		message: 'Bạn phải đồng ý với điều khoản',
+	}),
+})
 
 const RegisterForm = ({
 	handleRegister,
@@ -69,31 +113,94 @@ const RegisterForm = ({
 		name: RegisterFormProps,
 		currentForm: RegisterFormData
 	) => {
-		const result = RegisterFormSchema.safeParse(currentForm)
+		// Use step-based validation instead of the comprehensive schema
+		if (step === 1) {
+			// Only validate step 1 fields
+			const step1Fields = [
+				'firstName',
+				'lastName',
+				'email',
+				'password',
+				'confirmPassword',
+				'phoneNumber',
+			] as const
+			if (!step1Fields.includes(name as any)) return
 
-		if (!result.success) {
-			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
-			const properties = z4.treeifyError(result.error).properties
-
-			if (properties && properties[name]) {
-				filteredErrors[name] = properties[name]
+			const step1Data = {
+				firstName: currentForm.firstName,
+				lastName: currentForm.lastName,
+				email: currentForm.email,
+				password: currentForm.password,
+				confirmPassword: currentForm.confirmPassword,
+				phoneNumber: currentForm.phoneNumber,
 			}
 
-			setErrors(filteredErrors)
+			const result = Step1Schema.safeParse(step1Data)
+
+			if (!result.success) {
+				const filteredErrors: Record<string, FloatingLabelErrorData> = {}
+				const properties = z4.treeifyError(result.error).properties
+
+				if (properties && properties[name as keyof typeof properties]) {
+					const errorData = properties[name as keyof typeof properties]
+					if (errorData) {
+						filteredErrors[name] = errorData
+					}
+				}
+
+				setErrors(filteredErrors)
+			} else {
+				setErrors({})
+			}
 		} else {
-			setErrors({})
+			// Only validate step 2 fields
+			const step2Fields = ['dateOfBirth', 'gender', 'agreeToTerms'] as const
+			if (!step2Fields.includes(name as any)) return
+
+			const step2Data = {
+				dateOfBirth: currentForm.dateOfBirth,
+				gender: currentForm.gender,
+				agreeToTerms: currentForm.agreeToTerms,
+			}
+
+			const result = Step2Schema.safeParse(step2Data)
+
+			if (!result.success) {
+				const filteredErrors: Record<string, FloatingLabelErrorData> = {}
+				const properties = z4.treeifyError(result.error).properties
+
+				if (properties && properties[name as keyof typeof properties]) {
+					const errorData = properties[name as keyof typeof properties]
+					if (errorData) {
+						filteredErrors[name] = errorData
+					}
+				}
+
+				setErrors(filteredErrors)
+			} else {
+				setErrors({})
+			}
 		}
 	}
 
-	const validateEntireForm = (formData: RegisterFormData): boolean => {
-		const result = RegisterFormSchema.safeParse(formData)
+	const validateStep1 = (formData: RegisterFormData): boolean => {
+		const step1Data = {
+			firstName: formData.firstName,
+			lastName: formData.lastName,
+			email: formData.email,
+			password: formData.password,
+			confirmPassword: formData.confirmPassword,
+			phoneNumber: formData.phoneNumber,
+		}
+
+		const result = Step1Schema.safeParse(step1Data)
 
 		if (!result.success) {
 			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
 			const properties = z4.treeifyError(result.error).properties
 
 			if (properties) {
-				;(Object.keys(properties) as Array<keyof RegisterFormData>).forEach(
+				;(Object.keys(properties) as Array<keyof typeof step1Data>).forEach(
 					field => {
 						filteredErrors[field] = properties[field]!
 					}
@@ -107,26 +214,60 @@ const RegisterForm = ({
 		return true
 	}
 
+	const validateStep2 = (formData: RegisterFormData): boolean => {
+		const step2Data = {
+			dateOfBirth: formData.dateOfBirth,
+			gender: formData.gender,
+			agreeToTerms: formData.agreeToTerms,
+		}
+
+		const result = Step2Schema.safeParse(step2Data)
+
+		if (!result.success) {
+			const filteredErrors: Record<string, FloatingLabelErrorData> = {}
+			const properties = z4.treeifyError(result.error).properties
+
+			if (properties) {
+				;(Object.keys(properties) as Array<keyof typeof step2Data>).forEach(
+					field => {
+						filteredErrors[field] = properties[field]!
+					}
+				)
+			}
+
+			setErrors(filteredErrors)
+			return false
+		}
+		setErrors({})
+		return true
+	}
+
+	// Helper function to get error messages for current step
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 
-		const isValid = validateEntireForm(form)
+		// Use step-based validation for final submission
+		const isStep1Valid = validateStep1(form)
+		const isStep2Valid = validateStep2(form)
 
-		if (isValid) {
+		if (isStep1Valid && isStep2Valid) {
 			try {
 				handleRegister(form)
 			} catch (error) {
 				console.log(error)
 
 				alert('error!')
-				//! HANDLE SERVICE ERROR
 			}
 		}
 	}
 
-	// Switch between steps (1 and 2)
+	// Switch between steps (1 and 2) with validation
 	const handleNext = () => {
-		setStep(2)
+		const isStep1Valid = validateStep1(form)
+		if (isStep1Valid) {
+			setStep(2)
+		}
 	}
 
 	const handleBack = () => {
@@ -136,18 +277,40 @@ const RegisterForm = ({
 	return (
 		<form
 			className={clsx(
-				'p-7 max-w-lg min-w-sm mx-auto rounded-3xl bg-general',
+				'p-7 w-xl min-w-sm mx-auto rounded-3xl bg-general',
 				className
 			)}
 			onSubmit={handleSubmit}
 		>
+			{/* Step Indicator */}
+			<div className='flex items-center justify-center mb-6'>
+				<div className='flex items-center space-x-2'>
+					<div
+						className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+							step >= 1 ? 'bg-main text-white' : 'bg-gray-200 text-gray-500'
+						}`}
+					>
+						1
+					</div>
+					<div
+						className={`w-12 h-1 ${step >= 2 ? 'bg-main' : 'bg-gray-200'}`}
+					></div>
+					<div
+						className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+							step >= 2 ? 'bg-main text-white' : 'bg-gray-200 text-gray-500'
+						}`}
+					>
+						2
+					</div>
+				</div>
+			</div>
+
 			<h1 className='text-xl font-bold mb-4'>
 				{step === 1
 					? t('auth.register.titleStep1')
 					: t('auth.register.titleStep2')}
 			</h1>
 
-			{/* Step 1: Basic Information */}
 			{step === 1 && (
 				<>
 					<div className='flex gap-4'>
@@ -212,7 +375,7 @@ const RegisterForm = ({
 						<button
 							type='button'
 							onClick={handleNext}
-							className='w-full p-2 rounded-full bg-main text-white'
+							className='w-full p-2 rounded-full bg-main text-white hover:bg-main/90 transition-colors'
 						>
 							{t('auth.register.nextStep')}
 						</button>
@@ -307,7 +470,7 @@ const RegisterForm = ({
 						<button
 							type='button'
 							onClick={handleBack}
-							className='w-full p-2 rounded-full bg-gray-500 text-white'
+							className='w-full p-2 rounded-full bg-gray-500 text-white hover:bg-gray-600 transition-colors'
 						>
 							{t('auth.register.backStep')}
 						</button>

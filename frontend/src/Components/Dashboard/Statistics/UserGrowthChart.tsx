@@ -3,6 +3,7 @@
 import { UserGrowthData } from '@/Interfaces/Statistics/Types/Statistics'
 import { motion } from 'motion/react'
 import React from 'react'
+import { useLocale } from '@/Hooks/useLocale'
 import {
 	XAxis,
 	YAxis,
@@ -56,6 +57,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 	label,
 	period,
 }) => {
+	const { t } = useLocale()
+
 	if (!active || !payload?.length) return null
 	return (
 		<div className='bg-white p-3 border border-gray-200 rounded-lg shadow-lg'>
@@ -63,12 +66,12 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 				{formatDate(label ?? '', period)}
 			</p>
 			<p className='text-sm text-blue-600'>
-				Người dùng mới:{' '}
+				{t('statistics.newUsers')}:{' '}
 				<span className='font-semibold'>{payload[0]?.value ?? 'N/A'}</span>
 			</p>
 			{payload[1]?.value !== undefined && (
 				<p className='text-sm text-green-600'>
-					Tổng người dùng:{' '}
+					{t('statistics.totalUsers')}:{' '}
 					<span className='font-semibold'>{payload[1].value}</span>
 				</p>
 			)}
@@ -77,6 +80,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 }
 
 const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
+	const { t } = useLocale()
 	const chartData = data as UserGrowthChartData[]
 
 	const totalGrowth = React.useMemo(
@@ -91,7 +95,7 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 	if (!data || data.length === 0) {
 		return (
 			<div className='flex items-center justify-center h-64 bg-gray-50 rounded-[20px]'>
-				<p className='text-gray-500'>Không có dữ liệu tăng trưởng người dùng</p>
+				<p className='text-gray-500'>{t('statistics.noUserGrowthData')}</p>
 			</div>
 		)
 	}
@@ -105,17 +109,17 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 			<div className='flex items-center justify-between mb-6'>
 				<div>
 					<h3 className='text-lg font-semibold text-gray-800'>
-						Tăng Trưởng Người Dùng
+						{t('statistics.userGrowth')}
 					</h3>
 					<p className='text-sm text-gray-600'>
-						{period === 'week' && 'Tuần này'}
-						{period === 'month' && 'Tháng này'}
-						{period === 'year' && 'Năm nay'}
+						{period === 'week' && t('statistics.thisWeek')}
+						{period === 'month' && t('statistics.thisMonth')}
+						{period === 'year' && t('statistics.thisYear')}
 					</p>
 				</div>
 				<div className='text-right'>
 					<p className='text-2xl font-bold text-main'>+{totalGrowth}</p>
-					<p className='text-sm text-gray-600'>Người dùng mới</p>
+					<p className='text-sm text-gray-600'>{t('statistics.newUsers')}</p>
 				</div>
 			</div>
 
@@ -165,11 +169,11 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 			<div className='grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-gray-100'>
 				<div className='text-center'>
 					<p className='text-2xl font-bold text-blue-600'>{totalGrowth}</p>
-					<p className='text-sm text-gray-600'>Người dùng mới</p>
+					<p className='text-sm text-gray-600'>{t('statistics.newUsers')}</p>
 				</div>
 				<div className='text-center'>
 					<p className='text-2xl font-bold text-green-600'>{currentTotal}</p>
-					<p className='text-sm text-gray-600'>Tổng người dùng</p>
+					<p className='text-sm text-gray-600'>{t('statistics.totalUsers')}</p>
 				</div>
 			</div>
 
@@ -177,11 +181,15 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 			<div className='flex items-center justify-center gap-6 mt-4'>
 				<div className='flex items-center gap-2'>
 					<div className='w-3 h-3 bg-blue-500 rounded'></div>
-					<span className='text-xs text-gray-600'>Người dùng mới</span>
+					<span className='text-xs text-gray-600'>
+						{t('statistics.newUsers')}
+					</span>
 				</div>
 				<div className='flex items-center gap-2'>
 					<div className='w-3 h-3 bg-green-500 rounded'></div>
-					<span className='text-xs text-gray-600'>Tổng người dùng</span>
+					<span className='text-xs text-gray-600'>
+						{t('statistics.totalUsers')}
+					</span>
 				</div>
 			</div>
 		</motion.div>

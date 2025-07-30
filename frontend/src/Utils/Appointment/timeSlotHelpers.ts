@@ -85,10 +85,24 @@ export const generateAllTimeSlots = () => {
 }
 
 /**
- * Generate time slots from the appointments data (legacy - kept for compatibility)
+ * Generate business hours time slots from 08:00 to 22:00 (every 1 hour)
+ */
+export const generateBusinessTimeSlots = () => {
+	const timeSlots = []
+
+	for (let hour = 8; hour <= 22; hour++) {
+		const hourStr = hour.toString().padStart(2, '0')
+		timeSlots.push(`${hourStr}:00`)
+	}
+
+	return timeSlots
+}
+
+/**
+ * Generate time slots from the appointments data (now uses business hours)
  */
 export const generateTimeSlots = () => {
-	return generateAllTimeSlots()
+	return generateBusinessTimeSlots()
 }
 
 /**

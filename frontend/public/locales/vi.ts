@@ -337,6 +337,7 @@ const vi: Record<string, string> = {
 	'form.invalid': 'Không hợp lệ',
 	'form.notes': 'Ghi chú',
 	'form.language_preference': 'Ngôn ngữ ưa thích',
+	'form.email': 'Email',
 
 	// Birth control
 	'birthcontrol.tracking': 'Theo dõi chu kỳ',
@@ -566,6 +567,11 @@ const vi: Record<string, string> = {
 	'auth.resetPassword.retryIn': 'Thử lại sau {seconds}s',
 	'auth.resetPassword.success':
 		'Đặt lại mật khẩu thành công. Bạn sẽ được chuyển hướng đến trang đăng nhập.',
+	'auth.sendResetEmail': 'Gửi email đặt lại',
+	'auth.resetEmailSent': 'Email đặt lại đã được gửi thành công!',
+	'auth.forgotPasswordDescription':
+		'Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.',
+	'auth.backToLogin': 'Quay lại đăng nhập',
 	'auth.verifyingUser': 'Đang xác minh người dùng...',
 
 	// Navigation
@@ -777,6 +783,7 @@ const vi: Record<string, string> = {
 	'member.booking.no_bookings_description':
 		'Bạn chưa có đặt dịch vụ nào. Hãy khám phá các dịch vụ của chúng tôi và đặt lịch ngay!',
 	'member.booking.explore_services': 'Khám phá dịch vụ',
+	'member.booking.retry': 'Thử lại',
 
 	// Statistics page
 	'statistics.loadingData': 'Đang tải dữ liệu thống kê...',
@@ -806,6 +813,28 @@ const vi: Record<string, string> = {
 	'statistics.needsProcessing': 'Cần xử lý',
 	'statistics.testResults': 'Kết Quả Xét Nghiệm',
 	'statistics.completed': 'Đã hoàn thành',
+	'statistics.newUsers': 'Người Dùng Mới',
+	'statistics.userGrowth': 'Tăng Trưởng Người Dùng',
+	'statistics.thisWeek': 'Tuần Này',
+	'statistics.thisMonth': 'Tháng Này',
+	'statistics.thisYear': 'Năm Nay',
+	'statistics.noUserGrowthData': 'Không có dữ liệu tăng trưởng người dùng',
+	'statistics.noRevenueData': 'Không có dữ liệu doanh thu',
+	'statistics.noServiceData': 'Không có dữ liệu dịch vụ',
+	'statistics.metric': 'Chỉ Số',
+	'statistics.value': 'Giá Trị',
+	'statistics.serviceName': 'Tên Dịch Vụ',
+	'statistics.rating': 'Đánh Giá',
+	'statistics.performance': 'Hiệu Suất',
+	'statistics.avgRating': 'Đánh Giá TB',
+	'statistics.userStatistics': 'Thống Kê Người Dùng',
+	'statistics.paymentStatistics': 'Thống Kê Thanh Toán',
+	'statistics.serviceStatistics': 'Thống Kê Dịch Vụ',
+	'statistics.testStatistics': 'Thống Kê Xét Nghiệm',
+	'statistics.activeUsers': 'Người Dùng Hoạt Động',
+	'statistics.managers': 'Quản Lý',
+	'statistics.staff': 'Nhân Viên',
+	'statistics.recentActivity': 'Hoạt Động Gần Đây',
 
 	// Payment callback page
 	'payment.callback.success': 'Thanh toán thành công!',
@@ -1219,6 +1248,9 @@ const vi: Record<string, string> = {
 	'birthControl.important_note': 'Lưu ý quan trọng:',
 	'birthControl.phases_calculated_relatively':
 		'Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸) thường rơi vào giữa khoảng không an toàn. Phương pháp này không đảm bảo 100% hiệu quả tránh thai.',
+	'birthControl.account_required': 'Yêu Cầu Tài Khoản',
+	'birthControl.please_login_to_access':
+		'Vui lòng đăng nhập để truy cập tính năng này.',
 
 	// Weekdays (short)
 	'weekdays.sun': 'CN',
