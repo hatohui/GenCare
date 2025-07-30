@@ -48,11 +48,6 @@ export class ChatSignalRClient {
 				},
 			})
 			.withAutomaticReconnect(config.reconnectOptions)
-			.configureLogging(
-				config.connectionOptions.logLevel === 'Information'
-					? signalR.LogLevel.Information
-					: signalR.LogLevel.Warning
-			)
 			.build()
 
 		this.connection.serverTimeoutInMilliseconds =
@@ -95,7 +90,7 @@ export class ChatSignalRClient {
 			}
 		)
 
-		this.connection.onclose(error => {
+		this.connection.onclose((error: Error | undefined) => {
 			if (error) {
 				console.error('SignalR connection closed with error:', error)
 				if (error.message && error.message.includes('timeout')) {
@@ -220,7 +215,6 @@ const chatApi = {
 			)
 			.withAutomaticReconnect({
 				nextRetryDelayInMilliseconds: retryContext => {
-					// Exponential backoff with max 30 seconds
 					const delay = Math.min(
 						1000 * Math.pow(2, retryContext.previousRetryCount),
 						30000
@@ -228,7 +222,6 @@ const chatApi = {
 					return delay
 				},
 			})
-			.configureLogging(signalR.LogLevel.Warning)
 			.build()
 	},
 
@@ -292,9 +285,6 @@ export const useDeleteMessage = () => {
 	})
 }
 
-// Removed useConnection hook to prevent multiple connection instances
-// Use ChatSignalRClient directly in useChat hook instead
-
 export const useAllConversations = () => {
 	return useQuery({
 		queryKey: ['allConversations'],
@@ -306,7 +296,7 @@ export const useUnassignedConversations = () => {
 	return useQuery({
 		queryKey: ['unassignedConversations'],
 		queryFn: chatApi.getUnassignedConversations,
-		refetchInterval: 5000, // Refetch every 5 seconds
+		refetchInterval: 5000,
 	})
 }
 

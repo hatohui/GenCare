@@ -55,20 +55,41 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 
 	const { accessToken } = useToken()
 	const { data: userData } = useGetMe()
-	const { data: conversationHistory } = useUserConversationHistory()
+	const { data: conversationHistory, refetch: refetchConversationHistory } =
+		useUserConversationHistory()
 	const createConversationMutation = useCreateConversation()
 	const endConversationMutation = useEndConversation()
 
 	const handleConversationEnded = useCallback(() => {
 		setIsConversationStarted(false)
 		toast(t('chat.conversation_ended_by_consultant'), {
-			icon: 'ℹ️',
+			icon: 'i',
 		})
 	}, [t])
 
-	const handleConsultantJoined = useCallback(() => {
+	const handleConsultantJoined = useCallback(async () => {
 		toast.success(t('chat.consultant_joined'))
-	}, [t])
+
+		try {
+			const { data: updatedHistory } = await refetchConversationHistory()
+
+			if (conversationId && updatedHistory) {
+				const updatedConversation = updatedHistory.find(
+					(conv: any) => conv.conversationId === conversationId
+				)
+				if (updatedConversation) {
+					setCurrentConversationData({
+						staffName: updatedConversation.staffName,
+						staffId: updatedConversation.staffId,
+						staffAvatarUrl: updatedConversation.staffAvatarUrl,
+						status: updatedConversation.status,
+					})
+				}
+			}
+		} catch (error) {
+			console.error('Failed to refetch conversation history:', error)
+		}
+	}, [t, conversationId, refetchConversationHistory])
 
 	const { messages, connected, sendMessage, isLoading } = useChat(
 		conversationId || '',
@@ -103,11 +124,22 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 			})
 
 			const newConversationId = response.data.conversationId
+
 			setConversationId(newConversationId)
 			setSelectedConversationId(newConversationId)
 			setIsConversationStarted(true)
 			setInputMessage('')
-			setActiveTab('active')
+			if (activeTab !== 'ended') {
+				setActiveTab('active')
+			}
+
+			setCurrentConversationData({
+				staffName: undefined,
+				staffId: undefined,
+				staffAvatarUrl: undefined,
+				status: true,
+			})
+
 			toast.success(t('chat.conversation_started'))
 		} catch (error) {
 			toast.error(t('chat.failed_to_start'))
@@ -120,10 +152,10 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		setSelectedConversationId(selectedId)
 		setIsConversationStarted(true)
 
-		// Find and set the conversation data
 		const conversation = conversationHistory?.find(
 			(conv: any) => conv.conversationId === selectedId
 		)
+
 		if (conversation) {
 			setCurrentConversationData({
 				staffName: conversation.staffName,
@@ -131,6 +163,11 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 				staffAvatarUrl: conversation.staffAvatarUrl,
 				status: conversation.status,
 			})
+
+			// Don't automatically switch tabs when selecting conversation
+			// if (conversation.staffId) {
+			// 	setActiveTab('active')
+			// }
 		} else {
 			// If conversation not found, set fallback data
 			setCurrentConversationData({
@@ -148,7 +185,10 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		setIsConversationStarted(false)
 		setInputMessage('')
 		setCurrentConversationData(null)
-		setActiveTab('active') // Switch to active tab when starting new conversation
+		// Only switch to active tab if not already on ended tab
+		if (activeTab !== 'ended') {
+			setActiveTab('active')
+		}
 	}
 
 	// Add key handler for Enter key
@@ -233,6 +273,64 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 			}, 100)
 		}
 	}, [isConversationStarted, isConversationEnded])
+
+	// Remove automatic tab switching when consultant joins
+	// useEffect(() => {
+	// 	if (currentConversationData?.staffId && activeTab !== 'active') {
+	// 		setActiveTab('active')
+	// 	}
+	// }, [currentConversationData?.staffId, activeTab])
+
+	// Periodically refresh conversation data when waiting for consultant
+	useEffect(() => {
+		if (
+			!currentConversationData?.staffId &&
+			isConversationStarted &&
+			conversationId
+		) {
+			console.log('Starting periodic refresh for conversation:', conversationId)
+			const interval = setInterval(async () => {
+				try {
+					console.log('Periodic refresh: checking for consultant...')
+					const { data: updatedHistory } = await refetchConversationHistory()
+					if (updatedHistory) {
+						const updatedConversation = updatedHistory.find(
+							(conv: any) => conv.conversationId === conversationId
+						)
+						console.log(
+							'Periodic refresh found conversation:',
+							updatedConversation
+						)
+						if (updatedConversation && updatedConversation.staffId) {
+							// Consultant has joined!
+							console.log('Consultant detected via periodic refresh!')
+							setCurrentConversationData({
+								staffName: updatedConversation.staffName,
+								staffId: updatedConversation.staffId,
+								staffAvatarUrl: updatedConversation.staffAvatarUrl,
+								status: updatedConversation.status,
+							})
+							// Don't automatically switch tabs during periodic refresh
+							clearInterval(interval)
+						}
+					}
+				} catch (error) {
+					console.error('Failed to refresh conversation data:', error)
+				}
+			}, 5000) // Check every 5 seconds
+
+			// Clean up interval
+			return () => {
+				console.log('Cleaning up periodic refresh interval')
+				clearInterval(interval)
+			}
+		}
+	}, [
+		currentConversationData?.staffId,
+		isConversationStarted,
+		conversationId,
+		refetchConversationHistory,
+	])
 
 	return (
 		<div
@@ -416,6 +514,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 									>
 										{currentConversationData?.staffAvatarUrl ? (
 											<CldImage
+												key={currentConversationData.staffAvatarUrl} // Force re-render when URL changes
 												src={currentConversationData.staffAvatarUrl}
 												width={40}
 												height={40}
@@ -424,6 +523,15 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 												}
 												className='w-10 h-10 rounded-full object-cover'
 												style={{ objectFit: 'cover' }}
+												loading='eager'
+												onError={e => {
+													console.log(
+														'Image failed to load:',
+														currentConversationData.staffAvatarUrl
+													)
+													// Hide the image on error and show fallback icon
+													e.currentTarget.style.display = 'none'
+												}}
 											/>
 										) : (
 											<span className='text-white text-lg'>
@@ -530,6 +638,7 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 												>
 													{currentConversationData?.staffAvatarUrl ? (
 														<CldImage
+															key={`${currentConversationData.staffAvatarUrl}-${message.messageId}`} // Force re-render when URL changes
 															src={currentConversationData.staffAvatarUrl}
 															width={32}
 															height={32}
@@ -539,6 +648,15 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 															}
 															className='w-8 h-8 rounded-full object-cover'
 															style={{ objectFit: 'cover' }}
+															loading='eager'
+															onError={e => {
+																console.log(
+																	'Message avatar failed to load:',
+																	currentConversationData.staffAvatarUrl
+																)
+																// Hide the image on error and show fallback icon
+																e.currentTarget.style.display = 'none'
+															}}
 														/>
 													) : (
 														<span className='text-white text-sm font-medium'>
