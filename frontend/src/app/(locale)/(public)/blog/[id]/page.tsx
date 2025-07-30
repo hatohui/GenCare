@@ -279,7 +279,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 									Thẻ bài viết
 								</h3>
 								<div className='flex flex-wrap gap-2'>
-									{blog.tagTitle?.map((tag: string) => (
+									{blog.tagTitles?.map((tag: string) => (
 										<span
 											key={tag}
 											className='px-3 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium'
@@ -359,7 +359,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 								{/* Header */}
 								<div className='mb-6'>
 									<div className='flex items-center space-x-2 mb-3'>
-										{blog.tagTitle?.map((tag: string) => (
+										{blog.tagTitles?.map((tag: string) => (
 											<span
 												key={tag}
 												className='px-3 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium'
