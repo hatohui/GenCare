@@ -11,6 +11,7 @@ interface ConsultantConversationHistoryProps {
 	onSelectConversation?: (conversationId: string) => void
 	selectedConversationId?: string | null
 	className?: string
+	filterByStatus?: boolean // true for active, false for ended, undefined for all
 }
 
 interface ConsultantConversationHistoryItem {
@@ -25,13 +26,33 @@ interface ConsultantConversationHistoryItem {
 
 const ConsultantConversationHistory: React.FC<
 	ConsultantConversationHistoryProps
-> = ({ onSelectConversation, selectedConversationId, className }) => {
+> = ({
+	onSelectConversation,
+	selectedConversationId,
+	className,
+	filterByStatus,
+}) => {
 	const { t } = useLocale()
 	const {
 		data: conversations,
 		isLoading,
 		error,
 	} = useConsultantConversationHistory()
+
+	const filteredConversations =
+		conversations?.filter((conversation: ConsultantConversationHistoryItem) => {
+			if (filterByStatus === undefined) return true
+
+			if (filterByStatus === true) {
+				return conversation.status
+			}
+
+			if (filterByStatus === false) {
+				return !conversation.status
+			}
+
+			return true
+		}) || []
 
 	const formatDate = (dateString: string) => {
 		try {
@@ -100,10 +121,29 @@ const ConsultantConversationHistory: React.FC<
 		)
 	}
 
+	if (filteredConversations.length === 0) {
+		return (
+			<div className={`${className} p-4`}>
+				<div className='text-center text-gray-500'>
+					<div className='w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+						<MessageCircle className='w-6 h-6 text-gray-400' />
+					</div>
+					<p className='text-sm font-medium'>
+						{filterByStatus === true
+							? t('chat.no_active_conversations')
+							: filterByStatus === false
+							? t('chat.no_ended_conversations')
+							: t('chat.no_conversations_yet')}
+					</p>
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div className={`${className}`}>
 			<div className='space-y-1 p-2'>
-				{conversations.map(
+				{filteredConversations.map(
 					(conversation: ConsultantConversationHistoryItem) => (
 						<div
 							key={conversation.conversationId}

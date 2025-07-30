@@ -67,12 +67,20 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 		setSelectedConversationId(null)
 		setSelectedConversationDetails(null)
 		toast(t('chat.conversation_ended'), {
-			icon: 'ℹ️',
+			icon: 'i',
 		})
 	}, [t])
 
+	const handleConsultantJoined = useCallback(() => {
+		console.log('Consultant joined notification received')
+	}, [])
+
 	const { messages, sendMessage, isLoading, connected, connectionState } =
-		useChat(selectedConversationId || '', handleConversationEnded)
+		useChat(
+			selectedConversationId || '',
+			handleConversationEnded,
+			handleConsultantJoined
+		)
 
 	const {
 		data: unassignedConversations = [],
@@ -102,21 +110,14 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 	const handleConversationSelect = useCallback(
 		(conversationId: string) => {
 			setSelectedConversationId(conversationId)
-			// Switch to active tab when a conversation is selected
-			setActiveView('active')
-
-			// Find conversation details from history or unassigned conversations
-			// consultantHistory is a direct array of conversations
 			let conversation = null
 
-			// First, try consultantHistory as a direct array (this should be the correct structure)
 			if (Array.isArray(consultantHistory)) {
 				conversation = consultantHistory.find(
 					(c: any) => c.conversationId === conversationId
 				)
 			}
 
-			// Fallback: try unassigned conversations
 			if (!conversation) {
 				conversation = unassignedConversations.find(
 					(c: UnassignedConversation) => c.conversationId === conversationId
@@ -137,7 +138,6 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 					memberId: conversation.memberId,
 				})
 			} else {
-				// If conversation not found in current data, set fallback
 				setSelectedConversationDetails({
 					memberName: t('chat.patient'),
 					memberAvatarUrl: undefined,
@@ -153,10 +153,11 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 			try {
 				await joinConversationMutation.mutateAsync(conversationId)
 				setSelectedConversationId(conversationId)
-				// Switch to active tab when joining a conversation
-				setActiveView('active')
+				// Only switch to active tab if we're currently on waiting tab
+				if (activeView === 'waiting') {
+					setActiveView('active')
+				}
 
-				// Set conversation details when joining
 				const conversation = unassignedConversations.find(
 					(c: UnassignedConversation) => c.conversationId === conversationId
 				)
@@ -179,7 +180,13 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 				toast.error(t('chat.failed_to_join'))
 			}
 		},
-		[joinConversationMutation, refetchUnassigned, unassignedConversations, t]
+		[
+			joinConversationMutation,
+			refetchUnassigned,
+			unassignedConversations,
+			t,
+			activeView,
+		]
 	)
 
 	const handleEndConversation = useCallback(async () => {
@@ -206,7 +213,6 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 				await sendMessage(inputMessage)
 				setInputMessage('')
 
-				// Focus back on input after sending message
 				setTimeout(() => {
 					inputRef.current?.focus()
 				}, 100)
@@ -218,13 +224,11 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 		[inputMessage, selectedConversationId, sendMessage, t]
 	)
 
-	// Add key handler for Enter key
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === 'Enter' && !e.shiftKey) {
 				e.preventDefault()
 				if (inputMessage.trim() && selectedConversationId && !isLoading) {
-					// Create a synthetic form event
 					const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
 					handleSendMessage(syntheticEvent)
 				}
@@ -236,7 +240,6 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 	const formatUnassignedTime = useCallback(
 		(dateString: string) => {
 			try {
-				// Ensure the date string is treated as UTC by appending 'Z' if not present
 				const utcString = dateString.endsWith('Z')
 					? dateString
 					: dateString + 'Z'
@@ -276,16 +279,6 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 		}
 	}, [selectedConversationDetails?.memberId, t])
 
-	// Auto-focus input when conversation is selected
-	useEffect(() => {
-		if (selectedConversationId) {
-			setTimeout(() => {
-				inputRef.current?.focus()
-			}, 100)
-		}
-	}, [selectedConversationId])
-
-	// Auto-focus input when conversation is selected
 	useEffect(() => {
 		if (selectedConversationId) {
 			setTimeout(() => {
@@ -312,7 +305,10 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 					{/* View Toggle */}
 					<div className='flex bg-white bg-opacity-20 rounded-lg p-1 space-x-1'>
 						<button
-							onClick={() => setActiveView('waiting')}
+							onClick={() => {
+								setActiveView('waiting')
+								// Don't clear selection when switching tabs - keep chat visible
+							}}
 							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
 								activeView === 'waiting'
 									? 'bg-white text-gray-700 shadow-sm'
@@ -323,7 +319,10 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 							<span>{t('chat.waiting')}</span>
 						</button>
 						<button
-							onClick={() => setActiveView('active')}
+							onClick={() => {
+								setActiveView('active')
+								// Don't clear selection when switching to active, as user might want to keep current conversation
+							}}
 							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
 								activeView === 'active'
 									? 'bg-white text-gray-700 shadow-sm'
@@ -334,7 +333,10 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 							<span>{t('chat.active')}</span>
 						</button>
 						<button
-							onClick={() => setActiveView('ended')}
+							onClick={() => {
+								setActiveView('ended')
+								// Don't clear selection when switching tabs - keep chat visible
+							}}
 							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
 								activeView === 'ended'
 									? 'bg-white text-gray-700 shadow-sm'
@@ -481,6 +483,7 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 							className='h-full'
 							onSelectConversation={handleConversationSelect}
 							selectedConversationId={selectedConversationId}
+							filterByStatus={true}
 						/>
 					) : (
 						/* Ended Conversations */
@@ -494,6 +497,7 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 								className='flex-1'
 								onSelectConversation={handleConversationSelect}
 								selectedConversationId={selectedConversationId}
+								filterByStatus={false} // Show only ended conversations
 							/>
 						</div>
 					)}
@@ -641,8 +645,19 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 												</p>
 											</div>
 											{message.createdBy === userData?.id && (
-												<div className='w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0'>
-													<Stethoscope className='w-4 h-4' />
+												<div className='w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0 overflow-hidden'>
+													{userData?.avatarUrl ? (
+														<CldImage
+															src={userData.avatarUrl}
+															width={32}
+															height={32}
+															alt={userData.firstName || 'Consultant'}
+															className='w-8 h-8 rounded-full object-cover'
+															style={{ objectFit: 'cover' }}
+														/>
+													) : (
+														<Stethoscope className='w-4 h-4' />
+													)}
 												</div>
 											)}
 										</div>
