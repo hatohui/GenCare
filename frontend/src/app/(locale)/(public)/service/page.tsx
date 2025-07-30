@@ -7,7 +7,6 @@ import ServiceList from '@/Components/Services/ServiceList'
 import SearchBar from '@/Components/Management/SearchBar'
 import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
-import { SearchSVG } from '@/Components/SVGs'
 import { motion } from 'motion/react'
 import { useLocale } from '@/Hooks/useLocale'
 
@@ -82,8 +81,6 @@ export default function Page() {
 					>
 						<div className='flex flex-col lg:flex-row gap-10 items-center'>
 							<div className='relative flex-1 w-full'>
-								<SearchSVG className='absolute top-1/2 left-4 -translate-y-1/2 text-gray-500 z-10 size-7 ' />
-
 								<SearchBar className='border-none  ml-15  pr-10 py-3 rounded-[30px] text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-main/20' />
 							</div>
 							<div className='flex gap-3'>

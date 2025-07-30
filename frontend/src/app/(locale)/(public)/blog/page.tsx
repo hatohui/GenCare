@@ -204,8 +204,11 @@ const BlogPage = () => {
 	const { t } = useLocale()
 
 	// Always derive filters from URL
-	const search = searchParams?.get('search') || ''
+	const search = searchParams?.get('search') || null
 	const selectedTag = searchParams?.get('tags') || null
+
+	// Debug logging
+	console.log('Blog page search params:', { search, selectedTag })
 
 	// Memoize the strings to prevent unnecessary re-renders of TypedText
 	const titleStrings = React.useMemo(() => [t('blog.forum_title')], [t])
@@ -222,10 +225,22 @@ const BlogPage = () => {
 		isFetchingNextPage,
 		isLoading,
 		isError,
+		error,
 	} = useInfiniteBlogs(ITEMS_PER_PAGE, search, selectedTag)
 
 	// Flatten all pages into a single array
-	const blogs = data?.pages.flatMap(page => page) || []
+	const blogs = data?.pages.flatMap(page => page || []) || []
+
+	// Debug logging
+	console.log('Blog page data:', {
+		data: data?.pages,
+		blogs,
+		isLoading,
+		isError,
+		error,
+		hasNextPage,
+		isFetchingNextPage,
+	})
 
 	// Load more when the last item comes into view
 	React.useEffect(() => {
@@ -297,22 +312,6 @@ const BlogPage = () => {
 				<FlorageBackground />
 			</section>
 
-			{/* Top Bar with Recommended */}
-			<section className='py-4 bg-white border-b border-gray-200'>
-				<div className='max-w-6xl mx-auto px-6'>
-					<div className='flex items-center justify-between'>
-						<button className='px-6 py-2 bg-gradient-to-r from-main to-secondary text-white rounded-full font-medium hover:shadow-lg transition-shadow'>
-							{t('blog.recommended')}
-						</button>
-						<div className='text-sm text-gray-500'>
-							{isLoading
-								? t('common.loading')
-								: t('blog.count_posts', { count: blogs.length })}
-						</div>
-					</div>
-				</div>
-			</section>
-
 			{/* Main Content with Sidebar */}
 			<div className='max-w-6xl mx-auto px-6 py-8'>
 				<div className='flex gap-8'>
@@ -347,29 +346,6 @@ const BlogPage = () => {
 													: new Date(blog.createdAt).toLocaleDateString()}
 											</p>
 										</div>
-									))}
-								</div>
-							</div>
-
-							{/* Categories */}
-							<div className='mb-6'>
-								<h3 className='text-lg font-bold text-gray-800 mb-3 border-b-2 border-accent/30 pb-2'>
-									{t('blog.categories')}
-								</h3>
-								<div className='space-y-2'>
-									{[
-										t('blog.category_health'),
-										t('blog.category_lifestyle'),
-										t('blog.category_medical'),
-										t('blog.category_nutrition'),
-										t('blog.category_psychology'),
-									].map(category => (
-										<button
-											key={category}
-											className='w-full text-left p-2 text-sm text-gray-600 hover:bg-accent/10 rounded-lg transition-colors'
-										>
-											{category}
-										</button>
 									))}
 								</div>
 							</div>
@@ -424,7 +400,9 @@ const BlogPage = () => {
 									<h3 className='text-xl font-semibold mb-2'>
 										{t('blog.load_failed')}
 									</h3>
-									<p className='mb-4'>{t('blog.load_failed_desc')}</p>
+									<p className='mb-4'>
+										{error?.message || t('blog.load_failed_desc')}
+									</p>
 									<button
 										onClick={() => window.location.reload()}
 										className='px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors'

@@ -83,7 +83,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									<Heart
 										className={`w-4 h-4 ${isLiking ? 'animate-pulse' : ''}`}
 									/>
-									<span className='text-sm'>{comment.like || 0}</span>
+									<span className='text-sm'>{comment.likes || 0}</span>
 								</button>
 							) : (
 								<button
@@ -92,7 +92,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 									title='Login to like comment'
 								>
 									<Heart className='w-4 h-4' />
-									<span className='text-sm'>{comment.like || 0}</span>
+									<span className='text-sm'>{comment.likes || 0}</span>
 								</button>
 							))}
 

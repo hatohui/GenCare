@@ -337,6 +337,7 @@ const vi: Record<string, string> = {
 	'form.invalid': 'Không hợp lệ',
 	'form.notes': 'Ghi chú',
 	'form.language_preference': 'Ngôn ngữ ưa thích',
+	'form.email': 'Email',
 
 	// Birth control
 	'birthcontrol.tracking': 'Theo dõi chu kỳ',
@@ -550,6 +551,11 @@ const vi: Record<string, string> = {
 	'auth.resetPassword.retryIn': 'Thử lại sau {seconds}s',
 	'auth.resetPassword.success':
 		'Đặt lại mật khẩu thành công. Bạn sẽ được chuyển hướng đến trang đăng nhập.',
+	'auth.sendResetEmail': 'Gửi email đặt lại',
+	'auth.resetEmailSent': 'Email đặt lại đã được gửi thành công!',
+	'auth.forgotPasswordDescription':
+		'Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.',
+	'auth.backToLogin': 'Quay lại đăng nhập',
 	'auth.verifyingUser': 'Đang xác minh người dùng...',
 
 	// Navigation
@@ -761,6 +767,7 @@ const vi: Record<string, string> = {
 	'member.booking.no_bookings_description':
 		'Bạn chưa có đặt dịch vụ nào. Hãy khám phá các dịch vụ của chúng tôi và đặt lịch ngay!',
 	'member.booking.explore_services': 'Khám phá dịch vụ',
+	'member.booking.retry': 'Thử lại',
 
 	// Statistics page
 	'statistics.loadingData': 'Đang tải dữ liệu thống kê...',

@@ -203,6 +203,7 @@ const en: Record<string, string> = {
 	'form.invalid': 'Invalid input',
 	'form.notes': 'Notes',
 	'form.language_preference': 'Language preference',
+	'form.email': 'Email',
 
 	// Birth control
 	'birthcontrol.tracking': 'Birth Control Tracking',
@@ -538,6 +539,11 @@ const en: Record<string, string> = {
 	'auth.resetPassword.retryIn': 'Retry in {seconds}s',
 	'auth.resetPassword.success':
 		'Password reset successful. You will be redirected to login shortly.',
+	'auth.sendResetEmail': 'Send Reset Email',
+	'auth.resetEmailSent': 'Reset email sent successfully!',
+	'auth.forgotPasswordDescription':
+		'Enter your email address and we will send you a link to reset your password.',
+	'auth.backToLogin': 'Back to login',
 
 	// Navigation
 	'nav.home': 'Home',
@@ -741,6 +747,7 @@ const en: Record<string, string> = {
 	'member.booking.no_bookings_description':
 		'You have no bookings yet. Explore our services and book now!',
 	'member.booking.explore_services': 'Explore Services',
+	'member.booking.retry': 'Retry',
 
 	// Statistics page
 	'statistics.loadingData': 'Loading statistics data...',

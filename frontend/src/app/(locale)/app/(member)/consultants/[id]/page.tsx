@@ -20,6 +20,7 @@ import {
 	WORKING_SLOTS,
 	getSlotWeekRange,
 } from '@/Utils/SlotHelpers/slotTimeHelpers'
+import { Star } from 'lucide-react'
 
 const BookConsultantPage = () => {
 	const { t } = useLocale()
@@ -390,13 +391,7 @@ const BookConsultantPage = () => {
 					}}
 				>
 					<div className='relative z-10'>
-						<motion.div
-							whileHover={{
-								rotate: 360,
-								scale: 1.1,
-								transition: { duration: 0.6, type: 'spring' },
-							}}
-						>
+						<div className='hover:scale-105 transition duration-400'>
 							{consultantData.avatarUrl ? (
 								<CldImage
 									src={consultantData.avatarUrl}
@@ -410,7 +405,7 @@ const BookConsultantPage = () => {
 									{initials}
 								</div>
 							)}
-						</motion.div>
+						</div>
 
 						<motion.h3
 							className='text-lg font-semibold text-blue-900'
@@ -478,7 +473,7 @@ const BookConsultantPage = () => {
 								animate={{ rotate: [0, 10, -10, 0] }}
 								transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
 							>
-								⭐
+								<Star />
 							</motion.span>
 							{'yearOfExperience' in consultantData
 								? consultantData.yearOfExperience

@@ -161,39 +161,9 @@ const ConsultantList = () => {
 								whileHover={{ opacity: 1 }}
 							/>
 
-							{/* Floating particles effect */}
-							<motion.div
-								className='absolute inset-0 pointer-events-none'
-								initial={{ opacity: 0 }}
-								whileHover={{ opacity: 1 }}
-								transition={{ duration: 0.5 }}
-							>
-								{[...Array(3)].map((_, i) => (
-									<motion.div
-										key={i}
-										className='absolute w-2 h-2 bg-main bg-opacity-60 rounded-full'
-										style={{
-											left: `${20 + i * 30}%`,
-											top: `${10 + i * 20}%`,
-										}}
-										animate={{
-											y: [0, -10, 0],
-											opacity: [0.3, 0.8, 0.3],
-											scale: [1, 1.2, 1],
-										}}
-										transition={{
-											duration: 2 + i * 0.5,
-											repeat: Infinity,
-											delay: i * 0.3,
-										}}
-									/>
-								))}
-							</motion.div>
-
 							<div className='flex flex-col items-center flex-1 relative z-10'>
 								<motion.div
 									whileHover={{
-										rotate: 360,
 										scale: 1.1,
 										transition: { duration: 0.6, type: 'spring' },
 									}}
