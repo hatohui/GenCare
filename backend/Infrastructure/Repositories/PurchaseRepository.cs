@@ -50,9 +50,20 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
     {
         var oneWeekAgo = DateTime.SpecifyKind(DateTime.Now.AddDays(-7), DateTimeKind.Unspecified);
 
+        await dbContext.PaymentHistories
+            .Where(ph => ph.Status == PaymentStatus.Pending &&
+                dbContext.Purchases
+                    .Where(p => p.CreatedAt < oneWeekAgo)
+                    .Select(p => p.Id)
+                    .Contains(ph.PurchaseId))
+            .ExecuteDeleteAsync();
+
         await dbContext.Purchases
-            .Where(p => p.PaymentHistory.Status == PaymentStatus.Pending &&
-                        p.CreatedAt < oneWeekAgo)
+            .Where(p => p.CreatedAt < oneWeekAgo &&
+                dbContext.PaymentHistories
+                    .Where(ph => ph.Status == PaymentStatus.Pending)
+                    .Select(ph => ph.PurchaseId)
+                    .Contains(p.Id))
             .ExecuteDeleteAsync();
     }
 }
