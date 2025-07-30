@@ -607,6 +607,14 @@ const SlotManagementCalendar = ({
 								schedules
 							).assignedConsultants
 						}
+						appointments={
+							getSlotStatus(
+								selectedSlot.day,
+								selectedSlot.slotNo,
+								appointments,
+								schedules
+							).appointments
+						}
 					/>
 				)}
 			</AnimatePresence>
