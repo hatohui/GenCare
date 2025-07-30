@@ -83,7 +83,7 @@ public class PurchaseService(
         if (purchases == null || purchases.Count == 0)
             throw new AppException(404, "No purchases found for this account");
         //map all order details in purchases to BookedService list
-        List<BookedService> rs = new();
+        List<BookedService> rs = [];
         foreach (var purchase in purchases)
         {
             //kiểm tra trạng thái payment history
