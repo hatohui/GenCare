@@ -75,6 +75,7 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
 	}, [initialData, reset])
 
 	const handleImageUpload = (url: string, publicId: string) => {
+		console.log(publicId)
 		setNewImageUrls(prev => [...prev, url])
 		toast.success('Image uploaded successfully')
 	}

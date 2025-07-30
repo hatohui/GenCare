@@ -88,6 +88,7 @@ const AccountDetailPage = () => {
 			{ id, data: formData },
 			{
 				onSuccess: data => {
+					console.log(data)
 					setIsEditing(false)
 
 					// Invalidate and refetch account queries
