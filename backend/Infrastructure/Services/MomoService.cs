@@ -52,6 +52,8 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         var requestId = Guid.NewGuid().ToString();
         var extraData = string.Empty;
 
+        // Tạo raw signature để kiểm tra, các data trong
+        // đây được quy định theo doc của MoMo
         var rawSignature =
             $"accessKey={momoConfig.Value.AccessKey}" +
             $"&amount={amount.ToString("F0")}" +
@@ -67,6 +69,7 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
 
         var signature = ComputeHmacSha256(rawSignature, momoConfig.Value.SecretKey);
 
+        //tạo 1 object chứa dữ liệu cần gửi đi
         var requestData = new
         {
             partnerCode = momoConfig.Value.PartnerCode,
@@ -82,17 +85,20 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
             signature = signature!
         };
 
+        //tạo 1 body cho http request
         var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
 
-
+        //gửi http post request đến endpoint của MOMO API
         var response = await httpClient.PostAsync(momoConfig.Value.Endpoint, content);
 
+        //đọc toàn bộ nội dung phản hồi trả về từ MOMO API(dạng chuỗi)x
         var responseContent = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Momo API call failed: {response.StatusCode} - {responseContent}");
         }
+        //chuyển nội dung json trả về từ MOMO API sang đối tượng MomoPaymentResponse
         return JsonConvert.DeserializeObject<MomoPaymentResponse>(responseContent) ?? throw new Exception("Momo payment response is null");
     }
 
@@ -115,7 +121,8 @@ public class MomoService(IOptions<MomoConfig> momoConfig,
         var signature = request.Signature;
 
 
-        // Tạo raw signature để kiểm tra
+        // Tạo raw signature để kiểm tra, các data trong
+        // đây được quy định theo doc của MoMo
         var rawSignature =
             $"accessKey={momoConfig.Value.AccessKey}" +
             $"&amount={amount}" +
