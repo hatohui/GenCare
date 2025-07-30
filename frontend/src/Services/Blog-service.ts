@@ -15,8 +15,8 @@ import {
 } from '@tanstack/react-query'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
 
-const BLOG_URL = `${DEFAULT_API_URL}/blogs`
-const COMMENT_URL = `${DEFAULT_API_URL}/comments`
+const BLOG_URL = `${DEFAULT_API_URL}/api/blogs`
+const COMMENT_URL = `${DEFAULT_API_URL}/api/comments`
 
 const blogApi = {
 	GetBlogById: (id: string) => {

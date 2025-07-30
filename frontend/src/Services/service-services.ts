@@ -31,7 +31,7 @@ const serviceApi = {
 
 		return axios
 			.get<GetServiceByPageResponse>(
-				`${DEFAULT_API_URL}/services?${params.toString()}`
+				`${DEFAULT_API_URL}/api/services?${params.toString()}`
 			)
 			.then(res => {
 				return res.data
@@ -57,7 +57,7 @@ const serviceApi = {
 			params.append('includeDeleted', includeDeleted.toString())
 		if (sortByAlphabetical) params.append('sortByAlphabetical', 'true')
 
-		const query = `/services/all?${params.toString()}`
+		const query = `/api/services/all?${params.toString()}`
 
 		return axiosInstance.get<GetServiceByPageAdminResponse>(query).then(res => {
 			return res.data
@@ -66,25 +66,25 @@ const serviceApi = {
 
 	getById: (id: string) =>
 		axios
-			.get<GetServiceWithIdResponse>(`${DEFAULT_API_URL}/services/${id}`)
+			.get<GetServiceWithIdResponse>(`${DEFAULT_API_URL}/api/services/${id}`)
 			.then(res => res.data),
 
 	create: (data: any) =>
 		axiosInstance
-			.post<CreateServiceApiResponse>('/services', data)
+			.post<CreateServiceApiResponse>('/api/services', data)
 			.then(res => res.data),
 
 	update: (id: string, data: UpdateServiceApiRequest) => {
 		console.log(`/services/${id}`)
 
 		return axiosInstance
-			.put<UpdateServiceApiResponse>(`/services/${id}`, data)
+			.put<UpdateServiceApiResponse>(`/api/services/${id}`, data)
 			.then(res => res.data)
 	},
 
 	delete: (id: string) =>
 		axiosInstance
-			.delete<DeleteServiceApiResponse>(`/services/${id}`)
+			.delete<DeleteServiceApiResponse>(`/api/services/${id}`)
 			.then(res => res.data),
 }
 
