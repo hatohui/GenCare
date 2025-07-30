@@ -91,6 +91,7 @@ const ServiceDetailPage = () => {
 							query.refetch()
 						},
 						onError: error => {
+							console.log(error)
 							toast.error(
 								t('feedback.updateFailed') || 'Failed to update service'
 							)
@@ -141,6 +142,7 @@ const ServiceDetailPage = () => {
 							query.refetch()
 						},
 						onError: error => {
+							console.log(error)
 							toast.error(t('feedback.updateFailed') || 'Failed to save images')
 						},
 					}
@@ -158,6 +160,7 @@ const ServiceDetailPage = () => {
 	])
 
 	const handleImageUpload = (url: string, publicId: string) => {
+		console.log(publicId)
 		setNewImageUrls(prev => [...prev, url])
 		toast.success(t('feedback.imageUploaded') || 'Image uploaded successfully')
 	}

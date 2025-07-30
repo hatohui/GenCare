@@ -30,6 +30,7 @@ const handler: NextApiHandler<GoogleAiResponse> = async (req, res) => {
 				return res.status(405).json({ error: 'Method not allowed' })
 		}
 	} catch (error) {
+		console.log(error)
 		return res.status(500).json({ message: 'Internal server error' })
 	}
 }
