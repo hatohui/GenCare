@@ -700,6 +700,22 @@ public class AccountService(
         return response;
     }
 
+
+    public async Task<bool> CheckEmailExist(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            throw new AppException(400, "Email cannot be empty");
+        }
+        //get account by email
+        var account = await accountRepo.GetByEmailAsync(email);
+        if (account is null) //email does not exist
+        {
+            return false;
+        }
+        return true;
+    }
+
     public async Task<ConsultantInfoModel?> GetConsultantByIdAsync(Guid consultantId)
     {
         // Get the account by ID
@@ -736,5 +752,6 @@ public class AccountService(
             Biography = account.StaffInfo?.Biography,
             Department = department?.Name ?? string.Empty,
         };
+
     }
 }

@@ -42,7 +42,7 @@ public class ChatHub : Hub
         var httpContext = Context.GetHttpContext();
 
         var token = AuthHelper.GetAccessToken(httpContext);
-        
+
         if (string.IsNullOrEmpty(token))
             throw new AppException(401, "Missing or invalid access token.");
 
@@ -54,7 +54,7 @@ public class ChatHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, "AvailableStaffOrConsultant");
         await Clients.Caller.SendAsync("JoinedGroup", "AvailableStaffOrConsultant");
     }
-    
+
     /// <summary>
     /// Adds the current connection to a conversation group.
     /// </summary>
@@ -65,6 +65,4 @@ public class ChatHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
         await Clients.Caller.SendAsync("JoinedConversation", conversationId);
     }
-
-
 }

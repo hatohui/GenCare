@@ -45,6 +45,7 @@ public class CommentService(IBlogRepository blogRepository,
         {
             //get account of comment
             var account = await accountRepository.GetAccountByIdAsync(comment.AccountId);
+            
             rs.Add(new CommentViewResponse
             {
                 Id = comment.Id.ToString("D"),
@@ -56,7 +57,8 @@ public class CommentService(IBlogRepository blogRepository,
                 UpdatedBy = comment.UpdatedBy?.ToString("D"),
                 DeletedAt = comment.DeletedAt,
                 DeletedBy = comment.DeletedBy?.ToString("D"),
-                IsDeleted = comment.IsDeleted
+                IsDeleted = comment.IsDeleted,
+                Likes = comment.Likes
             });
         }
         return rs;

@@ -9,6 +9,7 @@ import {
 } from '../SVGs'
 import clsx from 'clsx'
 import TestResultEditModal from './TestResultEditModal'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface TestOrderItemProps {
 	result: Result
@@ -17,6 +18,7 @@ interface TestOrderItemProps {
 const TestOrderItem: React.FC<TestOrderItemProps> = ({ result }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [editOrderId, setEditOrderId] = useState<string | null>(null)
+	const { t } = useLocale()
 
 	return (
 		<div className='w-full'>
@@ -50,18 +52,20 @@ const TestOrderItem: React.FC<TestOrderItemProps> = ({ result }) => {
 									) : (
 										<XCircleSVG className='size-3' />
 									)}
-									{result.status ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
+									{result.status
+										? t('test.status.completed')
+										: t('test.status.incomplete')}
 								</div>
 							</div>
 							<p className='text-sm text-gray-600'>
-								Ngày đặt: {result.orderDate.toLocaleDateString('vi-VN')}
+								{t('test.order_date')}: {result.orderDate.toLocaleDateString()}
 							</p>
 						</div>
 						<div className='flex items-center gap-3'>
 							<button
 								onClick={() => setIsOpen(!isOpen)}
 								className='p-2 rounded-full hover:bg-gray-100 transition-colors'
-								aria-label={isOpen ? 'Thu gọn' : 'Mở rộng'}
+								aria-label={isOpen ? t('test.collapse') : t('test.expand')}
 							>
 								{isOpen ? (
 									<ChevronUpSVG className='size-5 text-gray-600' />

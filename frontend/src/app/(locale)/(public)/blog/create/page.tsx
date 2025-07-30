@@ -6,6 +6,7 @@ import { useCreateBlog } from '@/Services/Blog-service'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
 import FlorageBackground from '@/Components/Landing/FlorageBackground'
+import { useLocale } from '@/Hooks/useLocale'
 
 // Dynamically import BlogForm to prevent SSR issues with Cloudinary
 const BlogForm = dynamic(
@@ -27,6 +28,7 @@ const BlogForm = dynamic(
 import type { BlogCreateInput } from '@/Components/Blogs/BlogForm'
 
 const BlogCreatePage = () => {
+	const { t } = useLocale()
 	const [imageUrls, setImageUrls] = React.useState<string[]>([])
 	const createBlog = useCreateBlog()
 	const router = useRouter()
@@ -55,7 +57,7 @@ const BlogCreatePage = () => {
 					className='flex items-center gap-2 text-gray-600 hover:text-accent transition-colors mb-6'
 				>
 					<ArrowLeft className='w-5 h-5' />
-					Quay lại diễn đàn
+					{t('blog.back_to_forum')}
 				</button>
 			</div>
 
@@ -85,7 +87,7 @@ const BlogCreatePage = () => {
 								Không thể tạo bài viết
 							</h3>
 							<p className='text-red-700 text-sm'>
-								Đã xảy ra lỗi. Vui lòng thử lại sau.
+								{t('error.occurred_try_again')}
 							</p>
 						</div>
 					</div>

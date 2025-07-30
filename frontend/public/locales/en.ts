@@ -394,10 +394,13 @@ const en: Record<string, string> = {
 	'booking.payment_method': 'Payment Method',
 	'booking.pay_with_momo': 'Pay Now with MoMo',
 	'booking.pay_later': 'Pay Later',
+	'booking.pay_now_vnpay': 'Pay Now with VNPay',
 	'booking.total': 'Total',
 	'booking.momo_description': 'You will be redirected to MoMo payment page',
 	'booking.momo_description2': 'after confirming the booking.',
 	'booking.pay_later_description': 'You can pay after booking successfully.',
+	'booking.vnpay_description':
+		'You will be redirected to VNPay payment page after confirming the service booking.',
 	'booking.confirm_booking': 'Confirm Booking',
 	'booking.payment': 'Payment',
 	'booking.select_payment_method': 'Select payment method for your service',
@@ -438,6 +441,31 @@ const en: Record<string, string> = {
 	'booking.back': '← Go back',
 	'booking.book_service': 'Book Service',
 	'booking.deleting': 'Deleting...',
+	'booking.pdf_download_error': 'Error downloading PDF. Please try again.',
+	'booking.payment_info_not_found': 'Payment information not found',
+	'booking.payment_link_failed': 'Cannot create payment link',
+	'booking.vnpay_payment_failed': 'VNPay payment failed. Please try again.',
+	'booking.status_label': 'Status',
+	'booking.downloading': 'Downloading...',
+	'booking.download_pdf': 'Download PDF',
+	'booking.processing': 'Processing...',
+	'booking.pay_momo': 'Pay with MoMo',
+	'booking.pay_vnpay': 'Pay with VNPay',
+
+	// Test Results
+	'test.results_title': 'Test Results',
+	'test.general_results': 'General Test Results',
+	'test.loading_results': 'Loading results...',
+	'test.loading_error': 'Error loading results.',
+	'test.no_results': 'No test results available.',
+	'test.generated_on': 'Results generated on:',
+	'test.view_details': 'View Details',
+	'test.undefined': 'Undefined',
+	'test.all_normal_message':
+		'All indicators are within normal limits. Overall health is good.',
+	'test.abnormal': 'Abnormal',
+	'test.borderline': 'Borderline',
+	'test.summary': 'Summary',
 
 	// Services
 	'services.list': 'Services',
@@ -1095,6 +1123,136 @@ const en: Record<string, string> = {
 	'schedule.available_for_slot': "You're available for this time slot",
 	'schedule.slot_details': 'Slot {0} Details',
 	'schedule.appointments_count': 'Appointments ({0})',
+
+	// AI Chat
+	'ai.chat.open': 'Open AI Chat',
+	'ai.chat.close': 'Close AI Chat',
+	'ai.chat.no_messages': 'No messages yet, be the first to send a message!',
+	'ai.chat.error_occurred':
+		'An error occurred while processing your request. Please try again.',
+
+	// Blog Pages
+	'blog.back_to_forum': 'Back to forum',
+	'blog.edit_post_title': 'Edit post',
+	'blog.login_to_like': 'Log in to like post',
+
+	// Test Results
+	'test.status.completed': 'Completed',
+	'test.status.incomplete': 'Incomplete',
+	'test.expand': 'Expand',
+	'test.collapse': 'Collapse',
+
+	// Appointments
+	'appointment.join_now_urgent': 'JOIN NOW',
+	'appointment.join_now_simple': 'Join',
+
+	// Loading states
+	'loading.default': 'Loading...',
+	'error.loading_data': 'Error loading data. Please try again.',
+	'error.no_data_found': 'No data found. Please reload the page and try again.',
+
+	// Appointment status
+	'appointment.status.booked': 'Booked',
+	'appointment.status.confirmed': 'Confirmed',
+	'appointment.status.pending': 'Pending',
+	'appointment.status.cancelled': 'Cancelled',
+
+	// Confirmation messages
+	'confirmation.are_you_sure_delete':
+		'Are you sure you want to delete this item?',
+	'confirmation.are_you_sure_restore':
+		'Are you sure you want to restore this item?',
+	'confirmation.action_will_delete':
+		'This action will delete the item. Do you want to proceed?',
+	'confirmation.action_will_restore':
+		'This action will restore the item. Do you want to proceed?',
+
+	// Birth Control
+	'birthControl.loading_cycle_info': 'Loading cycle information...',
+	'birthControl.menstrual_cycle_prediction': 'Menstrual Cycle Prediction',
+	'birthControl.manage_track_cycle_safely':
+		'Manage and track your menstrual cycle safely and accurately',
+	'birthControl.cannot_load_cycle_info':
+		'Unable to load cycle information from server',
+	'birthControl.error_loading_cycle':
+		'An error occurred while loading cycle information. You can still use other features on this page.',
+	'birthControl.cycle_calendar': 'Cycle Calendar',
+	'birthControl.previous_month': '← Previous Month',
+	'birthControl.next_month': 'Next Month →',
+	'birthControl.no_cycle_data': 'No cycle data available',
+	'birthControl.select_start_date_to_view':
+		'Please select cycle start date to view calendar',
+	'birthControl.ovulation_day': 'Ovulation Day – Highest fertility chance 🌸',
+	'birthControl.menstrual_phase': 'Menstrual Phase – Period days',
+	'birthControl.unsafe_phase': 'Unsafe Phase – High fertility chance',
+	'birthControl.safe_phase': 'Safe Phase – Low fertility chance',
+	'birthControl.menstrual_period': 'Menstrual Period',
+	'birthControl.unsafe': 'Unsafe',
+	'birthControl.ovulation': 'Ovulation 🌸',
+	'birthControl.safe': 'Safe',
+	'birthControl.tracking_method_info':
+		'Information About Cycle Tracking Method',
+	'birthControl.how_it_works': 'How It Works:',
+	'birthControl.track_menstrual_start': 'Track menstrual cycle start date',
+	'birthControl.calculate_safe_unsafe': 'Calculate safe and unsafe phases',
+	'birthControl.predict_ovulation': 'Predict ovulation day',
+	'birthControl.provide_planning_info': 'Provide information for planning',
+	'birthControl.important_notes': 'Important Notes:',
+	'birthControl.reference_only': 'This method is for reference only',
+	'birthControl.not_100_effective':
+		'Not guaranteed 100% effective for contraception',
+	'birthControl.combine_with_other_methods':
+		'Should be combined with other methods',
+	'birthControl.consult_doctor': 'Consult a doctor when necessary',
+	'birthControl.important_note': 'Important note:',
+	'birthControl.phases_calculated_relatively':
+		'Phases are calculated relatively for reference. Ovulation day (🌸) usually falls in the middle of the unsafe period. This method is not guaranteed 100% effective for contraception.',
+
+	// Weekdays (short)
+	'weekdays.sun': 'SUN',
+	'weekdays.mon': 'MON',
+	'weekdays.tue': 'TUE',
+	'weekdays.wed': 'WED',
+	'weekdays.thu': 'THU',
+	'weekdays.fri': 'FRI',
+	'weekdays.sat': 'SAT',
+
+	// Service components
+	'service.loading_data': 'Loading data...',
+	'service.error_fetching_data': 'Error fetching data.',
+	'service.no_data_found': 'No data found.',
+	'service.search_services': 'Search services',
+	'service.search': 'Search',
+	'service.my_bookings': 'My Bookings',
+
+	// Blog error messages
+	'blog.cannot_load_post': 'Cannot load post',
+	'blog.error_loading_data':
+		'An error occurred while loading data. Please try again later.',
+	'blog.try_again': 'Try Again',
+	'blog.go_back': 'Go Back',
+
+	// Service pages
+	'service.page.go_back': '← Go back',
+	'service.page.services': 'Services',
+	'service.page.healthcare_services': 'Healthcare Services',
+	'service.page.discover_quality_healthcare':
+		'Discover quality healthcare services',
+	'service.page.sort_error':
+		'An error occurred while sorting. Please try again.',
+	'service.page.price_ascending': 'Price ascending ↑',
+	'service.page.price_descending': 'Price descending ↓',
+	'service.page.sort_by_price': 'Sort by price',
+	'service.page.current_filters': 'Current filters:',
+	'service.page.search_term': 'Search: {0}',
+	'service.page.clear_all': 'Clear all',
+
+	// Common error messages
+	'error.occurred_try_again': 'An error occurred. Please try again later.',
+	'error.cannot_delete_post': 'Cannot delete post',
+
+	// Management loading states
+	'management.loading_data': 'Loading data...',
 }
 
 export default en

@@ -1,5 +1,6 @@
 import { UseQueryResult } from '@tanstack/react-query'
 import React from 'react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface UseQueryUIStateOptions<T> {
 	query: UseQueryResult<T>
@@ -34,6 +35,7 @@ export const useQueryUIState = <T,>({
 	errorNode,
 	emptyNode,
 }: UseQueryUIStateOptions<T>): React.ReactNode | null => {
+	const { t } = useLocale()
 	const { isFetching, isError, isSuccess, data } = query
 
 	if (isFetching) {
@@ -41,7 +43,7 @@ export const useQueryUIState = <T,>({
 			loadingNode ?? (
 				<div className={defaultWrapper}>
 					<div className='animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600 mr-2' />
-					<span>Loading...</span>
+					<span>{t('loading.default')}</span>
 				</div>
 			)
 		)
@@ -51,7 +53,7 @@ export const useQueryUIState = <T,>({
 		return (
 			errorNode ?? (
 				<div className={`${defaultWrapper} text-red-500`}>
-					⚠️ Error loading data. Please try again.
+					⚠️ {t('error.loading_data')}
 				</div>
 			)
 		)
@@ -60,9 +62,7 @@ export const useQueryUIState = <T,>({
 	if (isSuccess && !data) {
 		return (
 			emptyNode ?? (
-				<div className={defaultWrapper}>
-					🚫 No data found. Please reload the page and try again.
-				</div>
+				<div className={defaultWrapper}>🚫 {t('error.no_data_found')}</div>
 			)
 		)
 	}

@@ -8,6 +8,7 @@ import { vi } from 'date-fns/locale'
 import { ResultData } from '@/Interfaces/Tests/Types/Tests'
 import { useGetResult } from '@/Services/Result-service'
 import { useCreateBookingPDF } from '@/Services/book-service'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface TestResultModalProps {
 	isOpen: boolean
@@ -118,6 +119,7 @@ const GeneralTestResultView = ({
 }: {
 	data: GeneralTestResult['data']
 }) => {
+	const { t } = useLocale()
 	const getStatusColor = (status: string) => {
 		switch (status) {
 			case 'normal':
@@ -134,20 +136,20 @@ const GeneralTestResultView = ({
 	const getStatusText = (status: string) => {
 		switch (status) {
 			case 'normal':
-				return 'Bình thường'
+				return t('test.normal')
 			case 'abnormal':
-				return 'Bất thường'
+				return t('test.abnormal')
 			case 'borderline':
-				return 'Giới hạn'
+				return t('test.borderline')
 			default:
-				return 'Không xác định'
+				return t('test.undefined')
 		}
 	}
 
 	return (
 		<div className='space-y-4'>
 			<h3 className='text-lg font-semibold text-main mb-4'>
-				Kết quả xét nghiệm tổng quát
+				{t('test.general_results')}
 			</h3>
 			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
 				{data.results.map((result, index) => (
@@ -172,14 +174,14 @@ const GeneralTestResultView = ({
 						</div>
 						{result.normalRange && (
 							<div className='text-xs text-gray-600'>
-								Bình thường: {result.normalRange}
+								{t('test.normal_range')} {result.normalRange}
 							</div>
 						)}
 					</div>
 				))}
 			</div>
 			<div className='bg-blue-50 border border-blue-200 rounded-[15px] p-4 mb-4'>
-				<h4 className='font-medium text-blue-800 mb-2'>Tóm tắt</h4>
+				<h4 className='font-medium text-blue-800 mb-2'>{t('test.summary')}</h4>
 				<p className='text-blue-700 text-sm'>{data.summary}</p>
 			</div>
 			<div className='bg-green-50 border border-green-200 rounded-[15px] p-4'>
@@ -192,10 +194,11 @@ const GeneralTestResultView = ({
 
 // Component for rendering ResultData
 const ResultDataView = ({ data }: { data: ResultData }) => {
+	const { t } = useLocale()
 	return (
 		<div className='space-y-4'>
 			<h3 className='text-lg font-semibold text-main mb-4'>
-				Kết quả xét nghiệm
+				{t('test.results_title')}
 			</h3>
 			<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6'>
 				{Object.entries(data).map(([parameter, result], index) => (
@@ -217,19 +220,19 @@ const ResultDataView = ({ data }: { data: ResultData }) => {
 								}`}
 							>
 								{result.flag === 'normal'
-									? 'Bình thường'
+									? t('test.normal')
 									: result.flag === 'high'
-									? 'Cao'
+									? t('test.high')
 									: result.flag === 'low'
-									? 'Thấp'
-									: 'Không xác định'}
+									? t('test.low')
+									: t('test.undefined')}
 							</span>
 						</div>
 						<div className='text-xl font-bold text-main mb-1'>
 							{result.value} {result.unit}
 						</div>
 						<div className='text-xs text-gray-600'>
-							Bình thường: {result.referenceRange}
+							{t('test.normal_range')} {result.referenceRange}
 						</div>
 					</div>
 				))}
@@ -244,6 +247,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	onClose,
 	bookingItem,
 }) => {
+	const { t } = useLocale()
 	const orderDetailId = bookingItem?.orderDetailId || ''
 	const { data, isLoading, error, refetch } = useGetResult(orderDetailId, {
 		enabled: isOpen && !!orderDetailId,
@@ -288,10 +292,10 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 	}
 
 	const renderTestResult = () => {
-		if (isLoading) return <div>Đang tải kết quả...</div>
-		if (error) return <div className='text-red-500'>Lỗi khi tải kết quả.</div>
-		if (!data || !data.resultData)
-			return <div>Không có kết quả xét nghiệm.</div>
+		if (isLoading) return <div>{t('test.loading_results')}</div>
+		if (error)
+			return <div className='text-red-500'>{t('test.loading_error')}</div>
+		if (!data || !data.resultData) return <div>{t('test.no_results')}</div>
 		return <ResultDataView data={data.resultData} />
 	}
 
@@ -303,7 +307,9 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 				{/* Header */}
 				<div className='flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0'>
 					<div>
-						<h2 className='text-xl font-bold text-main'>Kết quả xét nghiệm</h2>
+						<h2 className='text-xl font-bold text-main'>
+							{t('test.results_title')}
+						</h2>
 						<p className='text-gray-600 text-sm'>
 							{bookingItem?.serviceName} - {bookingItem?.firstName}{' '}
 							{bookingItem?.lastName}
@@ -324,7 +330,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 				{!isLoading && data && data.resultData && (
 					<div className='flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0'>
 						<div className='text-sm text-gray-600'>
-							Kết quả được tạo vào:{' '}
+							{t('test.generated_on')}{' '}
 							{data.resultDate
 								? new Date(data.resultDate).toLocaleDateString('vi-VN')
 								: '---'}
@@ -335,7 +341,7 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 								className='flex items-center gap-2 px-4 py-2 text-main border border-main rounded-[20px] hover:bg-main hover:text-white transition-colors'
 							>
 								<EyeSVG className='size-4' />
-								Xem chi tiết
+								{t('test.view_details')}
 							</button>
 							<button
 								onClick={handleDownloadPDF}
@@ -343,7 +349,9 @@ const TestResultModal: React.FC<TestResultModalProps> = ({
 								className='flex items-center gap-2 px-4 py-2 bg-main text-white rounded-[20px] hover:bg-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 							>
 								<DownloadSVG className='size-4' />
-								{isLoading ? 'Đang tải...' : 'Tải PDF'}
+								{isLoading
+									? t('booking.downloading')
+									: t('booking.download_pdf')}
 							</button>
 						</div>
 					</div>
