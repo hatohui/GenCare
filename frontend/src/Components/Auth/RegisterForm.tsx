@@ -10,6 +10,7 @@ import SubmitButton from './SubmitButton'
 import clsx from 'clsx'
 import { OauthResponse } from '@/Interfaces/Auth/Schema/oauth'
 import { useLocale } from '@/Hooks/useLocale'
+import { motion } from 'motion/react'
 
 type RegisterFormProps = keyof RegisterFormData
 
@@ -275,7 +276,10 @@ const RegisterForm = ({
 	}
 
 	return (
-		<form
+		<motion.form
+			initial={{ translateX: -20, opacity: 0 }}
+			animate={{ translateX: 0, opacity: 1 }}
+			transition={{ duration: 1.2, ease: 'easeOut' }}
 			className={clsx(
 				'p-7 w-xl min-w-sm mx-auto rounded-3xl bg-general',
 				className
@@ -493,7 +497,7 @@ const RegisterForm = ({
 					handleLogin={handleLogin}
 				/>
 			</div>
-		</form>
+		</motion.form>
 	)
 }
 

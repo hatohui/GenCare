@@ -545,6 +545,8 @@ const vi: Record<string, string> = {
 	'user.account': 'Tài khoản',
 
 	// Auth
+	'auth.noAccount': 'Chưa có tài khoản?',
+	'auth.signup': 'Đăng ký',
 	'auth.login': 'Đăng nhập',
 	'auth.logout': 'Đăng xuất',
 	'auth.register': 'Đăng ký',

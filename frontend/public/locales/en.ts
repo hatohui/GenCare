@@ -516,6 +516,8 @@ const en: Record<string, string> = {
 	'user.account': 'Account',
 
 	// Auth
+	'auth.noAccount': 'No account?',
+	'auth.signup': 'Sign Up',
 	'auth.login': 'Login',
 	'auth.logout': 'Logout',
 	'auth.register': 'Register',

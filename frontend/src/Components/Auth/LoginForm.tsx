@@ -145,6 +145,18 @@ const LoginForm = ({ handleLogin, formError }: LoginComponentProps) => {
 					handleLogin={response => handleLogin(response, remember.value)}
 				/>
 			</div>
+
+			<div className='mt-4 text-center'>
+				<span className='text-gray-600 text-sm'>
+					{t('auth.noAccount')}{' '}
+					<Link
+						href='/register'
+						className='text-blue-500 underline hover:text-blue-700 transition-colors'
+					>
+						{t('auth.signup')}
+					</Link>
+				</span>
+			</div>
 		</motion.div>
 	)
 }
