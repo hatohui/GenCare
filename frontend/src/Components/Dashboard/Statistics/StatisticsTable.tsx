@@ -4,6 +4,7 @@ import React from 'react'
 import { motion } from 'motion/react'
 import { LucideIcon } from 'lucide-react'
 import FormatCurrency from '@/Components/FormatCurrency'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface StatisticsTableProps {
 	title: string
@@ -23,6 +24,7 @@ const StatisticsTable: React.FC<StatisticsTableProps> = ({
 	data,
 	className = '',
 }) => {
+	const { t } = useLocale()
 	const getValueColor = (color?: string) => {
 		switch (color) {
 			case 'success':
@@ -73,10 +75,10 @@ const StatisticsTable: React.FC<StatisticsTableProps> = ({
 					<thead>
 						<tr className='border-b border-gray-200'>
 							<th className='text-left py-3 px-2 text-sm font-medium text-gray-600'>
-								Metric
+								{t('statistics.metric')}
 							</th>
 							<th className='text-right py-3 px-2 text-sm font-medium text-gray-600'>
-								Value
+								{t('statistics.value')}
 							</th>
 						</tr>
 					</thead>

@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { BarChart3 } from 'lucide-react'
 import FormatCurrency from '@/Components/FormatCurrency'
 import { TopService } from '@/Interfaces/Statistics/Types/Statistics'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface TopServicesTableProps {
 	services: TopService[]
@@ -17,6 +18,8 @@ const TopServicesTable: React.FC<TopServicesTableProps> = ({
 	title = 'Top Services',
 	className = '',
 }) => {
+	const { t } = useLocale()
+
 	if (!services || services.length === 0) {
 		return (
 			<div
@@ -27,7 +30,7 @@ const TopServicesTable: React.FC<TopServicesTableProps> = ({
 					<h3 className='text-lg font-semibold text-gray-800'>{title}</h3>
 				</div>
 				<div className='text-center py-8 text-gray-500'>
-					No service data available
+					{t('statistics.noServiceData')}
 				</div>
 			</div>
 		)
@@ -49,19 +52,19 @@ const TopServicesTable: React.FC<TopServicesTableProps> = ({
 					<thead>
 						<tr className='border-b border-gray-200'>
 							<th className='text-left py-3 px-2 text-sm font-medium text-gray-600'>
-								Service Name
+								{t('statistics.serviceName')}
 							</th>
 							<th className='text-center py-3 px-2 text-sm font-medium text-gray-600'>
-								Bookings
+								{t('statistics.bookings')}
 							</th>
 							<th className='text-center py-3 px-2 text-sm font-medium text-gray-600'>
-								Revenue
+								{t('statistics.revenue')}
 							</th>
 							<th className='text-center py-3 px-2 text-sm font-medium text-gray-600'>
-								Rating
+								{t('statistics.rating')}
 							</th>
 							<th className='text-center py-3 px-2 text-sm font-medium text-gray-600'>
-								Performance
+								{t('statistics.performance')}
 							</th>
 						</tr>
 					</thead>
@@ -126,7 +129,9 @@ const TopServicesTable: React.FC<TopServicesTableProps> = ({
 			<div className='mt-6 pt-4 border-t border-gray-200'>
 				<div className='grid grid-cols-3 gap-4 text-center'>
 					<div>
-						<p className='text-sm text-gray-600'>Total Bookings</p>
+						<p className='text-sm text-gray-600'>
+							{t('statistics.totalBookings')}
+						</p>
 						<p className='text-lg font-semibold text-gray-800'>
 							{services
 								.reduce((sum, service) => sum + service.bookings, 0)
@@ -134,7 +139,9 @@ const TopServicesTable: React.FC<TopServicesTableProps> = ({
 						</p>
 					</div>
 					<div>
-						<p className='text-sm text-gray-600'>Total Revenue</p>
+						<p className='text-sm text-gray-600'>
+							{t('statistics.totalRevenue')}
+						</p>
 						<p className='text-lg font-semibold text-green-600'>
 							<FormatCurrency
 								amount={services.reduce(
@@ -145,7 +152,7 @@ const TopServicesTable: React.FC<TopServicesTableProps> = ({
 						</p>
 					</div>
 					<div>
-						<p className='text-sm text-gray-600'>Avg. Rating</p>
+						<p className='text-sm text-gray-600'>{t('statistics.avgRating')}</p>
 						<p className='text-lg font-semibold text-gray-800'>
 							{(
 								services.reduce(

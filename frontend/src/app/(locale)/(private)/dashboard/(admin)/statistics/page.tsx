@@ -255,25 +255,33 @@ const AdminStatisticsPage = () => {
 						<div className='text-2xl font-bold text-blue-600'>
 							{dashboardStatistic.totalActiveUsers.toLocaleString('en-US')}
 						</div>
-						<div className='text-sm text-gray-600'>Total Users</div>
+						<div className='text-sm text-gray-600'>
+							{t('statistics.totalUsers')}
+						</div>
 					</div>
 					<div className='text-center'>
 						<div className='text-2xl font-bold text-green-600'>
 							<FormatCurrency amount={dashboardStatistic.totalRevenue} />
 						</div>
-						<div className='text-sm text-gray-600'>Total Revenue</div>
+						<div className='text-sm text-gray-600'>
+							{t('statistics.totalRevenue')}
+						</div>
 					</div>
 					<div className='text-center'>
 						<div className='text-2xl font-bold text-purple-600'>
 							{dashboardStatistic.totalBookings.toLocaleString('en-US')}
 						</div>
-						<div className='text-sm text-gray-600'>Total Bookings</div>
+						<div className='text-sm text-gray-600'>
+							{t('statistics.totalBookings')}
+						</div>
 					</div>
 					<div className='text-center'>
 						<div className='text-2xl font-bold text-indigo-600'>
 							{dashboardStatistic.totalServices}
 						</div>
-						<div className='text-sm text-gray-600'>Active Services</div>
+						<div className='text-sm text-gray-600'>
+							{t('statistics.activeServices')}
+						</div>
 					</div>
 				</div>
 			</motion.div>
@@ -394,29 +402,29 @@ const AdminStatisticsPage = () => {
 			>
 				{/* User Statistics Table */}
 				<StatisticsTable
-					title='User Statistics'
+					title={t('statistics.userStatistics')}
 					icon={Users}
 					data={[
 						{
-							label: 'Active Users',
+							label: t('statistics.activeUsers'),
 							value: dashboardStatistic.totalActiveUsers,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Managers',
+							label: t('statistics.managers'),
 							value: dashboardStatistic.totalActiveManagers,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Staff',
+							label: t('statistics.staff'),
 							value: dashboardStatistic.totalActiveStaffs,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Consultants',
+							label: t('statistics.consultants'),
 							value: dashboardStatistic.totalActiveConsultants,
 							type: 'number',
 							color: 'info',
@@ -426,29 +434,29 @@ const AdminStatisticsPage = () => {
 
 				{/* Payment Statistics Table */}
 				<StatisticsTable
-					title='Payment Statistics'
+					title={t('statistics.paymentStatistics')}
 					icon={DollarSign}
 					data={[
 						{
-							label: 'Pending Payments',
+							label: t('statistics.pendingPayments'),
 							value: dashboardStatistic.pendingPayments,
 							type: 'number',
 							color: 'warning',
 						},
 						{
-							label: 'Completed Payments',
+							label: t('statistics.completedPayments'),
 							value: dashboardStatistic.completedPayments,
 							type: 'number',
 							color: 'success',
 						},
 						{
-							label: 'Total Revenue',
+							label: t('statistics.totalRevenue'),
 							value: dashboardStatistic.totalRevenue,
 							type: 'currency',
 							color: 'success',
 						},
 						{
-							label: 'Success Rate',
+							label: t('statistics.successRate'),
 							value: 98.5,
 							type: 'percentage',
 							color: 'success',
@@ -458,29 +466,29 @@ const AdminStatisticsPage = () => {
 
 				{/* Service Statistics Table */}
 				<StatisticsTable
-					title='Service Statistics'
+					title={t('statistics.serviceStatistics')}
 					icon={Package}
 					data={[
 						{
-							label: 'Total Services',
+							label: t('statistics.totalServices'),
 							value: dashboardStatistic.totalServices,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Total Bookings',
+							label: t('statistics.totalBookings'),
 							value: dashboardStatistic.totalBookings,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Active Consultants',
+							label: t('statistics.activeConsultants'),
 							value: dashboardStatistic.totalActiveConsultants,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Avg. Rating',
+							label: t('statistics.avgRating'),
 							value: 4.8,
 							type: 'text',
 							color: 'success',
@@ -490,29 +498,29 @@ const AdminStatisticsPage = () => {
 
 				{/* Test Statistics Table */}
 				<StatisticsTable
-					title='Test Statistics'
+					title={t('statistics.testStatistics')}
 					icon={TrendingUp}
 					data={[
 						{
-							label: 'Test Results',
+							label: t('statistics.testResults'),
 							value: dashboardStatistic.testResults,
 							type: 'number',
 							color: 'info',
 						},
 						{
-							label: 'Success Rate',
+							label: t('statistics.successRate'),
 							value: 98.5,
 							type: 'percentage',
 							color: 'success',
 						},
 						{
-							label: 'Avg. Processing Time',
+							label: t('statistics.avgProcessingTime'),
 							value: '2.3 days',
 							type: 'text',
 							color: 'default',
 						},
 						{
-							label: 'Pending Tests',
+							label: t('statistics.pendingTests'),
 							value: 12,
 							type: 'number',
 							color: 'warning',

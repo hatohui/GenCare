@@ -3,6 +3,7 @@
 import { motion } from 'motion/react'
 import React, { useState, ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface StatsCardProps {
 	title: string
@@ -27,6 +28,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
 	color = 'blue',
 	delay = 0,
 }) => {
+	const { t } = useLocale()
 	const colorClasses = {
 		blue: {
 			bg: 'bg-blue-100',
@@ -129,7 +131,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
 							className='mt-4 px-4 py-2 bg-main text-white rounded-lg hover:bg-main/90 transition-colors'
 							onClick={() => setShowModal(false)}
 						>
-							Đóng
+							{t('common.close')}
 						</button>
 					</div>
 				</div>
