@@ -1214,6 +1214,9 @@ const en: Record<string, string> = {
 	'birthControl.important_note': 'Important note:',
 	'birthControl.phases_calculated_relatively':
 		'Phases are calculated relatively for reference. Ovulation day (🌸) usually falls in the middle of the unsafe period. This method is not guaranteed 100% effective for contraception.',
+	'birthControl.account_required': 'Account Required',
+	'birthControl.please_login_to_access':
+		'Please log in to access this feature.',
 
 	// Weekdays (short)
 	'weekdays.sun': 'SUN',

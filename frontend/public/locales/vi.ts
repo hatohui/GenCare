@@ -1211,6 +1211,9 @@ const vi: Record<string, string> = {
 	'birthControl.important_note': 'Lưu ý quan trọng:',
 	'birthControl.phases_calculated_relatively':
 		'Các pha được tính toán tương đối để tham khảo. Ngày rụng trứng (🌸) thường rơi vào giữa khoảng không an toàn. Phương pháp này không đảm bảo 100% hiệu quả tránh thai.',
+	'birthControl.account_required': 'Yêu Cầu Tài Khoản',
+	'birthControl.please_login_to_access':
+		'Vui lòng đăng nhập để truy cập tính năng này.',
 
 	// Weekdays (short)
 	'weekdays.sun': 'CN',

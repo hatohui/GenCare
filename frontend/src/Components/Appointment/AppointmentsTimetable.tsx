@@ -449,7 +449,7 @@ export const AppointmentsTimetable = () => {
 
 							{/* Body with time slots */}
 							<tbody>
-								{timeSlots.map((timeSlot, index) => {
+								{timeSlots.map(timeSlot => {
 									// All time slots shown are now business hours
 									return (
 										<tr
