@@ -200,6 +200,7 @@ const vi: Record<string, string> = {
 	// Status
 	'status.active': 'Hoạt động',
 	'status.inactive': 'Không hoạt động',
+	'status.all': 'Tất cả',
 
 	// Dates and time
 	'date.today': 'Hôm nay',

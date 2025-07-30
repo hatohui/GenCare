@@ -27,7 +27,7 @@ const FilterButtons = ({
 	const filterButtons = [
 		{
 			id: 'all',
-			label: t('status.active'),
+			label: t('status.all'),
 			active: includeDeleted === null,
 			onClick: () => setIncludeDeleted(null),
 		},

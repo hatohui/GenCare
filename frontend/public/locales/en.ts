@@ -68,6 +68,7 @@ const en: Record<string, string> = {
 	// Status
 	'status.active': 'Active',
 	'status.inactive': 'Inactive',
+	'status.all': 'All',
 
 	// Dates and time
 	'date.today': 'Today',
