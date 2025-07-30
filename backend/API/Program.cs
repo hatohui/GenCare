@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using API.ActionFilters;
 using Api.Middlewares;
+using API.ActionFilters;
 using API.Middlewares;
 using Application.DTOs.Appointment.Request;
 using Application.DTOs.Auth.Requests;
@@ -347,6 +347,12 @@ RecurringJob.AddOrUpdate<IReminderService>(
 RecurringJob.AddOrUpdate<IReminderService>(
     "SendTodayAppointmentReminders",
     s => s.SendTodayAppointmentRemindersAsync(),
+    Cron.Daily
+);
+
+RecurringJob.AddOrUpdate<IPurchaseService>(
+    "RemoveUnpaidServicesAsync",
+    s => s.RemoveUnpaidServicesAsync(),
     Cron.Daily
 );
 
