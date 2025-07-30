@@ -221,7 +221,7 @@ export type BlogCreateInput = {
 	title: string
 	content: string
 	author: string
-	tagTitle?: string[]
+	tagTitles?: string[]
 	imageUrls?: string[]
 }
 
@@ -295,7 +295,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 			title: initialData?.title || '',
 			content: initialData?.content || '',
 			author: initialData?.author || '',
-			tagTitle: initialData?.tagTitle || [],
+			tagTitles: initialData?.tagTitles || [],
 			imageUrls: initialData?.imageUrls || [],
 		},
 		mode: 'onChange',
@@ -304,7 +304,13 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 	const watchedContent = watch('content')
 	const watchedTitle = watch('title')
 	const watchedAuthor = watch('author')
-	const watchedTags = watch('tagTitle') || []
+	const watchedTags = watch('tagTitles') || []
+
+	// Debug logging
+	React.useEffect(() => {
+		console.log('BlogForm - Initial Data:', initialData)
+		console.log('BlogForm - Watched Tags:', watchedTags)
+	}, [initialData, watchedTags])
 
 	// Get all tag suggestions
 	const allTags = Object.values(TAG_SUGGESTIONS).flat()
@@ -353,7 +359,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 
 		if (value && !tagExists) {
 			const tags = Array.from(new Set([...watchedTags, tag]))
-			setValue('tagTitle', tags)
+			setValue('tagTitles', tags)
 		}
 		setTagInputValue('')
 		setShowTagSuggestions(false)
@@ -395,7 +401,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
 
 	const removeTag = (tag: string) => {
 		const tags = watchedTags.filter(t => t !== tag)
-		setValue('tagTitle', tags)
+		setValue('tagTitles', tags)
 	}
 
 	const removeImage = (url: string) => {

@@ -12,7 +12,7 @@ export type Blog = {
 	deletedBy?: string
 	isDeleted: boolean
 	imageUrls?: string[]
-	tagTitle?: string[]
+	tagTitles?: string[]
 	comments?: number
 	likes?: number
 }
@@ -24,8 +24,9 @@ export type CreateBlog = {
 	content: string
 	author: string
 	imageUrls?: string[]
-	tagTitle?: string[]
+	tagTitles?: string[]
 }
+
 export type Comment = {
 	id: string
 	content: string

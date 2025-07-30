@@ -207,6 +207,17 @@ const SlotManagementCalendar = ({
 			schedules
 		)
 
+		// Check if this is the last consultant and there are appointments
+		const hasAppointments = slotStatus.appointments.length > 0
+		const isLastConsultant = slotStatus.assignedConsultants.length === 1
+
+		if (hasAppointments && isLastConsultant) {
+			toast.error(
+				'Cannot remove the last consultant when there are active appointments'
+			)
+			return
+		}
+
 		const targetConsultant = slotStatus.assignedConsultants.find(
 			(consultant: any) => consultant.id === consultantId
 		)
@@ -219,7 +230,12 @@ const SlotManagementCalendar = ({
 		// Delete the schedule using the scheduleId
 		deleteScheduleMutation.mutate(targetConsultant.scheduleId, {
 			onSuccess: () => {
-				toast.success('Consultant removed successfully!')
+				const remainingConsultants = slotStatus.assignedConsultants.length - 1
+				toast.success(
+					`Consultant removed successfully! ${remainingConsultants} consultant${
+						remainingConsultants !== 1 ? 's' : ''
+					} remaining in this slot.`
+				)
 				schedulesQuery.refetch()
 			},
 			onError: error => {
@@ -590,6 +606,14 @@ const SlotManagementCalendar = ({
 								appointments,
 								schedules
 							).assignedConsultants
+						}
+						appointments={
+							getSlotStatus(
+								selectedSlot.day,
+								selectedSlot.slotNo,
+								appointments,
+								schedules
+							).appointments
 						}
 					/>
 				)}

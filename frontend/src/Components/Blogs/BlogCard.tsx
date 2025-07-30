@@ -29,8 +29,8 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
 			</div>
 			<div className='p-6'>
 				<div className='flex items-center gap-4 mb-3 flex-wrap'>
-					{blog.tagTitle &&
-						blog.tagTitle.map((tag: string) => (
+					{blog.tagTitles &&
+						blog.tagTitles.map((tag: string) => (
 							<span
 								key={tag}
 								className='px-2 py-1 bg-accent/20 text-accent rounded-full text-xs font-medium'
