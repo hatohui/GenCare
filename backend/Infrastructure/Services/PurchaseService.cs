@@ -192,9 +192,9 @@ public class PurchaseService(
         return result;
     }
 
-    public void RemoveUnpaidServicesAsync()
+    public async Task RemoveUnpaidServicesAsync()
     {
-        purchaseRepository.RemoveUnpaidPurchasesAsync();
+        await purchaseRepository.RemoveUnpaidPurchasesAsync();
     }
 
 }

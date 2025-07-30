@@ -39,7 +39,7 @@ namespace Application.Services
         /// <summary>
         /// Removes all unpaid purchases that are older than one week.
         /// </summary>
-        void RemoveUnpaidServicesAsync();
+        Task RemoveUnpaidServicesAsync();
 
     }
 }
