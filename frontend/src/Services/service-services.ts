@@ -57,7 +57,7 @@ const serviceApi = {
 			params.append('includeDeleted', includeDeleted.toString())
 		if (sortByAlphabetical) params.append('sortByAlphabetical', 'true')
 
-		const query = `/api/services/all?${params.toString()}`
+		const query = `/services/all?${params.toString()}`
 
 		return axiosInstance.get<GetServiceByPageAdminResponse>(query).then(res => {
 			return res.data
