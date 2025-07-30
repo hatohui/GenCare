@@ -302,6 +302,11 @@ const en: Record<string, string> = {
 	'chat.book_consultant_feature_coming_soon':
 		'Book consultant feature coming soon!',
 	'chat.show_pending': 'Show pending',
+	'chat.consultant_joined': 'A consultant has joined the conversation!',
+	'chat.no_consultant_assigned':
+		'No consultant is assigned to this conversation',
+	'chat.join_conversation': 'Join Conversation',
+	'chat.ended_conversations': 'Ended Conversations',
 
 	// Consultants
 	'consultant.details': 'Consultant Details',

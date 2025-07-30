@@ -3,7 +3,7 @@ import { DEFAULT_API_URL } from '@/Constants/API'
 import useToken from '@/Hooks/Auth/useToken'
 
 const axiosInstance = axios.create({
-	baseURL: DEFAULT_API_URL,
+	baseURL: DEFAULT_API_URL + '/api',
 	withCredentials: true,
 })
 

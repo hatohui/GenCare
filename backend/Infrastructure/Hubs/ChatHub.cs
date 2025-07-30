@@ -71,5 +71,10 @@ public class ChatHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
         await Clients.Caller.SendAsync("JoinedConversation", conversationId);
+
+        // Notify other clients in the conversation that a consultant has joined
+        await Clients
+            .GroupExcept(conversationId, Context.ConnectionId)
+            .SendAsync("ConsultantJoined", new { conversationId });
     }
 }

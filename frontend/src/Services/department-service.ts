@@ -1,14 +1,10 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { DepartmentResponse } from '@/Interfaces/Department/schema/department'
+import axiosInstance from '@/Utils/axios'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 
 const departmentApi = {
-	// Public API - no authentication required
 	getAll: () =>
-		axios
-			.get<DepartmentResponse>(`${DEFAULT_API_URL}/departments`)
-			.then(res => res.data),
+		axiosInstance.get<DepartmentResponse>('/departments').then(res => res.data),
 }
 
 export const useGetAllDepartments = () => {

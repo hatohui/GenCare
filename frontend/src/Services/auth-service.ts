@@ -12,12 +12,12 @@ import axios from 'axios'
 const authApi = {
 	register: (data: RegisterApi) => {
 		return axios
-			.post<TokenData>(`${DEFAULT_API_URL}/auth/register`, data)
+			.post<TokenData>(`${DEFAULT_API_URL}/api/auth/register`, data)
 			.then(res => res.data)
 	},
 	login: (data: LoginApi) => {
 		return axios
-			.post<TokenData>(`${DEFAULT_API_URL}/auth/login`, data, {
+			.post<TokenData>(`${DEFAULT_API_URL}/api/auth/login`, data, {
 				withCredentials: true,
 			})
 			.then(res => {

@@ -224,10 +224,8 @@ const BlogPage = () => {
 		isError,
 	} = useInfiniteBlogs(ITEMS_PER_PAGE, search, selectedTag)
 
-	// Flatten all pages into a single array
 	const blogs = data?.pages.flatMap(page => page) || []
 
-	// Load more when the last item comes into view
 	React.useEffect(() => {
 		if (inView && hasNextPage && !isFetchingNextPage) {
 			fetchNextPage()

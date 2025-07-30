@@ -255,20 +255,22 @@ builder.Services.AddScoped<IVNPayService, VNPayService>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
 
-// ====== Optimized SignalR Configuration ======
+// ====== Optimized SignalR Configuration for EC2+Cloudflare setup ======
 builder
     .Services.AddSignalR(options =>
     {
-        // Connection timeout - how long to wait for a connection to complete
-        options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+        // Increased timeouts for production environment with EC2+Cloudflare+Nginx
+        options.ClientTimeoutInterval = TimeSpan.FromSeconds(120); // 2 minutes - match frontend
         // Keep alive interval - how often to send keep-alive pings
-        options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+        options.KeepAliveInterval = TimeSpan.FromSeconds(20); // Match frontend
         // Hand shake timeout - how long to wait for the handshake to complete
-        options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+        options.HandshakeTimeout = TimeSpan.FromSeconds(30); // Match frontend
         // Maximum message size (2MB)
         options.MaximumReceiveMessageSize = 2 * 1024 * 1024;
         // Stream buffer capacity
         options.StreamBufferCapacity = 10;
+        // Enable detailed errors in development
+        options.EnableDetailedErrors = builder.Environment.IsDevelopment();
     })
     .AddJsonProtocol(options =>
     {

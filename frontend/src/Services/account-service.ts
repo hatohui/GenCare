@@ -16,10 +16,7 @@ import toast from 'react-hot-toast'
 
 const accountApi = {
 	getMe: () => {
-		console.log('queried')
-
 		return axiosInstance.get<any>('/accounts/me').then(res => {
-			// Transform backend ProfileViewModel to frontend StaffAccount format
 			const backendData = res.data
 			const transformedData: GetAccountByIdResponse = {
 				id: backendData.id,
@@ -40,11 +37,11 @@ const accountApi = {
 					backendData.biography ||
 					backendData.departmentName
 						? {
-								departmentId: '', // Backend ProfileViewModel doesn't include this, will need to fetch separately
+								departmentId: '',
 								degree: backendData.degree,
 								yearOfExperience: backendData.yearOfExperience,
 								biography: backendData.biography,
-								departmentName: backendData.departmentName || '', // Now backend includes this
+								departmentName: backendData.departmentName || '',
 						  }
 						: undefined,
 			}
@@ -103,18 +100,6 @@ const accountApi = {
 		return axiosInstance.get<any>(`/accounts/${id}`).then(res => {
 			// Transform backend AccountViewModel to frontend StaffAccount format
 			const backendData = res.data
-			console.log('🔧 Account Service - Backend response:', backendData)
-			if (backendData.staffInfo) {
-				console.log(
-					'🔧 Account Service - Backend staff info:',
-					backendData.staffInfo
-				)
-				console.log(
-					'🔧 Account Service - Backend department ID:',
-					backendData.staffInfo.departmentId
-				)
-			}
-
 			const transformedData: GetAccountByIdResponse = {
 				id: backendData.id,
 				email: backendData.email,

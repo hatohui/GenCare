@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
 	const { mutate, isPending } = useMutation({
 		mutationKey: ['reset-password'],
 		mutationFn: async (data: ResetPasswordRequest) =>
-			axios.post(`${DEFAULT_API_URL}/auth/reset-password`, data),
+			axios.post(`${DEFAULT_API_URL}/api/auth/reset-password`, data),
 		onSuccess: () => {
 			startRetryTimer()
 		},

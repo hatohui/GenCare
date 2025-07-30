@@ -8,7 +8,11 @@ import {
 } from '@/Services/chat-service'
 import useToken from '@/Hooks/Auth/useToken'
 
-const useChat = (conversationId: string, onConversationEnded?: () => void) => {
+const useChat = (
+	conversationId: string,
+	onConversationEnded?: () => void,
+	onConsultantJoined?: () => void
+) => {
 	const { accessToken: token } = useToken()
 	const [messages, setMessages] = useState<SignalRMessage[]>([])
 	const [connected, setConnected] = useState(false)
@@ -79,6 +83,10 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 			onConversationEnded?.()
 		})
 
+		client.onConsultantJoined(() => {
+			onConsultantJoined?.()
+		})
+
 		let isMounted = true
 
 		const startConnection = async () => {
@@ -104,12 +112,26 @@ const useChat = (conversationId: string, onConversationEnded?: () => void) => {
 					`Failed to start chat connection (attempt ${connectionAttemptRef.current}):`,
 					error
 				)
+
+				// Check if it's a timeout error and provide specific feedback
+				const isTimeoutError =
+					error instanceof Error &&
+					(error.message.includes('timeout') ||
+						error.message.includes('Server timeout'))
+
+				if (isTimeoutError) {
+					console.warn(
+						'Connection timeout detected - may be due to network latency or server load'
+					)
+				}
+
 				if (isMounted) {
 					setConnected(false)
-					// Exponential backoff for retry
+					// Exponential backoff for retry, with longer delays for timeout errors
 					if (connectionAttemptRef.current < maxConnectionAttempts) {
+						const baseDelay = isTimeoutError ? 3000 : 1000 // Longer delay for timeout errors
 						const retryDelay = Math.min(
-							1000 * Math.pow(2, connectionAttemptRef.current - 1),
+							baseDelay * Math.pow(2, connectionAttemptRef.current - 1),
 							10000
 						)
 						setTimeout(() => {

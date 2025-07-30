@@ -1,6 +1,5 @@
-export const DEFAULT_API_URL = 'https://api.gencare.site/api'
+export const DEFAULT_API_URL = process.env.NEXT_PUBLIC_API_URL
 
-// Payment callback URLs
 export const PAYMENT_SUCCESS_URL =
 	'/app/payment-callback?resultCode=0&message=Thanh%20to%C3%A1n%20th%C3%A0nh%20c%C3%B4ng'
 export const PAYMENT_FAILED_URL =

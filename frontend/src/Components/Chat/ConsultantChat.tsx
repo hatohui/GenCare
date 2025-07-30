@@ -11,17 +11,16 @@ import useChat from '@/Hooks/Chat/useChat'
 import { toast } from 'react-hot-toast'
 import { useGetMe } from '@/Services/account-service'
 import ConsultantConversationHistory from './ConsultantConversationHistory'
+import ConnectionStatus from './ConnectionStatus'
 import {
 	RefreshCw,
 	User,
 	Clock,
 	MessageCircle,
-	Rocket,
 	Stethoscope,
 	Loader2,
 	Coffee,
 	History,
-	UserPlus,
 	Copy,
 } from 'lucide-react'
 import { useLocale } from '@/Hooks/useLocale'
@@ -56,21 +55,24 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 			memberId?: string
 		} | null>(null)
 	const [inputMessage, setInputMessage] = useState('')
-	const [activeView, setActiveView] = useState<'unassigned' | 'history'>(
-		'unassigned'
+	const [activeView, setActiveView] = useState<'waiting' | 'active' | 'ended'>(
+		'waiting'
 	)
 
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 	const { data: userData } = useGetMe()
 
-	const { messages, sendMessage, isLoading, connected } = useChat(
-		selectedConversationId || '',
-		() => {
-			setSelectedConversationId(null)
-			setSelectedConversationDetails(null)
-		}
-	)
+	const handleConversationEnded = useCallback(() => {
+		setSelectedConversationId(null)
+		setSelectedConversationDetails(null)
+		toast(t('chat.conversation_ended'), {
+			icon: 'ℹ️',
+		})
+	}, [t])
+
+	const { messages, sendMessage, isLoading, connected, connectionState } =
+		useChat(selectedConversationId || '', handleConversationEnded)
 
 	const {
 		data: unassignedConversations = [],
@@ -100,6 +102,8 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 	const handleConversationSelect = useCallback(
 		(conversationId: string) => {
 			setSelectedConversationId(conversationId)
+			// Switch to active tab when a conversation is selected
+			setActiveView('active')
 
 			// Find conversation details from history or unassigned conversations
 			// consultantHistory is a direct array of conversations
@@ -149,6 +153,8 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 			try {
 				await joinConversationMutation.mutateAsync(conversationId)
 				setSelectedConversationId(conversationId)
+				// Switch to active tab when joining a conversation
+				setActiveView('active')
 
 				// Set conversation details when joining
 				const conversation = unassignedConversations.find(
@@ -279,6 +285,15 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 		}
 	}, [selectedConversationId])
 
+	// Auto-focus input when conversation is selected
+	useEffect(() => {
+		if (selectedConversationId) {
+			setTimeout(() => {
+				inputRef.current?.focus()
+			}, 100)
+		}
+	}, [selectedConversationId])
+
 	return (
 		<div
 			className={`${className} flex h-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200`}
@@ -295,36 +310,47 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 					</div>
 
 					{/* View Toggle */}
-					<div className='flex bg-white bg-opacity-20 rounded-lg p-1'>
+					<div className='flex bg-white bg-opacity-20 rounded-lg p-1 space-x-1'>
 						<button
-							onClick={() => setActiveView('unassigned')}
-							className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
-								activeView === 'unassigned'
-									? 'bg-white text-accent shadow-sm'
-									: 'text-gray-400 hover:bg-white hover:bg-opacity-10'
+							onClick={() => setActiveView('waiting')}
+							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+								activeView === 'waiting'
+									? 'bg-white text-gray-700 shadow-sm'
+									: 'text-gray-300 hover:bg-white hover:bg-opacity-10'
 							}`}
 						>
-							<UserPlus className='w-4 h-4' />
-							<span>{t('chat.pending')}</span>
+							<Clock className='w-3 h-3' />
+							<span>{t('chat.waiting')}</span>
 						</button>
 						<button
-							onClick={() => setActiveView('history')}
-							className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
-								activeView === 'history'
-									? 'bg-white text-accent shadow-sm'
-									: 'text-gray-400 hover:bg-white hover:bg-opacity-10'
+							onClick={() => setActiveView('active')}
+							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+								activeView === 'active'
+									? 'bg-white text-gray-700 shadow-sm'
+									: 'text-gray-300 hover:bg-white hover:bg-opacity-10'
 							}`}
 						>
-							<History className='w-4 h-4' />
-							<span>{t('chat.history')}</span>
+							<MessageCircle className='w-3 h-3' />
+							<span>{t('chat.active')}</span>
+						</button>
+						<button
+							onClick={() => setActiveView('ended')}
+							className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+								activeView === 'ended'
+									? 'bg-white text-gray-700 shadow-sm'
+									: 'text-gray-300 hover:bg-white hover:bg-opacity-10'
+							}`}
+						>
+							<History className='w-3 h-3' />
+							<span>{t('chat.ended')}</span>
 						</button>
 					</div>
 				</div>
 
 				{/* Sidebar Content */}
 				<div className='flex-1 overflow-hidden'>
-					{activeView === 'unassigned' ? (
-						/* Unassigned Conversations */
+					{activeView === 'waiting' ? (
+						/* Waiting Patients - Unassigned Conversations */
 						<div className='h-full flex flex-col'>
 							<div className='p-4 border-b border-gray-200 bg-gray-50'>
 								<div className='flex items-center justify-between'>
@@ -421,33 +447,26 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 																	{formatUnassignedTime(conversation.startAt)}
 																</span>
 															</div>
-															<div className='flex items-center space-x-1 text-xs text-green-600 mt-1'>
-																<div className='w-2 h-2 bg-green-500 rounded-full'></div>
+															<div className='flex items-center space-x-1 text-xs text-orange-600 mt-1'>
+																<div className='w-2 h-2 bg-orange-500 rounded-full animate-pulse'></div>
 																<span>{t('chat.waiting')}</span>
 															</div>
 														</div>
 													</div>
 
 													<button
-														onClick={() =>
+														onClick={e => {
+															e.stopPropagation()
 															handleJoinConversation(
 																conversation.conversationId
 															)
-														}
+														}}
 														disabled={joinConversationMutation.isPending}
-														className='w-full mt-3 px-4 py-2 bg-gradient-to-r from-accent to-accent/90 text-white rounded-lg hover:from-accent/90 hover:to-accent group-hover:shadow-lg transition-all duration-200 font-medium disabled:opacity-50'
+														className='w-full mt-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors disabled:opacity-50'
 													>
-														{joinConversationMutation.isPending ? (
-															<div className='flex items-center justify-center space-x-2'>
-																<Loader2 className='w-4 h-4 animate-spin' />
-																<span>{t('chat.joining')}</span>
-															</div>
-														) : (
-															<div className='flex items-center justify-center space-x-2'>
-																<Rocket className='w-4 h-4' />
-																<span>{t('chat.join_consultation')}</span>
-															</div>
-														)}
+														{joinConversationMutation.isPending
+															? t('chat.joining')
+															: t('chat.join_conversation')}
 													</button>
 												</div>
 											)
@@ -456,13 +475,27 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 								)}
 							</div>
 						</div>
-					) : (
-						/* Conversation History */
+					) : activeView === 'active' ? (
+						/* Active Conversations */
 						<ConsultantConversationHistory
 							className='h-full'
 							onSelectConversation={handleConversationSelect}
 							selectedConversationId={selectedConversationId}
 						/>
+					) : (
+						/* Ended Conversations */
+						<div className='h-full flex flex-col'>
+							<div className='p-3 border-b border-gray-200 bg-gray-50'>
+								<span className='text-sm font-medium text-gray-700'>
+									{t('chat.ended_conversations')}
+								</span>
+							</div>
+							<ConsultantConversationHistory
+								className='flex-1'
+								onSelectConversation={handleConversationSelect}
+								selectedConversationId={selectedConversationId}
+							/>
+						</div>
 					)}
 				</div>
 			</div>
@@ -505,15 +538,12 @@ const ConsultantChat: React.FC<ConsultantChatProps> = ({ className }) => {
 											</button>
 										)}
 									</div>
-									<div className='flex items-center space-x-1'>
-										<div
-											className={`w-2 h-2 rounded-full ${
-												connected ? 'bg-green-300' : 'bg-red-300'
-											}`}
-										></div>
-										<span className='text-sm opacity-90'>
-											{connected ? t('chat.connected') : t('chat.connecting')}
-										</span>
+									<div className='flex items-center space-x-2'>
+										<ConnectionStatus
+											connected={connected || false}
+											connectionState={connectionState}
+											className='text-white'
+										/>
 									</div>
 								</div>
 							</div>

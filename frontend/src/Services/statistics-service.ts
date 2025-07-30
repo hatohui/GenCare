@@ -1,14 +1,12 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import { AdminStatisticsResponse } from '@/Interfaces/Statistics/Types/Statistics'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
+import axiosInstance from '@/Utils/axios'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 
 const statisticsApi = {
-	// Private API - requires authentication (admin only)
 	getAdminStatistics: (header: string) => {
-		return axios
-			.get<AdminStatisticsResponse>(`${DEFAULT_API_URL}/statistics/admin`, {
+		return axiosInstance
+			.get<AdminStatisticsResponse>('/statistics/admin', {
 				headers: { Authorization: header },
 				timeout: 10000,
 			})
@@ -22,35 +20,27 @@ const statisticsApi = {
 			})
 	},
 
-	// Private API - requires authentication (admin only)
 	getRevenueData: (
 		header: string,
 		period: 'week' | 'month' | 'year' = 'month'
 	) => {
-		return axios
-			.get<AdminStatisticsResponse['revenueData']>(
-				`${DEFAULT_API_URL}/statistics/revenue`,
-				{
-					headers: { Authorization: header },
-					params: { period },
-				}
-			)
+		return axiosInstance
+			.get<AdminStatisticsResponse['revenueData']>('/statistics/revenue', {
+				headers: { Authorization: header },
+				params: { period },
+			})
 			.then(res => res.data)
 	},
 
-	// Private API - requires authentication (admin only)
 	getUserGrowth: (
 		header: string,
 		period: 'week' | 'month' | 'year' = 'month'
 	) => {
-		return axios
-			.get<AdminStatisticsResponse['userGrowth']>(
-				`${DEFAULT_API_URL}/statistics/users/growth`,
-				{
-					headers: { Authorization: header },
-					params: { period },
-				}
-			)
+		return axiosInstance
+			.get<AdminStatisticsResponse['userGrowth']>('/statistics/users/growth', {
+				headers: { Authorization: header },
+				params: { period },
+			})
 			.then(res => res.data)
 	},
 }

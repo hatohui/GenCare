@@ -441,6 +441,11 @@ const vi: Record<string, string> = {
 	'chat.book_consultant_feature_coming_soon':
 		'Tính năng đặt lịch tư vấn viên sắp ra mắt!',
 	'chat.show_pending': 'Hiển thị chờ xử lý',
+	'chat.consultant_joined': 'Một chuyên gia đã tham gia cuộc hội thoại!',
+	'chat.no_consultant_assigned':
+		'Chưa có chuyên gia nào được phân công cho cuộc hội thoại này',
+	'chat.join_conversation': 'Tham gia cuộc hội thoại',
+	'chat.ended_conversations': 'Cuộc hội thoại đã kết thúc',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',

@@ -3,6 +3,7 @@ import axiosInstance from '@/Utils/axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as signalR from '@microsoft/signalr'
 import ConnectionHealthMonitor from '@/Utils/Chat/ConnectionHealthMonitor'
+import getChatConfig from '@/Utils/Chat/chatConfig'
 
 export interface MediaItem {
 	url: string
@@ -28,35 +29,36 @@ export class ChatSignalRClient {
 	private receiveMessageCallback?: (msg: SignalRMessage) => void
 	private deleteMessageCallback?: (messageId: string) => void
 	private conversationEndedCallback?: (conversationId: string) => void
+	private consultantJoinedCallback?: (conversationId: string) => void
 	private isStarted = false
 	private isDestroyed = false
 	private healthMonitor?: ConnectionHealthMonitor
 	private healthChangeCallback?: (isHealthy: boolean) => void
 
 	constructor(conversationId: string, accessToken?: string) {
-		const url = `https://api.gencare.site/hubs/chat?conversationId=${conversationId}`
+		const config = getChatConfig()
+		const url = config.hubUrl(conversationId)
 
 		this.connection = new signalR.HubConnectionBuilder()
 			.withUrl(url, {
 				accessTokenFactory: () => accessToken || '',
-			})
-			.withAutomaticReconnect({
-				nextRetryDelayInMilliseconds: retryContext => {
-					// Exponential backoff with max 30 seconds
-					const delay = Math.min(
-						1000 * Math.pow(2, retryContext.previousRetryCount),
-						30000
-					)
-					console.log(
-						`SignalR reconnect attempt ${
-							retryContext.previousRetryCount + 1
-						}, delay: ${delay}ms`
-					)
-					return delay
+				headers: {
+					'Cache-Control': 'no-cache',
+					Pragma: 'no-cache',
 				},
 			})
-			.configureLogging(signalR.LogLevel.Warning) // Reduce logging to warnings only
+			.withAutomaticReconnect(config.reconnectOptions)
+			.configureLogging(
+				config.connectionOptions.logLevel === 'Information'
+					? signalR.LogLevel.Information
+					: signalR.LogLevel.Warning
+			)
 			.build()
+
+		this.connection.serverTimeoutInMilliseconds =
+			config.connectionOptions.serverTimeoutInMilliseconds
+		this.connection.keepAliveIntervalInMilliseconds =
+			config.connectionOptions.keepAliveIntervalInMilliseconds
 
 		this.healthMonitor = new ConnectionHealthMonitor(this.connection)
 		this.registerEvents()
@@ -84,18 +86,37 @@ export class ChatSignalRClient {
 			}
 		)
 
-		// Connection state handlers
+		this.connection.on(
+			'ConsultantJoined',
+			(data: { conversationId: string }) => {
+				if (!this.isDestroyed) {
+					this.consultantJoinedCallback?.(data.conversationId)
+				}
+			}
+		)
+
 		this.connection.onclose(error => {
-			console.log('SignalR connection closed', error)
+			if (error) {
+				console.error('SignalR connection closed with error:', error)
+				if (error.message && error.message.includes('timeout')) {
+					console.warn(
+						'Connection timeout - this may indicate network issues or server overload'
+					)
+				}
+			} else {
+				console.log('SignalR connection closed normally')
+			}
 			this.isStarted = false
 		})
 
 		this.connection.onreconnecting(error => {
 			console.log('SignalR reconnecting...', error)
+			this.healthChangeCallback?.(false)
 		})
 
 		this.connection.onreconnected(connectionId => {
-			console.log('SignalR reconnected', connectionId)
+			console.log('SignalR reconnected successfully', connectionId)
+			this.healthChangeCallback?.(true)
 		})
 	}
 
@@ -109,7 +130,6 @@ export class ChatSignalRClient {
 			this.isStarted = true
 			console.log('SignalR connection started successfully')
 
-			// Start health monitoring
 			this.healthMonitor?.start(this.healthChangeCallback)
 		} catch (err) {
 			console.error('SignalR connection failed:', err)
@@ -144,6 +164,10 @@ export class ChatSignalRClient {
 		this.conversationEndedCallback = callback
 	}
 
+	onConsultantJoined(callback: (conversationId: string) => void): void {
+		this.consultantJoinedCallback = callback
+	}
+
 	onHealthChange(callback: (isHealthy: boolean) => void): void {
 		this.healthChangeCallback = callback
 	}
@@ -155,8 +179,6 @@ export class ChatSignalRClient {
 
 		this.isDestroyed = true
 		this.isStarted = false
-
-		// Stop health monitoring
 		this.healthMonitor?.stop()
 
 		try {

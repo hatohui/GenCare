@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import {
 	useCreateConversation,
 	useEndConversation,
@@ -20,7 +21,6 @@ import {
 	Loader2,
 	User,
 	AlertCircle,
-	Video,
 	Calendar,
 	ChevronDown,
 } from 'lucide-react'
@@ -35,6 +35,7 @@ interface UserChatProps {
 
 const UserChat: React.FC<UserChatProps> = ({ className }) => {
 	const { t } = useLocale()
+	const router = useRouter()
 	const [conversationId, setConversationId] = useState<string | null>(null)
 	const [inputMessage, setInputMessage] = useState('')
 	const [isConversationStarted, setIsConversationStarted] = useState(false)
@@ -61,13 +62,18 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 	const handleConversationEnded = useCallback(() => {
 		setIsConversationStarted(false)
 		toast(t('chat.conversation_ended_by_consultant'), {
-			icon: 'i',
+			icon: 'ℹ️',
 		})
+	}, [t])
+
+	const handleConsultantJoined = useCallback(() => {
+		toast.success(t('chat.consultant_joined'))
 	}, [t])
 
 	const { messages, connected, sendMessage, isLoading } = useChat(
 		conversationId || '',
-		handleConversationEnded
+		handleConversationEnded,
+		handleConsultantJoined
 	)
 
 	const scrollToBottom = () => {
@@ -199,15 +205,14 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 		}
 	}
 
-	const handleVideoCall = useCallback(() => {
-		// TODO: Implement video call functionality
-		toast.success(t('chat.video_call_feature_coming_soon'))
-	}, [t])
-
 	const handleBookConsultant = useCallback(() => {
-		// TODO: Implement book consultant functionality
-		toast.success(t('chat.book_consultant_feature_coming_soon'))
-	}, [t])
+		// Redirect to consultant profile page
+		if (currentConversationData?.staffId) {
+			router.push(`/app/consultants/${currentConversationData.staffId}`)
+		} else {
+			toast.error(t('chat.no_consultant_assigned'))
+		}
+	}, [currentConversationData?.staffId, router, t])
 
 	// Get pending conversations count
 	const getPendingCount = useCallback(() => {
@@ -462,28 +467,16 @@ const UserChat: React.FC<UserChatProps> = ({ className }) => {
 								<div className='flex items-center space-x-2'>
 									{/* Action Buttons - Only show if consultant is assigned and conversation is active */}
 									{currentConversationData?.staffId && !isConversationEnded && (
-										<>
-											<button
-												onClick={handleVideoCall}
-												className='px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center space-x-1'
-												title={t('chat.video_call_with_consultant')}
-											>
-												<Video className='w-4 h-4' />
-												<span className='hidden sm:inline'>
-													{t('chat.video_call')}
-												</span>
-											</button>
-											<button
-												onClick={handleBookConsultant}
-												className='px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-1'
-												title={t('chat.book_this_consultant')}
-											>
-												<Calendar className='w-4 h-4' />
-												<span className='hidden sm:inline'>
-													{t('chat.book_consultant')}
-												</span>
-											</button>
-										</>
+										<button
+											onClick={handleBookConsultant}
+											className='px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-1'
+											title={t('chat.book_this_consultant')}
+										>
+											<Calendar className='w-4 h-4' />
+											<span className='hidden sm:inline'>
+												{t('chat.book_consultant')}
+											</span>
+										</button>
 									)}
 									{!isConversationEnded && (
 										<button
