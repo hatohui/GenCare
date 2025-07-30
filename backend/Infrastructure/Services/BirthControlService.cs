@@ -137,9 +137,6 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
         var startDate = ToUnspecified(request.StartDate!.Value.Date);
         var endDate = ToUnspecified(request.EndDate?.Date ?? startDate.AddDays(27));
         
-        //menstrual period lasts 5 days
-      
-        
         birthControl.StartDate = startDate;
         birthControl.EndDate = endDate;
         birthControl.StartUnsafeDate = startDate.AddDays(9);
@@ -149,12 +146,14 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
 
         await birthControlRepository.UpdateBirthControlAsync(birthControl);
         
-       
+        //get db again to response for frontend
         var newBirthControl =await birthControlRepository.GetBirthControlAsync(accountId);
         var menstrualStart = startDate;
         var menstrualEnd = startDate.AddDays(4);
+        // Calculate safe and unsafe periods based on the new dates
         var firstSafeStart = newBirthControl.StartDate;
         var firstSafeEnd = newBirthControl.StartUnsafeDate.AddDays(-1);
+        // The second safe period starts the day after the unsafe period ends
         var secondSafeStart = newBirthControl.EndUnsafeDate.AddDays(1);
         var secondSafeEnd = newBirthControl.EndDate;
 
@@ -168,11 +167,11 @@ public class BirthControlService(IBirthControlRepository birthControlRepository)
             
             MenstrualStartDate = menstrualStart,
             MenstrualEndDate = menstrualEnd,
-            //
+            
             StartSafeDate = firstSafeStart,
             EndSafeDate = firstSafeEnd,
             
-            //
+            
             SecondSafeStart = secondSafeStart,
             SecondSafeEnd = secondSafeEnd,
             
