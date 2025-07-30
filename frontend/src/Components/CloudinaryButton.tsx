@@ -53,7 +53,6 @@ export const CloudinaryButton = ({
 
 		if (isUploading) {
 			timeoutId = setTimeout(() => {
-				console.warn('CloudinaryButton: Upload timeout, resetting state')
 				setIsUploading(false)
 			}, 30000) // 30 seconds timeout
 		}
@@ -95,11 +94,9 @@ export const CloudinaryButton = ({
 			signatureEndpoint='/api/sign-image'
 			uploadPreset={uploadPreset}
 			onOpen={() => {
-				console.log('CloudinaryButton: Widget opened')
 				setIsUploading(true)
 			}}
 			onClose={() => {
-				console.log('CloudinaryButton: Widget closed')
 				setIsUploading(false)
 			}}
 			onSuccess={(result: CloudinaryUploadWidgetResults) => {
@@ -108,7 +105,6 @@ export const CloudinaryButton = ({
 					public_id: string
 				}
 
-				console.log('CloudinaryButton Uploaded successfully:', info.secure_url)
 				setIsUploading(false)
 				onUploaded(info.secure_url, info.public_id)
 			}}

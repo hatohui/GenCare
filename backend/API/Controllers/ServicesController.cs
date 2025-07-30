@@ -43,11 +43,9 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     [Route("/api/services/all")]
     [ProducesResponseType(typeof(ViewServiceByPageResponse), StatusCodes.Status200OK)]
     [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
-    //seacrh/ filter by deleted services & not deleted services, 0 co deleted service -> sort by updatedAt 
+    //seacrh/ filter by deleted services & not deleted services, 0 co deleted service -> sort by updatedAt
     public async Task<IActionResult> GetAllServices([FromQuery] ViewServiceForStaffRequest request)
     {
-      
-
         var services = await servicesService.SearchServiceIncludeDeletedAsync(request);
         return Ok(services);
     }
@@ -85,6 +83,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <param name="request">Service info</param>
     /// <returns>Created service</returns>
     [HttpPost]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
     [ProducesResponseType(typeof(CreateServiceResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -92,9 +91,10 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     {
         // Lấy accessToken từ header => Service ko truy cập HTTPContext trực tiếp
         var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
-            ? tokenHeader.Substring(7)
-            : string.Empty;
+        var accessToken =
+            tokenHeader != null && tokenHeader.StartsWith("Bearer ")
+                ? tokenHeader.Substring(7)
+                : string.Empty;
 
         try
         {
@@ -117,19 +117,22 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     /// <param name="request">Service update info </param>
     /// <returns>Update result</returns>
     [HttpPut("{id}")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
     [ProducesResponseType(typeof(UpdateServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Update([FromBody] UpdateServiceRequest request, [FromRoute] Guid id)
-    
-       
+    public async Task<IActionResult> Update(
+        [FromBody] UpdateServiceRequest request,
+        [FromRoute] Guid id
+    )
     {
         var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
-            ? tokenHeader.Substring(7)
-            : string.Empty;
+        var accessToken =
+            tokenHeader != null && tokenHeader.StartsWith("Bearer ")
+                ? tokenHeader.Substring(7)
+                : string.Empty;
 
         try
         {
@@ -154,6 +157,7 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Manager}")]
     [ProducesResponseType(typeof(DeleteServiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -161,9 +165,10 @@ public class ServicesController(IServicesService servicesService) : ControllerBa
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         var tokenHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        var accessToken = tokenHeader != null && tokenHeader.StartsWith("Bearer ")
-            ? tokenHeader.Substring(7)
-            : string.Empty;
+        var accessToken =
+            tokenHeader != null && tokenHeader.StartsWith("Bearer ")
+                ? tokenHeader.Substring(7)
+                : string.Empty;
 
         var request = new DeleteServiceRequest { Id = id };
 

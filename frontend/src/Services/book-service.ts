@@ -31,7 +31,6 @@ const bookingApi = {
 		return axiosInstance
 			.post<MomoServiceResponse>(`/payments/momo?purchaseId=${purchaseId}`, {})
 			.then(res => {
-				console.log(res.data)
 				return res.data
 			})
 	},
@@ -39,7 +38,6 @@ const bookingApi = {
 		return axiosInstance
 			.get(`/payments/vnpay?purchaseId=${purchaseId}`, {})
 			.then(res => {
-				console.log(res.data)
 				return res.data
 			})
 	},

@@ -123,7 +123,6 @@ const accountApi = {
 					  }
 					: undefined,
 			}
-			console.log('🔧 Account Service - Transformed data:', transformedData)
 			return transformedData
 		})
 	},

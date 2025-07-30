@@ -7,12 +7,13 @@ import { useParams } from 'next/navigation'
 import EditableField from '@/Components/Management/EditableField'
 import { CloudinaryButton } from '@/Components/CloudinaryButton'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CldImage } from 'next-cloudinary'
 import { useDeleteMedia } from '@/Services/media-service'
 import { toast } from 'react-hot-toast'
 import { useLocale } from '@/Hooks/useLocale'
 import LocalizedCurrency from '@/Components/LocalizedCurrency'
+import { useQueryClient } from '@tanstack/react-query'
 import {
 	Service,
 	UpdateServiceApiRequest,
@@ -39,6 +40,7 @@ const ServiceDetailPage = () => {
 	const params = useParams()
 	const router = useRouter()
 	const { t } = useLocale()
+	const queryClient = useQueryClient()
 	const serviceId =
 		params && typeof params.id === 'string' ? params.id : undefined
 	const updateServiceMutation = useUpdateService()
@@ -59,20 +61,18 @@ const ServiceDetailPage = () => {
 				updatedData.imageUrls?.map((img: any) =>
 					typeof img === 'string' ? img : img.url
 				) || []
-			const allImageUrls = [...existingImageUrls, ...newImageUrls]
 
 			const updatedServiceDTO: UpdateServiceApiRequest = {
 				name: updatedData.name,
 				description: updatedData.description,
 				price: updatedData.price,
 				isDeleted: updatedData.isDeleted,
-				imageUrls: allImageUrls,
+				imageUrls: existingImageUrls, // Don't add newImageUrls here
 			}
 
 			const result = updateServiceSchema.safeParse(updatedServiceDTO)
 
 			if (!result.success) {
-				console.error('Validation failed:', result.error)
 				toast.error(t('feedback.validationFailed'))
 			} else {
 				updateServiceMutation.mutate(
@@ -80,9 +80,20 @@ const ServiceDetailPage = () => {
 					{
 						onSuccess: () => {
 							setNewImageUrls([])
+							toast.success(
+								t('feedback.updateSuccess') || 'Service updated successfully'
+							)
+							// Invalidate both individual service and services list queries
+							queryClient.invalidateQueries({
+								queryKey: ['service', serviceId],
+							})
+							queryClient.invalidateQueries({ queryKey: ['services'] })
+							query.refetch()
 						},
 						onError: error => {
-							console.error('Update failed:', error)
+							toast.error(
+								t('feedback.updateFailed') || 'Failed to update service'
+							)
 						},
 					}
 				)
@@ -94,9 +105,61 @@ const ServiceDetailPage = () => {
 		query: query,
 	})
 
+	// Auto-save images when new ones are uploaded
+	useEffect(() => {
+		if (
+			newImageUrls.length > 0 &&
+			serviceData &&
+			!updateServiceMutation.isPending
+		) {
+			// Only send the new image URLs, not the existing ones
+			// The backend will handle adding them to the existing images
+			const updatedServiceDTO: UpdateServiceApiRequest = {
+				name: serviceData.name,
+				description: serviceData.description,
+				price: serviceData.price,
+				isDeleted: serviceData.isDeleted,
+				imageUrls: newImageUrls, // Only send new images
+			}
+
+			const result = updateServiceSchema.safeParse(updatedServiceDTO)
+
+			if (result.success) {
+				updateServiceMutation.mutate(
+					{ id: serviceId ?? '', data: result.data },
+					{
+						onSuccess: () => {
+							setNewImageUrls([])
+							toast.success(
+								t('feedback.imagesSaved') || 'Images saved automatically'
+							)
+							// Invalidate both individual service and services list queries
+							queryClient.invalidateQueries({
+								queryKey: ['service', serviceId],
+							})
+							queryClient.invalidateQueries({ queryKey: ['services'] })
+							query.refetch()
+						},
+						onError: error => {
+							toast.error(t('feedback.updateFailed') || 'Failed to save images')
+						},
+					}
+				)
+			}
+		}
+	}, [
+		newImageUrls,
+		serviceData,
+		serviceId,
+		updateServiceMutation,
+		queryClient,
+		query,
+		t,
+	])
+
 	const handleImageUpload = (url: string, publicId: string) => {
-		console.log('🖼️ Service detail image uploaded:', { url, publicId })
 		setNewImageUrls(prev => [...prev, url])
+		toast.success(t('feedback.imageUploaded') || 'Image uploaded successfully')
 	}
 
 	const handleRemoveImage = (imageId: string, imageUrl: string) => {
@@ -104,6 +167,9 @@ const ServiceDetailPage = () => {
 			deleteMediaMutation.mutate(imageId, {
 				onSuccess: () => {
 					toast.success(t('feedback.removed'))
+					// Invalidate both individual service and services list queries
+					queryClient.invalidateQueries({ queryKey: ['service', serviceId] })
+					queryClient.invalidateQueries({ queryKey: ['services'] })
 					query.refetch()
 				},
 				onError: () => {
@@ -382,43 +448,6 @@ const ServiceDetailPage = () => {
 									className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium'
 								/>
 							</div>
-
-							{/* New images preview */}
-							{newImageUrls.length > 0 && (
-								<div>
-									<p className='text-sm font-medium text-blue-600 mb-3'>
-										{t('services.newImages')} ({newImageUrls.length}):
-									</p>
-									<div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3'>
-										{newImageUrls.map((url, index) => (
-											<div
-												key={index}
-												className='relative aspect-square rounded-lg overflow-hidden border-2 border-blue-200 group'
-											>
-												<CldImage
-													src={url}
-													alt={`New image ${index + 1}`}
-													width={120}
-													height={120}
-													className='object-cover w-full h-full'
-												/>
-												<div className='absolute top-1 right-1 bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs'>
-													+
-												</div>
-												<button
-													onClick={e => {
-														e.stopPropagation()
-														handleRemoveImage('', url)
-													}}
-													className='absolute top-1 left-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs'
-												>
-													×
-												</button>
-											</div>
-										))}
-									</div>
-								</div>
-							)}
 						</div>
 					</div>
 				</div>

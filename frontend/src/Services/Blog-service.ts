@@ -37,12 +37,10 @@ const blogApi = {
 		if (tags && tags.trim()) params.append('Tags', tags.trim())
 
 		const url = `${BLOG_URL}?${params.toString()}`
-		console.log('Fetching blogs:', { url, page, count, search, tags })
 
 		return axios
 			.get<Blogs>(url)
 			.then(res => {
-				console.log('Blogs API response:', res.data)
 				return res.data
 			})
 			.catch(error => {

@@ -26,16 +26,19 @@ const FilterButtons = ({
 
 	const filterButtons = [
 		{
+			id: 'all',
 			label: t('status.active'),
 			active: includeDeleted === null,
 			onClick: () => setIncludeDeleted(null),
 		},
 		{
+			id: 'active',
 			label: t('management.service.active'),
 			active: includeDeleted === false,
 			onClick: () => setIncludeDeleted(false),
 		},
 		{
+			id: 'inactive',
 			label: t('management.service.inactive'),
 			active: includeDeleted === true,
 			onClick: () => setIncludeDeleted(true),
@@ -59,7 +62,7 @@ const FilterButtons = ({
 			{/* Status filters */}
 			{filterButtons.map((button, index) => (
 				<motion.button
-					key={button.label}
+					key={button.id}
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.3, delay: 0.1 * index }}

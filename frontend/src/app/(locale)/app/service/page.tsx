@@ -20,8 +20,6 @@ export default function Page() {
 	useEffect(() => {
 		const sort = searchParams?.get('orderByPrice') || ''
 		const search = searchParams?.get('search') || ''
-
-		console.log(sort, search)
 	}, [searchParams])
 
 	const handleSortToggle = () => {
