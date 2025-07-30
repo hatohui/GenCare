@@ -18,6 +18,14 @@ public class ChatHub : Hub
     }
 
     /// <summary>
+    /// Ping method for connection health checks
+    /// </summary>
+    public async Task Ping()
+    {
+        await Clients.Caller.SendAsync("Pong");
+    }
+
+    /// <summary>
     /// Executed when a new client connects to the hub.
     /// Automatically adds them to the conversation group if the conversation ID is provided in the query string.
     /// </summary>
@@ -32,6 +40,7 @@ public class ChatHub : Hub
 
         await base.OnConnectedAsync();
     }
+
     /// <summary>
     /// Allows a staff or consultant (authenticated via JWT) to join the group
     /// that receives real-time notifications for new conversations.
@@ -40,7 +49,6 @@ public class ChatHub : Hub
     public async Task JoinAsAvailableStaffOrConsultant()
     {
         var httpContext = Context.GetHttpContext();
-
         var token = AuthHelper.GetAccessToken(httpContext);
 
         if (string.IsNullOrEmpty(token))
@@ -59,7 +67,6 @@ public class ChatHub : Hub
     /// Adds the current connection to a conversation group.
     /// </summary>
     /// <param name="conversationId">The ID of the conversation group to join.</param>
-
     public async Task JoinConversation(string conversationId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);

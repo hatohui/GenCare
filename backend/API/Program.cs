@@ -75,7 +75,6 @@ builder.Services.Configure<VNPayConfig>(options =>
 
 // Add services
 builder.Services.AddControllers();
-builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 
 // ====== Swagger ======
@@ -179,7 +178,10 @@ builder.Services.AddCors(options =>
             corsPolicyBuilder
                 .WithOrigins(
                     "http://localhost:3000",
+                    "http://localhost:3001",
                     "https://www.gencare.site",
+                    "https://gencare.vercel.app",
+                    "https://*.gencare.vercel.app",
                     "http://127.0.0.1:5500"
                 )
                 .AllowCredentials()
@@ -232,7 +234,6 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<ITagService, TagService>();
-builder.Services.AddSignalR();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
@@ -247,13 +248,38 @@ builder.Services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IManualPaymentService, ManualPaymentService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
-builder.Services.AddSignalR();
 builder.Services.AddScoped<IZoomService, ZoomService>();
 builder.Services.AddScoped<IStatisticService, StatisticService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IVNPayService, VNPayService>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
+
+// ====== Optimized SignalR Configuration ======
+builder
+    .Services.AddSignalR(options =>
+    {
+        // Connection timeout - how long to wait for a connection to complete
+        options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+        // Keep alive interval - how often to send keep-alive pings
+        options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+        // Hand shake timeout - how long to wait for the handshake to complete
+        options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+        // Maximum message size (2MB)
+        options.MaximumReceiveMessageSize = 2 * 1024 * 1024;
+        // Stream buffer capacity
+        options.StreamBufferCapacity = 10;
+    })
+    .AddJsonProtocol(options =>
+    {
+        // Configure JSON serialization for better performance
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System
+            .Text
+            .Json
+            .JsonNamingPolicy
+            .CamelCase;
+        options.PayloadSerializerOptions.WriteIndented = false;
+    });
 
 //===========Redis Configuration===========
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -326,14 +352,27 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<RateLimitMiddleware>();
 
+// Optimize middleware order for performance
 app.UseRouting();
-app.UseHttpsRedirection();
 app.UseCors("AllowFrontendOrigins");
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/hubs/chat").RequireCors("AllowFrontendOrigins");
 
-await app.RunAsync(); //test
+// Enhanced SignalR Hub mapping with better configuration
+app.MapHub<ChatHub>(
+        "/hubs/chat",
+        options =>
+        {
+            options.Transports =
+                Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets
+                | Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
+            options.CloseOnAuthenticationExpiration = true;
+        }
+    )
+    .RequireCors("AllowFrontendOrigins");
+
+await app.RunAsync();
