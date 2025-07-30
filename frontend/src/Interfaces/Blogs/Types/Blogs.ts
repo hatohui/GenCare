@@ -37,7 +37,7 @@ export type Comment = {
 	deletedAt?: Date
 	deletedBy?: string
 	isDeleted: boolean
-	like?: number
+	likes?: number
 }
 
 export type Comments = Comment[]

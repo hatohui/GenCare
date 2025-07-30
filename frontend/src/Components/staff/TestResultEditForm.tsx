@@ -23,10 +23,10 @@ interface TestResultEditFormProps {
 
 // Simple validation schema
 const testParameterSchema = z.object({
-	key: z.string().min(1, 'Parameter name is required'),
-	value: z.number().min(0, 'Value cannot be negative'),
-	unit: z.string().min(1, 'Unit is required'),
-	referenceRange: z.string(),
+	key: z.string().min(1, 'Tên tham số là bắt buộc'),
+	value: z.number().min(0, 'Giá trị không thể âm'),
+	unit: z.string().min(1, 'Đơn vị là bắt buộc'),
+	referenceRange: z.string().min(1, 'Khoảng tham chiếu là bắt buộc'),
 	flag: z.enum(['normal', 'high', 'low']),
 })
 
@@ -40,14 +40,62 @@ const formSchema = z
 	})
 	.refine(
 		data => {
+			// Check if sample date is after order date
+			if (data.orderDate && data.sampleDate) {
+				const orderDate = new Date(data.orderDate)
+				const sampleDate = new Date(data.sampleDate)
+				return sampleDate >= orderDate
+			}
+			return true
+		},
+		{
+			message: 'Ngày lấy mẫu phải sau hoặc bằng ngày đặt',
+			path: ['sampleDate'],
+		}
+	)
+	.refine(
+		data => {
+			// Check if result date is after sample date
+			if (data.sampleDate && data.resultDate) {
+				const sampleDate = new Date(data.sampleDate)
+				const resultDate = new Date(data.resultDate)
+				return resultDate >= sampleDate
+			}
+			return true
+		},
+		{
+			message: 'Ngày trả kết quả phải sau hoặc bằng ngày lấy mẫu',
+			path: ['resultDate'],
+		}
+	)
+	.refine(
+		data => {
+			// Check if completed status has result date
 			if (data.status) {
 				return !!data.resultDate && data.resultDate !== ''
 			}
 			return true
 		},
 		{
-			message: 'Result date is required when completed',
+			message: 'Trạng thái đã hoàn thành thì phải có ngày trả kết quả',
 			path: ['resultDate'],
+		}
+	)
+	.refine(
+		data => {
+			// Check if completed status has at least one test parameter
+			if (data.status) {
+				return (
+					data.testParameters.length > 0 &&
+					data.testParameters.some(param => param.key.trim() !== '')
+				)
+			}
+			return true
+		},
+		{
+			message:
+				'Trạng thái đã hoàn thành thì phải có ít nhất một tham số xét nghiệm',
+			path: ['testParameters'],
 		}
 	)
 
@@ -253,11 +301,13 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 						</div>
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-2'>
-								{t('test.sample_date')}
+								{t('test.sample_date')}{' '}
+								<span className='text-gray-500 text-xs'>(≥ ngày đặt)</span>
 							</label>
 							<input
 								type='date'
 								{...register('sampleDate')}
+								min={watch('orderDate') || undefined}
 								className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-main'
 							/>
 							{errors.sampleDate && (
@@ -268,11 +318,13 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 						</div>
 						<div>
 							<label className='block text-sm font-medium text-gray-700 mb-2'>
-								{t('test.result_date')}
+								{t('test.result_date')}{' '}
+								<span className='text-gray-500 text-xs'>(≥ ngày lấy mẫu)</span>
 							</label>
 							<input
 								type='date'
 								{...register('resultDate')}
+								min={watch('sampleDate') || undefined}
 								className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-main'
 							/>
 							{errors.resultDate && (
@@ -320,6 +372,11 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 								<FlaskConical className='size-5' />
 								{t('test.parameters')}
 							</h3>
+							{errors.testParameters && (
+								<p className='text-red-500 text-sm'>
+									{errors.testParameters.message}
+								</p>
+							)}
 							<div className='flex gap-2'>
 								<button
 									type='button'
@@ -360,6 +417,11 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 												className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
 												placeholder='VD: glucose'
 											/>
+											{errors.testParameters?.[index]?.key && (
+												<p className='text-red-500 text-xs mt-1'>
+													{errors.testParameters[index]?.key?.message}
+												</p>
+											)}
 										</div>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
@@ -373,6 +435,11 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 												})}
 												className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
 											/>
+											{errors.testParameters?.[index]?.value && (
+												<p className='text-red-500 text-xs mt-1'>
+													{errors.testParameters[index]?.value?.message}
+												</p>
+											)}
 										</div>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
@@ -383,6 +450,11 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 												className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
 												placeholder={t('test.unit_placeholder')}
 											/>
+											{errors.testParameters?.[index]?.unit && (
+												<p className='text-red-500 text-xs mt-1'>
+													{errors.testParameters[index]?.unit?.message}
+												</p>
+											)}
 										</div>
 										<div>
 											<label className='block text-sm font-medium mb-1'>
@@ -393,6 +465,14 @@ const TestResultEditForm: React.FC<TestResultEditFormProps> = ({
 												className='w-full px-3 py-2 border border-gray-300 rounded-lg text-sm'
 												placeholder={t('test.reference_range_placeholder')}
 											/>
+											{errors.testParameters?.[index]?.referenceRange && (
+												<p className='text-red-500 text-xs mt-1'>
+													{
+														errors.testParameters[index]?.referenceRange
+															?.message
+													}
+												</p>
+											)}
 										</div>
 										<div className='flex gap-2'>
 											<div className='flex-1'>

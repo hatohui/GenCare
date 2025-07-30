@@ -30,7 +30,9 @@ export const useGetBirthControl = (id: string) => {
 	return useQuery({
 		queryKey: ['getBirthControl', id],
 		queryFn: () => birthControlApi.get(id),
-		staleTime: 0,
+		staleTime: 500,
+		retry: false,
+		enabled: !!id, // Only run query if id is provided
 	})
 }
 

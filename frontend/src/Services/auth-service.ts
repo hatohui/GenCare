@@ -54,6 +54,13 @@ const authApi = {
 				return res.data
 			})
 	},
+	isEmailExist: (email: string) => {
+		return axiosInstance
+			.post<boolean>(`/auth/check-email`, {
+				email,
+			})
+			.then(res => res.data)
+	},
 }
 
 export const useRegisterAccount = () => {
@@ -87,5 +94,11 @@ export const useLogoutAccount = () => {
 
 	return useMutation({
 		mutationFn: () => authApi.logout(handleLogout),
+	})
+}
+
+export const useIsEmailExist = () => {
+	return useMutation({
+		mutationFn: (email: string) => authApi.isEmailExist(email),
 	})
 }

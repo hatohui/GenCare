@@ -119,12 +119,6 @@ export const SIDE_NAV_OPTIONS: SideNavButtonProp[] = [
 		level: PermissionLevel.staff,
 	},
 	{
-		label: 'nav.appointments',
-		to: '/dashboard/appointments',
-		svg: <Calendar size={20} />,
-		level: PermissionLevel.staff,
-	},
-	{
 		label: 'nav.chat',
 		to: '/app/chat',
 		svg: <MessageCircle size={20} />,

@@ -1,4 +1,6 @@
 export { default as StatsCard } from './StatsCard'
+export { default as StatisticsTable } from './StatisticsTable'
+export { default as TopServicesTable } from './TopServicesTable'
 export { default as RevenueChart } from './RevenueChart'
 export { default as UserGrowthChart } from './UserGrowthChart'
 export { default as RecentActivity } from './RecentActivity'

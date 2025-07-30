@@ -39,7 +39,6 @@ export const ConsultantCard = ({
 		<motion.div
 			initial={{ opacity: 0, x: -20, y: -10 }}
 			animate={{ opacity: 1, x: 0, y: 0 }}
-			whileHover={{ scale: 1.02 }}
 			transition={{ duration: 0.5, ease: 'easeOut' }}
 			className={`bg-white rounded-2xl p-5 h-full shadow-md hover:shadow-lg transition-shadow duration-300 ${
 				onClick ? 'cursor-pointer' : ''

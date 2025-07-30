@@ -6,7 +6,17 @@ import { useAppointments } from '@/Services/appointment-service'
 import { AppointmentCell } from './AppointmentCell'
 import { CurrentTimeLine } from './CurrentTimeLine'
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
-import { Clock, Briefcase, Moon, BarChart3, TrendingUp } from 'lucide-react'
+import {
+	Clock,
+	Briefcase,
+	BarChart3,
+	TrendingUp,
+	Calendar,
+	Search,
+	ChevronLeft,
+	ChevronRight,
+	Eye,
+} from 'lucide-react'
 import {
 	getWeekRange,
 	getWeekDays,
@@ -158,195 +168,184 @@ export const AppointmentsTimetable = () => {
 
 	if (isLoading) {
 		return (
-			<motion.div
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				className='flex flex-col items-center justify-center min-h-[400px] space-y-4'
-			>
+			<div className='flex-1 flex items-center justify-center'>
 				<motion.div
-					animate={{ rotate: 360 }}
-					transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-					className='rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600'
-				/>
-				<motion.span
-					initial={{ opacity: 0, y: 10 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.2 }}
-					className='text-gray-600 text-lg font-medium'
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					className='text-center'
 				>
-					{t('appointment.loading_appointments')}
-				</motion.span>
-				<motion.div
-					initial={{ scaleX: 0 }}
-					animate={{ scaleX: 1 }}
-					transition={{ delay: 0.5, duration: 2, repeat: Infinity }}
-					className='w-32 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full'
-				/>
-			</motion.div>
+					<div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
+					<p className='text-gray-600'>
+						{t('appointment.loading_appointments')}
+					</p>
+				</motion.div>
+			</div>
 		)
 	}
 
 	if (error) {
 		return (
-			<motion.div
-				initial={{ opacity: 0, scale: 0.9 }}
-				animate={{ opacity: 1, scale: 1 }}
-				className='flex flex-col items-center justify-center min-h-[400px] space-y-6 p-8'
-			>
+			<div className='flex-1 flex items-center justify-center'>
 				<motion.div
-					initial={{ y: -20 }}
-					animate={{ y: 0 }}
-					className='text-red-600 text-center space-y-2'
-				>
-					<motion.div
-						animate={{ rotate: [0, -5, 5, 0] }}
-						transition={{ duration: 0.5, repeat: 2 }}
-						className='text-6xl mb-4'
-					>
-						😔
-					</motion.div>
-					<div className='text-xl font-bold text-gray-800'>
-						{t('appointment.error_occurred')}
-					</div>
-					<div className='text-sm text-gray-600 max-w-md'>{error.message}</div>
-				</motion.div>
-				<motion.button
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.3 }}
-					whileTap={{ scale: 0.95 }}
-					onClick={() => refetch()}
-					className='px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transition-all duration-200 shadow-lg font-medium flex items-center space-x-2'
+					className='text-center max-w-md mx-auto p-8'
 				>
-					<span>🔄</span>
-					<span>{t('appointment.try_again')}</span>
-				</motion.button>
-			</motion.div>
+					<div className='text-red-600 mb-4'>
+						<svg
+							className='w-16 h-16 mx-auto'
+							fill='currentColor'
+							viewBox='0 0 24 24'
+						>
+							<path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' />
+						</svg>
+					</div>
+					<h3 className='text-xl font-semibold text-gray-700 mb-2'>
+						{t('appointment.error_occurred')}
+					</h3>
+					<p className='text-gray-500 mb-4'>{error.message}</p>
+					<button
+						onClick={() => refetch()}
+						className='px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center space-x-2 mx-auto'
+					>
+						<svg
+							className='w-5 h-5'
+							fill='none'
+							stroke='currentColor'
+							viewBox='0 0 24 24'
+						>
+							<path
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								strokeWidth={2}
+								d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+							/>
+						</svg>
+						<span>{t('appointment.try_again')}</span>
+					</button>
+				</motion.div>
+			</div>
 		)
 	}
 
 	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5 }}
-			className='space-y-4 sm:space-y-6'
-		>
-			{/* Header with navigation */}
+		<div className='w-full h-full flex flex-col bg-gray-50'>
+			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.1 }}
-				className='flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6 rounded-xl border border-blue-100'
+				className='bg-white shadow-sm border-b border-gray-200 p-6'
 			>
+				<div className='flex items-center justify-between'>
+					<div className='flex items-center space-x-4'>
+						<div className='flex items-center space-x-2'>
+							<Eye className='w-6 h-6 text-blue-600' />
+							<h1 className='text-2xl font-bold text-gray-900'>
+								{t('appointment.my_appointments')}
+							</h1>
+						</div>
+						<div className='text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full'>
+							{formatWeekRange(startOfWeek, endOfWeek)}
+						</div>
+					</div>
+
+					{/* Navigation Controls */}
+					<div className='flex items-center space-x-2'>
+						<button
+							onClick={goToPreviousWeek}
+							className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
+							title={t('appointment.previous_week')}
+						>
+							<ChevronLeft className='w-4 h-4' />
+						</button>
+						<button
+							onClick={goToCurrentWeek}
+							className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium'
+						>
+							{t('appointment.current')}
+						</button>
+						<button
+							onClick={goToNextWeek}
+							className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
+							title={t('appointment.next_week')}
+						>
+							<ChevronRight className='w-4 h-4' />
+						</button>
+						<AnimatePresence>
+							{futureAppointments && futureAppointments.length > 0 && (
+								<motion.button
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{
+										opacity: 1,
+										scale: 1,
+										...(futureWeekAppointments.length === 0
+											? {
+													boxShadow: [
+														'0 0 0 0 rgba(34, 197, 94, 0.7)',
+														'0 0 0 10px rgba(34, 197, 94, 0)',
+														'0 0 0 0 rgba(34, 197, 94, 0)',
+													],
+													scale: [1, 1.05, 1],
+											  }
+											: {}),
+									}}
+									exit={{ opacity: 0, scale: 0.8 }}
+									whileTap={{ scale: 0.95 }}
+									onClick={goToFirstAppointmentWeek}
+									transition={{
+										duration: futureWeekAppointments.length === 0 ? 2 : 0.3,
+										repeat: futureWeekAppointments.length === 0 ? Infinity : 0,
+										repeatType: 'reverse',
+									}}
+									className={`px-4 py-2 rounded-lg transition-all duration-200 shadow-sm text-sm font-medium flex items-center space-x-2 ${
+										futureWeekAppointments.length === 0
+											? 'bg-green-600 text-white animate-pulse'
+											: 'bg-green-600 text-white hover:bg-green-700'
+									}`}
+								>
+									<Search className='w-4 h-4' />
+									<span>
+										{futureWeekAppointments.length === 0
+											? t('appointment.find_appointment')
+											: t('appointment.find_appointment')}
+									</span>
+								</motion.button>
+							)}
+						</AnimatePresence>
+					</div>
+				</div>
+
+				{/* Status Legend */}
 				<motion.div
-					initial={{ opacity: 0, x: -20 }}
-					animate={{ opacity: 1, x: 0 }}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
 					transition={{ delay: 0.2 }}
+					className='mt-4 flex flex-wrap items-center gap-4 text-sm'
 				>
-					<h1 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-						📅 {t('appointment.my_appointments')}
-					</h1>
-					<p className='text-gray-600 mt-1 text-sm sm:text-base'>
-						{t('appointment.week')} {formatWeekRange(startOfWeek, endOfWeek)}
-					</p>
-				</motion.div>
-
-				{/* Navigation Buttons */}
-				<motion.div
-					initial={{ opacity: 0, x: 20 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ delay: 0.3 }}
-					className='flex flex-wrap items-center gap-2 sm:gap-3'
-				>
-					<motion.button
-						whileTap={{ scale: 0.95 }}
-						onClick={goToPreviousWeek}
-						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium'
-					>
-						←{' '}
-						<span className='hidden sm:inline'>
-							{t('appointment.previous_week')}
+					<div className='flex items-center space-x-2'>
+						<div className='w-3 h-3 bg-green-100 border border-green-300 rounded'></div>
+						<span className='text-gray-600'>
+							{t('appointment.status.confirmed')}
 						</span>
-					</motion.button>
-
-					<motion.button
-						whileTap={{ scale: 0.95 }}
-						onClick={goToCurrentWeek}
-						className='px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transition-all duration-200 shadow-md text-xs sm:text-sm font-medium'
-					>
-						🏠{' '}
-						<span className='hidden sm:inline'>{t('appointment.current')}</span>
-					</motion.button>
-
-					<motion.button
-						whileTap={{ scale: 0.95 }}
-						onClick={goToNextWeek}
-						className='px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium'
-					>
-						<span className='hidden sm:inline'>
-							{t('appointment.next_week')}
-						</span>{' '}
-						→
-					</motion.button>
-
-					<AnimatePresence>
-						{futureAppointments && futureAppointments.length > 0 && (
-							<motion.button
-								initial={{ opacity: 0, scale: 0.8 }}
-								animate={{
-									opacity: 1,
-									scale: 1,
-									// Make it pulse when there are no appointments in current week
-									...(futureWeekAppointments.length === 0
-										? {
-												boxShadow: [
-													'0 0 0 0 rgba(34, 197, 94, 0.7)',
-													'0 0 0 10px rgba(34, 197, 94, 0)',
-													'0 0 0 0 rgba(34, 197, 94, 0)',
-												],
-												scale: [1, 1.05, 1],
-										  }
-										: {}),
-								}}
-								exit={{ opacity: 0, scale: 0.8 }}
-								whileTap={{ scale: 0.95 }}
-								onClick={goToFirstAppointmentWeek}
-								transition={{
-									duration: futureWeekAppointments.length === 0 ? 2 : 0.3,
-									repeat: futureWeekAppointments.length === 0 ? Infinity : 0,
-									repeatType: 'reverse',
-								}}
-								className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all duration-200 shadow-md text-xs sm:text-sm font-medium ${
-									futureWeekAppointments.length === 0
-										? 'bg-gradient-to-r from-green-500 to-green-600 text-white animate-pulse'
-										: 'bg-gradient-to-r from-green-500 to-green-600 text-white'
-								}`}
-							>
-								🔍{' '}
-								<span className='hidden sm:inline'>
-									{futureWeekAppointments.length === 0
-										? t('appointment.go_to_appointment')
-										: t('appointment.find_appointment')}
-								</span>
-								<span className='sm:hidden'>
-									{futureWeekAppointments.length === 0
-										? t('appointment.find')
-										: t('appointment.find')}
-								</span>
-							</motion.button>
-						)}
-					</AnimatePresence>
+					</div>
+					<div className='flex items-center space-x-2'>
+						<div className='w-3 h-3 bg-yellow-100 border border-yellow-300 rounded'></div>
+						<span className='text-gray-600'>
+							{t('appointment.status.pending')}
+						</span>
+					</div>
+					<div className='flex items-center space-x-2'>
+						<div className='w-3 h-3 bg-red-100 border border-red-300 rounded'></div>
+						<span className='text-gray-600'>
+							{t('appointment.status.cancelled')}
+						</span>
+					</div>
+					<div className='flex items-center space-x-2'>
+						<div className='w-3 h-3 bg-gray-200 border border-gray-300 rounded'></div>
+						<span className='text-gray-600'>{t('schedule.past')}</span>
+					</div>
 				</motion.div>
-			</motion.div>
 
-			{/* Timetable */}
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.4, duration: 0.5 }}
-				className='bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden appointment-timetable'
-			>
 				{/* No appointments in current week message */}
 				{futureAppointments &&
 					futureAppointments.length > 0 &&
@@ -354,10 +353,10 @@ export const AppointmentsTimetable = () => {
 						<motion.div
 							initial={{ opacity: 0, y: -20 }}
 							animate={{ opacity: 1, y: 0 }}
-							className='bg-yellow-50 border-l-4 border-yellow-400 p-4 m-4 rounded-lg'
+							className='mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg'
 						>
 							<div className='flex items-center space-x-3'>
-								<div className='text-yellow-600 text-2xl'>📅</div>
+								<Calendar className='w-6 h-6 text-yellow-600' />
 								<div>
 									<h3 className='text-yellow-800 font-semibold'>
 										{t('appointment.no_appointments_this_week')}
@@ -366,8 +365,9 @@ export const AppointmentsTimetable = () => {
 										{t('appointment.upcoming_appointments_info', {
 											0: futureAppointments.length.toString(),
 										})}{' '}
-										<span className='font-semibold text-green-600'>
-											&quot;🔍 {t('appointment.find_appointment')}&quot;
+										<span className='font-semibold text-green-600 flex items-center gap-1'>
+											<Search className='w-4 h-4' />
+											{t('appointment.find_appointment')}
 										</span>{' '}
 										{t('appointment.go_to_first_appointment')}
 									</p>
@@ -375,165 +375,136 @@ export const AppointmentsTimetable = () => {
 							</div>
 						</motion.div>
 					)}
+			</motion.div>
 
-				<div className='overflow-x-auto max-h-[70vh] sm:max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-gray-200 relative scroll-container'>
-					{/* Current Time Line Overlay */}
-					<CurrentTimeLine
-						timeSlots={timeSlots}
-						weekDays={weekDays}
-						onTimeSlotStatusChange={handleTimeSlotStatusChange}
-					/>
+			{/* Timetable */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.3 }}
+				className='flex-1 overflow-auto p-6'
+			>
+				<div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+					<div className='overflow-x-auto max-h-[70vh] sm:max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-gray-200 relative scroll-container'>
+						{/* Current Time Line Overlay */}
+						<CurrentTimeLine
+							timeSlots={timeSlots}
+							weekDays={weekDays}
+							onTimeSlotStatusChange={handleTimeSlotStatusChange}
+						/>
 
-					<motion.table
-						initial={{ opacity: 0.95 }}
-						animate={{ opacity: 1 }}
-						transition={{ duration: 0.2 }}
-						className='w-full min-w-[320px] sm:min-w-[800px] table-fixed'
-						style={{
-							tableLayout: 'fixed',
-							minWidth: '800px',
-						}}
-					>
-						{/* Header with days */}
-						<thead className='sticky top-0 z-50 sticky-header'>
-							<motion.tr
-								initial={{ opacity: 0, y: -10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.6 }}
-								className='bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-300'
-							>
-								<motion.th
-									initial={{ opacity: 0, x: -10 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ delay: 0.7 }}
-									className='w-16 sm:w-24 px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-bold text-gray-800 border-b border-gray-300 sticky left-0 z-40 bg-gradient-to-r from-gray-50 to-gray-100 shadow-lg sticky-time-col'
-									style={{
-										width: '100px',
-										minWidth: '100px',
-										maxWidth: '100px',
-									}}
-								>
-									<Clock className='w-4 h-4 inline mr-2' />
-									<span className='hidden sm:inline'>
-										{t('appointment.time')}
-									</span>
-								</motion.th>
-								{weekDays.map((day, index) => (
-									<motion.th
-										key={day.toISOString()}
-										initial={{ opacity: 0, y: -10 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ delay: 0.7 + index * 0.05 }}
-										className='px-1 sm:px-2 py-3 text-center text-xs sm:text-sm font-bold text-gray-800 border-b border-gray-300 min-w-[100px] sm:min-w-[150px] bg-gradient-to-r from-gray-50 to-gray-100 relative z-30'
+						<table
+							className='w-full min-w-[320px] sm:min-w-[800px] table-fixed'
+							style={{
+								tableLayout: 'fixed',
+								minWidth: '800px',
+							}}
+						>
+							{/* Header with days */}
+							<thead className='sticky top-0 z-50 sticky-header'>
+								<tr className='bg-gray-50 border-b border-gray-200'>
+									<th
+										className='w-16 sm:w-24 px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-200 sticky left-0 z-40 bg-gray-50 shadow-lg sticky-time-col'
 										style={{
-											width: `calc((100% - 100px) / 7)`,
-											minWidth: '120px',
+											width: '100px',
+											minWidth: '100px',
+											maxWidth: '100px',
 										}}
 									>
-										<div className='flex flex-col items-center space-y-1'>
-											<span className='text-xs text-gray-600'>
-												{new Date(day)
-													.toLocaleDateString(
-														locale === 'vi' ? 'vi-VN' : 'en-US',
-														{ weekday: 'short' }
-													)
-													.toUpperCase()}
-											</span>
-											<span className='font-bold text-gray-900'>
-												{new Date(day).toLocaleDateString(
-													locale === 'vi' ? 'vi-VN' : 'en-US',
-													{
-														day: '2-digit',
-														month: '2-digit',
-													}
-												)}
-											</span>
+										<div className='flex items-center space-x-2'>
+											<Clock className='w-4 h-4' />
+											<span>Time</span>
 										</div>
-									</motion.th>
-								))}
-							</motion.tr>
-						</thead>
-
-						{/* Body with time slots */}
-						<motion.tbody
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ delay: 0.8, duration: 0.5 }}
-						>
-							{timeSlots.map((timeSlot, index) => {
-								// Show all time slots, but visually distinguish working hours
-								const isWorkingHours =
-									timeSlot >= '08:00' && timeSlot <= '22:00'
-								return (
-									<motion.tr
-										key={timeSlot}
-										initial={{ opacity: 0, x: -20 }}
-										animate={{ opacity: 1, x: 0 }}
-										transition={{ delay: 0.9 + index * 0.02 }}
-										className='border-b border-gray-200 group'
-									>
-										<motion.td
-											initial={{ opacity: 0, x: -10 }}
-											animate={{ opacity: 1, x: 0 }}
-											transition={{ delay: 1 + index * 0.02 }}
-											className={`px-2 sm:px-4 py-2 text-xs sm:text-sm font-bold border-r border-gray-200 sticky left-0 z-20 transition-all duration-200 shadow-md sticky-time-col ${
-												isWorkingHours
-													? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-900'
-													: 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700'
-											}`}
+									</th>
+									{weekDays.map(day => (
+										<th
+											key={day.toISOString()}
+											className='px-2 py-3 text-center text-sm font-semibold text-gray-700 border-b border-gray-200 min-w-[100px] sm:min-w-[150px] bg-gray-50 relative z-30'
 											style={{
-												width: '100px',
-												minWidth: '100px',
-												maxWidth: '100px',
+												width: `calc((100% - 100px) / 7)`,
+												minWidth: '120px',
 											}}
 										>
-											<span className='flex items-center space-x-2'>
-												{isWorkingHours ? (
+											<div className='flex flex-col items-center space-y-1'>
+												<span className='text-xs text-gray-600'>
+													{new Date(day)
+														.toLocaleDateString(
+															locale === 'vi' ? 'vi-VN' : 'en-US',
+															{ weekday: 'short' }
+														)
+														.toUpperCase()}
+												</span>
+												<span className='font-bold text-gray-900'>
+													{new Date(day).toLocaleDateString(
+														locale === 'vi' ? 'vi-VN' : 'en-US',
+														{
+															day: '2-digit',
+															month: '2-digit',
+														}
+													)}
+												</span>
+											</div>
+										</th>
+									))}
+								</tr>
+							</thead>
+
+							{/* Body with time slots */}
+							<tbody>
+								{timeSlots.map(timeSlot => {
+									// All time slots shown are now business hours
+									return (
+										<tr
+											key={timeSlot}
+											className='border-b border-gray-200 group'
+										>
+											<td
+												className='px-4 py-3 text-sm font-semibold border-r border-gray-200 sticky left-0 z-20 transition-all duration-200 shadow-md sticky-time-col bg-gray-50 text-gray-800'
+												style={{
+													width: '100px',
+													minWidth: '100px',
+													maxWidth: '100px',
+												}}
+											>
+												<div className='flex items-center space-x-2'>
 													<Briefcase className='w-4 h-4' />
-												) : (
-													<Moon className='w-4 h-4' />
-												)}
-												<span>{timeSlot}</span>
-											</span>
-										</motion.td>
-										{weekDays.map((day, dayIndex) => {
-											const dateKey = getLocalDateKey(day)
-											const appointmentsForSlot =
-												groupedAppointments[dateKey]?.[timeSlot] || []
-											const isSlotPast = isTimeSlotPast(day, timeSlot)
-											const isSlotHighlighted =
-												highlightedSlot === `${dateKey}-${timeSlot}`
-											return (
-												<motion.td
-													key={`${dateKey}-${timeSlot}`}
-													ref={el => {
-														cellRefs.current[`${dateKey}-${timeSlot}`] = el
-													}}
-													initial={{ opacity: 0, scale: 0.9 }}
-													animate={{ opacity: 1, scale: 1 }}
-													transition={{
-														delay: 1.1 + index * 0.02 + dayIndex * 0.01,
-													}}
-													className={`p-0 relative z-10 appointment-cell ${
-														isSlotPast ? 'bg-gray-300' : ''
-													}`}
-													style={{
-														width: `calc((100% - 100px) / 7)`,
-														minWidth: '120px',
-													}}
-												>
-													<AppointmentCell
-														appointments={appointmentsForSlot}
-														isHighlighted={isSlotHighlighted}
-													/>
-												</motion.td>
-											)
-										})}
-									</motion.tr>
-								)
-							})}
-						</motion.tbody>
-					</motion.table>
+													<span>{timeSlot}</span>
+												</div>
+											</td>
+											{weekDays.map(day => {
+												const dateKey = getLocalDateKey(day)
+												const appointmentsForSlot =
+													groupedAppointments[dateKey]?.[timeSlot] || []
+												const isSlotPast = isTimeSlotPast(day, timeSlot)
+												const isSlotHighlighted =
+													highlightedSlot === `${dateKey}-${timeSlot}`
+												return (
+													<td
+														key={`${dateKey}-${timeSlot}`}
+														ref={el => {
+															cellRefs.current[`${dateKey}-${timeSlot}`] = el
+														}}
+														className={`p-0 relative z-10 appointment-cell ${
+															isSlotPast ? 'bg-gray-100' : ''
+														}`}
+														style={{
+															width: `calc((100% - 100px) / 7)`,
+															minWidth: '120px',
+														}}
+													>
+														<AppointmentCell
+															appointments={appointmentsForSlot}
+															isHighlighted={isSlotHighlighted}
+														/>
+													</td>
+												)
+											})}
+										</tr>
+									)
+								})}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</motion.div>
 
@@ -541,94 +512,34 @@ export const AppointmentsTimetable = () => {
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 1.5, duration: 0.5 }}
-				className='bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm'
+				transition={{ delay: 0.4, duration: 0.5 }}
+				className='bg-white border-t border-gray-200 p-4'
 			>
 				<div className='flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0'>
-					<motion.div
-						initial={{ opacity: 0, x: -20 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ delay: 1.6 }}
-						className='flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm'
-					>
+					<div className='flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm'>
 						<div className='flex items-center space-x-3'>
-							<BarChart3 className='w-6 h-6 text-blue-600' />
+							<BarChart3 className='w-5 h-5 text-blue-600' />
 							<span className='text-gray-700'>
 								{t('appointment.this_week')}:{' '}
-								<span className='font-bold text-blue-600 text-lg'>
+								<span className='font-bold text-blue-600'>
 									{futureWeekAppointments.length}
 								</span>{' '}
 								{t('appointment.appointments_count')}
 							</span>
 						</div>
 						<div className='flex items-center space-x-3'>
-							<TrendingUp className='w-6 h-6 text-purple-600' />
+							<TrendingUp className='w-5 h-5 text-purple-600' />
 							<span className='text-gray-700'>
 								{t('appointment.upcoming')}:{' '}
-								<span className='font-bold text-purple-600 text-lg'>
+								<span className='font-bold text-purple-600'>
 									{futureAppointments?.length || 0}
 								</span>{' '}
-								{t('appointment.upcoming_appointments')}
+								{t('appointment.appointments_count')}
 							</span>
 						</div>
-					</motion.div>
-
-					<motion.div
-						initial={{ opacity: 0, x: 20 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ delay: 1.7 }}
-						className='flex flex-wrap items-center gap-3 sm:gap-4'
-					>
-						<motion.div
-							initial={{ scale: 0 }}
-							animate={{ scale: 1 }}
-							transition={{ delay: 1.8, type: 'spring' }}
-							className='flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm'
-						>
-							<motion.div
-								animate={{ scale: [1, 1.2, 1] }}
-								transition={{ duration: 2, repeat: Infinity }}
-								className='w-3 h-3 bg-green-500 rounded-full'
-							></motion.div>
-							<span className='text-xs sm:text-sm text-gray-700 font-medium'>
-								{t('appointment.confirmed')}
-							</span>
-						</motion.div>
-
-						<motion.div
-							initial={{ scale: 0 }}
-							animate={{ scale: 1 }}
-							transition={{ delay: 1.9, type: 'spring' }}
-							className='flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm'
-						>
-							<motion.div
-								animate={{ scale: [1, 1.2, 1] }}
-								transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-								className='w-3 h-3 bg-yellow-500 rounded-full'
-							></motion.div>
-							<span className='text-xs sm:text-sm text-gray-700 font-medium'>
-								{t('appointment.pending_confirmation')}
-							</span>
-						</motion.div>
-
-						<motion.div
-							initial={{ scale: 0 }}
-							animate={{ scale: 1 }}
-							transition={{ delay: 2, type: 'spring' }}
-							className='flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm'
-						>
-							<motion.div
-								animate={{ scale: [1, 1.2, 1] }}
-								transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-								className='w-3 h-3 bg-red-500 rounded-full'
-							></motion.div>
-							<span className='text-xs sm:text-sm text-gray-700 font-medium'>
-								{t('appointment.cancelled')}
-							</span>
-						</motion.div>
-					</motion.div>
+					</div>
 				</div>
 			</motion.div>
-		</motion.div>
+		</div>
 	)
 }

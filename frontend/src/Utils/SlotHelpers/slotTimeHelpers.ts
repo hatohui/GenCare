@@ -108,7 +108,7 @@ export const generateSlotDateTime = (
 	const year = day.getFullYear()
 	const month = (day.getMonth() + 1).toString().padStart(2, '0')
 	const dayStr = day.getDate().toString().padStart(2, '0')
-	return `${year}-${month}-${dayStr}T${slotStartTime}:00`
+	return `${year}-${month}-${dayStr}T${slotStartTime}:00Z`
 }
 
 /**

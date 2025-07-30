@@ -19,8 +19,8 @@ const SearchBar = ({
 	onChange,
 }: SearchBarProps) => {
 	const searchParams = useSearchParams()
-	const search = searchParams?.get('search')
-	const [searchParam, setSearchParam] = useState(search)
+	const search = searchParams?.get('search') || ''
+	const [searchParam, setSearchParam] = useState<string>(search)
 	const router = useRouter()
 	const pathname = usePathname()
 	const { t } = useLocale()
@@ -33,8 +33,12 @@ const SearchBar = ({
 
 	const createQueryString = useCallback(
 		(name: string, value: string) => {
-			const params = new URLSearchParams(searchParams?.toString())
-			params.set(name, value)
+			const params = new URLSearchParams(searchParams?.toString() || '')
+			if (value.trim()) {
+				params.set(name, value.trim())
+			} else {
+				params.delete(name)
+			}
 			return params.toString()
 		},
 		[searchParams]
@@ -43,7 +47,11 @@ const SearchBar = ({
 	const debouncedPush = useMemo(
 		() =>
 			debounce((value: string) => {
-				router.push(pathname + '?' + createQueryString('search', value.trim()))
+				const queryString = createQueryString('search', value)
+				const newPath = queryString ? `${pathname}?${queryString}` : pathname
+				if (newPath) {
+					router.push(newPath)
+				}
 			}, waitTime),
 		[router, pathname, createQueryString, waitTime]
 	)

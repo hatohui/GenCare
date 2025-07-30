@@ -12,6 +12,7 @@ import {
 	ForgotPasswordRequest,
 	forgotPasswordSchema,
 } from '@/Interfaces/Auth/Schema/forgot-password'
+import Link from 'next/link'
 
 export default function ForgotPasswordPage() {
 	const [retryTimer, setRetryTimer] = useState<number | null>(null)
@@ -43,7 +44,9 @@ export default function ForgotPasswordPage() {
 			startRetryTimer()
 		},
 		onError: (error: any) => {
-			window.alert(error?.response?.data?.message || 'Something went wrong')
+			window.alert(
+				error?.response?.data?.message || t('common.error.try_again_later')
+			)
 		},
 	})
 
@@ -82,6 +85,9 @@ export default function ForgotPasswordPage() {
 				<h2 className='text-center text-3xl font-bold tracking-tight text-slate-950'>
 					{t('auth.forgotPassword')}
 				</h2>
+				<p className='text-center text-sm text-gray-600'>
+					{t('auth.forgotPasswordDescription')}
+				</p>
 				<form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
 					<div className='space-y-2'>
 						<label htmlFor='email-address' className='sr-only'>
@@ -143,6 +149,14 @@ export default function ForgotPasswordPage() {
 						{t('auth.resetEmailSent')}
 					</p>
 				)}
+				<div className='text-center'>
+					<Link
+						href='/login'
+						className='text-sm text-accent hover:text-accent/80 transition-colors duration-200'
+					>
+						{t('auth.backToLogin')}
+					</Link>
+				</div>
 			</div>
 		</div>
 	)
