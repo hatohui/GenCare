@@ -1,5 +1,4 @@
-﻿using System.Security.AccessControl;
-using Application.DTOs.Purchase;
+﻿using Application.DTOs.Purchase;
 using Application.DTOs.Purchase.Request;
 using Application.DTOs.Purchase.Response;
 using Application.Helpers;
@@ -37,9 +36,7 @@ public class PurchaseService(
         //for each order detail in booking service request
         foreach (var o in bookingServiceRequest.OrderDetails!)
         {
-            var ser = await serviceRepository.SearchServiceByIdAsync(o.ServiceId);
-            if (ser == null)
-                throw new AppException(404, $"Service with ID {o.ServiceId} not found");
+            var ser = await serviceRepository.SearchServiceByIdAsync(o.ServiceId) ?? throw new AppException(404, $"Service with ID {o.ServiceId} not found");
             //calculate total price
             totalPrice += ser.Price;
             //create new order detail
@@ -80,9 +77,7 @@ public class PurchaseService(
     public async Task<List<BookedService>> GetBookedService(string accountId)
     {
         //get account by id
-        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId));
-        if (account == null)
-            throw new AppException(404, "account not found");
+        var account = await accountRepository.GetAccountByIdAsync(Guid.Parse(accountId)) ?? throw new AppException(404, "account not found");
         //get purchases by account id
         var purchases = await purchaseRepository.GetByAccountId(account.Id);
         if (purchases == null || purchases.Count == 0)
@@ -96,7 +91,7 @@ public class PurchaseService(
             var paymentHistory = await paymentHistoryRepository.GetById(purchase.Id);
             if (paymentHistory != null)
             {
-                if (paymentHistory!.Status.Trim().ToLower() == PaymentStatus.Paid.ToLower())
+                if (paymentHistory!.Status.Trim().Equals(PaymentStatus.Paid, StringComparison.CurrentCultureIgnoreCase))
                     paid = true;
                 //get order details of this purchase
                 var orderDetails = purchase.OrderDetails;
@@ -162,7 +157,7 @@ public class PurchaseService(
                 PurchaseId = purchase.Id.ToString(),
                 IsPaid = false,
                 Price = 0,
-                Order = new List<BookedServiceModel>()
+                Order = []
             };
 
             var paymentCheck = await paymentHistoryRepository.GetById(purchase.Id);
@@ -190,12 +185,16 @@ public class PurchaseService(
                 responseItem.Price += service.Price;
             }
 
-            if (responseItem.Order.Any())
+            if (responseItem.Order.Count != 0)
                 result.Add(responseItem);
         }
 
         return result;
     }
 
+    public void RemoveUnpaidServicesAsync()
+    {
+        purchaseRepository.RemoveUnpaidPurchasesAsync();
+    }
 
 }
