@@ -48,7 +48,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .ToList();
         return response;
     }
-    private async Task<DashboardStatisticModel> GetDashboardStatistic()
+    public async Task<DashboardStatisticModel> GetDashboardStatistic()
     {
         //dashboard statistic 
         var accounts = await accountRepository.GetAll();
@@ -89,7 +89,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
             TestResults = totalResults.Count
         };
     }
-    private async Task<List<RevenueDataModel>> GetDailyRevenueAsync()
+    public async Task<List<RevenueDataModel>> GetDailyRevenueAsync()
     {
         var paymentHistories = await paymentHistoryRepository.GetAll();
         List<RevenueDataModel> response = new();
@@ -106,7 +106,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .ToList();
         return response;
     }
-    private async Task<List<UserGrowthModel>> GetDailyUserGrowth()
+    public async Task<List<UserGrowthModel>> GetDailyUserGrowth()
     {
         var accounts = await accountRepository.GetAll();
         List<UserGrowthModel> response = new();
@@ -136,7 +136,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
                 .ToList();
         return response;
     }
-    private async Task<List<TopServiceModel>> GetServiceStatistic()
+    public async Task<List<TopServiceModel>> GetServiceStatistic()
     {
         var services = await serviceRepository.GetAll();
         var paymentHistories = await paymentHistoryRepository.GetAll();
@@ -188,7 +188,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
         
         return rs;
     }
-    private async Task<PaymentStatisticModel> GetPaymentStatistic()
+    public async Task<PaymentStatisticModel> GetPaymentStatistic()
     {
         var paymentHistories = await paymentHistoryRepository.GetAll();
         var total = paymentHistories.Count;
@@ -205,7 +205,7 @@ public class StatisticService(IPaymentHistoryRepository paymentHistoryRepository
             MonthlyRevenue = monthlyRevenue
         };
     }
-    private async Task<UserStatisticModel> GetUserStatistic()
+    public async Task<UserStatisticModel> GetUserStatistic()
     {
         var accounts = await accountRepository.GetAll();
         var totalUsers = accounts.Count(a => a.Role.Name == RoleNames.Member);
