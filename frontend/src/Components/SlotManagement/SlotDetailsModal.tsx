@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import {
 	X,
@@ -10,13 +10,18 @@ import {
 	Clock,
 	Users,
 	AlertCircle,
+	UserPlus,
+	XIcon,
 } from 'lucide-react'
 import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
 import {
 	WORKING_SLOTS,
 	formatSlotTimeRange,
+	isSlotInPast,
 } from '@/Utils/SlotHelpers/slotTimeHelpers'
+import { useLocale } from '@/Hooks/useLocale'
 import { CldImage } from 'next-cloudinary'
 
 interface SlotDetailsModalProps {
@@ -30,8 +35,10 @@ interface SlotDetailsModalProps {
 	assignedConsultants: any[]
 	appointments: Appointment[]
 	onRemoveConsultant: (consultantId: string) => void
-	onAddMoreConsultants?: () => void // New prop to allow adding more
-	availableConsultantsCount?: number // Show how many can still be added
+	onAddMoreConsultants?: () => void
+	onAddMoreAttendees?: () => void
+	availableConsultantsCount?: number
+	isManager?: boolean
 }
 
 const SlotDetailsModal = ({
@@ -42,27 +49,30 @@ const SlotDetailsModal = ({
 	appointments,
 	onRemoveConsultant,
 	onAddMoreConsultants,
+	onAddMoreAttendees,
 	availableConsultantsCount = 0,
 }: SlotDetailsModalProps) => {
+	const { t, locale } = useLocale()
+
+	// Helper function to format dates based on current locale
+	const formatLocalizedDate = (date: Date, pattern: string) => {
+		return format(date, pattern, {
+			locale: locale === 'vi' ? vi : undefined,
+		})
+	}
+
 	if (!isOpen) return null
 
 	const hasAppointments = appointments.length > 0
+	const isSlotPast = isSlotInPast(slotInfo.day, slotInfo.slot.startTime)
 
-	// Function to check if a consultant can be removed
 	const canRemoveConsultant = (consultantId: string) => {
-		// If there are no appointments, consultant can be removed
+		if (isSlotPast) return false
 		if (!hasAppointments) return true
-
-		// If there are appointments, check if this specific consultant has any appointments
 		const consultantHasAppointments = appointments.some(
 			appointment => appointment.staffId === consultantId
 		)
-
-		// If consultant has appointments, they cannot be removed
 		if (consultantHasAppointments) return false
-
-		// If consultant has no appointments but there are other appointments,
-		// only allow removal if there are multiple consultants assigned
 		return assignedConsultants.length > 1
 	}
 
@@ -90,17 +100,22 @@ const SlotDetailsModal = ({
 						<div className='flex items-center justify-between'>
 							<div>
 								<h2 className='text-xl font-semibold text-general'>
-									Slot Details
+									{t('management.slot.slot_details')}
 								</h2>
 								<div className='flex items-center space-x-4 text-sm text-general mt-1'>
 									<div className='flex items-center space-x-1'>
 										<Calendar className='w-4 h-4' />
-										<span>{format(slotInfo.day, 'EEEE, MMMM d, yyyy')}</span>
+										<span>
+											{formatLocalizedDate(slotInfo.day, 'EEEE, MMMM d, yyyy')}
+										</span>
 									</div>
 									<div className='flex items-center space-x-1'>
 										<Clock className='w-4 h-4' />
 										<span>
-											Slot {slotInfo.slotNo} •{' '}
+											{t('management.slot.slot_number', {
+												number: slotInfo.slotNo,
+											})}{' '}
+											•{' '}
 											{formatSlotTimeRange(
 												slotInfo.slot.startTime,
 												slotInfo.slot.endTime
@@ -131,12 +146,12 @@ const SlotDetailsModal = ({
 									<AlertCircle className='w-5 h-5 mt-0.5 text-yellow-600' />
 									<div>
 										<h3 className='font-medium text-yellow-800'>
-											Active Appointments
+											{t('management.slot.active_appointments')}
 										</h3>
 										<p className='text-sm mt-1 text-yellow-700'>
-											This slot has {appointments.length} active appointment
-											{appointments.length > 1 ? 's' : ''}. Consultants with
-											appointments cannot be removed.
+											{t('management.slot.appointment_warning', {
+												count: appointments.length,
+											})}
 										</p>
 									</div>
 								</div>
@@ -148,14 +163,15 @@ const SlotDetailsModal = ({
 							<div className='flex items-center space-x-2 mb-4'>
 								<Users className='w-5 h-5 text-gray-700' />
 								<h3 className='text-lg font-semibold text-gray-900'>
-									Assigned Consultants ({assignedConsultants.length})
+									{t('management.slot.assigned_consultants')} (
+									{assignedConsultants.length})
 								</h3>
 							</div>
 
 							{assignedConsultants.length === 0 ? (
 								<div className='text-center py-8 text-gray-500'>
 									<Users className='w-12 h-12 mx-auto mb-2 text-gray-300' />
-									<p>No consultants assigned to this slot</p>
+									<p>{t('management.slot.no_consultants_assigned')}</p>
 								</div>
 							) : (
 								<div className='space-y-3'>
@@ -200,38 +216,50 @@ const SlotDetailsModal = ({
 														</div>
 													</div>
 												</div>
-												{canRemoveConsultant(consultant.id) ? (
-													<button
-														onClick={() => {
-															console.log(
-																'Remove button clicked for consultant:',
-																consultant
-															)
-															console.log(
-																'Consultant scheduleId:',
-																consultant.scheduleId
-															)
-															onRemoveConsultant(consultant.id)
-														}}
-														className='px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200'
-													>
-														Remove
-													</button>
-												) : (
-													<button
-														disabled
-														className='px-3 py-1 text-sm text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed'
-														title={
-															appointments.some(
-																app => app.staffId === consultant.id
-															)
-																? 'Cannot remove consultant with active appointments'
-																: 'Cannot remove consultant'
-														}
-													>
-														Remove
-													</button>
-												)}
+
+												{/* Action buttons */}
+												<div className='flex items-center space-x-2'>
+													{/* Remove button */}
+													{canRemoveConsultant(consultant.id) ? (
+														<button
+															onClick={() => {
+																console.log(
+																	'Remove button clicked for consultant:',
+																	consultant
+																)
+																console.log(
+																	'Consultant scheduleId:',
+																	consultant.scheduleId
+																)
+																onRemoveConsultant(consultant.id)
+															}}
+															className='px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200'
+															title={t('management.slot.remove_consultant')}
+														>
+															<XIcon className='w-4 h-4' />
+														</button>
+													) : (
+														<button
+															disabled
+															className='px-3 py-1 text-sm text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed'
+															title={
+																isSlotPast
+																	? t('management.slot.cannot_modify_past')
+																	: appointments.some(
+																			app => app.staffId === consultant.id
+																	  )
+																	? t(
+																			'management.slot.cannot_remove_with_appointments'
+																	  )
+																	: t(
+																			'management.slot.cannot_remove_consultant'
+																	  )
+															}
+														>
+															<User className='w-4 h-4' />
+														</button>
+													)}
+												</div>
 											</div>
 										</motion.div>
 									))}
@@ -245,7 +273,7 @@ const SlotDetailsModal = ({
 								<div className='flex items-center space-x-2 mb-4'>
 									<Calendar className='w-5 h-5 text-gray-700' />
 									<h3 className='text-lg font-semibold text-gray-900'>
-										Appointments ({appointments.length})
+										{t('management.slot.appointments')} ({appointments.length})
 									</h3>
 								</div>
 
@@ -264,13 +292,18 @@ const SlotDetailsModal = ({
 														{appointment.memberName}
 													</h4>
 													<p className='text-sm text-gray-600'>
-														with {appointment.staffName}
+														{t('management.slot.with_consultant', {
+															consultant: appointment.staffName,
+														})}
 													</p>
 													<p className='text-sm text-gray-500 mt-1'>
-														{format(new Date(appointment.scheduleAt), 'h:mm a')}
+														{formatLocalizedDate(
+															new Date(appointment.scheduleAt),
+															'h:mm a'
+														)}
 													</p>
 												</div>
-												<div className='text-right'>
+												<div className='flex items-center space-x-2'>
 													<span
 														className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
 															appointment.status === 'confirmed' ||
@@ -281,7 +314,8 @@ const SlotDetailsModal = ({
 																: 'bg-red-100 text-red-800'
 														}`}
 													>
-														{appointment.status}
+														{t(`appointment.status.${appointment.status}`) ||
+															appointment.status}
 													</span>
 												</div>
 											</div>
@@ -294,23 +328,43 @@ const SlotDetailsModal = ({
 
 					{/* Footer */}
 					<div className='bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between'>
-						<div>
+						<div className='flex items-center space-x-3'>
+							{/* Add More Consultants Button */}
 							{onAddMoreConsultants &&
 								availableConsultantsCount > 0 &&
-								!hasAppointments && (
+								!isSlotPast && (
 									<button
 										onClick={onAddMoreConsultants}
-										className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+										className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2'
 									>
-										Add More Consultants ({availableConsultantsCount} available)
+										<UserPlus className='w-4 h-4' />
+										<span>{t('management.slot.add_consultant')}</span>
 									</button>
 								)}
+
+							{/* Add More Attendees Button */}
+							{hasAppointments && onAddMoreAttendees && !isSlotPast && (
+								<button
+									onClick={onAddMoreAttendees}
+									className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2'
+									title={t('management.slot.add_more_attendees')}
+								>
+									<UserPlus className='w-4 h-4' />
+									<span>{t('management.slot.add_attendees')}</span>
+								</button>
+							)}
+
+							{isSlotPast && (
+								<div className='text-sm text-gray-500 italic'>
+									{t('management.slot.past_slots_readonly')}
+								</div>
+							)}
 						</div>
 						<button
 							onClick={onClose}
 							className='px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors'
 						>
-							Close
+							{t('common.close')}
 						</button>
 					</div>
 				</motion.div>

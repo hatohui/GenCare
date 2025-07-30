@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import {
 	X,
@@ -14,6 +14,7 @@ import {
 import { CldImage } from 'next-cloudinary'
 import { ConsultantAccount } from '@/Services/consultant-service'
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
+import { useLocale } from '@/Hooks/useLocale'
 
 interface AssignConsultantModalProps {
 	isOpen: boolean
@@ -40,6 +41,7 @@ const AssignConsultantModal = ({
 	onRemoveConsultant,
 	appointments = [],
 }: AssignConsultantModalProps) => {
+	const { t } = useLocale()
 	const [selectedConsultants, setSelectedConsultants] = useState<string[]>([])
 	const [searchTerm, setSearchTerm] = useState('')
 
@@ -58,11 +60,16 @@ const AssignConsultantModal = ({
 	const canRemoveConsultants =
 		!hasAppointments || assignedConsultants.length > 1
 
-	const handleAssign = () => {
+	const handleAssign = async () => {
 		if (selectedConsultants.length > 0) {
-			onAssign(selectedConsultants)
-			setSelectedConsultants([])
-			setSearchTerm('')
+			try {
+				await onAssign(selectedConsultants)
+				setSelectedConsultants([])
+				setSearchTerm('')
+				onClose()
+			} catch (error) {
+				console.error('Assignment failed:', error)
+			}
 		}
 	}
 
@@ -73,12 +80,25 @@ const AssignConsultantModal = ({
 	}
 
 	const toggleConsultantSelection = (consultantId: string) => {
-		setSelectedConsultants(prev =>
-			prev.includes(consultantId)
-				? prev.filter(id => id !== consultantId)
-				: [...prev, consultantId]
-		)
+		setSelectedConsultants(prev => {
+			const isSelected = prev.includes(consultantId)
+			if (isSelected) {
+				// Remove from selection
+				return prev.filter(id => id !== consultantId)
+			} else {
+				// Add to selection
+				return [...prev, consultantId]
+			}
+		})
 	}
+
+	// Reset selection when modal opens/closes
+	useEffect(() => {
+		if (!isOpen) {
+			setSelectedConsultants([])
+			setSearchTerm('')
+		}
+	}, [isOpen])
 
 	if (!isOpen) return null
 
@@ -88,7 +108,7 @@ const AssignConsultantModal = ({
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className='fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50 p-4'
+				className='fixed inset-0 rounded bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50 p-4'
 				onClick={e => {
 					if (e.target === e.currentTarget) {
 						handleCancel()
@@ -99,30 +119,33 @@ const AssignConsultantModal = ({
 					initial={{ scale: 0.95, opacity: 0 }}
 					animate={{ scale: 1, opacity: 1 }}
 					exit={{ scale: 0.95, opacity: 0 }}
-					className='bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-scroll'
+					className='bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col'
 				>
 					{/* Header */}
-					<div className='bg-main px-6 py-4 border-b border-blue-100'>
+					<div className='bg-main px-6 py-4 rounded-t-xl border-b border-blue-100'>
 						<div className='flex items-center justify-between'>
 							<div>
 								<h2 className='text-xl font-semibold text-general'>
-									Assign Consultant
+									{t('management.assign.title')}
 								</h2>
 								<p className='text-sm text-general mt-1'>
-									Slot {slotInfo.slotNo} • {slotInfo.day} • {slotInfo.time}
+									{t('management.slot.slot_number', {
+										number: slotInfo.slotNo,
+									})}{' '}
+									• {slotInfo.day} • {slotInfo.time}
 								</p>
 							</div>
 							<button
 								onClick={handleCancel}
 								className='p-2 hover:bg-blue-100 rounded-lg transition-colors'
 							>
-								<X className='w-5 h-5 text-gray-500' />
+								<X className='w-5 h-5 text-white hover:text-black' />
 							</button>
 						</div>
 					</div>
 
 					{/* Content */}
-					<div className='p-6'>
+					<div className='flex-1 overflow-y-auto p-6'>
 						{/* Warning for appointments */}
 						{hasAppointments && (
 							<motion.div
@@ -146,13 +169,12 @@ const AssignConsultantModal = ({
 									</div>
 									<div>
 										<h3 className='font-medium text-yellow-800'>
-											Active Appointments
+											{t('management.assign.active_appointments')}
 										</h3>
 										<p className='text-sm mt-1 text-yellow-700'>
-											This slot has {appointments.length} active appointment
-											{appointments.length > 1 ? 's' : ''}. You can add more
-											consultants but cannot remove the last consultant while
-											appointments are scheduled.
+											{t('management.assign.appointment_warning_multiple', {
+												count: appointments.length,
+											})}
 										</p>
 									</div>
 								</div>
@@ -162,7 +184,9 @@ const AssignConsultantModal = ({
 						{assignedConsultants.length > 0 && (
 							<div className='mb-6'>
 								<h3 className='text-sm font-medium text-gray-900 mb-3'>
-									Currently Assigned ({assignedConsultants.length})
+									{t('management.assign.currently_assigned', {
+										count: assignedConsultants.length,
+									})}
 								</h3>
 								<div className='space-y-2 p-3 bg-gray-50 rounded-lg border'>
 									{assignedConsultants.map(consultant => (
@@ -197,7 +221,7 @@ const AssignConsultantModal = ({
 												<button
 													onClick={() => onRemoveConsultant(consultant.id)}
 													className='p-1 hover:bg-red-50 rounded transition-colors group'
-													title='Remove consultant'
+													title={t('management.assign.remove_consultant')}
 												>
 													<Trash2 className='w-4 h-4 text-gray-400 group-hover:text-red-500' />
 												</button>
@@ -209,8 +233,8 @@ const AssignConsultantModal = ({
 														title={
 															hasAppointments &&
 															assignedConsultants.length === 1
-																? 'Cannot remove the last consultant when there are active appointments'
-																: 'Cannot remove consultant'
+																? t('management.assign.cannot_remove_last')
+																: t('management.assign.cannot_remove')
 														}
 													>
 														<Trash2 className='w-4 h-4 text-gray-300' />
@@ -230,12 +254,13 @@ const AssignConsultantModal = ({
 									<div className='flex items-center justify-between mb-3'>
 										<h3 className='text-sm font-medium text-gray-900 flex items-center'>
 											<Plus className='w-4 h-4 mr-2 text-blue-600' />
-											Add More Consultants ({filteredConsultants.length}{' '}
-											available)
+											{t('management.assign.add_more', {
+												count: filteredConsultants.length,
+											})}
 										</h3>
 										{hasAppointments && (
 											<div className='text-xs text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200'>
-												✓ Can add to booked slot
+												{t('management.assign.can_add_to_booked')}
 											</div>
 										)}
 									</div>
@@ -247,7 +272,7 @@ const AssignConsultantModal = ({
 							<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400' />
 							<input
 								type='text'
-								placeholder='Search consultants...'
+								placeholder={t('management.assign.search_placeholder')}
 								value={searchTerm}
 								onChange={e => setSearchTerm(e.target.value)}
 								className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
@@ -261,25 +286,32 @@ const AssignConsultantModal = ({
 									<User className='w-12 h-12 mx-auto mb-2 text-gray-300' />
 									<p>
 										{consultants.length === 0
-											? 'No consultants found'
-											: 'No available consultants to assign'}
+											? t('management.assign.no_consultants')
+											: t('management.assign.no_available')}
 									</p>
 									{consultants.length > 0 &&
 										filteredConsultants.length === 0 &&
 										searchTerm === '' && (
 											<p className='text-sm mt-1'>
-												All consultants are already assigned to this slot
+												{t('management.assign.all_assigned')}
 											</p>
 										)}
 								</div>
 							) : (
 								<div className='space-y-2'>
 									<div className='text-sm text-gray-600 mb-3'>
-										{filteredConsultants.length} available consultant
-										{filteredConsultants.length !== 1 ? 's' : ''}
+										{filteredConsultants.length === 1
+											? t('management.assign.available_count', {
+													count: filteredConsultants.length,
+											  })
+											: t('management.assign.available_count_plural', {
+													count: filteredConsultants.length,
+											  })}
 										{selectedConsultants.length > 0 && (
 											<span className='ml-2 text-blue-600 font-medium'>
-												({selectedConsultants.length} selected)
+												{t('management.assign.selected_count', {
+													count: selectedConsultants.length,
+												})}
 											</span>
 										)}
 									</div>
@@ -345,22 +377,27 @@ const AssignConsultantModal = ({
 					</div>
 
 					{/* Footer */}
-					<div className='bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-end space-x-3'>
+					<div className='bg-gray-50 px-6 py-4 rounded-b-xl border-t border-gray-200 flex items-center justify-end space-x-3'>
 						<button
 							onClick={handleCancel}
 							className='px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors'
 						>
-							Cancel
+							{t('management.assign.cancel')}
 						</button>
 						<button
 							onClick={handleAssign}
 							disabled={selectedConsultants.length === 0}
 							className='px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
 						>
-							Assign{' '}
-							{selectedConsultants.length > 0 &&
-								`(${selectedConsultants.length})`}{' '}
-							Consultant{selectedConsultants.length !== 1 ? 's' : ''}
+							{selectedConsultants.length > 0
+								? selectedConsultants.length === 1
+									? t('management.assign.assign_with_count', {
+											count: selectedConsultants.length,
+									  })
+									: t('management.assign.assign_with_count_plural', {
+											count: selectedConsultants.length,
+									  })
+								: t('management.assign.assign_button')}
 						</button>
 					</div>
 				</motion.div>

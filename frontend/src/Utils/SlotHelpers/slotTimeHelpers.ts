@@ -59,11 +59,12 @@ export const getSlotWeekRange = (date: Date) => {
 }
 
 /**
- * Get week days array (Monday to Sunday)
+ * Get week days array (Monday to Saturday, excluding Sunday)
  */
 export const getSlotWeekDays = (startOfWeek: Date) => {
 	const days = []
-	for (let i = 0; i < 7; i++) {
+	for (let i = 0; i < 6; i++) {
+		// Changed from 7 to 6 to exclude Sunday
 		const day = new Date(startOfWeek)
 		day.setDate(startOfWeek.getDate() + i)
 		days.push(day)

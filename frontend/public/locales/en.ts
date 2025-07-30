@@ -85,6 +85,7 @@ const en: Record<string, string> = {
 	'action.confirm': 'Confirm',
 	'action.book_now': 'Book Now',
 	'action.view_details': 'View Details',
+	'action.today': 'Today',
 
 	// Common
 	'common.dateOfBirth': 'Date of Birth',
@@ -938,6 +939,99 @@ const en: Record<string, string> = {
 	'management.slot.slot': 'Slot',
 	'management.slot.day': 'Day',
 	'management.slot.time': 'Time',
+	'management.slot.management': 'Slot Management',
+	'management.slot.details': 'Slot Details',
+	'management.slot.assigned_consultants': 'Assigned Consultants',
+	'management.slot.appointments': 'Appointments',
+	'management.slot.no_consultants_assigned':
+		'No consultants assigned to this slot',
+	'management.slot.add_more_consultants': 'Add {{count}} More Consultants',
+	'management.slot.add_consultant': 'Add Consultant',
+	'management.slot.available_consultants': 'available',
+	'management.slot.remove': 'Remove',
+	'management.slot.cancel': 'Cancel',
+	'management.slot.assign': 'Assign',
+	'management.slot.consultant': 'Consultant',
+	'management.slot.consultants': 'Consultants',
+	'management.slot.search_consultants': 'Search consultants...',
+	'management.slot.active_appointments': 'Active Appointments',
+	'management.slot.cannot_remove_consultant':
+		'Consultants with appointments cannot be removed.',
+	'management.slot.past_slots_readonly': 'Past slots cannot be modified',
+	'management.slot.cannot_remove_last_consultant':
+		'Cannot remove the last consultant when there are active appointments',
+	'management.slot.consultant_removed': 'Consultant removed successfully!',
+	'management.slot.consultant_assigned': 'consultant assigned successfully!',
+	'management.slot.consultants_assigned': 'consultants assigned successfully!',
+	'management.slot.already_assigned': 'are already assigned to this slot',
+	'management.slot.no_available_consultants':
+		'No available consultants to assign to this slot',
+	'management.slot.remaining_in_slot': 'consultant remaining in this slot.',
+	'management.slot.remaining_in_slot_plural':
+		'consultants remaining in this slot.',
+	'management.slot.delete_appointment': 'Delete Appointment',
+	'management.slot.confirm_delete_appointment':
+		'Are you sure you want to delete this appointment?',
+	'management.slot.appointment_deleted': 'Appointment deleted successfully',
+	'management.slot.failed_delete_appointment': 'Failed to delete appointment',
+	'management.slot.reassign_consultant': 'Reassign Consultant',
+	'management.slot.select_new_consultant':
+		'Select a new consultant to replace this one',
+	'management.slot.consultant_reassigned': 'Consultant reassigned successfully',
+	'management.slot.failed_reassign_consultant': 'Failed to reassign consultant',
+	'management.slot.available': 'Available',
+	'management.slot.assigned': 'Assigned',
+	'management.slot.booked': 'Booked',
+	'management.slot.past': 'Past',
+	'management.slot.loading': 'Loading schedule...',
+	'management.slot.consultant_count_single': '{{count}} consultant',
+	'management.slot.consultant_count_plural': '{{count}} consultants',
+	'management.slot.appointment_count_single': '{{count}} appointment',
+	'management.slot.appointment_count_plural': '{{count}} appointments',
+	'management.slot.more_consultants': 'more',
+	'management.slot.slot_details': 'Slot Details',
+	'management.slot.slot_number': 'Slot {{number}}',
+	'management.slot.appointment_warning':
+		'This slot has {{count}} active appointment(s). Consultants with appointments cannot be removed.',
+	'management.slot.remove_consultant': 'Remove consultant',
+	'management.slot.cannot_modify_past': 'Cannot modify past slots',
+	'management.slot.cannot_remove_with_appointments':
+		'Cannot remove consultant with active appointments',
+	'management.slot.with_consultant': 'with {{consultant}}',
+	'management.slot.schedule_not_found':
+		'Schedule not found for this consultant',
+	'management.slot.add_more_attendees': 'Add More Attendees',
+	'management.slot.add_attendees': 'Add Attendees',
+	'management.slot.add_attendees_functionality_placeholder':
+		'Add Attendees functionality - Coming Soon!',
+
+	// Assign Consultant Modal
+	'management.assign.title': 'Assign Consultant',
+	'management.assign.active_appointments': 'Active Appointments',
+	'management.assign.appointment_warning_multiple':
+		'This slot has {{count}} active appointments. You can add more consultants but cannot remove the last consultant while appointments are scheduled.',
+	'management.assign.currently_assigned': 'Currently Assigned ({{count}})',
+	'management.assign.remove_consultant': 'Remove consultant',
+	'management.assign.cannot_remove_last':
+		'Cannot remove the last consultant when there are active appointments',
+	'management.assign.cannot_remove': 'Cannot remove consultant',
+	'management.assign.add_more': 'Add More Consultants ({{count}} available)',
+	'management.assign.can_add_to_booked': '✓ Can add to booked slot',
+	'management.assign.search_placeholder': 'Search consultants...',
+	'management.assign.no_consultants': 'No consultants found',
+	'management.assign.no_available': 'No available consultants to assign',
+	'management.assign.all_assigned':
+		'All consultants are already assigned to this slot',
+	'management.assign.available_count': '{{count}} available consultant',
+	'management.assign.available_count_plural': '{{count}} available consultants',
+	'management.assign.selected_count': '({{count}} selected)',
+	'management.assign.cancel': 'Cancel',
+	'management.assign.assign_button': 'Assign',
+	'management.assign.assign_with_count': 'Assign ({{count}}) Consultant',
+	'management.assign.assign_with_count_plural':
+		'Assign ({{count}}) Consultants',
+	'management.assign.consultant': 'Consultant',
+	'management.assign.consultants': 'Consultants',
 
 	// Management - General
 	'management.add_new': 'Add New',

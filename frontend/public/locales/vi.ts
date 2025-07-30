@@ -174,13 +174,13 @@ const vi: Record<string, string> = {
 	'service.hero_title': 'Dịch Vụ Chăm Sóc Sức Khỏe',
 	'service.hero_description':
 		'Khám phá các dịch vụ y tế chất lượng cao với đội ngũ chuyên gia giàu kinh nghiệm',
-	'service.sort_by_price': 'Sắp xếp giá',
+	'service.sort_by_price': 'Sắp xếp theo giá',
 	'service.price_ascending': 'Giá tăng dần ↑',
 	'service.price_descending': 'Giá giảm dần ↓',
-	'service.featured_services': 'Dịch Vụ Nổi Bật',
+	'service.featured_services': 'Dịch Vụ Chất Lượng Cao',
 	'service.featured_description':
-		'Chọn lựa từ các dịch vụ chăm sóc sức khỏe chất lượng cao, được thiết kế để đáp ứng mọi nhu cầu của bạn',
-	'service.why_choose_us': 'Tại Sao Chọn Dịch Vụ Của Chúng Tôi?',
+		'Chọn lựa từ các dịch vụ chăm sóc sức khỏe chuyên nghiệp, được thiết kế để đáp ứng mọi nhu cầu của bạn',
+	'service.why_choose_us': 'Tại Sao Chọn Chúng Tôi?',
 	'service.service_description': 'Mô tả dịch vụ',
 	'service.expert_title': 'Chuyên Gia Hàng Đầu',
 	'service.expert_description': 'Đội ngũ bác sĩ giàu kinh nghiệm, tận tâm.',
@@ -217,6 +217,7 @@ const vi: Record<string, string> = {
 	'action.confirm': 'Xác nhận',
 	'action.book_now': 'Đặt ngay',
 	'action.view_details': 'Xem chi tiết',
+	'action.today': 'Hôm nay',
 
 	// Common
 	'common.firstName': 'Tên',
@@ -959,6 +960,102 @@ const vi: Record<string, string> = {
 	'management.slot.slot': 'Slot',
 	'management.slot.day': 'Ngày',
 	'management.slot.time': 'Thời gian',
+	'management.slot.management': 'Quản lý slot',
+	'management.slot.details': 'Chi tiết slot',
+	'management.slot.assigned_consultants': 'Tư vấn viên được phân công',
+	'management.slot.appointments': 'Cuộc hẹn',
+	'management.slot.no_consultants_assigned':
+		'Chưa có tư vấn viên nào được phân công cho slot này',
+	'management.slot.add_more_consultants': 'Thêm {{count}} Tư Vấn Viên',
+	'management.slot.add_consultant': 'Thêm Tư Vấn Viên',
+	'management.slot.available_consultants': 'có sẵn',
+	'management.slot.remove': 'Xóa',
+	'management.slot.cancel': 'Hủy',
+	'management.slot.assign': 'Phân công',
+	'management.slot.consultant': 'Tư vấn viên',
+	'management.slot.consultants': 'Tư vấn viên',
+	'management.slot.search_consultants': 'Tìm kiếm tư vấn viên...',
+	'management.slot.active_appointments': 'Cuộc hẹn đang hoạt động',
+	'management.slot.cannot_remove_consultant':
+		'Không thể xóa tư vấn viên có cuộc hẹn.',
+	'management.slot.past_slots_readonly': 'Không thể chỉnh sửa slot đã qua',
+	'management.slot.cannot_remove_last_consultant':
+		'Không thể xóa tư vấn viên cuối cùng khi có cuộc hẹn đang hoạt động',
+	'management.slot.consultant_removed': 'Đã xóa tư vấn viên thành công!',
+	'management.slot.consultant_assigned':
+		'tư vấn viên được phân công thành công!',
+	'management.slot.consultants_assigned':
+		'tư vấn viên được phân công thành công!',
+	'management.slot.already_assigned': 'đã được phân công cho slot này',
+	'management.slot.no_available_consultants':
+		'Không có tư vấn viên nào có sẵn để phân công cho slot này',
+	'management.slot.remaining_in_slot': 'tư vấn viên còn lại trong slot này.',
+	'management.slot.remaining_in_slot_plural':
+		'tư vấn viên còn lại trong slot này.',
+	'management.slot.delete_appointment': 'Xóa cuộc hẹn',
+	'management.slot.confirm_delete_appointment':
+		'Bạn có chắc chắn muốn xóa cuộc hẹn này?',
+	'management.slot.appointment_deleted': 'Đã xóa cuộc hẹn thành công',
+	'management.slot.failed_delete_appointment': 'Không thể xóa cuộc hẹn',
+	'management.slot.reassign_consultant': 'Phân công lại tư vấn viên',
+	'management.slot.select_new_consultant': 'Chọn tư vấn viên mới để thay thế',
+	'management.slot.consultant_reassigned':
+		'Đã phân công lại tư vấn viên thành công',
+	'management.slot.failed_reassign_consultant':
+		'Không thể phân công lại tư vấn viên',
+	'management.slot.available': 'Có sẵn',
+	'management.slot.assigned': 'Đã phân công',
+	'management.slot.booked': 'Đã đặt',
+	'management.slot.past': 'Đã qua',
+	'management.slot.loading': 'Đang tải lịch trình...',
+	'management.slot.consultant_count_single': '{{count}} tư vấn viên',
+	'management.slot.consultant_count_plural': '{{count}} tư vấn viên',
+	'management.slot.appointment_count_single': '{{count}} cuộc hẹn',
+	'management.slot.appointment_count_plural': '{{count}} cuộc hẹn',
+	'management.slot.more_consultants': 'thêm',
+	'management.slot.slot_details': 'Chi tiết khung giờ',
+	'management.slot.slot_number': 'Khung giờ {{number}}',
+	'management.slot.appointment_warning':
+		'Khung giờ này có {{count}} cuộc hẹn đang hoạt động. Không thể xóa tư vấn viên có cuộc hẹn.',
+	'management.slot.remove_consultant': 'Xóa tư vấn viên',
+	'management.slot.add_more_attendees': 'Thêm Nhiều Người Tham Dự',
+	'management.slot.add_attendees': 'Thêm Người Tham Dự',
+	'management.slot.add_attendees_functionality_placeholder':
+		'Chức năng Thêm Người Tham Dự - Sắp Ra Mắt!',
+	'management.slot.cannot_modify_past': 'Không thể chỉnh sửa khung giờ đã qua',
+	'management.slot.cannot_remove_with_appointments':
+		'Không thể xóa tư vấn viên có cuộc hẹn đang hoạt động',
+	'management.slot.with_consultant': 'với {{consultant}}',
+	'management.slot.schedule_not_found':
+		'Không tìm thấy lịch trình cho tư vấn viên này',
+
+	// Assign Consultant Modal
+	'management.assign.title': 'Phân công tư vấn viên',
+	'management.assign.active_appointments': 'Cuộc hẹn đang hoạt động',
+	'management.assign.appointment_warning_multiple':
+		'Khung giờ này có {{count}} cuộc hẹn đang hoạt động. Bạn có thể thêm tư vấn viên nhưng không thể xóa tư vấn viên cuối cùng khi vẫn còn cuộc hẹn.',
+	'management.assign.currently_assigned': 'Đã được phân công ({{count}})',
+	'management.assign.remove_consultant': 'Xóa tư vấn viên',
+	'management.assign.cannot_remove_last':
+		'Không thể xóa tư vấn viên cuối cùng khi có cuộc hẹn đang hoạt động',
+	'management.assign.cannot_remove': 'Không thể xóa tư vấn viên',
+	'management.assign.add_more': 'Thêm tư vấn viên ({{count}} có sẵn)',
+	'management.assign.can_add_to_booked': '✓ Có thể thêm vào khung giờ đã đặt',
+	'management.assign.search_placeholder': 'Tìm kiếm tư vấn viên...',
+	'management.assign.no_consultants': 'Không tìm thấy tư vấn viên',
+	'management.assign.no_available': 'Không có tư vấn viên nào để phân công',
+	'management.assign.all_assigned':
+		'Tất cả tư vấn viên đã được phân công cho khung giờ này',
+	'management.assign.available_count': '{{count}} tư vấn viên có sẵn',
+	'management.assign.available_count_plural': '{{count}} tư vấn viên có sẵn',
+	'management.assign.selected_count': '({{count}} đã chọn)',
+	'management.assign.cancel': 'Hủy',
+	'management.assign.assign_button': 'Phân công',
+	'management.assign.assign_with_count': 'Phân công ({{count}}) tư vấn viên',
+	'management.assign.assign_with_count_plural':
+		'Phân công ({{count}}) tư vấn viên',
+	'management.assign.consultant': 'Tư vấn viên',
+	'management.assign.consultants': 'Tư vấn viên',
 
 	// Management - General
 	'management.add_new': 'Thêm mới',

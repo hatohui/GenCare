@@ -29,7 +29,7 @@ export default function SideNav() {
 		<div className='relative overflow-visible'>
 			<button
 				aria-label={collapsed ? t('nav.expand') : t('nav.collapse')}
-				className='absolute top-1/2 -translate-y-1/2 right-[-16px] z-20 rounded-full bg-accent text-white w-8 h-8 items-center justify-center shadow-lg hover:scale-105 transition hidden md:flex'
+				className='absolute top-1/2 -translate-y-1/2 right-[-16px] rounded-full bg-accent text-white w-8 h-8 items-center justify-center shadow-lg hover:scale-105 transition hidden md:flex'
 				onClick={() => setCollapsed(!collapsed)}
 			>
 				<span className='pointer-events-none mb-[2px]'>

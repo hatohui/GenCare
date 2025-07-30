@@ -24,6 +24,19 @@ const getAppointments = async () => {
 	return response.data
 }
 
+const deleteAppointment = async (appointmentId: string) => {
+	const response = await axiosInstance.delete(`/appointments/${appointmentId}`)
+	return response.data
+}
+
+const updateAppointment = async (appointmentId: string, data: any) => {
+	const response = await axiosInstance.put(
+		`/appointments/${appointmentId}`,
+		data
+	)
+	return response.data
+}
+
 export const useAppointments = () => {
 	return useQuery({
 		queryKey: ['appointments'],
@@ -67,6 +80,34 @@ export const useCreateAppointmentWithZoom = () => {
 	return useMutation({
 		mutationFn: (data: AppointmentCreateRequest) =>
 			createAppointmentWithZoom(data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['appointments'] })
+		},
+	})
+}
+
+export const useDeleteAppointment = () => {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (appointmentId: string) => deleteAppointment(appointmentId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['appointments'] })
+		},
+	})
+}
+
+export const useUpdateAppointment = () => {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: ({
+			appointmentId,
+			data,
+		}: {
+			appointmentId: string
+			data: any
+		}) => updateAppointment(appointmentId, data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['appointments'] })
 		},

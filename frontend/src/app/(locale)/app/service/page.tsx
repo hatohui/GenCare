@@ -34,7 +34,7 @@ export default function Page() {
 				params.delete('orderByPrice')
 			}
 
-			router.push(`${pathname}?${params.toString()}`)
+			router.push(`${pathname}?${params.toString()}`, { scroll: false })
 		} catch (error) {
 			console.error('Error updating sort:', error)
 			toast.error(t('service.page.sort_error'))

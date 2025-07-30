@@ -50,12 +50,12 @@ export const LocaleProvider: React.FC<{ children: ReactNode }> = ({
 
 		if (!params) return translation
 
-		// Replace parameters in the format {0}, {1}, etc.
+		// Replace parameters in the format {{variable}} or {0}, {1}, etc.
 		return Object.entries(params).reduce((result, [paramKey, paramValue]) => {
-			return result.replace(
-				new RegExp(`\\{${paramKey}\\}`, 'g'),
-				String(paramValue)
-			)
+			// Handle both {{variable}} and {variable} formats
+			return result
+				.replace(new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g'), String(paramValue))
+				.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), String(paramValue))
 		}, translation)
 	}
 

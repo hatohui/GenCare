@@ -30,6 +30,7 @@ import {
 	formatSlotTimeRange,
 } from '@/Utils/SlotHelpers/slotTimeHelpers'
 import { getSlotStatus } from '@/Utils/SlotHelpers/slotAvailabilityHelpers'
+import { useLocale } from '@/Hooks/useLocale'
 import AssignConsultantModal from './AssignConsultantModal'
 import SlotDetailsModal from './SlotDetailsModal'
 import { CreateSlotRequest } from '@/Interfaces/Slot/Schema/slot'
@@ -42,6 +43,7 @@ interface SlotManagementCalendarProps {
 const SlotManagementCalendar = ({
 	isManager = false,
 }: SlotManagementCalendarProps) => {
+	const { t, locale } = useLocale()
 	const [currentWeek, setCurrentWeek] = useState(new Date())
 	const [selectedSlot, setSelectedSlot] = useState<{
 		day: Date
@@ -93,6 +95,12 @@ const SlotManagementCalendar = ({
 
 		setSelectedSlot({ day, slotNo, slot })
 
+		// If slot is in the past, only show details (read-only mode)
+		if (slotStatus.status === 'past') {
+			setIsDetailsModalOpen(true)
+			return
+		}
+
 		// If slot has appointments, only show details (can't modify)
 		if (slotStatus.appointments.length > 0) {
 			setIsDetailsModalOpen(true)
@@ -102,7 +110,7 @@ const SlotManagementCalendar = ({
 			if (slotStatus.assignedConsultants.length > 0) {
 				setIsDetailsModalOpen(true)
 			} else {
-				toast.error('No available consultants to assign to this slot')
+				toast.error(t('management.slot.no_available_consultants'))
 			}
 		}
 		// If there are available consultants, allow assignment (even if some already assigned)
@@ -138,9 +146,11 @@ const SlotManagementCalendar = ({
 				})
 				.join(', ')
 			toast.error(
-				`Consultant(s) ${duplicateNames} are already assigned to this slot`
+				`${t('management.slot.consultant')} ${duplicateNames} ${t(
+					'management.slot.already_assigned'
+				)}`
 			)
-			return
+			throw new Error('Duplicate consultants')
 		}
 
 		const targetSlot = slots.find(
@@ -164,36 +174,48 @@ const SlotManagementCalendar = ({
 			try {
 				const slotResult = await createSlotMutation.mutateAsync(newSlot)
 				slotIdToUse = slotResult.slotId
+				// Refresh slots data after creation
+				await slotsQuery.refetch()
 			} catch (error: any) {
 				toast.error(error?.response?.data?.message || 'Failed to create slot')
-				return
+				throw error
 			}
 		}
 
-		// Create schedules for each consultant
-		const promises = consultantIds.map(consultantId => {
-			const newSchedule: CreateScheduleRequest = {
-				slotId: slotIdToUse || '',
-				accountId: consultantId,
-			}
-			return createScheduleMutation.mutateAsync(newSchedule)
-		})
-
+		// Create schedules for each consultant sequentially to avoid conflicts
 		try {
-			await Promise.all(promises)
+			for (const consultantId of consultantIds) {
+				const newSchedule: CreateScheduleRequest = {
+					slotId: slotIdToUse || '',
+					accountId: consultantId,
+				}
+				await createScheduleMutation.mutateAsync(newSchedule)
+			}
+
+			const count = consultantIds.length
 			toast.success(
-				`${consultantIds.length} consultant${
-					consultantIds.length > 1 ? 's' : ''
-				} assigned successfully!`
+				`${count} ${
+					count === 1
+						? t('management.slot.consultant')
+						: t('management.slot.consultants')
+				} ${t('management.slot.consultants_assigned')}`
 			)
-			schedulesQuery.refetch()
+
+			// Refresh all related data to ensure UI consistency
+			await Promise.all([
+				schedulesQuery.refetch(),
+				slotsQuery.refetch(),
+				appointmentsQuery.refetch(),
+			])
 		} catch (error: any) {
 			toast.error(
 				error?.response?.data?.message || 'Failed to assign some consultants'
 			)
+			throw error
 		}
 
 		setIsAssignModalOpen(false)
+		setSelectedSlot(null) // Clear selection to ensure fresh data on next click
 	}
 
 	const handleRemoveConsultant = (consultantId: string) => {
@@ -212,9 +234,7 @@ const SlotManagementCalendar = ({
 		const isLastConsultant = slotStatus.assignedConsultants.length === 1
 
 		if (hasAppointments && isLastConsultant) {
-			toast.error(
-				'Cannot remove the last consultant when there are active appointments'
-			)
+			toast.error(t('management.slot.cannot_remove_last_consultant'))
 			return
 		}
 
@@ -229,14 +249,24 @@ const SlotManagementCalendar = ({
 
 		// Delete the schedule using the scheduleId
 		deleteScheduleMutation.mutate(targetConsultant.scheduleId, {
-			onSuccess: () => {
+			onSuccess: async () => {
 				const remainingConsultants = slotStatus.assignedConsultants.length - 1
+				const remainingText =
+					remainingConsultants === 1
+						? t('management.slot.remaining_in_slot')
+						: t('management.slot.remaining_in_slot_plural')
 				toast.success(
-					`Consultant removed successfully! ${remainingConsultants} consultant${
-						remainingConsultants !== 1 ? 's' : ''
-					} remaining in this slot.`
+					`${t(
+						'management.slot.consultant_removed'
+					)} ${remainingConsultants} ${remainingText}`
 				)
-				schedulesQuery.refetch()
+
+				// Refresh all related data to ensure UI consistency
+				await Promise.all([
+					schedulesQuery.refetch(),
+					slotsQuery.refetch(),
+					appointmentsQuery.refetch(),
+				])
 			},
 			onError: error => {
 				console.error('Error removing consultant:', error)
@@ -308,7 +338,7 @@ const SlotManagementCalendar = ({
 						<div className='flex items-center space-x-2'>
 							<Settings className='w-6 h-6 text-blue-600' />
 							<h1 className='text-2xl font-bold text-gray-900'>
-								Slot Management
+								{t('management.slot.management')}
 							</h1>
 						</div>
 						<div className='text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full'>
@@ -329,7 +359,7 @@ const SlotManagementCalendar = ({
 							onClick={goToToday}
 							className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium'
 						>
-							Today
+							{t('action.today')}
 						</button>
 						<button
 							onClick={goToNextWeek}
@@ -350,19 +380,23 @@ const SlotManagementCalendar = ({
 				>
 					<div className='flex items-center space-x-2'>
 						<div className='w-3 h-3 bg-white border border-gray-200 rounded'></div>
-						<span className='text-gray-600'>Available</span>
+						<span className='text-gray-600'>
+							{t('management.slot.available')}
+						</span>
 					</div>
 					<div className='flex items-center space-x-2'>
 						<div className='w-3 h-3 bg-green-100 border border-green-300 rounded'></div>
-						<span className='text-gray-600'>Assigned</span>
+						<span className='text-gray-600'>
+							{t('management.slot.assigned')}
+						</span>
 					</div>
 					<div className='flex items-center space-x-2'>
 						<div className='w-3 h-3 bg-red-100 border border-red-300 rounded'></div>
-						<span className='text-gray-600'>Booked</span>
+						<span className='text-gray-600'>{t('management.slot.booked')}</span>
 					</div>
 					<div className='flex items-center space-x-2'>
 						<div className='w-3 h-3 bg-gray-100 border border-gray-300 rounded'></div>
-						<span className='text-gray-600'>Past</span>
+						<span className='text-gray-600'>{t('management.slot.past')}</span>
 					</div>
 				</motion.div>
 			</motion.div>
@@ -390,23 +424,36 @@ const SlotManagementCalendar = ({
 					className='flex-1 overflow-auto p-6'
 				>
 					<div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
-						<div className='min-w-[1000px]'>
+						<div className='min-w-[900px]'>
 							{/* Header Row */}
-							<div className='grid grid-cols-8 border-b border-gray-200'>
+							<div className='grid grid-cols-7 border-b border-gray-200'>
 								<div className='p-4 bg-gray-50 font-semibold text-gray-700 border-r border-gray-200'>
-									Time Slot
+									{t('management.slot.time_slot')}
 								</div>
 								{weekDays.map(day => (
 									<div
 										key={day.toISOString()}
 										className='p-4 bg-gray-50 text-center font-semibold text-gray-700 border-r border-gray-200 last:border-r-0'
 									>
-										<div className='text-sm'>{format(day, 'EEE')}</div>
+										<div className='text-sm'>
+											{day
+												.toLocaleDateString(
+													locale === 'vi' ? 'vi-VN' : 'en-US',
+													{ weekday: 'short' }
+												)
+												.toUpperCase()}
+										</div>
 										<div className='text-lg font-bold mt-1'>
-											{format(day, 'd')}
+											{day.toLocaleDateString(
+												locale === 'vi' ? 'vi-VN' : 'en-US',
+												{ day: '2-digit' }
+											)}
 										</div>
 										<div className='text-xs text-gray-500 mt-1'>
-											{format(day, 'MMM')}
+											{day.toLocaleDateString(
+												locale === 'vi' ? 'vi-VN' : 'en-US',
+												{ month: 'short' }
+											)}
 										</div>
 									</div>
 								))}
@@ -415,11 +462,11 @@ const SlotManagementCalendar = ({
 							{/* Slot Rows */}
 							{WORKING_SLOTS.map((slot, slotIndex) => (
 								<motion.div
-									key={slot.no}
+									key={slotIndex}
 									initial={{ opacity: 0, x: -20 }}
 									animate={{ opacity: 1, x: 0 }}
 									transition={{ delay: 0.4 + slotIndex * 0.1 }}
-									className='grid grid-cols-8 border-b border-gray-200 last:border-b-0'
+									className='grid grid-cols-7 border-b border-gray-200 last:border-b-0'
 								>
 									{/* Slot Info */}
 									<div className='p-4 bg-gray-50 border-r border-gray-200 flex flex-col justify-center'>
@@ -440,8 +487,7 @@ const SlotManagementCalendar = ({
 											schedules
 										)
 
-										const isClickable =
-											isManager && slotStatus.status !== 'past'
+										const isClickable = isManager // Managers can click all slots (past slots for viewing only)
 
 										return (
 											<motion.div
@@ -465,11 +511,23 @@ const SlotManagementCalendar = ({
 														{slotStatus.assignedConsultants.length > 0 && (
 															<div className='mt-2'>
 																<div className='text-xs font-medium mb-1'>
-																	{slotStatus.assignedConsultants.length}{' '}
-																	consultant
-																	{slotStatus.assignedConsultants.length > 1
-																		? 's'
-																		: ''}
+																	{slotStatus.assignedConsultants.length === 1
+																		? t(
+																				'management.slot.consultant_count_single',
+																				{
+																					count:
+																						slotStatus.assignedConsultants
+																							.length,
+																				}
+																		  )
+																		: t(
+																				'management.slot.consultant_count_plural',
+																				{
+																					count:
+																						slotStatus.assignedConsultants
+																							.length,
+																				}
+																		  )}
 																</div>
 
 																{slotStatus.assignedConsultants.length <= 3 ? (
@@ -539,7 +597,7 @@ const SlotManagementCalendar = ({
 																			+
 																			{slotStatus.assignedConsultants.length -
 																				2}{' '}
-																			more
+																			{t('management.slot.more_consultants')}
 																		</div>
 																	</div>
 																)}
@@ -550,10 +608,19 @@ const SlotManagementCalendar = ({
 														{slotStatus.appointments.length > 0 && (
 															<div className='mt-2'>
 																<div className='text-xs font-medium text-red-600'>
-																	{slotStatus.appointments.length} appointment
-																	{slotStatus.appointments.length > 1
-																		? 's'
-																		: ''}
+																	{slotStatus.appointments.length === 1
+																		? t(
+																				'management.slot.appointment_count_single',
+																				{
+																					count: slotStatus.appointments.length,
+																				}
+																		  )
+																		: t(
+																				'management.slot.appointment_count_plural',
+																				{
+																					count: slotStatus.appointments.length,
+																				}
+																		  )}
 																</div>
 															</div>
 														)}
@@ -655,6 +722,7 @@ const SlotManagementCalendar = ({
 							getAvailableConsultants(selectedSlot.day, selectedSlot.slotNo)
 								.length
 						}
+						isManager={isManager}
 					/>
 				)}
 			</AnimatePresence>
