@@ -1,4 +1,3 @@
-import { DEFAULT_API_URL } from '@/Constants/API'
 import {
 	AdminStatisticsResponse,
 	DashboardStatistic,

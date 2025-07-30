@@ -13,7 +13,6 @@ import React, { useState } from 'react'
 import {
 	Users,
 	DollarSign,
-	Calendar,
 	Package,
 	TrendingUp,
 	Activity,
@@ -68,56 +67,6 @@ const ErrorStatistics = ({ refetch }: { refetch: () => void }) => {
 		</div>
 	)
 }
-
-const getStatsCards = (t: any) => [
-	{
-		title: t('statistics.totalUsers'),
-		value: (stat: any) => stat.totalActiveUsers.toLocaleString('en-US'),
-		subtitle: t('statistics.registeredAccounts'),
-		icon: Users,
-		color: 'blue' as const,
-		trend: {
-			value: 12.5,
-			isPositive: true,
-			label: t('statistics.comparedToLastMonth'),
-		},
-		delay: 0.1,
-	},
-	{
-		title: t('statistics.revenue'),
-		value: (stat: any) => <FormatCurrency amount={stat.totalRevenue} />,
-		subtitle: t('statistics.totalRevenue'),
-		icon: DollarSign,
-		color: 'green' as const,
-		trend: {
-			value: 8.3,
-			isPositive: true,
-			label: t('statistics.comparedToLastMonth'),
-		},
-		delay: 0.2,
-	},
-	{
-		title: t('statistics.bookings'),
-		value: (stat: any) => stat.totalBookings.toLocaleString('en-US'),
-		subtitle: t('statistics.bookingCount'),
-		icon: Calendar,
-		color: 'purple' as const,
-		trend: {
-			value: 15.2,
-			isPositive: true,
-			label: t('statistics.comparedToLastMonth'),
-		},
-		delay: 0.3,
-	},
-	{
-		title: t('statistics.services'),
-		value: (stat: any) => stat.totalServices,
-		subtitle: t('statistics.activeServices'),
-		icon: Package,
-		color: 'indigo' as const,
-		delay: 0.4,
-	},
-]
 
 const AdminStatisticsPage = () => {
 	const { t } = useLocale()
