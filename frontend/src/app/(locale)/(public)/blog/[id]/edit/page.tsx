@@ -172,7 +172,7 @@ const BlogEditPage = ({ params }: { params: Promise<{ id: string }> }) => {
 						title: blog.title,
 						content: blog.content,
 						author: blog.author,
-						tagTitle: blog.tagTitle || [],
+						tagTitles: blog.tagTitles || [],
 					}}
 				/>
 			</div>

@@ -9,18 +9,46 @@ import { useSearchParams } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useLocale } from '@/Hooks/useLocale'
 
+// VNPay error code mapping
+const getVNPayErrorMessage = (responseCode: string): string => {
+	const errorCodes: { [key: string]: string } = {
+		'00': 'Transaction successful',
+		'07': 'Transaction deducted successfully. Transaction is suspected of fraud (related to the amount of money deducted)',
+		'09': 'Card/Account of customer is not registered for internet banking service at bank',
+		'10': 'Customer authenticated card/account information incorrectly more than 3 times',
+		'11': 'Payment deadline has expired. Please try again',
+		'12': 'Card/Account of customer is locked',
+		'13': 'You entered the wrong transaction authentication password (OTP). Please try again',
+		'24': 'Customer canceled the transaction',
+		'51': 'Your account does not have enough balance to make the transaction',
+		'65': 'Your account has exceeded the daily transaction limit',
+		'75': 'Payment bank is under maintenance',
+		'79': 'You entered the wrong payment password more than allowed. Please try again',
+		'99': 'Other error (please contact the bank)',
+	}
+
+	return errorCodes[responseCode] || `Unknown error (Code: ${responseCode})`
+}
+
 const Page = () => {
 	const { t } = useLocale()
 	const { data, isLoading, error, refetch } = useGetOrder()
 	const searchParams = useSearchParams()
 
-	// Check for payment callback parameters
+	// Check for payment callback parameters from different payment gateways
 	useEffect(() => {
+		// MoMo payment callback parameters
 		const resultCode = searchParams?.get('resultCode')
 		const message = searchParams?.get('message')
 
+		// VNPay payment callback parameters
+		const vnpResponseCode = searchParams?.get('vnp_ResponseCode')
+		const vnpTransactionStatus = searchParams?.get('vnp_TransactionStatus')
+		const vnpOrderInfo = searchParams?.get('vnp_OrderInfo')
+
+		// Handle MoMo payment callback
 		if (resultCode !== null) {
-			// Clear URL parameters
+			// Clear MoMo URL parameters
 			const url = new URL(window.location.href)
 			url.searchParams.delete('resultCode')
 			url.searchParams.delete('message')
@@ -33,6 +61,51 @@ const Page = () => {
 				refetch()
 			} else {
 				toast.error(message || t('member.booking.payment_failed'))
+			}
+		}
+		// Handle VNPay payment callback
+		else if (vnpResponseCode !== null) {
+			console.log('VNPay callback detected:', {
+				vnpResponseCode,
+				vnpTransactionStatus,
+				vnpOrderInfo,
+				allParams: Object.fromEntries(searchParams?.entries() || []),
+			})
+
+			// Clear VNPay URL parameters
+			const url = new URL(window.location.href)
+			const vnpParams = [
+				'vnp_Amount',
+				'vnp_BankCode',
+				'vnp_CardType',
+				'vnp_OrderInfo',
+				'vnp_PayDate',
+				'vnp_ResponseCode',
+				'vnp_TmnCode',
+				'vnp_TransactionNo',
+				'vnp_TransactionStatus',
+				'vnp_TxnRef',
+				'vnp_SecureHash',
+			]
+			vnpParams.forEach(param => url.searchParams.delete(param))
+			window.history.replaceState({}, '', url.toString())
+
+			// Show appropriate message based on VNPay response codes
+			// vnp_ResponseCode: 00 = success, others = failure
+			// vnp_TransactionStatus: 00 = success, others = failure
+			if (vnpResponseCode === '00' && vnpTransactionStatus === '00') {
+				console.log('VNPay payment successful')
+				toast.success(t('member.booking.payment_success'))
+				// Refresh booking data
+				refetch()
+			} else {
+				console.log('VNPay payment failed:', {
+					vnpResponseCode,
+					vnpTransactionStatus,
+				})
+				// Parse order info for better error context
+				const errorMessage = getVNPayErrorMessage(vnpResponseCode || '99')
+				toast.error(`${t('member.booking.payment_failed')}: ${errorMessage}`)
 			}
 		}
 	}, [searchParams, refetch, t])

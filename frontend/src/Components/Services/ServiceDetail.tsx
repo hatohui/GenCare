@@ -16,7 +16,6 @@ export default function ServiceDetail({
 	imageUrls,
 	createdAt,
 	updatedAt,
-	createdBy,
 }: {
 	id: string
 	name: string
@@ -102,8 +101,8 @@ export default function ServiceDetail({
 	return (
 		<main className='relative min-h-screen bg-[#F7F7F7] text-gray-900 overflow-x-hidden'>
 			<FlorageBackground />
-			<ReturnButton to='/service' />
 			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 py-16 px-4 md:px-8 relative z-10'>
+				<ReturnButton to='/service' className='absolute top-10 left-10' />
 				{/* Left Panel */}
 				<motion.div
 					initial={{ opacity: 0, x: -30 }}
@@ -135,11 +134,6 @@ export default function ServiceDetail({
 							<span>
 								{t('service.updated_at')}:{' '}
 								{new Date(updatedAt).toLocaleDateString('vi-VN')}
-							</span>
-						)}
-						{createdBy && (
-							<span>
-								{t('service.created_by')}: {createdBy}
 							</span>
 						)}
 					</div>

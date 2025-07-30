@@ -47,7 +47,9 @@ const SlotDetailsModal = ({
 	if (!isOpen) return null
 
 	const hasAppointments = appointments.length > 0
-	const canRemoveConsultants = !hasAppointments // Restore proper logic
+	// Allow removal if there are no appointments OR if there are multiple consultants assigned
+	const canRemoveConsultants =
+		!hasAppointments || assignedConsultants.length > 1
 
 	return (
 		<AnimatePresence>
@@ -108,18 +110,42 @@ const SlotDetailsModal = ({
 							<motion.div
 								initial={{ opacity: 0, y: -10 }}
 								animate={{ opacity: 1, y: 0 }}
-								className='bg-red-50 border border-red-200 rounded-lg p-4 mb-6'
+								className={`border rounded-lg p-4 mb-6 ${
+									assignedConsultants.length > 1
+										? 'bg-yellow-50 border-yellow-200'
+										: 'bg-red-50 border-red-200'
+								}`}
 							>
 								<div className='flex items-start space-x-3'>
-									<AlertCircle className='w-5 h-5 text-red-600 mt-0.5' />
+									<AlertCircle
+										className={`w-5 h-5 mt-0.5 ${
+											assignedConsultants.length > 1
+												? 'text-yellow-600'
+												: 'text-red-600'
+										}`}
+									/>
 									<div>
-										<h3 className='font-medium text-red-800'>
+										<h3
+											className={`font-medium ${
+												assignedConsultants.length > 1
+													? 'text-yellow-800'
+													: 'text-red-800'
+											}`}
+										>
 											Active Appointments
 										</h3>
-										<p className='text-sm text-red-700 mt-1'>
+										<p
+											className={`text-sm mt-1 ${
+												assignedConsultants.length > 1
+													? 'text-yellow-700'
+													: 'text-red-700'
+											}`}
+										>
 											This slot has {appointments.length} active appointment
-											{appointments.length > 1 ? 's' : ''}. Consultants cannot
-											be removed while appointments are scheduled.
+											{appointments.length > 1 ? 's' : ''}.
+											{assignedConsultants.length > 1
+												? ' You can remove consultants as long as at least one remains assigned.'
+												: ' The last consultant cannot be removed while appointments are scheduled.'}
 										</p>
 									</div>
 								</div>
@@ -183,7 +209,7 @@ const SlotDetailsModal = ({
 														</div>
 													</div>
 												</div>
-												{canRemoveConsultants && (
+												{canRemoveConsultants ? (
 													<button
 														onClick={() => {
 															console.log(
@@ -197,6 +223,19 @@ const SlotDetailsModal = ({
 															onRemoveConsultant(consultant.id)
 														}}
 														className='px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200'
+													>
+														Remove
+													</button>
+												) : (
+													<button
+														disabled
+														className='px-3 py-1 text-sm text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed'
+														title={
+															hasAppointments &&
+															assignedConsultants.length === 1
+																? 'Cannot remove the last consultant when there are active appointments'
+																: 'Cannot remove consultant'
+														}
 													>
 														Remove
 													</button>

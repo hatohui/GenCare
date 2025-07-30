@@ -122,7 +122,7 @@ const ForumBlogItem = React.memo(({ blog }: { blog: Blog }) => {
 
 					{/* Tags */}
 					<div className='flex flex-wrap gap-2 mb-3'>
-						{blog.tagTitle?.map((tag: string) => (
+						{blog.tagTitles?.map((tag: string) => (
 							<span
 								key={tag}
 								className='px-2 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium'
@@ -272,7 +272,7 @@ const BlogPage = () => {
 			{canCreateBlog && (
 				<button
 					onClick={() => router.push('/blog/create')}
-					className='fixed bottom-8 right-8 z-50 flex items-center justify-center w-16 h-16 rounded-full bg-accent text-white shadow-lg hover:bg-blue-700 focus:ring-4 focus:ring-accent/30 transition text-2xl group'
+					className='fixed bottom-25 right-7 z-50 flex items-center justify-center w-15 h-15 rounded-full bg-accent text-white shadow-lg hover:bg-blue-700 focus:ring-4 focus:ring-accent/30 transition text-2xl group'
 					title={t('blog.create_post')}
 					aria-label={t('blog.create_post')}
 				>
