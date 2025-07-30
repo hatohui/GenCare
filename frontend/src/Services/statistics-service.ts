@@ -9,14 +9,14 @@ import {
 	UserStatistic,
 } from '@/Interfaces/Statistics/Types/Statistics'
 import { useAccessTokenHeader } from '@/Utils/Auth/getAccessTokenHeader'
+import axiosInstance from '@/Utils/axios'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 
 const statisticsApi = {
 	// Dashboard statistics - main overview
 	getDashboardStatistics: (header: string) => {
-		return axios
-			.get<DashboardStatistic>(`${DEFAULT_API_URL}/statistics/dashboard`, {
+		return axiosInstance
+			.get<DashboardStatistic>('/statistics/dashboard', {
 				headers: { Authorization: header },
 				timeout: 10000,
 			})
@@ -36,8 +36,8 @@ const statisticsApi = {
 		header: string,
 		period: 'week' | 'month' | 'year' = 'month'
 	) => {
-		return axios
-			.get<RevenueData[]>(`${DEFAULT_API_URL}/statistics/revenue-data`, {
+		return axiosInstance
+			.get<RevenueData[]>('/statistics/revenue-data', {
 				headers: { Authorization: header },
 				params: { period },
 				timeout: 10000,
@@ -54,8 +54,8 @@ const statisticsApi = {
 		header: string,
 		period: 'week' | 'month' | 'year' = 'month'
 	) => {
-		return axios
-			.get<UserGrowthData[]>(`${DEFAULT_API_URL}/statistics/user-growth`, {
+		return axiosInstance
+			.get<UserGrowthData[]>('/statistics/user-growth', {
 				headers: { Authorization: header },
 				params: { period },
 				timeout: 10000,
@@ -69,8 +69,8 @@ const statisticsApi = {
 
 	// Top services data
 	getTopServices: (header: string) => {
-		return axios
-			.get<TopService[]>(`${DEFAULT_API_URL}/statistics/top-services`, {
+		return axiosInstance
+			.get<TopService[]>('/statistics/top-services', {
 				headers: { Authorization: header },
 				timeout: 10000,
 			})
@@ -83,8 +83,8 @@ const statisticsApi = {
 
 	// Payment statistics
 	getPaymentStatistics: (header: string) => {
-		return axios
-			.get<PaymentStatistic>(`${DEFAULT_API_URL}/statistics/payment`, {
+		return axiosInstance
+			.get<PaymentStatistic>('/statistics/payment', {
 				headers: { Authorization: header },
 				timeout: 10000,
 			})
@@ -97,8 +97,8 @@ const statisticsApi = {
 
 	// User statistics
 	getUserStatistics: (header: string) => {
-		return axios
-			.get<UserStatistic>(`${DEFAULT_API_URL}/statistics/users`, {
+		return axiosInstance
+			.get<UserStatistic>('/statistics/users', {
 				headers: { Authorization: header },
 				timeout: 10000,
 			})
@@ -111,8 +111,8 @@ const statisticsApi = {
 
 	// Legacy method for backward compatibility
 	getAdminStatistics: (header: string) => {
-		return axios
-			.get<AdminStatisticsResponse>(`${DEFAULT_API_URL}/statistics/admin`, {
+		return axiosInstance
+			.get<AdminStatisticsResponse>('/statistics/admin', {
 				headers: { Authorization: header },
 				timeout: 10000,
 			})

@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 const roleApi = {
-	// Public API - no authentication required
 	getAll: () =>
-		axios.get<RoleResponse>(`${DEFAULT_API_URL}/roles`).then(res => res.data),
+		axios
+			.get<RoleResponse>(`${DEFAULT_API_URL}/api/roles`)
+			.then(res => res.data),
 }
 
 export const useGetAllRoles = () => {

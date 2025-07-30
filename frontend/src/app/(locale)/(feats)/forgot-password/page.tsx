@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
 	const { mutate, isPending } = useMutation({
 		mutationKey: ['forgot-password'],
 		mutationFn: async (data: ForgotPasswordRequest) =>
-			axios.post(`${DEFAULT_API_URL}/auth/forgot-password`, data),
+			axios.post(`${DEFAULT_API_URL}/api/auth/forgot-password`, data),
 		onSuccess: () => {
 			// Do not reset the form to preserve the email input
 			startRetryTimer()

@@ -242,7 +242,6 @@ const BlogPage = () => {
 		isFetchingNextPage,
 	})
 
-	// Load more when the last item comes into view
 	React.useEffect(() => {
 		if (inView && hasNextPage && !isFetchingNextPage) {
 			fetchNextPage()

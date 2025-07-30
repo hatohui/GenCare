@@ -1,5 +1,6 @@
 ﻿using Application.Repositories;
 using Domain.Abstractions;
+using Domain.Common.Constants;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories;
@@ -21,7 +22,7 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
     public async Task<List<Purchase>> GetAllPurchasesAsync()
         => await dbContext.Purchases
                  .Include(p => p.OrderDetails)
-                    .ToListAsync(); 
+                    .ToListAsync();
 
 
     public async Task<List<Purchase>> GetByAccountId(Guid accountId)
@@ -43,5 +44,26 @@ public class PurchaseRepository(IApplicationDbContext dbContext) : IPurchaseRepo
     {
         dbContext.Purchases.Update(purchase);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task RemoveUnpaidPurchasesAsync()
+    {
+        var oneWeekAgo = DateTime.SpecifyKind(DateTime.Now.AddDays(-7), DateTimeKind.Unspecified);
+
+        await dbContext.PaymentHistories
+            .Where(ph => ph.Status == PaymentStatus.Pending &&
+                dbContext.Purchases
+                    .Where(p => p.CreatedAt < oneWeekAgo)
+                    .Select(p => p.Id)
+                    .Contains(ph.PurchaseId))
+            .ExecuteDeleteAsync();
+
+        await dbContext.Purchases
+            .Where(p => p.CreatedAt < oneWeekAgo &&
+                dbContext.PaymentHistories
+                    .Where(ph => ph.Status == PaymentStatus.Pending)
+                    .Select(ph => ph.PurchaseId)
+                    .Contains(p.Id))
+            .ExecuteDeleteAsync();
     }
 }

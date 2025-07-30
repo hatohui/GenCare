@@ -442,6 +442,11 @@ const vi: Record<string, string> = {
 	'chat.book_consultant_feature_coming_soon':
 		'Tính năng đặt lịch tư vấn viên sắp ra mắt!',
 	'chat.show_pending': 'Hiển thị chờ xử lý',
+	'chat.consultant_joined': 'Một chuyên gia đã tham gia cuộc hội thoại!',
+	'chat.no_consultant_assigned':
+		'Chưa có chuyên gia nào được phân công cho cuộc hội thoại này',
+	'chat.join_conversation': 'Tham gia cuộc hội thoại',
+	'chat.ended_conversations': 'Cuộc hội thoại đã kết thúc',
 
 	// Consultants
 	'consultant.details': 'Chi tiết tư vấn viên',
@@ -491,6 +496,17 @@ const vi: Record<string, string> = {
 	'appointment.go_to_first_appointment': 'để đi đến tuần có lịch hẹn đầu tiên.',
 	'appointment.this_week': 'Tuần này',
 	'appointment.appointments_count': 'lịch hẹn',
+	'appointment.loading_appointments': 'Đang tải lịch hẹn...',
+	'appointment.error_occurred': 'Oops! Có lỗi xảy ra',
+	'appointment.try_again': 'Thử lại',
+	'appointment.time': 'Thời gian',
+	'appointment.go_to_appointment': 'Đi đến lịch hẹn',
+	'appointment.find': 'Tìm',
+	'appointment.upcoming_appointments': 'lịch hẹn sắp tới',
+	'appointment.confirmed': 'Đã xác nhận',
+	'appointment.pending_confirmation': 'Chờ xác nhận',
+	'appointment.current_time': 'Thời gian hiện tại',
+	'appointment.upcoming_notification': 'Sắp đến giờ hẹn, bấm để tham gia',
 
 	// Payments
 	'payment.paid': 'Đã thanh toán',
@@ -1013,7 +1029,6 @@ const vi: Record<string, string> = {
 	'appointment.join': 'Tham gia',
 	'appointment.join_zoom': 'Tham gia cuộc họp',
 	'appointment.current_week': 'Hiện tại',
-	'appointment.error_occurred': 'Oops! Có lỗi xảy ra',
 	'appointment.retry': 'Thử lại',
 	'appointment.processing': 'Đang xử lý...',
 

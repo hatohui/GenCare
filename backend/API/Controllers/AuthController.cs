@@ -208,13 +208,13 @@ public class AuthController
     }
 
     [HttpPost("check-email")]
-    public async Task<IActionResult> CheckEmailExist(string email)
+    public async Task<IActionResult> CheckEmailExist([FromBody] EmailExistRequest request)
     {
-        if(string.IsNullOrWhiteSpace(email))
+        if(string.IsNullOrWhiteSpace(request.Email))
         {
             return BadRequest("Email is required.");
         }
-        var exists = await accountService.CheckEmailExist(email);
+        var exists = await accountService.CheckEmailExist(request.Email);
         if(!exists)
         {
             return NotFound("Email does not exist.");

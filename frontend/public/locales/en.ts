@@ -304,6 +304,11 @@ const en: Record<string, string> = {
 	'chat.book_consultant_feature_coming_soon':
 		'Book consultant feature coming soon!',
 	'chat.show_pending': 'Show pending',
+	'chat.consultant_joined': 'A consultant has joined the conversation!',
+	'chat.no_consultant_assigned':
+		'No consultant is assigned to this conversation',
+	'chat.join_conversation': 'Join Conversation',
+	'chat.ended_conversations': 'Ended Conversations',
 
 	// Consultants
 	'consultant.details': 'Consultant Details',
@@ -354,6 +359,18 @@ const en: Record<string, string> = {
 		'button to go to the first appointment week.',
 	'appointment.this_week': 'This week',
 	'appointment.appointments_count': 'appointments',
+	'appointment.loading_appointments': 'Loading appointments...',
+	'appointment.error_occurred': 'Oops! An error occurred',
+	'appointment.try_again': 'Try again',
+	'appointment.time': 'Time',
+	'appointment.go_to_appointment': 'Go to appointment',
+	'appointment.find': 'Find',
+	'appointment.upcoming_appointments': 'upcoming appointments',
+	'appointment.confirmed': 'Confirmed',
+	'appointment.pending_confirmation': 'Pending confirmation',
+	'appointment.current_time': 'Current time',
+	'appointment.upcoming_notification':
+		'Appointment starting soon, click to join',
 
 	// Payments
 	'payment.paid': 'Paid',
@@ -991,7 +1008,6 @@ const en: Record<string, string> = {
 	'appointment.join': 'Join',
 	'appointment.join_zoom': 'Join Meeting',
 	'appointment.current_week': 'Current',
-	'appointment.error_occurred': 'Oops! An error occurred',
 	'appointment.retry': 'Retry',
 	'appointment.processing': 'Processing...',
 
