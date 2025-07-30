@@ -36,7 +36,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 							Service not found
 						</h3>
 						<p className='text-gray-600 mb-4'>
-							The service you're looking for doesn't exist or has been removed.
+							The service you&apos;re looking for doesn&apos;t exist or has been removed.
 						</p>
 						<button
 							onClick={() => router.back()}

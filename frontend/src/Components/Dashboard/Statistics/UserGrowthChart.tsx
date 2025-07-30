@@ -26,21 +26,24 @@ interface UserGrowthChartData extends UserGrowthData {
 
 const formatDate = (
 	dateString: string,
-	period: UserGrowthChartProps['period']
+	period: UserGrowthChartProps['period'],
+	locale?: string
 ) => {
 	const date = new Date(dateString)
+	const localeCode = locale === 'vi' ? 'vi-VN' : 'en-US'
+
 	switch (period) {
 		case 'week':
-			return date.toLocaleDateString('en-US', { weekday: 'short' })
+			return date.toLocaleDateString(localeCode, { weekday: 'short' })
 		case 'month':
-			return date.toLocaleDateString('en-US', {
+			return date.toLocaleDateString(localeCode, {
 				day: 'numeric',
 				month: 'short',
 			})
 		case 'year':
-			return date.toLocaleDateString('en-US', { month: 'short' })
+			return date.toLocaleDateString(localeCode, { month: 'short' })
 		default:
-			return date.toLocaleDateString('en-US')
+			return date.toLocaleDateString(localeCode)
 	}
 }
 
@@ -57,13 +60,13 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 	label,
 	period,
 }) => {
-	const { t } = useLocale()
+	const { t, locale } = useLocale()
 
 	if (!active || !payload?.length) return null
 	return (
 		<div className='bg-white p-3 border border-gray-200 rounded-lg shadow-lg'>
 			<p className='text-sm font-medium text-gray-800'>
-				{formatDate(label ?? '', period)}
+				{formatDate(label ?? '', period, locale)}
 			</p>
 			<p className='text-sm text-blue-600'>
 				{t('statistics.newUsers')}:{' '}
@@ -80,7 +83,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
 }
 
 const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
-	const { t } = useLocale()
+	const { t, locale } = useLocale()
 	const chartData = data as UserGrowthChartData[]
 
 	const totalGrowth = React.useMemo(
@@ -132,7 +135,7 @@ const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data, period }) => {
 						<CartesianGrid strokeDasharray='3 3' stroke='#f0f0f0' />
 						<XAxis
 							dataKey='date'
-							tickFormatter={d => formatDate(d, period)}
+							tickFormatter={d => formatDate(d, period, locale)}
 							tick={{ fontSize: 12, fill: '#6b7280' }}
 						/>
 						<YAxis

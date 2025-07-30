@@ -141,6 +141,7 @@ const en: Record<string, string> = {
 	'common.collapse': 'Collapse',
 	'common.expand': 'Expand',
 	'common.try_again': 'Try Again',
+	'common.tryAgain': 'Try Again',
 	'common.go_back': 'Go Back',
 	'common.actions': 'Actions',
 	'common.refresh': 'Refresh',
@@ -817,6 +818,12 @@ const en: Record<string, string> = {
 	'statistics.managers': 'Managers',
 	'statistics.staff': 'Staff',
 	'statistics.recentActivity': 'Recent Activity',
+	'statistics.completedPayments': 'Completed Payments',
+	'statistics.totalBookings': 'Total Bookings',
+	'statistics.totalServices': 'Total Services',
+	'statistics.successRate': 'Success Rate',
+	'statistics.avgProcessingTime': 'Avg. Processing Time',
+	'statistics.pendingTests': 'Pending Tests',
 
 	// Payment callback page
 	'payment.callback.success': 'Payment successful!',
@@ -1245,6 +1252,10 @@ const en: Record<string, string> = {
 	'recentActivity.minutes_ago': '{count} minutes ago',
 	'recentActivity.hours_ago': '{count} hours ago',
 	'recentActivity.invalid_time': 'Invalid time',
+	'recentActivity.service_booked': 'Service {serviceName} was booked',
+	'recentActivity.payment_completed': 'Payment completed',
+	'recentActivity.user_registered': 'New user registered',
+	'recentActivity.test_completed': 'Test completed',
 
 	// Schedule
 	'schedule.my_schedule': 'My Schedule',

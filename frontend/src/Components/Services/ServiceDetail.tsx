@@ -1,7 +1,6 @@
 import { useRouter } from 'next/navigation'
 import AutoCarousel from '../AutoCarousel'
 import useToken from '@/Hooks/Auth/useToken'
-import FlorageBackground from '../Landing/FlorageBackground'
 import ReturnButton from '../ReturnButton'
 import { motion } from 'motion/react'
 import Testimonials from '@/Constants/Testomonial'
@@ -275,7 +274,7 @@ export default function ServiceDetail({
 									</div>
 								</div>
 								<blockquote className='text-gray-600 leading-relaxed italic'>
-									"{item.content}"
+									&ldquo;{item.content}&rdquo;
 								</blockquote>
 							</motion.div>
 						))}

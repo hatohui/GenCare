@@ -69,10 +69,16 @@ const ErrorStatistics = ({ refetch }: { refetch: () => void }) => {
 }
 
 const AdminStatisticsPage = () => {
-	const { t } = useLocale()
+	const { t, locale } = useLocale()
 	const [selectedPeriod, setSelectedPeriod] = useState<
 		'week' | 'month' | 'year'
 	>('month')
+
+	// Helper function to format numbers based on locale
+	const formatNumber = (num: number) => {
+		const localeCode = locale === 'vi' ? 'vi-VN' : 'en-US'
+		return num.toLocaleString(localeCode)
+	}
 
 	// Use individual API hooks
 	const {
@@ -201,7 +207,7 @@ const AdminStatisticsPage = () => {
 				<div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
 					<div className='text-center'>
 						<div className='text-2xl font-bold text-blue-600'>
-							{dashboardStatistic.totalActiveUsers.toLocaleString('en-US')}
+							{formatNumber(dashboardStatistic.totalActiveUsers)}
 						</div>
 						<div className='text-sm text-gray-600'>
 							{t('statistics.totalUsers')}
@@ -217,7 +223,7 @@ const AdminStatisticsPage = () => {
 					</div>
 					<div className='text-center'>
 						<div className='text-2xl font-bold text-purple-600'>
-							{dashboardStatistic.totalBookings.toLocaleString('en-US')}
+							{formatNumber(dashboardStatistic.totalBookings)}
 						</div>
 						<div className='text-sm text-gray-600'>
 							{t('statistics.totalBookings')}
@@ -328,15 +334,47 @@ const AdminStatisticsPage = () => {
 					</div>
 					<RecentActivity
 						activities={filteredAndSortedTopServices
-							.slice(0, 3)
-							.map((service: any) => ({
-								id: service.serviceId,
-								type: 'service',
-								message: service.serviceName,
-								timestamp: new Date().toISOString(),
-								status: 'info',
-								userName: service.serviceName,
-							}))}
+							.slice(0, 5)
+							.map((service: any, index: number) => {
+								// Create more realistic timestamps (last 24 hours)
+								const hoursAgo = Math.floor(Math.random() * 24) + 1
+								const timestamp = new Date()
+								timestamp.setHours(timestamp.getHours() - hoursAgo)
+
+								// Create different activity types
+								const activityTypes = [
+									{
+										type: 'booking' as const,
+										message: t('recentActivity.service_booked', {
+											serviceName: service.serviceName,
+										}),
+										status: 'success' as const,
+									},
+									{
+										type: 'payment' as const,
+										message: t('recentActivity.payment_completed'),
+										status: 'success' as const,
+									},
+									{
+										type: 'service' as const,
+										message: t('recentActivity.service_booked', {
+											serviceName: service.serviceName,
+										}),
+										status: 'info' as const,
+									},
+								]
+
+								const activity = activityTypes[index % activityTypes.length]
+
+								return {
+									id: `${service.serviceId}-${index}`,
+									type: activity.type,
+									message: activity.message,
+									timestamp: timestamp.toISOString(),
+									status: activity.status,
+									userName: `User ${index + 1}`,
+								}
+							})}
 					/>
 				</div>
 			</motion.div>

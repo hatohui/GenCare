@@ -28,7 +28,7 @@ const useChat = (
 	useEffect(() => {
 		if (conversationId !== previousConversationIdRef.current) {
 			setMessages([])
-			connectionAttemptRef.current = 0 // Reset connection attempts for new conversation
+			connectionAttemptRef.current = 0
 			previousConversationIdRef.current = conversationId
 		}
 	}, [conversationId])

@@ -836,6 +836,26 @@ const vi: Record<string, string> = {
 	'statistics.managers': 'Quản Lý',
 	'statistics.staff': 'Nhân Viên',
 	'statistics.recentActivity': 'Hoạt Động Gần Đây',
+	'statistics.completedPayments': 'Thanh Toán Hoàn Thành',
+	'statistics.totalBookings': 'Tổng Lượt Đặt',
+	'statistics.totalServices': 'Tổng Dịch Vụ',
+	'statistics.successRate': 'Tỷ Lệ Thành Công',
+	'statistics.avgProcessingTime': 'Thời Gian Xử Lý TB',
+	'statistics.pendingTests': 'Xét Nghiệm Chờ Xử Lý',
+
+	// Recent Activity translations
+	'recentActivity.title': 'Hoạt Động Gần Đây',
+	'recentActivity.see_all': 'Xem tất cả',
+	'recentActivity.see_more': 'Xem thêm {count} hoạt động',
+	'recentActivity.empty': 'Không có hoạt động gần đây',
+	'recentActivity.just_now': 'Vừa xong',
+	'recentActivity.minutes_ago': '{count} phút trước',
+	'recentActivity.hours_ago': '{count} giờ trước',
+	'recentActivity.invalid_time': 'Thời gian không hợp lệ',
+	'recentActivity.service_booked': 'Dịch vụ {serviceName} được đặt',
+	'recentActivity.payment_completed': 'Thanh toán hoàn thành',
+	'recentActivity.user_registered': 'Người dùng mới đăng ký',
+	'recentActivity.test_completed': 'Xét nghiệm hoàn thành',
 
 	// Payment callback page
 	'payment.callback.success': 'Thanh toán thành công!',
