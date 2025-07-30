@@ -133,7 +133,6 @@ const AdminStatisticsPage = () => {
 
 	const handleExportData = () => {
 		// Implement export functionality
-		console.log('Exporting data...')
 	}
 
 	const handleRefresh = () => {

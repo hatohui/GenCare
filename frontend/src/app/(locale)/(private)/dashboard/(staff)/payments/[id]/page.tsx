@@ -17,8 +17,6 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 	useEffect(() => {
 		const sort = searchParams?.get('isPaid') || ''
 		const search = searchParams?.get('search') || ''
-
-		console.log(sort, search)
 	}, [searchParams])
 
 	if (!id) {

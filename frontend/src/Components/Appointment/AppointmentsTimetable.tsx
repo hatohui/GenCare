@@ -38,23 +38,19 @@ export const AppointmentsTimetable = () => {
 
 	const { startOfWeek, endOfWeek } = getWeekRange(currentWeek)
 
-	// Memoize weekDays to prevent recreation on every render
 	const weekDays = useMemo(() => getWeekDays(startOfWeek), [startOfWeek])
 
-	// Filter appointments for current week
 	const weekAppointments = useMemo(
 		() => (data ? filterAppointmentsForWeek(data, startOfWeek, endOfWeek) : []),
 		[data, startOfWeek, endOfWeek]
 	)
 
-	// Generate all time slots and group appointments - memoize to prevent recreation
 	const timeSlots = useMemo(() => generateTimeSlots(), [])
 	const groupedAppointments = useMemo(
 		() => groupAppointmentsByDateTime(weekAppointments),
 		[weekAppointments]
 	)
 
-	// Helper để tạo local date key
 	const getLocalDateKey = useCallback((date: Date) => {
 		const year = date.getFullYear()
 		const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -62,17 +58,15 @@ export const AppointmentsTimetable = () => {
 		return `${year}-${month}-${day}`
 	}, [])
 
-	// Handle time slot status changes from CurrentTimeLine - optimized to prevent unnecessary updates
 	const handleTimeSlotStatusChange = useCallback(
 		(day: Date, timeSlot: string, isPast: boolean) => {
 			const dateKey = getLocalDateKey(day)
 			const slotKey = `${dateKey}-${timeSlot}`
 
 			setPastTimeSlots(prev => {
-				// Only update if the status actually changed
 				const currentStatus = prev.has(slotKey)
 				if (currentStatus === isPast) {
-					return prev // No change needed
+					return prev
 				}
 
 				const newSet = new Set(prev)

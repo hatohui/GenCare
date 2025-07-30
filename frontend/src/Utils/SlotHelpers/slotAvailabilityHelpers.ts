@@ -1,6 +1,6 @@
 import { Appointment } from '@/Interfaces/Appointment/Types/Appointment'
 import { ScheduleListResponse } from '@/Interfaces/Schedule/Schema/schedule'
-import { addHours, isSameHour } from 'date-fns'
+import { addHours, isSameHour, startOfDay } from 'date-fns'
 import { WORKING_SLOTS, isSlotInPast } from './slotTimeHelpers'
 
 /**
@@ -131,9 +131,15 @@ export const getAppointmentsForSlot = (
 	const slot = WORKING_SLOTS.find(s => s.no === slotNo)
 	if (!slot) return []
 
-	// Create the slot start and end times for the given day
-	const slotStartTime = addHours(day, parseInt(slot.startTime.split(':')[0]))
-	const slotEndTime = addHours(day, parseInt(slot.endTime.split(':')[0]))
+	// Create the slot start and end times for the given day (in local timezone)
+	const slotStartTime = addHours(
+		startOfDay(day),
+		parseInt(slot.startTime.split(':')[0])
+	)
+	const slotEndTime = addHours(
+		startOfDay(day),
+		parseInt(slot.endTime.split(':')[0])
+	)
 
 	const result = appointments.filter(appointment => {
 		if (appointment.isDeleted) return false
@@ -146,8 +152,14 @@ export const getAppointmentsForSlot = (
 			appointmentDate = new Date(appointment.scheduleAt + 'Z')
 		}
 
+		// Convert appointment date to local timezone for comparison
+		const localAppointmentDate = new Date(appointmentDate.getTime())
+
 		// Check if appointment falls within this slot's time range
-		return appointmentDate >= slotStartTime && appointmentDate < slotEndTime
+		return (
+			localAppointmentDate >= slotStartTime &&
+			localAppointmentDate < slotEndTime
+		)
 	})
 
 	return result
